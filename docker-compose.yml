@@ -20,7 +20,7 @@ services:
       # Optional: Mount a volume for data persistence if needed
       - ./data:/usr/share/nginx/html/data:ro
     networks:
-      - web
+      - cerberusnet
 
   # Auto-updater service that pulls latest from GitHub
   watchtower:
@@ -37,10 +37,10 @@ services:
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
     networks:
-      - web
+      - cerberusnet
 
 networks:
-  web:
+  cerberusnet:
     external: true
 
 # Alternative compose file for simple local deployment
@@ -59,3 +59,9 @@ services:
       - TZ=America/New_York
     volumes:
       - ./data:/usr/share/nginx/html/data:ro
+    networks:
+      - cerberusnet
+
+networks:
+  cerberusnet:
+    external: true
