@@ -10,6 +10,9 @@ class MWATDDMAXCalculator {
     this.results = null;
 
     this.initializeEventListeners();
+    
+    // Initial check for calculation readiness
+    setTimeout(() => this.checkCalculationReady(), 100);
   }
 
   initializeEventListeners() {
@@ -20,6 +23,14 @@ class MWATDDMAXCalculator {
     // Discharge pattern selection
     document.getElementById('dischargePattern').addEventListener('change', (e) => this.handleDischargePatternChange(e));
     document.getElementById('analysisMonth').addEventListener('change', (e) => this.handleAnalysisMonthChange(e));
+    
+    // Add change listeners for discharge configuration inputs
+    document.getElementById('singleStartDate').addEventListener('change', () => this.checkCalculationReady());
+    document.getElementById('singleEndDate').addEventListener('change', () => this.checkCalculationReady());
+    document.getElementById('dailyStartTime').addEventListener('change', () => this.checkCalculationReady());
+    document.getElementById('dailyEndTime').addEventListener('change', () => this.checkCalculationReady());
+    document.getElementById('dailyStartDate').addEventListener('change', () => this.checkCalculationReady());
+    document.getElementById('dailyEndDate').addEventListener('change', () => this.checkCalculationReady());
 
     // Calculation button
     document.getElementById('calculateBtn').addEventListener('click', () => this.calculateCompliance());
@@ -325,7 +336,7 @@ class MWATDDMAXCalculator {
     periodDiv.innerHTML = `
       <div class="custom-period-header">
         <strong>Discharge Period ${periodIndex + 1}</strong>
-        <button type="button" class="remove-period" onclick="this.parentElement.parentElement.remove(); this.checkCalculationReady();">Remove</button>
+        <button type="button" class="remove-period" onclick="this.parentElement.parentElement.remove(); calculator.checkCalculationReady();">Remove</button>
       </div>
       <div class="period-controls">
         <div class="control-group">
@@ -340,6 +351,15 @@ class MWATDDMAXCalculator {
     `;
     
     customPeriods.appendChild(periodDiv);
+    
+    // Add event listeners to the new inputs
+    const startInput = periodDiv.querySelector('.custom-start');
+    const endInput = periodDiv.querySelector('.custom-end');
+    startInput.addEventListener('change', () => this.checkCalculationReady());
+    endInput.addEventListener('change', () => this.checkCalculationReady());
+    
+    // Check if calculation is ready after adding period
+    this.checkCalculationReady();
   }
 
   checkCalculationReady() {
@@ -347,12 +367,36 @@ class MWATDDMAXCalculator {
     const hasMonth = this.analysisMonth;
     const hasDischarge = this.validateDischargeConfiguration();
     
+    // Debug logging
+    console.log('Calculation readiness check:', {
+      hasData,
+      hasMonth,
+      hasDischarge,
+      sensor1Records: this.sensor1Data ? this.sensor1Data.length : 0,
+      sensor2Records: this.sensor2Data ? this.sensor2Data.length : 0,
+      analysisMonth: this.analysisMonth,
+      dischargePattern: document.getElementById('dischargePattern').value
+    });
+    
     const calculateBtn = document.getElementById('calculateBtn');
-    calculateBtn.disabled = !(hasData && hasMonth && hasDischarge);
+    const isReady = hasData && hasMonth && hasDischarge;
+    calculateBtn.disabled = !isReady;
+    
+    // Visual feedback
+    if (isReady) {
+      calculateBtn.style.opacity = '1';
+      calculateBtn.style.cursor = 'pointer';
+    } else {
+      calculateBtn.style.opacity = '0.6';
+      calculateBtn.style.cursor = 'not-allowed';
+    }
   }
 
   validateDischargeConfiguration() {
     const pattern = document.getElementById('dischargePattern').value;
+    
+    // If no pattern selected, return false
+    if (!pattern) return false;
     
     switch (pattern) {
       case 'single':
