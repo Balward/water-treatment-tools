@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  water-treatment-tools:
+    build: .
+    image: water-treatment-tools:latest
+    container_name: water-treatment-tools
+    restart: unless-stopped
+    ports:
+      - "6969:80"
+    environment:
+      - TZ=America/New_York  # Adjust to your timezone
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.water-treatment.rule=Host(`water-treatment.yourdomain.com`)"
+      - "traefik.http.routers.water-treatment.tls=true"
+      - "traefik.http.routers.water-treatment.tls.certresolver=letsencrypt"
+      - "traefik.http.services.water-treatment.loadbalancer.server.port=80"
+    volumes:
+      # Optional: Mount a volume for data persistence if needed
+      - ./data:/usr/share/nginx/html/data:ro
+    networks:
+      - web
+
+  # Auto-updater service that pulls latest from GitHub
+  watchtower:
+    image: containrrr/watchtower:latest
+    container_name: water-treatment-watchtower
+    restart: unless-stopped
+    environment:
+      - WATCHTOWER_POLL_INTERVAL=300  # Check every 5 minutes
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_INCLUDE_RESTARTING=true
+      - WATCHTOWER_LABEL_ENABLE=true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+    networks:
+      - web
+
+networks:
+  web:
+    external: true
+
+# Alternative compose file for simple local deployment
+---
+# docker-compose.local.yml
+version: '3.8'
+
+services:
+  water-treatment-tools:
+    build: .
+    container_name: water-treatment-tools-local
+    restart: unless-stopped
+    ports:
+      - "6969:80"
+    environment:
+      - TZ=America/New_York
+    volumes:
+      - ./data:/usr/share/nginx/html/data:ro
