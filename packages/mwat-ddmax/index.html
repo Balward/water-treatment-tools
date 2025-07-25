@@ -154,10 +154,23 @@
             <div class="control-group">
               <label for="dischargePattern">Discharge Pattern:</label>
               <select id="dischargePattern">
+                <option value="continuous">Continuous Discharge</option>
                 <option value="single">Single Period</option>
                 <option value="daily">Daily Recurring</option>
                 <option value="custom">Custom Schedule</option>
               </select>
+            </div>
+          </div>
+
+          <!-- Continuous Discharge Configuration -->
+          <div class="discharge-config" id="continuousDischargeConfig" style="display: none">
+            <h4>Continuous Discharge</h4>
+            <p class="continuous-description">
+              Assumes discharge occurred continuously throughout the entire data period. 
+              All temperature readings will be included in MWAT/DDMAX calculations.
+            </p>
+            <div class="continuous-note">
+              <strong>Note:</strong> This option uses all available data from both sensor files for compliance calculations.
             </div>
           </div>
 

@@ -302,12 +302,16 @@ class MWATDDMAXCalculator {
     const pattern = event.target.value;
     
     // Hide all config sections
+    document.getElementById('continuousDischargeConfig').style.display = 'none';
     document.getElementById('singlePeriodConfig').style.display = 'none';
     document.getElementById('dailyRecurringConfig').style.display = 'none';
     document.getElementById('customScheduleConfig').style.display = 'none';
 
     // Show relevant config section
     switch (pattern) {
+      case 'continuous':
+        document.getElementById('continuousDischargeConfig').style.display = 'block';
+        break;
       case 'single':
         document.getElementById('singlePeriodConfig').style.display = 'block';
         break;
@@ -399,6 +403,10 @@ class MWATDDMAXCalculator {
     if (!pattern) return false;
     
     switch (pattern) {
+      case 'continuous':
+        // Continuous discharge always valid if pattern is selected
+        return true;
+        
       case 'single':
         const startSingle = document.getElementById('singleStartDate').value;
         const endSingle = document.getElementById('singleEndDate').value;
@@ -457,6 +465,17 @@ class MWATDDMAXCalculator {
     const periods = [];
     
     switch (pattern) {
+      case 'continuous':
+        // For continuous discharge, create one large period covering all data
+        const allData = [...(this.sensor1Data || []), ...(this.sensor2Data || [])];
+        if (allData.length > 0) {
+          const timestamps = allData.map(d => new Date(d.timestamp));
+          const minTime = new Date(Math.min(...timestamps));
+          const maxTime = new Date(Math.max(...timestamps));
+          periods.push({ start: minTime, end: maxTime });
+        }
+        break;
+        
       case 'single':
         const start = new Date(document.getElementById('singleStartDate').value);
         const end = new Date(document.getElementById('singleEndDate').value);
@@ -603,13 +622,12 @@ class MWATDDMAXCalculator {
     // MWAT is the average of daily maximum temperatures
     const mwat = dailyMaximums.reduce((sum, d) => sum + d.maxTemp, 0) / dailyMaximums.length;
     
-    // Determine which month this week should be assigned to for DMR
+    // Determine which month this week should be assigned to for DMR using Wednesday rule
     const weekStart = new Date(weekKey);
     const weekEnd = new Date(weekStart);
     weekEnd.setDate(weekEnd.getDate() + 6);
     
-    // Week is assigned to the month where it ends
-    const dmrMonth = `${weekEnd.getFullYear()}-${String(weekEnd.getMonth() + 1).padStart(2, '0')}`;
+    const dmrMonth = this.calculateDMRMonth(weekStart, weekEnd);
     
     return {
       weekKey,
@@ -621,6 +639,33 @@ class MWATDDMAXCalculator {
       dailyMaximums,
       dischargeHours: this.calculateDischargeHours(weekData)
     };
+  }
+
+  calculateDMRMonth(weekStart, weekEnd) {
+    // Wednesday rule: If the week ends on Wednesday or later in the month, 
+    // it's included in that month. Otherwise, it goes to the next month.
+    
+    // Find Wednesday of the week (day 3, where Sunday = 0)
+    const wednesday = new Date(weekStart);
+    wednesday.setDate(weekStart.getDate() + 3); // Add 3 days to Sunday to get Wednesday
+    
+    // Get the month and year that Wednesday falls in
+    const wednesdayMonth = wednesday.getMonth() + 1; // JavaScript months are 0-based
+    const wednesdayYear = wednesday.getFullYear();
+    
+    // Get the last day of Wednesday's month
+    const lastDayOfMonth = new Date(wednesdayYear, wednesdayMonth, 0).getDate();
+    
+    // If Wednesday is after the 3rd-to-last day of the month, 
+    // the week goes to the next month
+    if (wednesday.getDate() > lastDayOfMonth - 2) {
+      // Week goes to next month
+      const nextMonth = new Date(wednesdayYear, wednesdayMonth, 1); // First day of next month
+      return `${nextMonth.getFullYear()}-${String(nextMonth.getMonth() + 1).padStart(2, '0')}`;
+    } else {
+      // Week stays in Wednesday's month
+      return `${wednesdayYear}-${String(wednesdayMonth).padStart(2, '0')}`;
+    }
   }
 
   groupDataByDays(data) {
@@ -827,16 +872,26 @@ This tool calculates Maximum Weekly Average Temperature (MWAT) and Daily Dissolv
 
 Key Features:
 • Import two CSV or Excel files with 15-minute temperature sensor data
-• Define discharge periods (single, daily recurring, or custom schedule)
-• Calculate weekly averages with proper DMR month assignment
+• Define discharge periods (continuous, single, daily recurring, or custom schedule)
+• Calculate weekly averages with proper DMR month assignment using Wednesday rule
 • Export compliance reports for regulatory submission
+
+Discharge Pattern Options:
+• Continuous: All data included (assumes discharge throughout entire period)
+• Single Period: One specific start/end time range
+• Daily Recurring: Same hours each day over a date range
+• Custom Schedule: Multiple individual discharge periods
 
 Supported File Formats:
 • CSV files: Date/Time in column B, Temperature in column C (starting row 3)
 • Excel files: Date/Time in column B, Temperature in column C (starting row 3)
 
-DMR Assignment Rule:
-Weeks spanning month boundaries are assigned to the month where the week ends.
+DMR Assignment Rule (Wednesday Rule):
+Weeks are assigned based on where Wednesday falls. If Wednesday is in the last 3 days of a month, the week goes to the next month's DMR. Otherwise, it stays in the current month.
+
+Examples:
+• April 2025 DMR includes weeks from 3/30-4/30
+• June 2025 DMR includes weeks from 6/1-6/28 (last week goes to July)
 
 For technical support or questions about calculations, contact your environmental compliance team.`);
 }
