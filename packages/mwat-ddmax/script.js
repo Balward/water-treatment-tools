@@ -57,7 +57,7 @@ class MWATDDMAXCalculator {
     } catch (error) {
       console.error('File upload error:', error);
       statusElement.textContent = '❌ Error loading file';
-      this.showNotification('Error loading Excel file: ' + error.message, 'error');
+      this.showNotification('Error loading data file: ' + error.message, 'error');
     }
   }
 
@@ -67,55 +67,169 @@ class MWATDDMAXCalculator {
       
       reader.onload = (e) => {
         try {
-          const data = new Uint8Array(e.target.result);
-          const workbook = XLSX.read(data, { type: 'array' });
-          
-          // Assume data is in the first sheet
-          const firstSheetName = workbook.SheetNames[0];
-          const worksheet = workbook.Sheets[firstSheetName];
-          
-          // Convert to JSON - assume timestamp in column A, temperature in column B
-          const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-          
-          // Skip header row and parse data
-          const parsedData = [];
-          for (let i = 1; i < jsonData.length; i++) {
-            const row = jsonData[i];
-            if (row.length >= 2 && row[0] && row[1] !== undefined) {
-              try {
-                // Parse Excel date/time
-                const timestamp = this.parseExcelDateTime(row[0]);
-                const temperature = parseFloat(row[1]);
-                
-                if (!isNaN(temperature) && timestamp) {
-                  parsedData.push({
-                    timestamp: timestamp,
-                    temperature: temperature
-                  });
+          // Check if it's a CSV file
+          if (file.name.toLowerCase().endsWith('.csv')) {
+            const text = e.target.result;
+            const parsedData = this.parseCSVData(text);
+            resolve(parsedData);
+          } else {
+            // Handle Excel files
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+            
+            // Assume data is in the first sheet
+            const firstSheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[firstSheetName];
+            
+            // Convert to JSON - assume timestamp in column B, temperature in column C (Excel format)
+            const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+            
+            // Skip header rows and parse data (start from row 2, index 2)
+            const parsedData = [];
+            for (let i = 2; i < jsonData.length; i++) {
+              const row = jsonData[i];
+              if (row.length >= 3 && row[1] && row[2] !== undefined) {
+                try {
+                  // Parse Excel date/time from column B
+                  const timestamp = this.parseExcelDateTime(row[1]);
+                  const temperature = parseFloat(row[2]);
+                  
+                  if (!isNaN(temperature) && timestamp) {
+                    parsedData.push({
+                      timestamp: timestamp,
+                      temperature: temperature
+                    });
+                  }
+                } catch (error) {
+                  // Skip invalid rows
+                  continue;
                 }
-              } catch (error) {
-                // Skip invalid rows
-                continue;
               }
+            }
+            
+            if (parsedData.length === 0) {
+              reject(new Error('No valid data found. Expected timestamp in column B and temperature in column C.'));
+            } else {
+              // Sort by timestamp
+              parsedData.sort((a, b) => a.timestamp - b.timestamp);
+              resolve(parsedData);
             }
           }
           
-          if (parsedData.length === 0) {
-            reject(new Error('No valid data found. Expected timestamp in column A and temperature in column B.'));
-          } else {
-            // Sort by timestamp
-            parsedData.sort((a, b) => a.timestamp - b.timestamp);
-            resolve(parsedData);
-          }
-          
         } catch (error) {
-          reject(new Error('Failed to parse Excel file: ' + error.message));
+          reject(new Error('Failed to parse file: ' + error.message));
         }
       };
       
       reader.onerror = () => reject(new Error('Failed to read file'));
-      reader.readAsArrayBuffer(file);
+      
+      // Read as text for CSV, as ArrayBuffer for Excel
+      if (file.name.toLowerCase().endsWith('.csv')) {
+        reader.readAsText(file);
+      } else {
+        reader.readAsArrayBuffer(file);
+      }
     });
+  }
+
+  parseCSVData(csvText) {
+    const lines = csvText.split('\n');
+    const parsedData = [];
+    
+    // Skip first 2 lines (title and headers), start from line 3 (index 2)
+    for (let i = 2; i < lines.length; i++) {
+      const line = lines[i].trim();
+      if (!line) continue; // Skip empty lines
+      
+      try {
+        // Parse CSV line - handle quoted values
+        const columns = this.parseCSVLine(line);
+        
+        if (columns.length >= 3) {
+          // Column B (index 1) = Date/Time, Column C (index 2) = Temperature
+          const dateTimeStr = columns[1];
+          const tempStr = columns[2];
+          
+          if (dateTimeStr && tempStr) {
+            const timestamp = this.parseCSVDateTime(dateTimeStr);
+            const temperature = parseFloat(tempStr);
+            
+            if (!isNaN(temperature) && timestamp) {
+              parsedData.push({
+                timestamp: timestamp,
+                temperature: temperature
+              });
+            }
+          }
+        }
+      } catch (error) {
+        // Skip invalid rows
+        continue;
+      }
+    }
+    
+    if (parsedData.length === 0) {
+      throw new Error('No valid data found. Expected Date/Time in column B and Temperature in column C.');
+    }
+    
+    // Sort by timestamp
+    parsedData.sort((a, b) => a.timestamp - b.timestamp);
+    return parsedData;
+  }
+
+  parseCSVLine(line) {
+    const result = [];
+    let current = '';
+    let inQuotes = false;
+    
+    for (let i = 0; i < line.length; i++) {
+      const char = line[i];
+      
+      if (char === '"' && (i === 0 || line[i-1] === ',')) {
+        inQuotes = true;
+      } else if (char === '"' && inQuotes && (i === line.length - 1 || line[i+1] === ',')) {
+        inQuotes = false;
+      } else if (char === ',' && !inQuotes) {
+        result.push(current.trim());
+        current = '';
+      } else {
+        current += char;
+      }
+    }
+    
+    result.push(current.trim());
+    return result;
+  }
+
+  parseCSVDateTime(dateTimeStr) {
+    // Handle format: MM/dd/yy hh:mm:ss AM/PM
+    // Example: "03/11/25 11:15:00 AM"
+    
+    try {
+      // Clean the string
+      const cleaned = dateTimeStr.replace(/^"+|"+$/g, ''); // Remove quotes
+      
+      // Parse the date/time
+      const parsed = new Date(cleaned);
+      
+      if (isNaN(parsed.getTime())) {
+        throw new Error('Invalid date format');
+      }
+      
+      // Handle 2-digit years (assume 20xx for years < 50, 19xx for years >= 50)
+      if (parsed.getFullYear() < 1000) {
+        const year = parsed.getFullYear();
+        if (year < 50) {
+          parsed.setFullYear(2000 + year);
+        } else {
+          parsed.setFullYear(1900 + year);
+        }
+      }
+      
+      return parsed;
+    } catch (error) {
+      throw new Error(`Failed to parse date: ${dateTimeStr}`);
+    }
   }
 
   parseExcelDateTime(excelDate) {
@@ -668,10 +782,14 @@ function showHelp() {
 This tool calculates Maximum Weekly Average Temperature (MWAT) and Daily Dissolved Maximum (DDMAX) values for Colorado CDPHE wastewater discharge compliance.
 
 Key Features:
-• Import two Excel files with 15-minute temperature sensor data
+• Import two CSV or Excel files with 15-minute temperature sensor data
 • Define discharge periods (single, daily recurring, or custom schedule)
 • Calculate weekly averages with proper DMR month assignment
 • Export compliance reports for regulatory submission
+
+Supported File Formats:
+• CSV files: Date/Time in column B, Temperature in column C (starting row 3)
+• Excel files: Date/Time in column B, Temperature in column C (starting row 3)
 
 DMR Assignment Rule:
 Weeks spanning month boundaries are assigned to the month where the week ends.
