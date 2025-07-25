@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sodium Permanganate Dose Predictor</title>
+
+    <!-- Local Stylesheets -->
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>🧪 Sodium Permanganate Dose Predictor</h1>
+        <p>
+          AI-powered dosing optimization for water treatment facilities
+        </p>
+      </div>
+
+      <div class="instructions-section">
+        <div class="instructions-card">
+          <h3>📝 Quick Instructions</h3>
+          <ol class="instructions-list">
+            <li>
+              <strong>Seasonal Presets:</strong> Choose a preset that matches current conditions
+            </li>
+            <li>
+              <strong>Input Parameters:</strong> Enter your raw water quality measurements
+            </li>
+            <li>
+              <strong>Get Prediction:</strong> Click "Predict Optimal Dose" for AI recommendation
+            </li>
+            <li>
+              <strong>Apply Dosing:</strong> Use the predicted dose in your treatment system
+            </li>
+            <li>
+              <strong>Documentation:</strong> Copy results for record keeping
+            </li>
+          </ol>
+          <p class="instructions-tip">
+            💡 <strong>Tip:</strong> The AI model is trained on 3.5 years of operational data with ±0.08 mg/L accuracy.
+          </p>
+        </div>
+      </div>
+
+      <!-- Seasonal Presets Section -->
+      <div class="presets-section">
+        <div class="control-card">
+          <h3>🌟 Seasonal Presets</h3>
+          <div class="presets-grid">
+            <button class="preset-btn" data-season="spring">
+              <span class="preset-icon">🌱</span>
+              <span class="preset-name">Spring</span>
+              <span class="preset-desc">Higher organics from runoff</span>
+            </button>
+            <button class="preset-btn" data-season="summer">
+              <span class="preset-icon">☀️</span>
+              <span class="preset-name">Summer</span>
+              <span class="preset-desc">Stable conditions</span>
+            </button>
+            <button class="preset-btn" data-season="fall">
+              <span class="preset-icon">🍂</span>
+              <span class="preset-name">Fall</span>
+              <span class="preset-desc">Elevated leaf matter</span>
+            </button>
+            <button class="preset-btn" data-season="winter">
+              <span class="preset-icon">❄️</span>
+              <span class="preset-name">Winter</span>
+              <span class="preset-desc">Reduced biological activity</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Parameters Input Section -->
+      <div class="parameters-section">
+        <div class="control-card">
+          <h3>📊 Water Quality Parameters</h3>
+          <form id="parametersForm" class="parameters-form">
+            <div class="parameters-grid">
+              <div class="parameter-group">
+                <label for="rawMn">⚗️ Raw Manganese (mg/L)</label>
+                <input type="number" id="rawMn" step="0.001" min="0.001" max="0.500" placeholder="0.040" required>
+                <small>Primary driver of permanganate demand</small>
+              </div>
+              
+              <div class="parameter-group">
+                <label for="rawFe">🔬 Raw Iron (mg/L)</label>
+                <input type="number" id="rawFe" step="0.001" min="0.001" max="0.300" placeholder="0.015" required>
+                <small>Competes with manganese for permanganate</small>
+              </div>
+
+              <div class="parameter-group">
+                <label for="rawToc">🌿 Total Organic Carbon (mg/L)</label>
+                <input type="number" id="rawToc" step="0.1" min="0.1" max="10.0" placeholder="2.30" required>
+                <small>Organic matter consuming permanganate</small>
+              </div>
+
+              <div class="parameter-group">
+                <label for="rawPh">🧪 pH Level</label>
+                <input type="number" id="rawPh" step="0.1" min="6.0" max="9.0" placeholder="7.45" required>
+                <small>Affects permanganate reaction kinetics</small>
+              </div>
+
+              <div class="parameter-group">
+                <label for="rawTemp">🌡️ Temperature (°C)</label>
+                <input type="number" id="rawTemp" step="0.1" min="-5" max="35" placeholder="6.0" required>
+                <small>Higher temps increase reaction rates</small>
+              </div>
+
+              <div class="parameter-group">
+                <label for="rainfall">🌧️ Previous Day Rainfall (inches)</label>
+                <input type="number" id="rainfall" step="0.01" min="0.0" max="5.0" placeholder="0.1" required>
+                <small>Affects raw water turbidity and organics</small>
+              </div>
+            </div>
+
+            <div class="predict-section">
+              <button type="submit" class="btn btn-large btn-gold" id="predictBtn">
+                <span>🧠</span>
+                <span>Predict Optimal Dose</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Results Section -->
+      <div class="results-section" id="resultsSection" style="display: none;">
+        <div class="control-card">
+          <h3>🎯 AI Prediction Results</h3>
+          <div class="results-display">
+            <div class="prediction-main">
+              <div class="prediction-value" id="predictionValue">---.---</div>
+              <div class="prediction-unit">mg/L Sodium Permanganate</div>
+            </div>
+            <div class="prediction-meta">
+              <div class="meta-item">
+                <span class="meta-label">🕐 Generated:</span>
+                <span class="meta-value" id="predictionTime">--</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">🎯 Accuracy:</span>
+                <span class="meta-value">±0.08 mg/L</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">🤖 Model:</span>
+                <span class="meta-value">Random Forest</span>
+              </div>
+            </div>
+            <div class="results-actions">
+              <button class="btn btn-green" id="copyBtn">
+                <span>📋</span>
+                <span>Copy Result</span>
+              </button>
+              <button class="btn btn-gray" id="resetBtn">
+                <span>🔄</span>
+                <span>Reset Form</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Help Modal -->
+      <div id="helpModal" class="help-modal" style="display: none">
+        <div class="help-modal-content">
+          <button class="modal-close-x" onclick="closeHelp()" title="Close">
+            &times;
+          </button>
+          <h3>🧪 Sodium Permanganate Dose Predictor Help</h3>
+
+          <div class="help-section">
+            <h4>🎯 System Overview</h4>
+            <p>
+              This AI-powered system predicts optimal sodium permanganate dosing for water treatment facilities. 
+              Using machine learning trained on 3.5 years of historical data, it analyzes water quality parameters 
+              to recommend precise chemical dosing amounts.
+            </p>
+          </div>
+
+          <div class="help-section">
+            <h4>🧠 Machine Learning Model</h4>
+            <ul>
+              <li><strong>Algorithm:</strong> Random Forest Regressor</li>
+              <li><strong>Training Data:</strong> 3.5 years of operational data</li>
+              <li><strong>Accuracy:</strong> ±0.08 mg/L mean absolute error</li>
+              <li><strong>R² Score:</strong> 0.92 (92% variance explained)</li>
+            </ul>
+          </div>
+
+          <div class="help-section">
+            <h4>📋 Parameter Guidelines</h4>
+            <div class="param-guide">
+              <div class="param-item">
+                <strong>Raw Manganese:</strong> 0.001-0.500 mg/L (High impact - 85% influence)
+              </div>
+              <div class="param-item">
+                <strong>Raw Iron:</strong> 0.001-0.300 mg/L (Medium impact - 65% influence)
+              </div>
+              <div class="param-item">
+                <strong>Total Organic Carbon:</strong> 0.1-10.0 mg/L (High impact - 72% influence)
+              </div>
+              <div class="param-item">
+                <strong>pH Level:</strong> 6.0-9.0 (Medium impact - 35% influence)
+              </div>
+              <div class="param-item">
+                <strong>Temperature:</strong> -5 to 35°C (Medium impact - 45% influence)
+              </div>
+              <div class="param-item">
+                <strong>Rainfall:</strong> 0.0-5.0 inches (Low impact - 28% influence)
+              </div>
+            </div>
+          </div>
+
+          <div class="help-section">
+            <h4>💡 Best Practices</h4>
+            <ul>
+              <li>Use fresh, representative water samples</li>
+              <li>Calibrate instruments regularly for accurate readings</li>
+              <li>Consider seasonal variations in raw water quality</li>
+              <li>Monitor treated water quality to validate predictions</li>
+              <li>Document unusual conditions for future reference</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Floating Action Bar -->
+    <div class="floating-action-bar">
+      <button class="btn btn-gray" onclick="openHelp()">
+        ℹ️ Help & Documentation
+      </button>
+      <button class="btn btn-gray" onclick="window.location.href='../'">
+        🏠 Back to Dashboard
+      </button>
+    </div>
+
+    <!-- Notification System -->
+    <div id="notificationContainer" class="notification-container"></div>
+
+    <!-- Local JavaScript -->
+    <script src="script.js"></script>
+  </body>
+</html>
