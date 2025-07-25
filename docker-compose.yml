@@ -7,7 +7,7 @@ services:
     container_name: water-treatment-tools
     restart: unless-stopped
     ports:
-      - "6868:80"
+      - "6767:80"
     environment:
       - TZ=America/New_York  # Adjust to your timezone
     labels:
@@ -54,7 +54,7 @@ services:
     container_name: water-treatment-tools-local
     restart: unless-stopped
     ports:
-      - "6868:80"
+      - "6767:80"
     environment:
       - TZ=America/New_York
     volumes:

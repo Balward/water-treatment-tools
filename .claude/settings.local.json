@@ -3,7 +3,8 @@
     "allow": [
       "Bash(start index.html)",
       "Bash(mkdir:*)",
-      "Bash(mv:*)"
+      "Bash(mv:*)",
+      "Bash(git add:*)"
     ],
     "deny": []
   }

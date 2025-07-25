@@ -21,7 +21,7 @@ This guide covers deploying the Water Treatment Tools application on Docker, spe
 docker-compose up -d
 ```
 
-The application will be available at `http://your-server-ip:6868`
+The application will be available at `http://your-server-ip:6767`
 
 #### Option 2: Direct Docker Run
 
@@ -33,7 +33,7 @@ docker build -t water-treatment-tools .
 docker run -d \
   --name water-treatment-tools \
   --restart unless-stopped \
-  -p 6868:80 \
+  -p 6767:80 \
   -v ./data:/usr/share/nginx/html/data:ro \
   water-treatment-tools
 ```
@@ -45,7 +45,7 @@ docker run -d \
 docker run -d \
   --name water-treatment-tools \
   --restart unless-stopped \
-  -p 6868:80 \
+  -p 6767:80 \
   ghcr.io/your-username/water-treatment-tools:latest
 ```
 
@@ -75,14 +75,14 @@ The docker-compose.yml includes Watchtower which automatically:
 1. **Domain Names:** `water-treatment.yourdomain.com`
 2. **Scheme:** `http`
 3. **Forward Hostname/IP:** Your Unraid server IP
-4. **Forward Port:** `6868`
+4. **Forward Port:** `6767`
 5. **Enable SSL:** Yes (with Let's Encrypt)
 
 ### Custom Nginx Configuration (if needed)
 
 ```nginx
 location / {
-    proxy_pass http://your-server-ip:6868;
+    proxy_pass http://your-server-ip:6767;
     proxy_set_header Host $host;
     proxy_set_header X-Real-IP $remote_addr;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -117,7 +117,7 @@ water-treatment-tools/
 
 ### Port Configuration
 
-The application runs on port 80 inside the container and is mapped to port 6868 on the host. To change the external port, modify the docker-compose.yml:
+The application runs on port 80 inside the container and is mapped to port 6767 on the host. To change the external port, modify the docker-compose.yml:
 
 ```yaml
 ports:
@@ -139,7 +139,7 @@ docker-compose logs water-treatment-tools
 
 2. **Verify port availability:**
 ```bash
-netstat -tulpn | grep 6868
+netstat -tulpn | grep 6767
 ```
 
 3. **Check file permissions:**
@@ -156,7 +156,7 @@ docker ps | grep water-treatment
 
 2. **Test local access:**
 ```bash
-curl http://localhost:6868
+curl http://localhost:6767
 ```
 
 3. **Check nginx configuration:**
@@ -190,7 +190,7 @@ docker-compose up -d
 
 The container includes a health check endpoint:
 ```bash
-curl http://your-server-ip:6868/health
+curl http://your-server-ip:6767/health
 ```
 
 ### Container Status
