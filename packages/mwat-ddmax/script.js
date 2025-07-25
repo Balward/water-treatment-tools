@@ -1,0 +1,686 @@
+// MWAT/DDMAX Compliance Calculator
+// Colorado CDPHE Wastewater Discharge Monitoring
+
+class MWATDDMAXCalculator {
+  constructor() {
+    this.sensor1Data = null;
+    this.sensor2Data = null;
+    this.dischargePeriods = [];
+    this.analysisMonth = null;
+    this.results = null;
+
+    this.initializeEventListeners();
+  }
+
+  initializeEventListeners() {
+    // File upload handlers
+    document.getElementById('file1Input').addEventListener('change', (e) => this.handleFileUpload(e, 1));
+    document.getElementById('file2Input').addEventListener('change', (e) => this.handleFileUpload(e, 2));
+
+    // Discharge pattern selection
+    document.getElementById('dischargePattern').addEventListener('change', (e) => this.handleDischargePatternChange(e));
+    document.getElementById('analysisMonth').addEventListener('change', (e) => this.handleAnalysisMonthChange(e));
+
+    // Calculation button
+    document.getElementById('calculateBtn').addEventListener('click', () => this.calculateCompliance());
+
+    // Custom period management
+    document.getElementById('addCustomPeriod').addEventListener('click', () => this.addCustomPeriod());
+
+    // Export and reset buttons
+    document.getElementById('exportExcelBtn').addEventListener('click', () => this.exportToExcel());
+    document.getElementById('resetCalculationBtn').addEventListener('click', () => this.resetCalculation());
+  }
+
+  async handleFileUpload(event, sensorNumber) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const statusElement = document.getElementById(`file${sensorNumber}Status`);
+    statusElement.textContent = 'Loading...';
+
+    try {
+      const data = await this.parseExcelFile(file);
+      
+      if (sensorNumber === 1) {
+        this.sensor1Data = data;
+      } else {
+        this.sensor2Data = data;
+      }
+
+      statusElement.textContent = `✅ Loaded: ${data.length} records`;
+      statusElement.classList.add('loaded');
+
+      this.updateDataPreview();
+      this.checkCalculationReady();
+
+    } catch (error) {
+      console.error('File upload error:', error);
+      statusElement.textContent = '❌ Error loading file';
+      this.showNotification('Error loading Excel file: ' + error.message, 'error');
+    }
+  }
+
+  async parseExcelFile(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      
+      reader.onload = (e) => {
+        try {
+          const data = new Uint8Array(e.target.result);
+          const workbook = XLSX.read(data, { type: 'array' });
+          
+          // Assume data is in the first sheet
+          const firstSheetName = workbook.SheetNames[0];
+          const worksheet = workbook.Sheets[firstSheetName];
+          
+          // Convert to JSON - assume timestamp in column A, temperature in column B
+          const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+          
+          // Skip header row and parse data
+          const parsedData = [];
+          for (let i = 1; i < jsonData.length; i++) {
+            const row = jsonData[i];
+            if (row.length >= 2 && row[0] && row[1] !== undefined) {
+              try {
+                // Parse Excel date/time
+                const timestamp = this.parseExcelDateTime(row[0]);
+                const temperature = parseFloat(row[1]);
+                
+                if (!isNaN(temperature) && timestamp) {
+                  parsedData.push({
+                    timestamp: timestamp,
+                    temperature: temperature
+                  });
+                }
+              } catch (error) {
+                // Skip invalid rows
+                continue;
+              }
+            }
+          }
+          
+          if (parsedData.length === 0) {
+            reject(new Error('No valid data found. Expected timestamp in column A and temperature in column B.'));
+          } else {
+            // Sort by timestamp
+            parsedData.sort((a, b) => a.timestamp - b.timestamp);
+            resolve(parsedData);
+          }
+          
+        } catch (error) {
+          reject(new Error('Failed to parse Excel file: ' + error.message));
+        }
+      };
+      
+      reader.onerror = () => reject(new Error('Failed to read file'));
+      reader.readAsArrayBuffer(file);
+    });
+  }
+
+  parseExcelDateTime(excelDate) {
+    // Handle different Excel date formats
+    if (typeof excelDate === 'number') {
+      // Excel serial date
+      return new Date((excelDate - 25569) * 86400 * 1000);
+    } else if (typeof excelDate === 'string') {
+      // Try to parse as string
+      const parsed = new Date(excelDate);
+      if (!isNaN(parsed.getTime())) {
+        return parsed;
+      }
+    } else if (excelDate instanceof Date) {
+      return excelDate;
+    }
+    
+    throw new Error('Invalid date format');
+  }
+
+  updateDataPreview() {
+    if (this.sensor1Data) {
+      const stats1 = this.generateDataStats(this.sensor1Data, 1);
+      document.getElementById('sensor1Stats').innerHTML = stats1;
+    }
+
+    if (this.sensor2Data) {
+      const stats2 = this.generateDataStats(this.sensor2Data, 2);
+      document.getElementById('sensor2Stats').innerHTML = stats2;
+    }
+
+    if (this.sensor1Data || this.sensor2Data) {
+      document.getElementById('previewSection').style.display = 'block';
+    }
+
+    if (this.sensor1Data && this.sensor2Data) {
+      document.getElementById('dischargeSection').style.display = 'block';
+    }
+  }
+
+  generateDataStats(data, sensorNumber) {
+    const count = data.length;
+    const startDate = new Date(Math.min(...data.map(d => d.timestamp)));
+    const endDate = new Date(Math.max(...data.map(d => d.timestamp)));
+    const temperatures = data.map(d => d.temperature);
+    const minTemp = Math.min(...temperatures);
+    const maxTemp = Math.max(...temperatures);
+    const avgTemp = temperatures.reduce((a, b) => a + b, 0) / temperatures.length;
+
+    return `
+      <strong>Records:</strong> ${count.toLocaleString()}<br>
+      <strong>Date Range:</strong> ${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}<br>
+      <strong>Temperature Range:</strong> ${minTemp.toFixed(1)}°C - ${maxTemp.toFixed(1)}°C<br>
+      <strong>Average:</strong> ${avgTemp.toFixed(1)}°C
+    `;
+  }
+
+  handleDischargePatternChange(event) {
+    const pattern = event.target.value;
+    
+    // Hide all config sections
+    document.getElementById('singlePeriodConfig').style.display = 'none';
+    document.getElementById('dailyRecurringConfig').style.display = 'none';
+    document.getElementById('customScheduleConfig').style.display = 'none';
+
+    // Show relevant config section
+    switch (pattern) {
+      case 'single':
+        document.getElementById('singlePeriodConfig').style.display = 'block';
+        break;
+      case 'daily':
+        document.getElementById('dailyRecurringConfig').style.display = 'block';
+        break;
+      case 'custom':
+        document.getElementById('customScheduleConfig').style.display = 'block';
+        break;
+    }
+
+    this.checkCalculationReady();
+  }
+
+  handleAnalysisMonthChange(event) {
+    this.analysisMonth = event.target.value;
+    this.checkCalculationReady();
+  }
+
+  addCustomPeriod() {
+    const customPeriods = document.getElementById('customPeriods');
+    const periodIndex = customPeriods.children.length;
+    
+    const periodDiv = document.createElement('div');
+    periodDiv.className = 'custom-period';
+    periodDiv.innerHTML = `
+      <div class="custom-period-header">
+        <strong>Discharge Period ${periodIndex + 1}</strong>
+        <button type="button" class="remove-period" onclick="this.parentElement.parentElement.remove(); this.checkCalculationReady();">Remove</button>
+      </div>
+      <div class="period-controls">
+        <div class="control-group">
+          <label>Start Date & Time:</label>
+          <input type="datetime-local" class="custom-start" />
+        </div>
+        <div class="control-group">
+          <label>End Date & Time:</label>
+          <input type="datetime-local" class="custom-end" />
+        </div>
+      </div>
+    `;
+    
+    customPeriods.appendChild(periodDiv);
+  }
+
+  checkCalculationReady() {
+    const hasData = this.sensor1Data && this.sensor2Data;
+    const hasMonth = this.analysisMonth;
+    const hasDischarge = this.validateDischargeConfiguration();
+    
+    const calculateBtn = document.getElementById('calculateBtn');
+    calculateBtn.disabled = !(hasData && hasMonth && hasDischarge);
+  }
+
+  validateDischargeConfiguration() {
+    const pattern = document.getElementById('dischargePattern').value;
+    
+    switch (pattern) {
+      case 'single':
+        const startSingle = document.getElementById('singleStartDate').value;
+        const endSingle = document.getElementById('singleEndDate').value;
+        return startSingle && endSingle;
+        
+      case 'daily':
+        const startTime = document.getElementById('dailyStartTime').value;
+        const endTime = document.getElementById('dailyEndTime').value;
+        const startDate = document.getElementById('dailyStartDate').value;
+        const endDate = document.getElementById('dailyEndDate').value;
+        return startTime && endTime && startDate && endDate;
+        
+      case 'custom':
+        const customPeriods = document.querySelectorAll('.custom-period');
+        if (customPeriods.length === 0) return false;
+        
+        for (let period of customPeriods) {
+          const start = period.querySelector('.custom-start').value;
+          const end = period.querySelector('.custom-end').value;
+          if (!start || !end) return false;
+        }
+        return true;
+        
+      default:
+        return false;
+    }
+  }
+
+  calculateCompliance() {
+    try {
+      this.showNotification('Calculating MWAT/DDMAX compliance...', 'info');
+      
+      // Generate discharge periods
+      this.dischargePeriods = this.generateDischargePeriods();
+      
+      // Filter data to discharge periods only
+      const filteredData1 = this.filterDataToDischargePeriods(this.sensor1Data);
+      const filteredData2 = this.filterDataToDischargePeriods(this.sensor2Data);
+      
+      // Calculate weekly MWAT and daily DDMAX
+      this.results = this.performComplianceCalculations(filteredData1, filteredData2);
+      
+      // Display results
+      this.displayResults();
+      
+      this.showNotification('Compliance calculations completed successfully!', 'success');
+      
+    } catch (error) {
+      console.error('Calculation error:', error);
+      this.showNotification('Error during calculation: ' + error.message, 'error');
+    }
+  }
+
+  generateDischargePeriods() {
+    const pattern = document.getElementById('dischargePattern').value;
+    const periods = [];
+    
+    switch (pattern) {
+      case 'single':
+        const start = new Date(document.getElementById('singleStartDate').value);
+        const end = new Date(document.getElementById('singleEndDate').value);
+        periods.push({ start, end });
+        break;
+        
+      case 'daily':
+        const startTime = document.getElementById('dailyStartTime').value;
+        const endTime = document.getElementById('dailyEndTime').value;
+        const startDate = new Date(document.getElementById('dailyStartDate').value);
+        const endDate = new Date(document.getElementById('dailyEndDate').value);
+        
+        // Generate daily periods
+        for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+          const dayStart = new Date(d);
+          const [startHour, startMin] = startTime.split(':');
+          dayStart.setHours(parseInt(startHour), parseInt(startMin), 0, 0);
+          
+          const dayEnd = new Date(d);
+          const [endHour, endMin] = endTime.split(':');
+          dayEnd.setHours(parseInt(endHour), parseInt(endMin), 0, 0);
+          
+          // Handle overnight periods
+          if (dayEnd <= dayStart) {
+            dayEnd.setDate(dayEnd.getDate() + 1);
+          }
+          
+          periods.push({ start: new Date(dayStart), end: new Date(dayEnd) });
+        }
+        break;
+        
+      case 'custom':
+        const customPeriods = document.querySelectorAll('.custom-period');
+        customPeriods.forEach(period => {
+          const start = new Date(period.querySelector('.custom-start').value);
+          const end = new Date(period.querySelector('.custom-end').value);
+          periods.push({ start, end });
+        });
+        break;
+    }
+    
+    // Sort periods by start time
+    periods.sort((a, b) => a.start - b.start);
+    return periods;
+  }
+
+  filterDataToDischargePeriods(data) {
+    const filtered = [];
+    
+    for (const record of data) {
+      const timestamp = new Date(record.timestamp);
+      
+      // Check if timestamp falls within any discharge period
+      for (const period of this.dischargePeriods) {
+        if (timestamp >= period.start && timestamp <= period.end) {
+          filtered.push(record);
+          break;
+        }
+      }
+    }
+    
+    return filtered;
+  }
+
+  performComplianceCalculations(data1, data2) {
+    // Combine and sort all temperature data
+    const allData = [...data1, ...data2].sort((a, b) => a.timestamp - b.timestamp);
+    
+    if (allData.length === 0) {
+      throw new Error('No data found during discharge periods');
+    }
+    
+    // Group data by calendar weeks
+    const weeklyData = this.groupDataByWeeks(allData);
+    
+    // Calculate MWAT and DDMAX for each week
+    const weeklyResults = [];
+    let overallMWAT = 0;
+    let overallDDMAX = 0;
+    
+    for (const [weekKey, weekData] of Object.entries(weeklyData)) {
+      const weekResult = this.calculateWeeklyCompliance(weekKey, weekData);
+      weeklyResults.push(weekResult);
+      
+      // Track overall maximums
+      overallMWAT = Math.max(overallMWAT, weekResult.mwat);
+      overallDDMAX = Math.max(overallDDMAX, weekResult.ddmax);
+    }
+    
+    // Filter results for the analysis month based on DMR assignment rule
+    const filteredResults = this.filterResultsForDMR(weeklyResults);
+    
+    return {
+      overallMWAT,
+      overallDDMAX,
+      weeklyResults: filteredResults,
+      allWeeklyResults: weeklyResults
+    };
+  }
+
+  groupDataByWeeks(data) {
+    const weeks = {};
+    
+    for (const record of data) {
+      const date = new Date(record.timestamp);
+      const weekKey = this.getWeekKey(date);
+      
+      if (!weeks[weekKey]) {
+        weeks[weekKey] = [];
+      }
+      
+      weeks[weekKey].push(record);
+    }
+    
+    return weeks;
+  }
+
+  getWeekKey(date) {
+    // Get the Sunday of the week containing this date
+    const sunday = new Date(date);
+    sunday.setDate(date.getDate() - date.getDay());
+    sunday.setHours(0, 0, 0, 0);
+    
+    return sunday.toISOString().split('T')[0];
+  }
+
+  calculateWeeklyCompliance(weekKey, weekData) {
+    // Group data by day for DDMAX calculation
+    const dailyData = this.groupDataByDays(weekData);
+    
+    // Calculate daily maximums
+    const dailyMaximums = [];
+    for (const [dayKey, dayData] of Object.entries(dailyData)) {
+      const maxTemp = Math.max(...dayData.map(d => d.temperature));
+      dailyMaximums.push({
+        date: dayKey,
+        maxTemp: maxTemp
+      });
+    }
+    
+    // DDMAX is the maximum of daily maximums for the week
+    const ddmax = Math.max(...dailyMaximums.map(d => d.maxTemp));
+    
+    // MWAT is the average of daily maximum temperatures
+    const mwat = dailyMaximums.reduce((sum, d) => sum + d.maxTemp, 0) / dailyMaximums.length;
+    
+    // Determine which month this week should be assigned to for DMR
+    const weekStart = new Date(weekKey);
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekEnd.getDate() + 6);
+    
+    // Week is assigned to the month where it ends
+    const dmrMonth = `${weekEnd.getFullYear()}-${String(weekEnd.getMonth() + 1).padStart(2, '0')}`;
+    
+    return {
+      weekKey,
+      weekStart,
+      weekEnd,
+      dmrMonth,
+      mwat: mwat,
+      ddmax: ddmax,
+      dailyMaximums,
+      dischargeHours: this.calculateDischargeHours(weekData)
+    };
+  }
+
+  groupDataByDays(data) {
+    const days = {};
+    
+    for (const record of data) {
+      const date = new Date(record.timestamp);
+      const dayKey = date.toISOString().split('T')[0];
+      
+      if (!days[dayKey]) {
+        days[dayKey] = [];
+      }
+      
+      days[dayKey].push(record);
+    }
+    
+    return days;
+  }
+
+  calculateDischargeHours(weekData) {
+    if (weekData.length === 0) return 0;
+    
+    // Approximate discharge hours based on data points (15-minute intervals)
+    const intervals = weekData.length;
+    return (intervals * 15) / 60; // Convert to hours
+  }
+
+  filterResultsForDMR(weeklyResults) {
+    // Filter weeks that should be reported in the selected analysis month
+    return weeklyResults.filter(week => week.dmrMonth === this.analysisMonth);
+  }
+
+  displayResults() {
+    if (!this.results) return;
+    
+    // Display overall values
+    document.getElementById('mwatValue').textContent = `${this.results.overallMWAT.toFixed(2)}°C`;
+    document.getElementById('ddmaxValue').textContent = `${this.results.overallDDMAX.toFixed(2)}°C`;
+    
+    // Add details
+    document.getElementById('mwatDetails').innerHTML = `
+      Maximum Weekly Average Temperature<br>
+      <small>Highest MWAT across all weeks in ${this.getMonthName(this.analysisMonth)}</small>
+    `;
+    
+    document.getElementById('ddmaxDetails').innerHTML = `
+      Daily Dissolved Maximum Temperature<br>
+      <small>Highest daily maximum in ${this.getMonthName(this.analysisMonth)}</small>
+    `;
+    
+    // Populate results table
+    this.populateResultsTable();
+    
+    // Show results section
+    document.getElementById('resultsSection').style.display = 'block';
+    
+    // Scroll to results
+    document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  populateResultsTable() {
+    const tbody = document.getElementById('resultsTableBody');
+    tbody.innerHTML = '';
+    
+    this.results.weeklyResults.forEach((week, index) => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>Week ${index + 1}</td>
+        <td>${week.weekStart.toLocaleDateString()} - ${week.weekEnd.toLocaleDateString()}</td>
+        <td>${this.getMonthName(week.dmrMonth)}</td>
+        <td>${week.mwat.toFixed(2)}°C</td>
+        <td>${week.ddmax.toFixed(2)}°C</td>
+        <td>${week.dischargeHours.toFixed(1)} hours</td>
+      `;
+      tbody.appendChild(row);
+    });
+  }
+
+  getMonthName(monthString) {
+    const [year, month] = monthString.split('-');
+    const date = new Date(year, month - 1);
+    return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  }
+
+  exportToExcel() {
+    if (!this.results) return;
+    
+    try {
+      // Create workbook
+      const wb = XLSX.utils.book_new();
+      
+      // Summary sheet
+      const summaryData = [
+        ['MWAT/DDMAX Compliance Report'],
+        [`Analysis Month: ${this.getMonthName(this.analysisMonth)}`],
+        [`Generated: ${new Date().toLocaleString()}`],
+        [],
+        ['Overall Results'],
+        ['Maximum Weekly Average Temperature (MWAT)', `${this.results.overallMWAT.toFixed(2)}°C`],
+        ['Daily Dissolved Maximum (DDMAX)', `${this.results.overallDDMAX.toFixed(2)}°C`],
+        [],
+        ['Weekly Breakdown'],
+        ['Week', 'Date Range', 'DMR Month', 'MWAT (°C)', 'DDMAX (°C)', 'Discharge Hours']
+      ];
+      
+      this.results.weeklyResults.forEach((week, index) => {
+        summaryData.push([
+          `Week ${index + 1}`,
+          `${week.weekStart.toLocaleDateString()} - ${week.weekEnd.toLocaleDateString()}`,
+          this.getMonthName(week.dmrMonth),
+          week.mwat.toFixed(2),
+          week.ddmax.toFixed(2),
+          week.dischargeHours.toFixed(1)
+        ]);
+      });
+      
+      const summaryWs = XLSX.utils.aoa_to_sheet(summaryData);
+      XLSX.utils.book_append_sheet(wb, summaryWs, 'Summary');
+      
+      // Save file
+      const filename = `MWAT_DDMAX_${this.analysisMonth}_${new Date().toISOString().split('T')[0]}.xlsx`;
+      XLSX.writeFile(wb, filename);
+      
+      this.showNotification('Excel report exported successfully!', 'success');
+      
+    } catch (error) {
+      console.error('Export error:', error);
+      this.showNotification('Error exporting to Excel: ' + error.message, 'error');
+    }
+  }
+
+  resetCalculation() {
+    // Reset data
+    this.sensor1Data = null;
+    this.sensor2Data = null;
+    this.dischargePeriods = [];
+    this.analysisMonth = null;
+    this.results = null;
+    
+    // Reset UI
+    document.getElementById('file1Input').value = '';
+    document.getElementById('file2Input').value = '';
+    document.getElementById('file1Status').textContent = 'No file selected';
+    document.getElementById('file2Status').textContent = 'No file selected';
+    document.getElementById('file1Status').classList.remove('loaded');
+    document.getElementById('file2Status').classList.remove('loaded');
+    
+    document.getElementById('analysisMonth').value = '';
+    document.getElementById('dischargePattern').value = '';
+    
+    // Hide sections
+    document.getElementById('previewSection').style.display = 'none';
+    document.getElementById('dischargeSection').style.display = 'none';
+    document.getElementById('resultsSection').style.display = 'none';
+    
+    // Clear custom periods
+    document.getElementById('customPeriods').innerHTML = '';
+    
+    this.checkCalculationReady();
+    this.showNotification('Calculation reset. Ready for new analysis.', 'info');
+  }
+
+  showNotification(message, type = 'info') {
+    const container = document.getElementById('notificationContainer');
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    
+    const icons = {
+      success: '✅',
+      error: '❌',
+      warning: '⚠️',
+      info: 'ℹ️'
+    };
+    
+    notification.innerHTML = `
+      <span class="notification-icon">${icons[type] || icons.info}</span>
+      <span class="notification-message">${message}</span>
+    `;
+    
+    container.appendChild(notification);
+    
+    // Trigger animation
+    setTimeout(() => notification.classList.add('show'), 100);
+    
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+      notification.classList.remove('show');
+      setTimeout(() => notification.remove(), 300);
+    }, 5000);
+    
+    // Click to dismiss
+    notification.addEventListener('click', () => {
+      notification.classList.remove('show');
+      setTimeout(() => notification.remove(), 300);
+    });
+  }
+}
+
+// Global functions for HTML event handlers
+function showHelp() {
+  alert(`MWAT/DDMAX Compliance Calculator Help
+
+This tool calculates Maximum Weekly Average Temperature (MWAT) and Daily Dissolved Maximum (DDMAX) values for Colorado CDPHE wastewater discharge compliance.
+
+Key Features:
+• Import two Excel files with 15-minute temperature sensor data
+• Define discharge periods (single, daily recurring, or custom schedule)
+• Calculate weekly averages with proper DMR month assignment
+• Export compliance reports for regulatory submission
+
+DMR Assignment Rule:
+Weeks spanning month boundaries are assigned to the month where the week ends.
+
+For technical support or questions about calculations, contact your environmental compliance team.`);
+}
+
+// Initialize the calculator when the page loads
+let calculator;
+document.addEventListener('DOMContentLoaded', () => {
+  calculator = new MWATDDMAXCalculator();
+});
