@@ -25,14 +25,14 @@ body {
 /* Header Styles */
 .header {
   text-align: center;
-  margin-bottom: 3rem;
-  padding: 2rem 0;
+  margin-bottom: 2rem;
+  padding: 1rem 0;
 }
 
 .brand {
   background: rgba(255, 255, 255, 0.95);
-  border-radius: 20px;
-  padding: 2rem;
+  border-radius: 16px;
+  padding: 1.5rem;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -41,20 +41,12 @@ body {
 .logo-container {
   display: flex;
   justify-content: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 .logo-image {
-  height: 120px;
+  height: 80px;
   width: auto;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  transition: all 0.3s ease;
-}
-
-.logo-image:hover {
-  transform: scale(1.02);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
 }
 
 .brand-text {
@@ -62,20 +54,21 @@ body {
 }
 
 .header h1 {
-  font-size: 2.8rem;
+  font-size: 2.2rem;
   font-weight: 700;
   background: linear-gradient(45deg, #00677F, #4A90A4);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  margin: 0;
+  margin: 0 0 0.5rem 0;
 }
 
 .tagline {
-  font-size: 1.2rem;
+  font-size: 1rem;
   color: #666;
   font-weight: 400;
   opacity: 0.8;
+  margin: 0;
 }
 
 /* Main Content */
