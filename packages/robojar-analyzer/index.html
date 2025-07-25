@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>RoboJar Data Analyzer - Enhanced with Statistics</title>
 
     <!-- External Library Dependencies -->
@@ -12,400 +11,545 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <!-- Local Stylesheets -->
-    <link rel="stylesheet" href="styles.css">
-</head>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
 
-<body>
+  <body>
     <div class="container">
-        <div class="header">
-            <h1>🤖 RoboJar Data Analyzer</h1>
-            <p>Upload your RoboJar Excel report to visualize and analyze the data</p>
+      <div class="header">
+        <h1>🤖 RoboJar Data Analyzer</h1>
+        <p>
+          Upload your RoboJar Excel report to visualize and analyze the data
+        </p>
+      </div>
+
+      <div class="instructions-section">
+        <div class="instructions-card">
+          <h3>📝 Quick Instructions</h3>
+          <ol class="instructions-list">
+            <li>
+              <strong>Upload:</strong> Choose a RoboJar Excel report file
+              (.xlsx/.xls)
+            </li>
+            <li>
+              <strong>Select:</strong> Pick a data column to analyze from the
+              dropdown
+            </li>
+            <li>
+              <strong>Configure:</strong> Adjust chart settings, forecasting
+              options, and statistical filters
+            </li>
+            <li>
+              <strong>Generate:</strong> Click "Generate Chart" to visualize
+              your data
+            </li>
+            <li>
+              <strong>Export:</strong> Save charts as PNG or copy statistics for
+              WIMS reporting
+            </li>
+          </ol>
+          <p class="instructions-tip">
+            💡 <strong>Tip:</strong> Use the "ℹ️" help buttons for detailed
+            explanations of statistics and forecast metrics.
+          </p>
         </div>
+      </div>
 
-        <div class="instructions-section">
-            <div class="instructions-card">
-                <h3>📝 Quick Instructions</h3>
-                <ol class="instructions-list">
-                    <li><strong>Upload:</strong> Choose a RoboJar Excel report file (.xlsx/.xls)</li>
-                    <li><strong>Select:</strong> Pick a data column to analyze from the dropdown</li>
-                    <li><strong>Configure:</strong> Adjust chart settings, forecasting options, and statistical filters
-                    </li>
-                    <li><strong>Generate:</strong> Click "Generate Chart" to visualize your data</li>
-                    <li><strong>Export:</strong> Save charts as PNG or copy statistics for WIMS reporting</li>
-                </ol>
-                <p class="instructions-tip">💡 <strong>Tip:</strong> Use the "ℹ️" help buttons for detailed explanations
-                    of statistics and forecast metrics.</p>
-            </div>
+      <div class="upload-section">
+        <div class="file-input-wrapper">
+          <input
+            type="file"
+            id="fileInput"
+            class="file-input"
+            accept=".xls,.xlsx"
+          />
+          <label
+            for="fileInput"
+            class="btn btn-large btn-teal"
+            style="margin: 10px 0"
+          >
+            📁 Import RoboJar Excel File
+          </label>
         </div>
+      </div>
 
-        <div class="upload-section">
-            <div class="file-input-wrapper">
-                <input type="file" id="fileInput" class="file-input" accept=".xls,.xlsx" />
-                <label for="fileInput" class="btn btn-large btn-teal" style="margin: 10px 0;">
-                    📁 Import RoboJar Excel File
-                </label>
-            </div>
-        </div>
+      <!-- Data Summary Section - Moved up for better UX flow -->
+      <div class="info-panel" id="infoPanel" style="display: none">
+        <h3>📋 Data Import Summary</h3>
+        <div class="sheet-info" id="sheetInfo"></div>
+      </div>
 
-        <!-- Data Summary Section - Moved up for better UX flow -->
-        <div class="info-panel" id="infoPanel" style="display: none;">
-            <h3>📋 Data Import Summary</h3>
-            <div class="sheet-info" id="sheetInfo"></div>
-        </div>
-
-        <!-- Basic Chart Configuration -->
-        <div class="basic-config" id="basicConfig" style="display: none;">
-            <div class="control-card">
-                <h3>📊 Chart Configuration</h3>
-                <div class="control-card-controls">
-                    <div class="control-group">
-                        <label for="columnSelect">Select Column to Graph:</label>
-                        <select id="columnSelect">
-                            <option value="">Choose a column...</option>
-                        </select>
-                    </div>
-
-                    <div class="control-group">
-                        <label for="chartType">Chart Type:</label>
-                        <select id="chartType">
-                            <option value="line">Line Chart</option>
-                            <option value="scatter">Scatter Plot</option>
-                        </select>
-                    </div>
-
-                    <div class="control-group">
-                        <label for="includeRPM">Include Paddle RPM (Secondary Axis):</label>
-                        <select id="includeRPM">
-                            <option value="false">No</option>
-                            <option value="true">Yes</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="forecast-section">
-                    <h4 class="config-subtitle">🔮 Forecasting Options</h4>
-
-                    <div class="forecast-controls">
-                        <div class="control-group">
-                            <label for="enableForecast">Forecasting Method:</label>
-                            <select id="enableForecast">
-                                <option value="false" selected>Disabled</option>
-                                <option value="adaptive">Adaptive (Recommended)</option>
-                                <option value="windowed">Windowed</option>
-                                <option value="weighted">Weighted</option>
-                                <option value="simple">Simple</option>
-                            </select>
-                        </div>
-
-                        <div class="control-group" id="polynomialOrderGroup" style="display: none;">
-                            <label for="polynomialOrder">Polynomial Order:</label>
-                            <select id="polynomialOrder">
-                                <option value="1">1st Order (Linear)</option>
-                                <option value="2" selected>2nd Order (Quadratic)</option>
-                                <option value="3">3rd Order (Cubic)</option>
-                            </select>
-                        </div>
-
-                        <div class="control-group" id="forecastStartGroup" style="display: none;">
-                            <label for="forecastStart">Forecast Start Time:</label>
-                            <select id="forecastStart">
-                                <option value="600">600s (10 min)</option>
-                                <option value="900">900s (15 min)</option>
-                                <option value="1200" selected>1200s (20 min)</option>
-                                <option value="1500">1500s (25 min)</option>
-                                <option value="1800">1800s (30 min)</option>
-                            </select>
-                        </div>
-
-                        <div class="control-group" id="forecastWindowGroup" style="display: none;">
-                            <label for="forecastWindow">Forecast Window:</label>
-                            <select id="forecastWindow">
-                                <option value="50">50 points (250 seconds)</option>
-                                <option value="100" selected>100 points (500 seconds)</option>
-                                <option value="150">150 points (750 seconds)</option>
-                                <option value="200">200 points (1000 seconds)</option>
-                                <option value="all">All data</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="forecastInfo" class="forecast-info" style="display: none;"></div>
-
-                <!-- Generate Chart Button -->
-                <div class="generate-button-section">
-                    <button class="btn btn-large btn-gold" id="generateChartMain" onclick="generateChart()">
-                        <span>📊</span>
-                        <span>Generate Chart</span>
-                    </button>
-                    <p class="generate-hint">Create your visualization with the settings above</p>
-                </div>
-            </div>
-        </div>
-
-
-        <div class="chart-container" id="chartContainer" style="display: none;">
-            <div id="chartTitle" class="chart-title"></div>
-            <div id="customLegend" class="custom-legend"></div>
-            <div class="chart-canvas-container">
-                <canvas id="myChart"></canvas>
-            </div>
-        </div>
-
-        <!-- Statistics Section - Moved below chart for better flow -->
-        <div class="statistics-section" id="statisticsSection" style="display: none;">
-            <div class="statistics-card" id="statisticsCard">
-                <h3>📊 Data Statistics
-                    <button class="help-icon" onclick="openStatsHelp()" title="Learn about these statistics"
-                        type="button">ℹ️</button>
-                </h3>
-                <div class="stats-controls">
-                    <div class="control-group">
-                        <label for="noiseFilter">Noise Filtering:</label>
-                        <select id="noiseFilter">
-                            <option value="none" selected>No Filtering</option>
-                            <option value="outlier">Remove Outliers (IQR Method)</option>
-                            <option value="smooth">Smooth Data (Moving Average)</option>
-                            <option value="both">Both (Outliers + Smoothing)</option>
-                        </select>
-                    </div>
-                    <div class="control-group">
-                        <label for="timeWindow">Analysis Time Window:</label>
-                        <select id="timeWindow">
-                            <option value="all">Full Duration</option>
-                            <option value="steady">Steady State Only (After 5 min)</option>
-                            <option value="final">Final 10 Minutes</option>
-                            <option value="custom">Custom Range</option>
-                        </select>
-                    </div>
-                    <div class="control-group" id="customRangeGroup"
-                        style="display: none; flex-direction: row; gap: 20px; align-items: center;">
-                        <div style="display: flex; flex-direction: column; gap: 5px;">
-                            <label for="startTime">Start Time (seconds):</label>
-                            <select id="startTime" style="width: 120px;">
-                                <option value="0">0 (Start)</option>
-                                <option value="50">50</option>
-                                <option value="100">100</option>
-                                <option value="150">150</option>
-                                <option value="200">200</option>
-                                <option value="250">250</option>
-                                <option value="300">300 (5 min)</option>
-                                <option value="350">350</option>
-                                <option value="400">400</option>
-                                <option value="450">450</option>
-                                <option value="500">500</option>
-                                <option value="550">550</option>
-                                <option value="600">600 (10 min)</option>
-                                <option value="650">650</option>
-                                <option value="700">700</option>
-                                <option value="750">750</option>
-                                <option value="800">800</option>
-                                <option value="850">850</option>
-                                <option value="900">900 (15 min)</option>
-                                <option value="950">950</option>
-                                <option value="1000">1000</option>
-                                <option value="1050">1050</option>
-                                <option value="1100">1100</option>
-                                <option value="1150">1150</option>
-                                <option value="1200">1200 (20 min)</option>
-                            </select>
-                        </div>
-                        <div style="display: flex; flex-direction: column; gap: 5px;">
-                            <label for="endTime">End Time (seconds):</label>
-                            <select id="endTime" style="width: 120px;">
-                                <option value="300">300 (5 min)</option>
-                                <option value="350">350</option>
-                                <option value="400">400</option>
-                                <option value="450">450</option>
-                                <option value="500">500</option>
-                                <option value="550">550</option>
-                                <option value="600">600 (10 min)</option>
-                                <option value="650">650</option>
-                                <option value="700">700</option>
-                                <option value="750">750</option>
-                                <option value="800">800</option>
-                                <option value="850">850</option>
-                                <option value="900">900 (15 min)</option>
-                                <option value="950">950</option>
-                                <option value="1000">1000</option>
-                                <option value="1050">1050</option>
-                                <option value="1100">1100</option>
-                                <option value="1150">1150</option>
-                                <option value="1200">1200 (20 min)</option>
-                                <option value="1250">1250</option>
-                                <option value="1300">1300</option>
-                                <option value="1350">1350</option>
-                                <option value="1400">1400</option>
-                                <option value="1450">1450</option>
-                                <option value="1500">1500 (25 min)</option>
-                                <option value="1800" selected>1800 (30 min)</option>
-                                <option value="2100">2100 (35 min)</option>
-                                <option value="2400">2400 (40 min)</option>
-                                <option value="2700">2700 (45 min)</option>
-                                <option value="3000">3000 (50 min)</option>
-                                <option value="3600">3600 (60 min)</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <div id="statisticsTable"></div>
+      <!-- Basic Chart Configuration -->
+      <div class="basic-config" id="basicConfig" style="display: none">
+        <div class="control-card">
+          <h3>📊 Chart Configuration</h3>
+          <div class="control-card-controls">
+            <div class="control-group">
+              <label for="columnSelect">Select Column to Graph:</label>
+              <select id="columnSelect">
+                <option value="">Choose a column...</option>
+              </select>
             </div>
 
-            <div class="metrics-card" id="metricsCard">
-                <h3>📈 Forecast Quality Metrics
-                    <button class="help-icon" onclick="openMetricsHelp()" title="Learn about these metrics"
-                        type="button">ℹ️</button>
-                </h3>
-                <div class="metrics-grid" id="metricsGrid">
-                    <!-- Metrics will be populated here -->
-                </div>
-                <div class="metrics-summary" id="metricsSummary">
-                    <!-- Summary will be populated here -->
-                </div>
+            <div class="control-group">
+              <label for="chartType">Chart Type:</label>
+              <select id="chartType">
+                <option value="line">Line Chart</option>
+                <option value="scatter">Scatter Plot</option>
+              </select>
             </div>
+
+            <div class="control-group">
+              <label for="includeRPM"
+                >Include Paddle RPM (Secondary Axis):</label
+              >
+              <select id="includeRPM">
+                <option value="false">No</option>
+                <option value="true">Yes</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="forecast-section">
+            <h4 class="config-subtitle">🔮 Forecasting Options</h4>
+
+            <div class="forecast-controls">
+              <div class="control-group">
+                <label for="enableForecast">Forecasting Method:</label>
+                <select id="enableForecast">
+                  <option value="false" selected>Disabled</option>
+                  <option value="adaptive">Adaptive (Recommended)</option>
+                  <option value="windowed">Windowed</option>
+                  <option value="weighted">Weighted</option>
+                  <option value="simple">Simple</option>
+                </select>
+              </div>
+
+              <div
+                class="control-group"
+                id="polynomialOrderGroup"
+                style="display: none"
+              >
+                <label for="polynomialOrder">Polynomial Order:</label>
+                <select id="polynomialOrder">
+                  <option value="1">1st Order (Linear)</option>
+                  <option value="2" selected>2nd Order (Quadratic)</option>
+                  <option value="3">3rd Order (Cubic)</option>
+                </select>
+              </div>
+
+              <div
+                class="control-group"
+                id="forecastStartGroup"
+                style="display: none"
+              >
+                <label for="forecastStart">Forecast Start Time:</label>
+                <select id="forecastStart">
+                  <option value="600">600s (10 min)</option>
+                  <option value="900">900s (15 min)</option>
+                  <option value="1200" selected>1200s (20 min)</option>
+                  <option value="1500">1500s (25 min)</option>
+                  <option value="1800">1800s (30 min)</option>
+                </select>
+              </div>
+
+              <div
+                class="control-group"
+                id="forecastWindowGroup"
+                style="display: none"
+              >
+                <label for="forecastWindow">Forecast Window:</label>
+                <select id="forecastWindow">
+                  <option value="50">50 points (250 seconds)</option>
+                  <option value="100" selected>100 points (500 seconds)</option>
+                  <option value="150">150 points (750 seconds)</option>
+                  <option value="200">200 points (1000 seconds)</option>
+                  <option value="all">All data</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div
+            id="forecastInfo"
+            class="forecast-info"
+            style="display: none"
+          ></div>
+
+          <!-- Generate Chart Button -->
+          <div class="generate-button-section">
+            <button
+              class="btn btn-large btn-gold"
+              id="generateChartMain"
+              onclick="generateChart()"
+            >
+              <span>📊</span>
+              <span>Generate Chart</span>
+            </button>
+            <p class="generate-hint">
+              Create your visualization with the settings above
+            </p>
+          </div>
         </div>
+      </div>
+
+      <div class="chart-container" id="chartContainer" style="display: none">
+        <div id="chartTitle" class="chart-title"></div>
+        <div id="customLegend" class="custom-legend"></div>
+        <div class="chart-canvas-container">
+          <canvas id="myChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Statistics Section - Moved below chart for better flow -->
+      <div
+        class="statistics-section"
+        id="statisticsSection"
+        style="display: none"
+      >
+        <div class="statistics-card" id="statisticsCard">
+          <h3>
+            📊 Data Statistics
+            <button
+              class="help-icon"
+              onclick="openStatsHelp()"
+              title="Learn about these statistics"
+              type="button"
+            >
+              ℹ️
+            </button>
+          </h3>
+          <div class="stats-controls">
+            <div class="control-group">
+              <label for="noiseFilter">Noise Filtering:</label>
+              <select id="noiseFilter">
+                <option value="none" selected>No Filtering</option>
+                <option value="outlier">Remove Outliers (IQR Method)</option>
+                <option value="smooth">Smooth Data (Moving Average)</option>
+                <option value="both">Both (Outliers + Smoothing)</option>
+              </select>
+            </div>
+            <div class="control-group">
+              <label for="timeWindow">Analysis Time Window:</label>
+              <select id="timeWindow">
+                <option value="all">Full Duration</option>
+                <option value="steady">Steady State Only (After 5 min)</option>
+                <option value="final">Final 10 Minutes</option>
+                <option value="custom">Custom Range</option>
+              </select>
+            </div>
+            <div
+              class="control-group"
+              id="customRangeGroup"
+              style="
+                display: none;
+                flex-direction: row;
+                gap: 20px;
+                align-items: center;
+              "
+            >
+              <div style="display: flex; flex-direction: column; gap: 5px">
+                <label for="startTime">Start Time (seconds):</label>
+                <select id="startTime" style="width: 120px">
+                  <option value="0">0 (Start)</option>
+                  <option value="50">50</option>
+                  <option value="100">100</option>
+                  <option value="150">150</option>
+                  <option value="200">200</option>
+                  <option value="250">250</option>
+                  <option value="300">300 (5 min)</option>
+                  <option value="350">350</option>
+                  <option value="400">400</option>
+                  <option value="450">450</option>
+                  <option value="500">500</option>
+                  <option value="550">550</option>
+                  <option value="600">600 (10 min)</option>
+                  <option value="650">650</option>
+                  <option value="700">700</option>
+                  <option value="750">750</option>
+                  <option value="800">800</option>
+                  <option value="850">850</option>
+                  <option value="900">900 (15 min)</option>
+                  <option value="950">950</option>
+                  <option value="1000">1000</option>
+                  <option value="1050">1050</option>
+                  <option value="1100">1100</option>
+                  <option value="1150">1150</option>
+                  <option value="1200">1200 (20 min)</option>
+                </select>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 5px">
+                <label for="endTime">End Time (seconds):</label>
+                <select id="endTime" style="width: 120px">
+                  <option value="300">300 (5 min)</option>
+                  <option value="350">350</option>
+                  <option value="400">400</option>
+                  <option value="450">450</option>
+                  <option value="500">500</option>
+                  <option value="550">550</option>
+                  <option value="600">600 (10 min)</option>
+                  <option value="650">650</option>
+                  <option value="700">700</option>
+                  <option value="750">750</option>
+                  <option value="800">800</option>
+                  <option value="850">850</option>
+                  <option value="900">900 (15 min)</option>
+                  <option value="950">950</option>
+                  <option value="1000">1000</option>
+                  <option value="1050">1050</option>
+                  <option value="1100">1100</option>
+                  <option value="1150">1150</option>
+                  <option value="1200">1200 (20 min)</option>
+                  <option value="1250">1250</option>
+                  <option value="1300">1300</option>
+                  <option value="1350">1350</option>
+                  <option value="1400">1400</option>
+                  <option value="1450">1450</option>
+                  <option value="1500">1500 (25 min)</option>
+                  <option value="1800" selected>1800 (30 min)</option>
+                  <option value="2100">2100 (35 min)</option>
+                  <option value="2400">2400 (40 min)</option>
+                  <option value="2700">2700 (45 min)</option>
+                  <option value="3000">3000 (50 min)</option>
+                  <option value="3600">3600 (60 min)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div id="statisticsTable"></div>
+        </div>
+
+        <div class="metrics-card" id="metricsCard">
+          <h3>
+            📈 Forecast Quality Metrics
+            <button
+              class="help-icon"
+              onclick="openMetricsHelp()"
+              title="Learn about these metrics"
+              type="button"
+            >
+              ℹ️
+            </button>
+          </h3>
+          <div class="metrics-grid" id="metricsGrid">
+            <!-- Metrics will be populated here -->
+          </div>
+          <div class="metrics-summary" id="metricsSummary">
+            <!-- Summary will be populated here -->
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Statistics Help Modal -->
-    <div id="statsHelpModal" class="help-modal" style="display: none;">
-        <div class="help-modal-content">
-            <button class="modal-close-x" onclick="closeStatsHelp()" title="Close">&times;</button>
-            <h3>📊 Understanding Data Statistics</h3>
+    <div id="statsHelpModal" class="help-modal" style="display: none">
+      <div class="help-modal-content">
+        <button class="modal-close-x" onclick="closeStatsHelp()" title="Close">
+          &times;
+        </button>
+        <h3>📊 Understanding Data Statistics</h3>
 
-            <div class="help-metric">
-                <h4>Basic Statistics</h4>
-                <p><strong>Min/Max:</strong> The lowest and highest values in your dataset. Useful for understanding the
-                    operational range.</p>
-                <p><strong>Mean (Average):</strong> Sum of all values divided by count. Most commonly used for
-                    reporting.</p>
-                <p><strong>Median:</strong> The middle value when data is sorted. Less affected by outliers than the
-                    mean.</p>
-                <p><strong>Standard Deviation:</strong> Measures data spread around the mean. Lower values indicate more
-                    consistent performance.</p>
-            </div>
-
-            <div class="help-metric">
-                <h4>Advanced Statistics</h4>
-                <p><strong>Coefficient of Variation (CV):</strong> Standard deviation divided by mean, expressed as
-                    percentage. Useful for comparing variability across different parameters.</p>
-                <p><strong>Percentiles (P10, P90):</strong> Values below which 10% and 90% of data falls. Helps identify
-                    typical operating ranges.</p>
-                <p><strong>Interquartile Range (IQR):</strong> Difference between 75th and 25th percentiles. Shows the
-                    spread of the middle 50% of data.</p>
-            </div>
-
-            <div class="help-metric">
-                <h4>Noise Assessment</h4>
-                <p><strong>Noise Level:</strong> Estimated using coefficient of variation and outlier detection:</p>
-                <div class="help-ranges">
-                    <div class="help-range excellent">Low: CV &lt; 15%</div>
-                    <div class="help-range good">Medium: CV 15-30%</div>
-                    <div class="help-range poor">High: CV &gt; 30%</div>
-                </div>
-            </div>
-
-            <div class="help-metric">
-                <h4>Filtering Options</h4>
-                <p><strong>Remove Outliers (IQR Method):</strong> Removes values beyond 1.5 × IQR from quartiles.
-                    Good for eliminating sensor spikes.</p>
-                <p><strong>Smooth Data (Moving Average):</strong> Applies 5-point moving average to reduce noise
-                    while preserving trends.</p>
-                <p><strong>Both:</strong> First removes outliers, then smooths the remaining data for maximum noise
-                    reduction.</p>
-            </div>
-
-            <div class="help-metric">
-                <h4>Time Window Selection</h4>
-                <p><strong>Full Duration:</strong> Uses all available data points.</p>
-                <p><strong>Steady State:</strong> Excludes first 5 minutes to avoid startup transients.</p>
-                <p><strong>Final 10 Minutes:</strong> Uses only the last 10 minutes when system should be most
-                    stable.</p>
-                <p><strong>Custom Range:</strong> Allows you to specify exact time bounds for analysis.</p>
-            </div>
-
+        <div class="help-metric">
+          <h4>Basic Statistics</h4>
+          <p>
+            <strong>Min/Max:</strong> The lowest and highest values in your
+            dataset. Useful for understanding the operational range.
+          </p>
+          <p>
+            <strong>Mean (Average):</strong> Sum of all values divided by count.
+            Most commonly used for reporting.
+          </p>
+          <p>
+            <strong>Median:</strong> The middle value when data is sorted. Less
+            affected by outliers than the mean.
+          </p>
+          <p>
+            <strong>Standard Deviation:</strong> Measures data spread around the
+            mean. Lower values indicate more consistent performance.
+          </p>
         </div>
+
+        <div class="help-metric">
+          <h4>Advanced Statistics</h4>
+          <p>
+            <strong>Coefficient of Variation (CV):</strong> Standard deviation
+            divided by mean, expressed as percentage. Useful for comparing
+            variability across different parameters.
+          </p>
+          <p>
+            <strong>Percentiles (P10, P90):</strong> Values below which 10% and
+            90% of data falls. Helps identify typical operating ranges.
+          </p>
+          <p>
+            <strong>Interquartile Range (IQR):</strong> Difference between 75th
+            and 25th percentiles. Shows the spread of the middle 50% of data.
+          </p>
+        </div>
+
+        <div class="help-metric">
+          <h4>Noise Assessment</h4>
+          <p>
+            <strong>Noise Level:</strong> Estimated using coefficient of
+            variation and outlier detection:
+          </p>
+          <div class="help-ranges">
+            <div class="help-range excellent">Low: CV &lt; 15%</div>
+            <div class="help-range good">Medium: CV 15-30%</div>
+            <div class="help-range poor">High: CV &gt; 30%</div>
+          </div>
+        </div>
+
+        <div class="help-metric">
+          <h4>Filtering Options</h4>
+          <p>
+            <strong>Remove Outliers (IQR Method):</strong> Removes values beyond
+            1.5 × IQR from quartiles. Good for eliminating sensor spikes.
+          </p>
+          <p>
+            <strong>Smooth Data (Moving Average):</strong> Applies 5-point
+            moving average to reduce noise while preserving trends.
+          </p>
+          <p>
+            <strong>Both:</strong> First removes outliers, then smooths the
+            remaining data for maximum noise reduction.
+          </p>
+        </div>
+
+        <div class="help-metric">
+          <h4>Time Window Selection</h4>
+          <p><strong>Full Duration:</strong> Uses all available data points.</p>
+          <p>
+            <strong>Steady State:</strong> Excludes first 5 minutes to avoid
+            startup transients.
+          </p>
+          <p>
+            <strong>Final 10 Minutes:</strong> Uses only the last 10 minutes
+            when system should be most stable.
+          </p>
+          <p>
+            <strong>Custom Range:</strong> Allows you to specify exact time
+            bounds for analysis.
+          </p>
+        </div>
+      </div>
     </div>
 
     <!-- Metrics Help Modal -->
-    <div id="metricsHelpModal" class="help-modal" style="display: none;">
-        <div class="help-modal-content">
-            <button class="modal-close-x" onclick="closeMetricsHelp()" title="Close">&times;</button>
-            <h3>📊 Understanding Forecast Quality Metrics</h3>
+    <div id="metricsHelpModal" class="help-modal" style="display: none">
+      <div class="help-modal-content">
+        <button
+          class="modal-close-x"
+          onclick="closeMetricsHelp()"
+          title="Close"
+        >
+          &times;
+        </button>
+        <h3>📊 Understanding Forecast Quality Metrics</h3>
 
-            <div class="help-metric">
-                <h4>R² (R-Squared / Coefficient of Determination)</h4>
-                <p><strong>What it measures:</strong> How well your polynomial model explains the variance in your
-                    data. R² of 1.0 means perfect fit, 0.0 means no explanatory power.</p>
-                <p><strong>Formula:</strong> R² = 1 - (Sum of Squared Residuals / Total Sum of Squares)</p>
-                <div class="help-ranges">
-                    <div class="help-range excellent">≥ 0.90 Excellent</div>
-                    <div class="help-range good">0.70-0.89 Good</div>
-                    <div class="help-range fair">0.50-0.69 Fair</div>
-                    <div class="help-range poor">&lt; 0.50 Poor</div>
-                </div>
-            </div>
-
-            <div class="help-metric">
-                <h4>RMSE (Root Mean Square Error)</h4>
-                <p><strong>What it measures:</strong> Average magnitude of prediction errors in the same units
-                    as your data. Lower values indicate better predictions.</p>
-                <p><strong>Formula:</strong> RMSE = √(Σ(predicted - actual)² / n)</p>
-                <p><strong>Interpretation:</strong> If RMSE = 5 and your data ranges 0-100, predictions are
-                    typically within ±5 units of actual values.</p>
-            </div>
-
-            <div class="help-metric">
-                <h4>MAE (Mean Absolute Error)</h4>
-                <p><strong>What it measures:</strong> Average absolute difference between predicted and actual
-                    values. Less sensitive to outliers than RMSE.</p>
-                <p><strong>Formula:</strong> MAE = Σ|predicted - actual| / n</p>
-                <p><strong>Comparison:</strong> If MAE &lt; RMSE, you have some large errors (outliers). If they're
-                    similar, errors are consistent.</p>
-            </div>
-
-            <div class="help-metric">
-                <h4>MAPE (Mean Absolute Percentage Error)</h4>
-                <p><strong>What it measures:</strong> Average percentage error, making it easy to understand
-                    regardless of data scale.</p>
-                <p><strong>Formula:</strong> MAPE = (Σ|predicted - actual| / |actual|) / n × 100%</p>
-                <div class="help-ranges">
-                    <div class="help-range excellent">≤ 10% Excellent</div>
-                    <div class="help-range good">10-20% Good</div>
-                    <div class="help-range fair">20-30% Fair</div>
-                    <div class="help-range poor">&gt; 30% Poor</div>
-                </div>
-            </div>
-
-            <div class="help-metric">
-                <h4>💡 Improving Your Forecast Quality</h4>
-                <p><strong>Low R² or High Errors?</strong> Try different polynomial orders or forecasting
-                    methods:</p>
-                <p>• <strong>Adaptive:</strong> Best for data with trend changes</p>
-                <p>• <strong>Windowed:</strong> Focus on recent stable periods</p>
-                <p>• <strong>Weighted:</strong> Emphasize recent data gradually</p>
-                <p>• <strong>Simple:</strong> Use all available data</p>
-            </div>
-
+        <div class="help-metric">
+          <h4>R² (R-Squared / Coefficient of Determination)</h4>
+          <p>
+            <strong>What it measures:</strong> How well your polynomial model
+            explains the variance in your data. R² of 1.0 means perfect fit, 0.0
+            means no explanatory power.
+          </p>
+          <p>
+            <strong>Formula:</strong> R² = 1 - (Sum of Squared Residuals / Total
+            Sum of Squares)
+          </p>
+          <div class="help-ranges">
+            <div class="help-range excellent">≥ 0.90 Excellent</div>
+            <div class="help-range good">0.70-0.89 Good</div>
+            <div class="help-range fair">0.50-0.69 Fair</div>
+            <div class="help-range poor">&lt; 0.50 Poor</div>
+          </div>
         </div>
+
+        <div class="help-metric">
+          <h4>RMSE (Root Mean Square Error)</h4>
+          <p>
+            <strong>What it measures:</strong> Average magnitude of prediction
+            errors in the same units as your data. Lower values indicate better
+            predictions.
+          </p>
+          <p><strong>Formula:</strong> RMSE = √(Σ(predicted - actual)² / n)</p>
+          <p>
+            <strong>Interpretation:</strong> If RMSE = 5 and your data ranges
+            0-100, predictions are typically within ±5 units of actual values.
+          </p>
+        </div>
+
+        <div class="help-metric">
+          <h4>MAE (Mean Absolute Error)</h4>
+          <p>
+            <strong>What it measures:</strong> Average absolute difference
+            between predicted and actual values. Less sensitive to outliers than
+            RMSE.
+          </p>
+          <p><strong>Formula:</strong> MAE = Σ|predicted - actual| / n</p>
+          <p>
+            <strong>Comparison:</strong> If MAE &lt; RMSE, you have some large
+            errors (outliers). If they're similar, errors are consistent.
+          </p>
+        </div>
+
+        <div class="help-metric">
+          <h4>MAPE (Mean Absolute Percentage Error)</h4>
+          <p>
+            <strong>What it measures:</strong> Average percentage error, making
+            it easy to understand regardless of data scale.
+          </p>
+          <p>
+            <strong>Formula:</strong> MAPE = (Σ|predicted - actual| / |actual|)
+            / n × 100%
+          </p>
+          <div class="help-ranges">
+            <div class="help-range excellent">≤ 10% Excellent</div>
+            <div class="help-range good">10-20% Good</div>
+            <div class="help-range fair">20-30% Fair</div>
+            <div class="help-range poor">&gt; 30% Poor</div>
+          </div>
+        </div>
+
+        <div class="help-metric">
+          <h4>💡 Improving Your Forecast Quality</h4>
+          <p>
+            <strong>Low R² or High Errors?</strong> Try different polynomial
+            orders or forecasting methods:
+          </p>
+          <p>• <strong>Adaptive:</strong> Best for data with trend changes</p>
+          <p>• <strong>Windowed:</strong> Focus on recent stable periods</p>
+          <p>• <strong>Weighted:</strong> Emphasize recent data gradually</p>
+          <p>• <strong>Simple:</strong> Use all available data</p>
+        </div>
+      </div>
     </div>
 
     <!-- Floating Action Bar -->
     <div class="floating-action-bar">
-        <button class="btn btn-gray" id="exportPngFloat" onclick="exportChart('png')" disabled>
-            📸 Export Chart PNG
-        </button>
+      <button
+        class="btn btn-gray"
+        id="exportPngFloat"
+        onclick="exportChart('png')"
+        disabled
+      >
+        📸 Export Chart PNG
+      </button>
 
-        <button class="btn btn-gray" id="exportPdfFloat" onclick="generatePdfReport()" disabled>
-            📄 Export PDF Report
-        </button>
+      <button
+        class="btn btn-gray"
+        id="exportPdfFloat"
+        onclick="generatePdfReport()"
+        disabled
+      >
+        📄 Export PDF Report
+      </button>
     </div>
-
 
     <!-- Notification System -->
     <div id="notificationContainer" class="notification-container"></div>
 
     <!-- Local JavaScript -->
     <script src="script.js"></script>
-</body>
-
+  </body>
 </html>
