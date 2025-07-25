@@ -5,6 +5,8 @@ class MWATDDMAXCalculator {
   constructor() {
     this.sensor1Data = null;
     this.sensor2Data = null;
+    this.mergedData = null;
+    this.mergeStats = null;
     this.dischargePeriods = [];
     this.analysisMonth = null;
     this.results = null;
@@ -24,13 +26,7 @@ class MWATDDMAXCalculator {
     document.getElementById('dischargePattern').addEventListener('change', (e) => this.handleDischargePatternChange(e));
     document.getElementById('analysisMonth').addEventListener('change', (e) => this.handleAnalysisMonthChange(e));
     
-    // Add change listeners for discharge configuration inputs
-    document.getElementById('singleStartDate').addEventListener('change', () => this.checkCalculationReady());
-    document.getElementById('singleEndDate').addEventListener('change', () => this.checkCalculationReady());
-    document.getElementById('dailyStartTime').addEventListener('change', () => this.checkCalculationReady());
-    document.getElementById('dailyEndTime').addEventListener('change', () => this.checkCalculationReady());
-    document.getElementById('dailyStartDate').addEventListener('change', () => this.checkCalculationReady());
-    document.getElementById('dailyEndDate').addEventListener('change', () => this.checkCalculationReady());
+    // No additional event listeners needed for simplified discharge options
 
     // Calculation button
     document.getElementById('calculateBtn').addEventListener('click', () => this.calculateCompliance());
@@ -41,6 +37,9 @@ class MWATDDMAXCalculator {
     // Export and reset buttons
     document.getElementById('exportExcelBtn').addEventListener('click', () => this.exportToExcel());
     document.getElementById('resetCalculationBtn').addEventListener('click', () => this.resetCalculation());
+    
+    // Continue to configuration button
+    document.getElementById('continueToConfigBtn').addEventListener('click', () => this.showDischargeConfiguration());
   }
 
   async handleFileUpload(event, sensorNumber) {
@@ -63,6 +62,12 @@ class MWATDDMAXCalculator {
       statusElement.classList.add('loaded');
 
       this.updateDataPreview();
+      
+      // If both sensors loaded, merge the data
+      if (this.sensor1Data && this.sensor2Data) {
+        this.mergeTemperatureData();
+      }
+      
       this.checkCalculationReady();
 
     } catch (error) {
@@ -243,6 +248,89 @@ class MWATDDMAXCalculator {
     }
   }
 
+  mergeTemperatureData() {
+    if (!this.sensor1Data || !this.sensor2Data) {
+      return;
+    }
+
+    this.showNotification('Merging temperature data from both sensors...', 'info');
+
+    // Create a map to store all temperature readings by timestamp
+    const temperatureMap = new Map();
+    let overlaps = 0;
+    let sensor1Count = 0;
+    let sensor2Count = 0;
+
+    // Add sensor 1 data
+    for (const record of this.sensor1Data) {
+      const timestampKey = record.timestamp.getTime();
+      temperatureMap.set(timestampKey, {
+        timestamp: record.timestamp,
+        temperatures: [record.temperature],
+        sources: ['sensor1']
+      });
+      sensor1Count++;
+    }
+
+    // Add sensor 2 data, handling overlaps
+    for (const record of this.sensor2Data) {
+      const timestampKey = record.timestamp.getTime();
+      
+      if (temperatureMap.has(timestampKey)) {
+        // Overlap found - add temperature to existing entry
+        const existing = temperatureMap.get(timestampKey);
+        existing.temperatures.push(record.temperature);
+        existing.sources.push('sensor2');
+        overlaps++;
+      } else {
+        // New timestamp
+        temperatureMap.set(timestampKey, {
+          timestamp: record.timestamp,
+          temperatures: [record.temperature],
+          sources: ['sensor2']
+        });
+      }
+      sensor2Count++;
+    }
+
+    // Create merged dataset with averaged temperatures
+    this.mergedData = [];
+    for (const [timestampKey, data] of temperatureMap) {
+      const averageTemp = data.temperatures.reduce((sum, temp) => sum + temp, 0) / data.temperatures.length;
+      
+      this.mergedData.push({
+        timestamp: data.timestamp,
+        temperature: averageTemp,
+        sources: data.sources,
+        originalCount: data.temperatures.length
+      });
+    }
+
+    // Sort by timestamp
+    this.mergedData.sort((a, b) => a.timestamp - b.timestamp);
+
+    // Store merge statistics
+    this.mergeStats = {
+      sensor1Records: sensor1Count,
+      sensor2Records: sensor2Count,
+      totalInputRecords: sensor1Count + sensor2Count,
+      mergedRecords: this.mergedData.length,
+      overlapsFound: overlaps,
+      duplicatesRemoved: (sensor1Count + sensor2Count) - this.mergedData.length
+    };
+
+    // Update the preview to show merged data
+    this.updateDataPreview();
+    
+    // Generate the temperature chart
+    this.generateTemperatureChart();
+
+    this.showNotification(
+      `Data merged successfully! ${overlaps} overlapping timestamps averaged.`, 
+      'success'
+    );
+  }
+
   parseExcelDateTime(excelDate) {
     // Handle different Excel date formats
     if (typeof excelDate === 'number') {
@@ -272,13 +360,21 @@ class MWATDDMAXCalculator {
       document.getElementById('sensor2Stats').innerHTML = stats2;
     }
 
+    // Show merged data statistics if available
+    if (this.mergedData && this.mergeStats) {
+      const mergedStats = this.generateMergedDataStats();
+      // Add merged data preview section if it doesn't exist
+      if (!document.getElementById('mergedStats')) {
+        this.addMergedDataPreview();
+      }
+      document.getElementById('mergedStats').innerHTML = mergedStats;
+    }
+
     if (this.sensor1Data || this.sensor2Data) {
       document.getElementById('previewSection').style.display = 'block';
     }
 
-    if (this.sensor1Data && this.sensor2Data) {
-      document.getElementById('dischargeSection').style.display = 'block';
-    }
+    // Don't automatically show discharge section - user must click Continue button after viewing chart
   }
 
   generateDataStats(data, sensorNumber) {
@@ -298,25 +394,202 @@ class MWATDDMAXCalculator {
     `;
   }
 
+  generateMergedDataStats() {
+    if (!this.mergedData || !this.mergeStats) return '';
+    
+    const data = this.mergedData;
+    const stats = this.mergeStats;
+    
+    const startDate = new Date(Math.min(...data.map(d => d.timestamp)));
+    const endDate = new Date(Math.max(...data.map(d => d.timestamp)));
+    const temperatures = data.map(d => d.temperature);
+    const minTemp = Math.min(...temperatures);
+    const maxTemp = Math.max(...temperatures);
+    const avgTemp = temperatures.reduce((a, b) => a + b, 0) / temperatures.length;
+    
+    return `
+      <div class="merge-summary">
+        <strong>📊 Merged Dataset Summary</strong><br>
+        <strong>Records:</strong> ${stats.mergedRecords.toLocaleString()} (from ${stats.totalInputRecords.toLocaleString()} total)<br>
+        <strong>Date Range:</strong> ${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}<br>
+        <strong>Temperature Range:</strong> ${minTemp.toFixed(1)}°C - ${maxTemp.toFixed(1)}°C<br>
+        <strong>Average:</strong> ${avgTemp.toFixed(1)}°C<br><br>
+        
+        <strong>🔗 Merge Details</strong><br>
+        <strong>Overlaps Found:</strong> ${stats.overlapsFound.toLocaleString()} timestamps<br>
+        <strong>Duplicates Removed:</strong> ${stats.duplicatesRemoved.toLocaleString()}<br>
+        <strong>Data Quality:</strong> ${stats.overlapsFound > 0 ? 'Overlaps averaged' : 'No overlaps detected'}
+      </div>
+    `;
+  }
+
+  addMergedDataPreview() {
+    const previewGrid = document.querySelector('.preview-grid');
+    if (previewGrid && !document.getElementById('mergedPreview')) {
+      const mergedCard = document.createElement('div');
+      mergedCard.className = 'preview-card merged-card';
+      mergedCard.innerHTML = `
+        <h4>🔗 Merged Temperature Data</h4>
+        <div class="preview-stats" id="mergedStats"></div>
+      `;
+      mergedCard.id = 'mergedPreview';
+      previewGrid.appendChild(mergedCard);
+    }
+  }
+
+  generateTemperatureChart() {
+    if (!this.mergedData) return;
+    
+    // Show chart section
+    document.getElementById('chartSection').style.display = 'block';
+    
+    // Prepare data for Chart.js
+    const chartData = this.mergedData.map(record => ({
+      x: record.timestamp,
+      y: record.temperature,
+      sources: record.sources,
+      originalCount: record.originalCount
+    }));
+    
+    // Get canvas context
+    const ctx = document.getElementById('temperatureChart').getContext('2d');
+    
+    // Destroy existing chart if it exists
+    if (this.temperatureChart) {
+      this.temperatureChart.destroy();
+    }
+    
+    // Create new chart
+    this.temperatureChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        datasets: [{
+          label: 'Temperature (°C)',
+          data: chartData,
+          borderColor: '#5a7a95',
+          backgroundColor: 'rgba(90, 122, 149, 0.1)',
+          borderWidth: 2,
+          pointRadius: function(context) {
+            // Larger points for averaged data
+            const point = context.parsed;
+            const dataPoint = chartData[context.dataIndex];
+            return dataPoint.originalCount > 1 ? 4 : 2;
+          },
+          pointBackgroundColor: function(context) {
+            const dataPoint = chartData[context.dataIndex];
+            if (dataPoint.originalCount > 1) {
+              return '#c9a96e'; // Gold for averaged points
+            } else if (dataPoint.sources.includes('sensor1') && dataPoint.sources.includes('sensor2')) {
+              return '#7fb3b3'; // Teal for both sensors
+            } else if (dataPoint.sources.includes('sensor1')) {
+              return '#5a7a95'; // Blue for sensor 1
+            } else {
+              return '#8b7fb3'; // Purple for sensor 2
+            }
+          },
+          tension: 0.1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: {
+            type: 'time',
+            time: {
+              displayFormats: {
+                hour: 'MMM dd HH:mm',
+                day: 'MMM dd'
+              }
+            },
+            title: {
+              display: true,
+              text: 'Date & Time'
+            }
+          },
+          y: {
+            title: {
+              display: true,
+              text: 'Temperature (°C)'
+            },
+            beginAtZero: false
+          }
+        },
+        plugins: {
+          title: {
+            display: true,
+            text: 'Combined Temperature Data from Both Sensors',
+            font: {
+              size: 16,
+              weight: 'bold'
+            }
+          },
+          legend: {
+            display: true,
+            labels: {
+              generateLabels: function(chart) {
+                return [
+                  { text: 'Sensor 1 Only', fillStyle: '#5a7a95', strokeStyle: '#5a7a95' },
+                  { text: 'Sensor 2 Only', fillStyle: '#8b7fb3', strokeStyle: '#8b7fb3' },
+                  { text: 'Both Sensors', fillStyle: '#7fb3b3', strokeStyle: '#7fb3b3' },
+                  { text: 'Averaged Values', fillStyle: '#c9a96e', strokeStyle: '#c9a96e' }
+                ];
+              }
+            }
+          },
+          tooltip: {
+            callbacks: {
+              title: function(context) {
+                const dataPoint = chartData[context[0].dataIndex];
+                return new Date(dataPoint.x).toLocaleString();
+              },
+              label: function(context) {
+                const dataPoint = chartData[context.dataIndex];
+                let label = `Temperature: ${dataPoint.y.toFixed(2)}°C`;
+                if (dataPoint.originalCount > 1) {
+                  label += ` (averaged from ${dataPoint.originalCount} sensors)`;
+                }
+                label += `\nSource: ${dataPoint.sources.join(', ')}`;
+                return label;
+              }
+            }
+          }
+        },
+        interaction: {
+          intersect: false,
+          mode: 'index'
+        }
+      }
+    });
+    
+    // Show continue button
+    document.getElementById('continueToConfigBtn').style.display = 'inline-flex';
+    
+    // Scroll to chart
+    document.getElementById('chartSection').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  showDischargeConfiguration() {
+    // Show discharge configuration section
+    document.getElementById('dischargeSection').style.display = 'block';
+    
+    // Scroll to discharge configuration
+    document.getElementById('dischargeSection').scrollIntoView({ behavior: 'smooth' });
+    
+    this.showNotification('Ready to configure discharge periods!', 'success');
+  }
+
   handleDischargePatternChange(event) {
     const pattern = event.target.value;
     
     // Hide all config sections
     document.getElementById('continuousDischargeConfig').style.display = 'none';
-    document.getElementById('singlePeriodConfig').style.display = 'none';
-    document.getElementById('dailyRecurringConfig').style.display = 'none';
     document.getElementById('customScheduleConfig').style.display = 'none';
 
     // Show relevant config section
     switch (pattern) {
       case 'continuous':
         document.getElementById('continuousDischargeConfig').style.display = 'block';
-        break;
-      case 'single':
-        document.getElementById('singlePeriodConfig').style.display = 'block';
-        break;
-      case 'daily':
-        document.getElementById('dailyRecurringConfig').style.display = 'block';
         break;
       case 'custom':
         document.getElementById('customScheduleConfig').style.display = 'block';
@@ -367,7 +640,7 @@ class MWATDDMAXCalculator {
   }
 
   checkCalculationReady() {
-    const hasData = this.sensor1Data && this.sensor2Data;
+    const hasData = this.sensor1Data && this.sensor2Data && this.mergedData;
     const hasMonth = this.analysisMonth;
     const hasDischarge = this.validateDischargeConfiguration();
     
@@ -378,11 +651,13 @@ class MWATDDMAXCalculator {
       hasDischarge,
       sensor1Records: this.sensor1Data ? this.sensor1Data.length : 0,
       sensor2Records: this.sensor2Data ? this.sensor2Data.length : 0,
+      mergedRecords: this.mergedData ? this.mergedData.length : 0,
       analysisMonth: this.analysisMonth,
       dischargePattern: document.getElementById('dischargePattern').value
     });
     
     const calculateBtn = document.getElementById('calculateBtn');
+    // For the final calculation, we need data, month, and discharge config
     const isReady = hasData && hasMonth && hasDischarge;
     calculateBtn.disabled = !isReady;
     
@@ -407,18 +682,6 @@ class MWATDDMAXCalculator {
         // Continuous discharge always valid if pattern is selected
         return true;
         
-      case 'single':
-        const startSingle = document.getElementById('singleStartDate').value;
-        const endSingle = document.getElementById('singleEndDate').value;
-        return startSingle && endSingle;
-        
-      case 'daily':
-        const startTime = document.getElementById('dailyStartTime').value;
-        const endTime = document.getElementById('dailyEndTime').value;
-        const startDate = document.getElementById('dailyStartDate').value;
-        const endDate = document.getElementById('dailyEndDate').value;
-        return startTime && endTime && startDate && endDate;
-        
       case 'custom':
         const customPeriods = document.querySelectorAll('.custom-period');
         if (customPeriods.length === 0) return false;
@@ -442,12 +705,11 @@ class MWATDDMAXCalculator {
       // Generate discharge periods
       this.dischargePeriods = this.generateDischargePeriods();
       
-      // Filter data to discharge periods only
-      const filteredData1 = this.filterDataToDischargePeriods(this.sensor1Data);
-      const filteredData2 = this.filterDataToDischargePeriods(this.sensor2Data);
+      // Filter merged data to discharge periods only
+      const filteredData = this.filterDataToDischargePeriods(this.mergedData);
       
       // Calculate weekly MWAT and daily DDMAX
-      this.results = this.performComplianceCalculations(filteredData1, filteredData2);
+      this.results = this.performComplianceCalculations(filteredData);
       
       // Display results
       this.displayResults();
@@ -466,44 +728,12 @@ class MWATDDMAXCalculator {
     
     switch (pattern) {
       case 'continuous':
-        // For continuous discharge, create one large period covering all data
-        const allData = [...(this.sensor1Data || []), ...(this.sensor2Data || [])];
-        if (allData.length > 0) {
-          const timestamps = allData.map(d => new Date(d.timestamp));
+        // For continuous discharge, create one large period covering all merged data
+        if (this.mergedData && this.mergedData.length > 0) {
+          const timestamps = this.mergedData.map(d => new Date(d.timestamp));
           const minTime = new Date(Math.min(...timestamps));
           const maxTime = new Date(Math.max(...timestamps));
           periods.push({ start: minTime, end: maxTime });
-        }
-        break;
-        
-      case 'single':
-        const start = new Date(document.getElementById('singleStartDate').value);
-        const end = new Date(document.getElementById('singleEndDate').value);
-        periods.push({ start, end });
-        break;
-        
-      case 'daily':
-        const startTime = document.getElementById('dailyStartTime').value;
-        const endTime = document.getElementById('dailyEndTime').value;
-        const startDate = new Date(document.getElementById('dailyStartDate').value);
-        const endDate = new Date(document.getElementById('dailyEndDate').value);
-        
-        // Generate daily periods
-        for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
-          const dayStart = new Date(d);
-          const [startHour, startMin] = startTime.split(':');
-          dayStart.setHours(parseInt(startHour), parseInt(startMin), 0, 0);
-          
-          const dayEnd = new Date(d);
-          const [endHour, endMin] = endTime.split(':');
-          dayEnd.setHours(parseInt(endHour), parseInt(endMin), 0, 0);
-          
-          // Handle overnight periods
-          if (dayEnd <= dayStart) {
-            dayEnd.setDate(dayEnd.getDate() + 1);
-          }
-          
-          periods.push({ start: new Date(dayStart), end: new Date(dayEnd) });
         }
         break;
         
@@ -540,9 +770,9 @@ class MWATDDMAXCalculator {
     return filtered;
   }
 
-  performComplianceCalculations(data1, data2) {
-    // Combine and sort all temperature data
-    const allData = [...data1, ...data2].sort((a, b) => a.timestamp - b.timestamp);
+  performComplianceCalculations(filteredData) {
+    // Use the already merged and filtered data
+    const allData = filteredData.sort((a, b) => a.timestamp - b.timestamp);
     
     if (allData.length === 0) {
       throw new Error('No data found during discharge periods');
@@ -878,9 +1108,7 @@ Key Features:
 
 Discharge Pattern Options:
 • Continuous: All data included (assumes discharge throughout entire period)
-• Single Period: One specific start/end time range
-• Daily Recurring: Same hours each day over a date range
-• Custom Schedule: Multiple individual discharge periods
+• Custom Periods: Define specific discharge time ranges (can be single periods, daily patterns, or irregular schedules)
 
 Supported File Formats:
 • CSV files: Date/Time in column B, Temperature in column C (starting row 3)

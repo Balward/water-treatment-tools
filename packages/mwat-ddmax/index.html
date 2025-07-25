@@ -8,6 +8,8 @@
 
     <!-- External Library Dependencies -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
 
     <!-- Local Stylesheets -->
     <link rel="stylesheet" href="styles.css" />
@@ -115,6 +117,22 @@
         </div>
       </div>
 
+      <!-- Temperature Chart Section -->
+      <div class="chart-section" id="chartSection" style="display: none">
+        <div class="control-card">
+          <h3>📈 Combined Temperature Data</h3>
+          <div class="chart-container">
+            <canvas id="temperatureChart"></canvas>
+          </div>
+          <div class="chart-actions">
+            <button class="btn btn-large btn-gold" id="continueToConfigBtn" style="display: none">
+              <span>⚙️</span>
+              <span>Continue to Discharge Configuration</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
       <!-- Discharge Period Configuration -->
       <div class="discharge-section" id="dischargeSection" style="display: none">
         <div class="control-card">
@@ -154,10 +172,9 @@
             <div class="control-group">
               <label for="dischargePattern">Discharge Pattern:</label>
               <select id="dischargePattern">
+                <option value="">Select discharge pattern...</option>
                 <option value="continuous">Continuous Discharge</option>
-                <option value="single">Single Period</option>
-                <option value="daily">Daily Recurring</option>
-                <option value="custom">Custom Schedule</option>
+                <option value="custom">Custom Periods</option>
               </select>
             </div>
           </div>
@@ -171,44 +188,6 @@
             </p>
             <div class="continuous-note">
               <strong>Note:</strong> This option uses all available data from both sensor files for compliance calculations.
-            </div>
-          </div>
-
-          <!-- Single Period Configuration -->
-          <div class="discharge-config" id="singlePeriodConfig" style="display: none">
-            <h4>Single Discharge Period</h4>
-            <div class="period-controls">
-              <div class="control-group">
-                <label for="singleStartDate">Start Date & Time:</label>
-                <input type="datetime-local" id="singleStartDate" />
-              </div>
-              <div class="control-group">
-                <label for="singleEndDate">End Date & Time:</label>
-                <input type="datetime-local" id="singleEndDate" />
-              </div>
-            </div>
-          </div>
-
-          <!-- Daily Recurring Configuration -->
-          <div class="discharge-config" id="dailyRecurringConfig" style="display: none">
-            <h4>Daily Recurring Discharge</h4>
-            <div class="period-controls">
-              <div class="control-group">
-                <label for="dailyStartTime">Daily Start Time:</label>
-                <input type="time" id="dailyStartTime" value="06:00" />
-              </div>
-              <div class="control-group">
-                <label for="dailyEndTime">Daily End Time:</label>
-                <input type="time" id="dailyEndTime" value="18:00" />
-              </div>
-              <div class="control-group">
-                <label for="dailyStartDate">Period Start Date:</label>
-                <input type="date" id="dailyStartDate" />
-              </div>
-              <div class="control-group">
-                <label for="dailyEndDate">Period End Date:</label>
-                <input type="date" id="dailyEndDate" />
-              </div>
             </div>
           </div>
 
