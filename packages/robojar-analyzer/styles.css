@@ -104,12 +104,20 @@ body {
   background: rgba(255, 255, 255, 0.1);
   border: 2px solid rgba(255, 255, 255, 0.2);
   border-radius: 8px;
-  color: white;
-  text-decoration: none;
+  color: white !important;
+  text-decoration: none !important;
   font-weight: 600;
   font-size: 14px;
   transition: all 0.3s ease;
   backdrop-filter: blur(10px);
+}
+
+.nav-btn:visited {
+  color: white !important;
+}
+
+.nav-btn:active {
+  color: white !important;
 }
 
 .nav-btn:hover {
@@ -117,6 +125,8 @@ body {
   border-color: rgba(255, 255, 255, 0.4);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  color: white !important;
+  text-decoration: none !important;
 }
 
 .nav-icon {
