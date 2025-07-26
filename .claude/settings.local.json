@@ -6,7 +6,13 @@
       "Bash(mv:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(unzip:*)",
+      "Bash(python:*)",
+      "Bash(pip install:*)",
+      "Bash(powershell:*)",
+      "Bash(findstr:*)",
+      "Bash(grep:*)"
     ],
     "deny": []
   }
