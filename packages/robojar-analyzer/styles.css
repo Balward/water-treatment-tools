@@ -78,13 +78,13 @@ body {
   .tabs-header {
     flex-direction: column;
   }
-  
+
   .tab-button {
     text-align: left;
     border-bottom: 1px solid var(--border-gray);
     border-right: none;
   }
-  
+
   .tab-button.active {
     border-left: 3px solid var(--accent-gold);
     border-bottom: 1px solid var(--border-gray);
@@ -349,7 +349,6 @@ body {
   font-style: italic;
   text-align: center;
 }
-
 
 /* Basic Configuration Section */
 .basic-config {
@@ -781,7 +780,6 @@ button {
   align-items: center;
   gap: 8px;
 }
-
 
 .import-badge {
   display: inline-flex;
