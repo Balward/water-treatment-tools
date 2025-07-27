@@ -64,6 +64,54 @@ function closeNotification(closeButton) {
 
 document.getElementById("fileInput").addEventListener("change", handleFile);
 
+// Chart regeneration notification system
+let chartsGenerated = false;
+let regenerationNotificationShown = false;
+
+function showRegenerationNotification() {
+  if (chartsGenerated && !regenerationNotificationShown) {
+    showNotification(
+      "Chart settings changed. Click 'Generate Charts' to apply changes.",
+      "warning",
+      8000
+    );
+    regenerationNotificationShown = true;
+    
+    // Highlight the Generate Charts button
+    const generateBtn = document.getElementById("generateChartsHeader");
+    if (generateBtn) {
+      generateBtn.style.animation = "pulse 2s infinite";
+    }
+  }
+}
+
+function clearRegenerationNotification() {
+  regenerationNotificationShown = false;
+  const generateBtn = document.getElementById("generateChartsHeader");
+  if (generateBtn) {
+    generateBtn.style.animation = "";
+  }
+}
+
+// Add event listeners for chart configuration changes
+document.addEventListener("DOMContentLoaded", function() {
+  const chartConfigControls = [
+    "chartType",
+    "includeRPM", 
+    "enableForecast",
+    "polynomialOrder",
+    "forecastStart",
+    "forecastWindow"
+  ];
+  
+  chartConfigControls.forEach(controlId => {
+    const control = document.getElementById(controlId);
+    if (control) {
+      control.addEventListener("change", showRegenerationNotification);
+    }
+  });
+});
+
 // Global functions for modal control
 window.openMetricsHelp = function () {
   const modal = document.getElementById("metricsHelpModal");
@@ -144,7 +192,6 @@ window.generatePdfReport = function () {
   const includeStatistics =
     document.getElementById("includeStatistics").checked;
 
-  showNotification("Generating PDF report...", "info", 3000);
 
   // Close modal and generate PDF
   closePdfExportModal();
@@ -385,7 +432,7 @@ async function addSelectedCharts(pdf, yPosition, margin, contentWidth) {
             parameter: parameter,
             column: header,
             sheetName: sheetName,
-            title: `${header} Over Time - RoboJar Analysis`,
+            title: `${header} Over Time - RoboJar`,
           });
         }
       });
@@ -1199,6 +1246,15 @@ function processWorkbook(workbook) {
 
   // Show success notification for file upload
   showNotification("File loaded successfully!", "success");
+  
+  // Show warning to generate charts
+  showNotification("Click 'Generate Charts' to create visualizations!", "warning", 6000);
+  
+  // Make Generate Charts button pulse to indicate action needed
+  const generateBtn = document.getElementById("generateChartsHeader");
+  if (generateBtn) {
+    generateBtn.style.animation = "pulse 2s infinite";
+  }
 }
 
 function updateUI() {
@@ -1362,7 +1418,7 @@ function createCustomLegend(datasets, includeRPM) {
   }
 }
 
-function createLegendItem(dataset, datasetIndex, isRPM, isForecast) {
+function createLegendItem(dataset, datasetIndex, isRPM, isForecast, chartInstance) {
   const item = document.createElement("div");
   item.className = "legend-item";
   item.dataset.datasetIndex = datasetIndex;
@@ -1391,10 +1447,13 @@ function createLegendItem(dataset, datasetIndex, isRPM, isForecast) {
 
   item.addEventListener("click", function () {
     const index = parseInt(this.dataset.datasetIndex);
-    const meta = currentChart.getDatasetMeta(index);
-    meta.hidden = !meta.hidden;
-    this.classList.toggle("hidden");
-    currentChart.update();
+    const targetChart = chartInstance || currentChart;
+    if (targetChart) {
+      const meta = targetChart.getDatasetMeta(index);
+      meta.hidden = !meta.hidden;
+      this.classList.toggle("hidden");
+      targetChart.update();
+    }
   });
 
   return item;
@@ -1432,7 +1491,7 @@ function exportPNG() {
   ctx.fillStyle = "#333";
   ctx.font = "bold 24px Segoe UI";
   ctx.textAlign = "center";
-  const title = `${selectedColumn} Over Time - RoboJar Analysis`;
+  const title = `${selectedColumn} Over Time - RoboJar`;
   ctx.fillText(title, tempCanvas.width / 2, 40);
 
   const canvasId = activeTabId.replace("-tab", "Chart");
@@ -1930,14 +1989,10 @@ function updateHeaderActions() {
 
   // Update header buttons
   const generateBtn = document.getElementById("generateChartsHeader");
-  const pngBtn = document.getElementById("exportPngHeader");
   const pdfBtn = document.getElementById("exportPdfHeader");
 
   if (generateBtn) {
     generateBtn.disabled = !hasData;
-  }
-  if (pngBtn) {
-    pngBtn.disabled = !hasPng;
   }
   if (pdfBtn) {
     pdfBtn.disabled = !hasPng;
@@ -1951,7 +2006,6 @@ document.addEventListener("DOMContentLoaded", function () {
 // Load test file function
 async function loadTestFile() {
   try {
-    showNotification("Loading test file...", "info");
 
     // Fetch the test Excel file from data folder
     const response = await fetch(
@@ -2027,7 +2081,6 @@ async function generateAllCharts() {
       return;
     }
 
-    showNotification(`Generating ${availableParams.length} charts...`, "info");
 
     // Generate chart for each parameter with small delays to prevent crashes
     for (let i = 0; i < availableParams.length; i++) {
@@ -2078,6 +2131,10 @@ async function generateAllCharts() {
       generateButton.innerHTML = "<span>📊</span><span>Generate Charts</span>";
     }
 
+    // Mark charts as generated and clear regeneration notification
+    chartsGenerated = true;
+    clearRegenerationNotification();
+    
     showNotification("All charts generated successfully!", "success");
   } catch (error) {
     console.error("Error generating charts:", error);
@@ -2478,7 +2535,7 @@ async function generateChartForParameter(
   // Update title and legend for this parameter
   document.getElementById(
     `${parameterId}Title`
-  ).textContent = `${columnName} Analysis`;
+  ).textContent = `${columnName}`;
   updateCustomLegendForParameter(parameterId, datasets);
 
   // Generate statistics for this parameter using per-sheet data
@@ -2505,16 +2562,19 @@ function updateCustomLegendForParameter(parameterId, datasets) {
   const legendElement = document.getElementById(`${parameterId}Legend`);
   if (!legendElement) return;
 
-  legendElement.innerHTML = datasets
-    .map(
-      (dataset) => `
-    <div class="legend-item">
-      <div class="legend-marker" style="background-color: ${dataset.borderColor}; border-color: ${dataset.borderColor}"></div>
-      <span class="legend-text">${dataset.label}</span>
-    </div>
-  `
-    )
-    .join("");
+  // Clear existing legend
+  legendElement.innerHTML = "";
+  
+  // Get the chart instance for this parameter
+  const chartInstance = window[`${parameterId}ChartInstance`];
+  
+  // Create clickable legend items
+  datasets.forEach((dataset, index) => {
+    const isRPM = dataset.label.includes("RPM");
+    const isForecast = dataset.label.includes("Forecast");
+    const legendItem = createLegendItem(dataset, index, isRPM, isForecast, chartInstance);
+    legendElement.appendChild(legendItem);
+  });
 }
 
 // Display forecast metrics for a specific parameter

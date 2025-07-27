@@ -25,16 +25,16 @@
           </p>
         </div>
         <div class="header-actions">
-          <a
-            href="../../"
-            class="action-btn btn-nav"
+          <button
+            class="action-btn"
+            onclick="window.location.href='../../'"
             title="Return to Dashboard"
           >
-            <span class="nav-icon">🏠</span>
-            <span class="nav-text">Dashboard</span>
-          </a>
+            <span>🏠</span>
+            <span>Dashboard</span>
+          </button>
           <button
-            class="action-btn btn-gold"
+            class="action-btn"
             id="generateChartsHeader"
             onclick="generateAllCharts()"
             disabled
@@ -43,22 +43,21 @@
             <span>Generate Charts</span>
           </button>
           <button
-            class="action-btn btn-gray"
-            id="exportPngHeader"
-            onclick="exportChart('png')"
-            disabled
-          >
-            <span>📸</span>
-            <span>Export PNG</span>
-          </button>
-          <button
-            class="action-btn btn-gray"
+            class="action-btn"
             id="exportPdfHeader"
             onclick="generatePdfReport()"
             disabled
           >
             <span>📄</span>
             <span>Export PDF</span>
+          </button>
+          <button
+            class="action-btn btn-help"
+            onclick="openStatsHelp()"
+            title="View Help Documentation"
+          >
+            <span>ℹ️</span>
+            <span>Help</span>
           </button>
         </div>
       </div>
@@ -71,28 +70,28 @@
           <ol class="instructions-list">
             <li>
               <strong>Upload:</strong> Choose a RoboJar Excel report file
-              (.xlsx/.xls)
+              (.xlsx/.xls) or load test file for demo
             </li>
             <li>
-              <strong>Select:</strong> Pick a data column to analyze from the
-              dropdown
+              <strong>Generate:</strong> Click "Generate Charts" to create
+              visualizations for all parameters automatically
             </li>
             <li>
-              <strong>Configure:</strong> Adjust chart settings, forecasting
-              options, and statistical filters
+              <strong>Navigate:</strong> Use the tabs (Mean Diameter, Mean
+              Volume, Particle Count, Concentration) to view different analyses
             </li>
             <li>
-              <strong>Generate:</strong> Click "Generate Chart" to visualize
-              your data
+              <strong>Configure:</strong> Adjust forecasting methods, time
+              windows, and data filtering options as needed
             </li>
             <li>
-              <strong>Export:</strong> Save charts as PNG or copy statistics for
-              WIMS reporting
+              <strong>Export:</strong> Generate comprehensive PDF reports with
+              all data
             </li>
           </ol>
           <p class="instructions-tip">
-            💡 <strong>Tip:</strong> Use the "ℹ️" help buttons for detailed
-            explanations of statistics and forecast metrics.
+            💡 <strong>Tip:</strong> Use the "ℹ️" Help button in the header for
+            detailed explanations of statistics and forecast metrics.
           </p>
 
           <div class="instructions-actions">
@@ -103,13 +102,13 @@
                 class="file-input"
                 accept=".xls,.xlsx"
               />
-              <label for="fileInput" class="btn btn-large btn-teal">
+              <button type="button" class="btn btn-large" onclick="document.getElementById('fileInput').click()">
                 📁 Import RoboJar Excel File
-              </label>
+              </button>
             </div>
             <button
               id="loadTestFile"
-              class="btn btn-large btn-gold"
+              class="btn btn-large"
               onclick="loadTestFile()"
             >
               🧪 Load Test File
@@ -123,7 +122,7 @@
 
       <!-- Data Summary Section - Moved up for better UX flow -->
       <div class="info-panel" id="infoPanel" style="display: none">
-        <div class="sheet-info" id="sheetInfo"></div>
+        <div class="sheet-info-card" id="sheetInfo"></div>
       </div>
 
       <!-- Basic Chart Configuration -->
@@ -151,7 +150,7 @@
           </div>
 
           <div class="forecast-section">
-            <h4 class="config-subtitle">🔮 Forecasting Options</h4>
+            <h3>🔮 Forecasting Options</h3>
 
             <div class="forecast-controls">
               <div class="control-group">
@@ -237,21 +236,21 @@
             onclick="switchTab('mean-volume')"
             data-tab="mean-volume"
           >
-            🔢 Mean Volume
+            📦 Mean Volume
           </button>
           <button
             class="tab-button"
             onclick="switchTab('particle-count')"
             data-tab="particle-count"
           >
-            🔴 Particle Count
+            🧮 Particle Count
           </button>
           <button
             class="tab-button"
             onclick="switchTab('concentration')"
             data-tab="concentration"
           >
-            💧 Concentration
+            🧪 Concentration
           </button>
         </div>
 
@@ -267,17 +266,7 @@
 
           <div class="statistics-section">
             <div class="statistics-card">
-              <h3>
-                📊 Mean Diameter Statistics
-                <button
-                  class="help-icon"
-                  onclick="openStatsHelp()"
-                  title="Learn about these statistics"
-                  type="button"
-                >
-                  ℹ️
-                </button>
-              </h3>
+              <h3>📊 Mean Diameter Statistics</h3>
               <div class="stats-controls">
                 <div class="control-group">
                   <label for="timeWindow">Analysis Time Window:</label>
@@ -326,17 +315,7 @@
             </div>
 
             <div class="metrics-card">
-              <h3>
-                📈 Forecast Quality Metrics
-                <button
-                  class="help-icon"
-                  onclick="openMetricsHelp()"
-                  title="Learn about these metrics"
-                  type="button"
-                >
-                  ℹ️
-                </button>
-              </h3>
+              <h3>📈 Forecast Quality Metrics</h3>
               <div class="metrics-grid" id="meanDiameterMetrics"></div>
               <div
                 class="metrics-summary"
@@ -429,10 +408,136 @@
         <button class="modal-close-x" onclick="closeStatsHelp()" title="Close">
           &times;
         </button>
-        <h3>📊 Understanding Data Statistics</h3>
+        <h3>📖 RoboJar Analyzer - Complete User Guide</h3>
 
         <div class="help-metric">
-          <h4>Basic Statistics</h4>
+          <h4>🚀 Getting Started</h4>
+          <p>
+            <strong>File Upload:</strong> Choose a RoboJar Excel report file
+            (.xlsx/.xls) using the Import button, or click "Load Test File" to
+            try the analyzer with sample data.
+          </p>
+          <p>
+            <strong>Generate Charts:</strong> Click "Generate Charts" in the
+            header to automatically create visualizations for all four
+            parameters (Mean Diameter, Mean Volume, Particle Count,
+            Concentration).
+          </p>
+          <p>
+            <strong>Navigate Tabs:</strong> Use the tabs to switch between
+            different parameter analyses. Each tab shows charts, statistics, and
+            forecast metrics for that specific measurement.
+          </p>
+        </div>
+
+        <div class="help-metric">
+          <h4>🤖 Understanding RoboJar Data</h4>
+          <p>
+            <strong>Mean Diameter:</strong> Average particle size, typically
+            measured in micrometers (μm). Key indicator of flocculation
+            effectiveness.
+          </p>
+          <p>
+            <strong>Mean Volume:</strong> Average volume of particles. Often
+            correlates with settling characteristics and treatment efficiency.
+          </p>
+          <p>
+            <strong>Particle Count:</strong> Number of particles detected per
+            unit volume. Higher counts may indicate poor coagulation.
+          </p>
+          <p>
+            <strong>Concentration:</strong> Total particle concentration, often
+            expressed as volume percentage. Critical for understanding solids
+            loading.
+          </p>
+        </div>
+
+        <div class="help-metric">
+          <h4>📊 Chart Configuration</h4>
+          <p>
+            <strong>Line Chart:</strong> Shows trends over time with connected
+            data points. Best for viewing continuous changes and patterns.
+          </p>
+          <p>
+            <strong>Scatter Plot:</strong> Shows individual data points without
+            connections. Better for identifying outliers and data distribution.
+          </p>
+          <p>
+            <strong>Secondary Axis (RPM):</strong> Displays paddle RPM data
+            alongside primary measurements to correlate mixing intensity with
+            particle behavior.
+          </p>
+        </div>
+
+        <div class="help-metric">
+          <h4>🔮 Forecasting Methods</h4>
+          <p>
+            <strong>Adaptive:</strong> Best for data with trend changes.
+            Automatically adjusts polynomial order based on data
+            characteristics. Recommended for most analyses.
+          </p>
+          <p>
+            <strong>Windowed:</strong> Uses a sliding window approach focusing
+            on recent stable periods. Good for systems with changing operating
+            conditions.
+          </p>
+          <p>
+            <strong>Weighted:</strong> Emphasizes recent data points gradually.
+            Useful when recent measurements are more representative of current
+            conditions.
+          </p>
+          <p>
+            <strong>Simple:</strong> Uses all available data with standard
+            polynomial regression. Best for very stable systems with consistent
+            trends.
+          </p>
+          <p>
+            <strong>Forecast Start Time:</strong> Controls when forecasting
+            begins (typically 10-20 minutes). Earlier start provides more
+            prediction data but may be less accurate.
+          </p>
+          <p>
+            <strong>Forecast Window:</strong> Amount of historical data used for
+            prediction. Larger windows provide stability but may miss recent
+            changes.
+          </p>
+        </div>
+
+        <div class="help-metric">
+          <h4>⏰ Time Window Selection</h4>
+          <p><strong>Full Duration:</strong> Uses all available data points.</p>
+          <p>
+            <strong>Steady State:</strong> Excludes first 5 minutes to avoid
+            startup transients.
+          </p>
+          <p>
+            <strong>Final 10 Minutes:</strong> Uses only the last 10 minutes
+            when system should be most stable.
+          </p>
+          <p>
+            <strong>Custom Range:</strong> Allows you to specify exact time
+            bounds for analysis.
+          </p>
+        </div>
+
+        <div class="help-metric">
+          <h4>🧹 Filtering Options</h4>
+          <p>
+            <strong>Remove Outliers (IQR Method):</strong> Removes values beyond
+            1.5 × IQR from quartiles. Good for eliminating sensor spikes.
+          </p>
+          <p>
+            <strong>Smooth Data (Moving Average):</strong> Applies 5-point
+            moving average to reduce noise while preserving trends.
+          </p>
+          <p>
+            <strong>Both:</strong> First removes outliers, then smooths the
+            remaining data for maximum noise reduction.
+          </p>
+        </div>
+
+        <div class="help-metric">
+          <h4>📊 Basic Statistics</h4>
           <p>
             <strong>Min/Max:</strong> The lowest and highest values in your
             dataset. Useful for understanding the operational range.
@@ -452,7 +557,7 @@
         </div>
 
         <div class="help-metric">
-          <h4>Advanced Statistics</h4>
+          <h4>📈 Advanced Statistics</h4>
           <p>
             <strong>Coefficient of Variation (CV):</strong> Standard deviation
             divided by mean, expressed as percentage. Useful for comparing
@@ -469,7 +574,7 @@
         </div>
 
         <div class="help-metric">
-          <h4>Noise Assessment</h4>
+          <h4>🔊 Noise Assessment</h4>
           <p>
             <strong>Noise Level:</strong> Estimated using coefficient of
             variation and outlier detection:
@@ -482,62 +587,11 @@
         </div>
 
         <div class="help-metric">
-          <h4>Filtering Options</h4>
+          <h4>🎯 Quality Metrics (R², RMSE, MAE, MAPE)</h4>
           <p>
-            <strong>Remove Outliers (IQR Method):</strong> Removes values beyond
-            1.5 × IQR from quartiles. Good for eliminating sensor spikes.
-          </p>
-          <p>
-            <strong>Smooth Data (Moving Average):</strong> Applies 5-point
-            moving average to reduce noise while preserving trends.
-          </p>
-          <p>
-            <strong>Both:</strong> First removes outliers, then smooths the
-            remaining data for maximum noise reduction.
-          </p>
-        </div>
-
-        <div class="help-metric">
-          <h4>Time Window Selection</h4>
-          <p><strong>Full Duration:</strong> Uses all available data points.</p>
-          <p>
-            <strong>Steady State:</strong> Excludes first 5 minutes to avoid
-            startup transients.
-          </p>
-          <p>
-            <strong>Final 10 Minutes:</strong> Uses only the last 10 minutes
-            when system should be most stable.
-          </p>
-          <p>
-            <strong>Custom Range:</strong> Allows you to specify exact time
-            bounds for analysis.
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Metrics Help Modal -->
-    <div id="metricsHelpModal" class="help-modal" style="display: none">
-      <div class="help-modal-content">
-        <button
-          class="modal-close-x"
-          onclick="closeMetricsHelp()"
-          title="Close"
-        >
-          &times;
-        </button>
-        <h3>📊 Understanding Forecast Quality Metrics</h3>
-
-        <div class="help-metric">
-          <h4>R² (R-Squared / Coefficient of Determination)</h4>
-          <p>
-            <strong>What it measures:</strong> How well your polynomial model
-            explains the variance in your data. R² of 1.0 means perfect fit, 0.0
-            means no explanatory power.
-          </p>
-          <p>
-            <strong>Formula:</strong> R² = 1 - (Sum of Squared Residuals / Total
-            Sum of Squares)
+            <strong>R² (Coefficient of Determination):</strong> Measures how
+            well the forecast model explains data variance. Values closer to 1.0
+            indicate better fits.
           </p>
           <div class="help-ranges">
             <div class="help-range excellent">≥ 0.90 Excellent</div>
@@ -545,64 +599,41 @@
             <div class="help-range fair">0.50-0.69 Fair</div>
             <div class="help-range poor">&lt; 0.50 Poor</div>
           </div>
-        </div>
-
-        <div class="help-metric">
-          <h4>RMSE (Root Mean Square Error)</h4>
           <p>
-            <strong>What it measures:</strong> Average magnitude of prediction
-            errors in the same units as your data. Lower values indicate better
-            predictions.
+            <strong>RMSE (Root Mean Square Error):</strong> Average prediction
+            error in data units. Lower values indicate better accuracy.
           </p>
-          <p><strong>Formula:</strong> RMSE = √(Σ(predicted - actual)² / n)</p>
           <p>
-            <strong>Interpretation:</strong> If RMSE = 5 and your data ranges
-            0-100, predictions are typically within ±5 units of actual values.
+            <strong>MAE (Mean Absolute Error):</strong> Average absolute
+            prediction error. Less sensitive to outliers than RMSE.
           </p>
-        </div>
-
-        <div class="help-metric">
-          <h4>MAE (Mean Absolute Error)</h4>
           <p>
-            <strong>What it measures:</strong> Average absolute difference
-            between predicted and actual values. Less sensitive to outliers than
-            RMSE.
-          </p>
-          <p><strong>Formula:</strong> MAE = Σ|predicted - actual| / n</p>
-          <p>
-            <strong>Comparison:</strong> If MAE &lt; RMSE, you have some large
-            errors (outliers). If they're similar, errors are consistent.
+            <strong>MAPE (Mean Absolute Percentage Error):</strong>
+            Percentage-based error metric, easy to interpret regardless of data
+            scale.
           </p>
         </div>
 
         <div class="help-metric">
-          <h4>MAPE (Mean Absolute Percentage Error)</h4>
+          <h4>💡 Best Practices</h4>
           <p>
-            <strong>What it measures:</strong> Average percentage error, making
-            it easy to understand regardless of data scale.
+            <strong>Data Quality:</strong> Review raw data for sensor errors or
+            unusual spikes before analysis. Use filtering options to clean noisy
+            data.
           </p>
           <p>
-            <strong>Formula:</strong> MAPE = (Σ|predicted - actual| / |actual|)
-            / n × 100%
+            <strong>Steady State Analysis:</strong> Focus on steady state
+            periods (after 5-10 minutes) for most accurate performance
+            assessments.
           </p>
-          <div class="help-ranges">
-            <div class="help-range excellent">≤ 10% Excellent</div>
-            <div class="help-range good">10-20% Good</div>
-            <div class="help-range fair">20-30% Fair</div>
-            <div class="help-range poor">&gt; 30% Poor</div>
-          </div>
-        </div>
-
-        <div class="help-metric">
-          <h4>💡 Improving Your Forecast Quality</h4>
           <p>
-            <strong>Low R² or High Errors?</strong> Try different polynomial
-            orders or forecasting methods:
+            <strong>Forecasting Tips:</strong> Start with Adaptive method and
+            adjust if needed. Use forecast metrics to validate model quality.
           </p>
-          <p>• <strong>Adaptive:</strong> Best for data with trend changes</p>
-          <p>• <strong>Windowed:</strong> Focus on recent stable periods</p>
-          <p>• <strong>Weighted:</strong> Emphasize recent data gradually</p>
-          <p>• <strong>Simple:</strong> Use all available data</p>
+          <p>
+            <strong>Reporting:</strong> Include both raw data trends and
+            filtered statistics in reports. Document any data filtering applied.
+          </p>
         </div>
       </div>
     </div>

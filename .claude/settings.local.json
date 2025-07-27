@@ -12,7 +12,12 @@
       "Bash(pip install:*)",
       "Bash(powershell:*)",
       "Bash(findstr:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(move:*)",
+      "Bash(cmd /c 'move \"\"C:\\Users\\Blain\\Downloads\\004BDC-051625 2025-06-24 13_38_24 MDT.csv\"\" \"\"C:\\Users\\Blain\\Downloads\\01_Data_Files\\\"\"')",
+      "Bash(cmd /c 'move \"\"C:\\Users\\Blain\\Downloads\\Cleaned_Data.xlsx\"\" \"\"C:\\Users\\Blain\\Downloads\\01_Data_Files\\\"\"')",
+      "Bash(cmd /c 'move \"\"C:\\Users\\Blain\\Downloads\\DMR2025(1).xlsx\"\" \"\"C:\\Users\\Blain\\Downloads\\01_Data_Files\\\"\"')",
+      "Bash(cmd /c 'move \"\"C:\\Users\\Blain\\Downloads\\DMR2025.xlsx\"\" \"\"C:\\Users\\Blain\\Downloads\\01_Data_Files\\\"\"')"
     ],
     "deny": []
   }

@@ -21,16 +21,33 @@ body {
   box-sizing: border-box;
 }
 
+/* Animation for chart regeneration notification */
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 193, 7, 1.0);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 0 15px rgba(255, 193, 7, 0.3);
+    transform: scale(1.05);
+  }
+  100% {
+    box-shadow: 0 0 0 20px rgba(255, 193, 7, 0);
+    transform: scale(1);
+  }
+}
+
 * {
   box-sizing: border-box;
 }
 
 /* Tabbed Interface Styles */
 .tabbed-charts-container {
-  margin: 20px;
+  margin: 20px 30px;
   background: white;
+  border: 2px solid #7f95b3;
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(127, 149, 179, 0.15);
   overflow: hidden;
 }
 
@@ -126,7 +143,6 @@ body {
     gap: 10px;
   }
 
-  .action-btn .nav-text,
   .action-btn span:nth-child(2) {
     display: none;
   }
@@ -191,37 +207,37 @@ body {
   text-decoration: none !important;
   font-weight: 600;
   font-size: 14px;
+  line-height: 1.2;
+  min-height: 44px;
+  box-sizing: border-box;
   transition: all 0.3s ease;
   backdrop-filter: blur(10px);
   cursor: pointer;
   white-space: nowrap;
 }
 
-.action-btn.btn-nav {
-  background: rgba(255, 255, 255, 0.1);
+/* Default header action button (Dashboard, Generate Charts, Export PDF) */
+.action-btn {
+  background: #8fa3b0;
+  border-color: #7e929f;
 }
 
-.action-btn.btn-gold {
-  background: var(--accent-gold);
-  border-color: var(--accent-gold);
+/* Help button exception - keep blue */
+.action-btn.btn-help {
+  background: #6b7bc7;
+  border-color: #5d6fb6;
 }
 
-.action-btn.btn-gray {
-  background: rgba(255, 255, 255, 0.1);
-}
-
+/* Default header action button hover */
 .action-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
-  border-color: rgba(255, 255, 255, 0.4);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  color: white !important;
-  text-decoration: none !important;
+  background: #7e929f;
+  border-color: #6d7f8a;
 }
 
-.action-btn.btn-gold:hover {
-  background: #b8985d;
-  border-color: #b8985d;
+/* Help button hover exception */
+.action-btn.btn-help:hover {
+  background: #5d6fb6;
+  border-color: #5163a5;
 }
 
 .action-btn:disabled {
@@ -231,46 +247,7 @@ body {
   box-shadow: none;
 }
 
-.nav-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 16px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-  color: white !important;
-  text-decoration: none !important;
-  font-weight: 600;
-  font-size: 14px;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
-}
 
-.nav-btn:visited {
-  color: white !important;
-}
-
-.nav-btn:active {
-  color: white !important;
-}
-
-.nav-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
-  border-color: rgba(255, 255, 255, 0.4);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  color: white !important;
-  text-decoration: none !important;
-}
-
-.nav-icon {
-  font-size: 16px;
-}
-
-.nav-text {
-  font-size: 14px;
-}
 
 .header h1 {
   margin: 0 0 5px 0;
@@ -356,19 +333,6 @@ body {
   background: #f5f7fa;
 }
 
-.generate-button-section {
-  text-align: center;
-  margin-top: 25px;
-  padding-top: 20px;
-  border-top: 1px solid #e8ecef;
-}
-
-.generate-hint {
-  margin: 10px 0 0 0;
-  color: #666;
-  font-size: 14px;
-  font-style: italic;
-}
 
 /* Statistics Section */
 .statistics-section {
@@ -390,7 +354,7 @@ body {
 .btn {
   display: inline-block;
   padding: 12px 25px;
-  border: none;
+  border: 2px solid transparent;
   border-radius: 6px;
   cursor: pointer;
   font-weight: 600;
@@ -414,49 +378,24 @@ body {
 .btn-large {
   padding: 15px 30px;
   font-size: 16px;
+  font-weight: 600;
 }
 
 .btn-large:hover {
   transform: translateY(-2px);
 }
 
-.btn-teal {
-  background: var(--secondary-teal);
+/* Large content buttons (Import RoboJar, Load Test File) */
+.btn {
+  background: #5a7a95;
+  border-color: #4d6b82;
   color: white;
 }
 
-.btn-teal:hover {
-  background: #6a9e9e;
-  box-shadow: 0 4px 12px rgba(127, 179, 179, 0.4);
-}
-
-.btn-gold {
-  background: var(--accent-gold);
-  color: white;
-}
-
-.btn-gold:hover {
-  background: #b8985d;
-  box-shadow: 0 4px 12px rgba(201, 169, 110, 0.4);
-}
-
-.btn-green {
-  background: var(--success-green);
-  color: white;
-}
-
-.btn-green:hover {
-  background: #5a8669;
-}
-
-.btn-gray {
-  background: var(--background-gray);
-  color: white;
-}
-
-.btn-gray:hover {
-  background: #7e929f;
-  box-shadow: 0 4px 12px rgba(143, 163, 176, 0.4);
+.btn:hover {
+  background: #4d6b82;
+  border-color: #425c6f;
+  box-shadow: 0 4px 12px rgba(90, 122, 149, 0.4);
 }
 
 .controls {
@@ -494,15 +433,6 @@ body {
   border-top: 1px solid #e8ecef;
 }
 
-.config-subtitle {
-  margin: 0 0 15px 0;
-  color: #7f95b3;
-  font-size: 16px;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
 
 .control-card-controls {
   display: flex;
@@ -512,24 +442,6 @@ body {
   flex-wrap: wrap;
 }
 
-.forecast-card {
-  background: white;
-  border: 2px solid #7f95b3;
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 4px 12px rgba(127, 179, 179, 0.15);
-  width: 100%;
-}
-
-.forecast-card h3 {
-  margin: 0 0 15px 0;
-  color: #5a7a95;
-  font-size: 18px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
 
 .forecast-controls {
   display: flex;
@@ -541,10 +453,7 @@ body {
 /* New styles for statistics card */
 .statistics-card {
   background: white;
-  border: 2px solid #7f95b3;
-  border-radius: 8px;
   padding: 20px;
-  box-shadow: 0 4px 12px rgba(107, 158, 127, 0.15);
   width: 100%;
   display: block;
 }
@@ -566,7 +475,7 @@ body {
   align-items: center;
   flex-wrap: wrap;
   margin-bottom: 20px;
-  padding: 15px;
+  padding: 12px;
   background: #f8f9fa;
   border-radius: 6px;
 }
@@ -580,7 +489,7 @@ body {
 
 .stats-table th,
 .stats-table td {
-  padding: 12px;
+  padding: 8px 12px;
   text-align: left;
   border-bottom: 1px solid #e9ecef;
 }
@@ -689,7 +598,7 @@ body {
 select,
 button {
   padding: 8px 15px;
-  border: 1px solid #d4d8dd;
+  border: 2px solid #d4d8dd;
   border-radius: 4px;
   font-size: 14px;
 }
@@ -698,11 +607,8 @@ button {
   padding: 40px 40px 60px 40px;
   position: relative;
   height: 650px;
-  margin: 20px 30px;
+  margin: 20px 0;
   background: white;
-  border: 2px solid #7f95b3;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(143, 163, 176, 0.15);
 }
 
 .chart-title {
@@ -781,6 +687,16 @@ button {
   gap: 8px;
 }
 
+.sheet-info-card {
+  background: white;
+  border: 2px solid #7f95b3;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(127, 149, 179, 0.15);
+  width: 100%;
+  margin: 0 auto;
+}
+
 .import-badge {
   display: inline-flex;
   align-items: center;
@@ -806,10 +722,7 @@ button {
 
 .metrics-card {
   background: white;
-  border: 2px solid #7f95b3;
-  border-radius: 8px;
-  padding: 15px;
-  box-shadow: 0 4px 12px rgba(153, 102, 255, 0.15);
+  padding: 20px;
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
@@ -1050,20 +963,6 @@ button {
   color: #721c24;
 }
 
-.help-close {
-  float: right;
-  background: #6c757d;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  margin-top: 20px;
-}
-
-.help-close:hover {
-  background: #5a6268;
-}
 
 /* Notification System */
 .notification-container {
@@ -1143,67 +1042,7 @@ button {
   opacity: 1;
 }
 
-.floating-action-bar {
-  position: fixed;
-  bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: white;
-  border: 2px solid #7f95b3;
-  border-radius: 12px;
-  padding: 12px 20px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-  display: flex;
-  gap: 20px;
-  align-items: center;
-  z-index: 1000;
-  backdrop-filter: blur(10px);
-  transition: all 0.3s ease;
-}
 
-.floating-action-bar:hover {
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
-}
-
-.floating-action-bar .btn {
-  padding: 10px 16px;
-  border-radius: 8px;
-  font-size: 14px;
-  white-space: nowrap;
-  min-width: 120px;
-}
-
-.floating-action-bar .btn:disabled {
-  opacity: 0.6;
-}
-
-/* Add some bottom padding to the container so content doesn't hide behind the floating bar */
-.container {
-  padding-bottom: 100px;
-}
-
-@media (max-width: 768px) {
-  .floating-action-bar {
-    bottom: 10px;
-    left: 10px;
-    right: 10px;
-    transform: none;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
-    padding: 12px 15px;
-  }
-
-  .floating-action-bar .btn {
-    flex: 1;
-    min-width: 120px;
-    justify-content: center;
-  }
-
-  .action-separator {
-    display: none;
-  }
-}
 
 /* PDF Export Modal Styling */
 .pdf-export-section {

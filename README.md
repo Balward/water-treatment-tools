@@ -22,7 +22,21 @@ A comprehensive collection of data analysis and visualization tools for water tr
 - **Advanced Forecasting**: Multiple algorithms (Adaptive, Windowed, Weighted, Simple polynomial regression)
 - **Export Capabilities**: PNG charts and comprehensive PDF reports
 - **Quality Metrics**: R², RMSE, MAE, MAPE for forecast validation
+- **Help System**: Built-in modal help for statistics and forecast metrics explanations
+- **Time Window Controls**: Full duration, steady state, final 10 minutes, or custom time ranges
+- **Data Filtering**: Remove outliers (IQR method) and smooth data with moving averages
+- **Header Action Bar**: Quick access buttons for chart generation and export functions
+- **Test File Support**: Load sample data for testing and demonstrations
+- **Notification System**: User-friendly alerts and status messages
 - **Responsive Design**: Works on desktop and mobile devices
+
+**Usage Instructions:**
+1. **Upload File**: Import RoboJar Excel report (.xlsx/.xls) or load test file
+2. **Generate Charts**: Click "Generate Charts" to create visualizations for all parameters
+3. **Navigate Tabs**: Switch between Mean Diameter, Mean Volume, Particle Count, and Concentration
+4. **Configure Analysis**: Adjust time windows, forecasting methods, and filtering options
+5. **View Statistics**: Comprehensive statistics with help tooltips for understanding metrics
+6. **Export Results**: Save individual PNG charts or generate comprehensive PDF reports
 
 **Recent Updates:**
 - ✅ Redesigned UI with tabbed interface for better workflow
@@ -30,6 +44,8 @@ A comprehensive collection of data analysis and visualization tools for water tr
 - ✅ Header action buttons for streamlined operations
 - ✅ Improved data visualization and statistics display
 - ✅ Test file loading functionality for quick demos
+- ✅ Comprehensive help modals for statistics and forecast metrics
+- ✅ Advanced time window and filtering controls
 
 ### 💧 Dose Predictor (`packages/dose-predictor/`)
 **Intelligent chemical dosing calculator for water treatment**
