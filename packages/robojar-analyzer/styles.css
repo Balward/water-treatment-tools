@@ -15,7 +15,7 @@
 body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   margin: 0;
-  padding: 20px;
+  padding: 0;
   background: var(--background-gray);
   min-height: 100vh;
   box-sizing: border-box;
@@ -25,10 +25,76 @@ body {
   box-sizing: border-box;
 }
 
+/* Tabbed Interface Styles */
+.tabbed-charts-container {
+  margin: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.tabs-header {
+  display: flex;
+  background: var(--light-gray);
+  border-bottom: 2px solid var(--border-gray);
+}
+
+.tab-button {
+  flex: 1;
+  padding: 15px 20px;
+  background: transparent;
+  border: none;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--primary-blue);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-bottom: 3px solid transparent;
+}
+
+.tab-button:hover {
+  background: rgba(90, 122, 149, 0.1);
+}
+
+.tab-button.active {
+  background: white;
+  border-bottom-color: var(--accent-gold);
+  color: var(--primary-blue);
+  font-weight: 600;
+}
+
+.tab-content {
+  display: none;
+  padding: 20px;
+  background: white;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .tabs-header {
+    flex-direction: column;
+  }
+  
+  .tab-button {
+    text-align: left;
+    border-bottom: 1px solid var(--border-gray);
+    border-right: none;
+  }
+  
+  .tab-button.active {
+    border-left: 3px solid var(--accent-gold);
+    border-bottom: 1px solid var(--border-gray);
+  }
+}
+
 .container {
   max-width: 1200px;
   width: 100%;
-  margin: 0 auto;
+  margin: 20px auto;
   background: #f5f7fa;
   border-radius: 8px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
@@ -36,13 +102,10 @@ body {
 }
 
 @media (max-width: 768px) {
-  body {
-    padding: 10px;
-  }
-
   .container {
     width: calc(100vw - 20px);
     max-width: none;
+    margin: 10px auto;
   }
 
   .header-content {
@@ -53,22 +116,36 @@ body {
 
   .header-main {
     order: 1;
+    text-align: center;
   }
 
-  .header-nav {
+  .header-actions {
     order: 2;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
   }
 
-  .nav-btn .nav-text {
+  .action-btn .nav-text,
+  .action-btn span:nth-child(2) {
     display: none;
   }
 
-  .nav-btn {
+  .action-btn {
     padding: 10px;
-    border-radius: 50%;
     min-width: 40px;
     min-height: 40px;
     justify-content: center;
+  }
+
+  .instructions-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .instructions-actions .btn {
+    width: 100%;
+    text-align: center;
   }
 }
 
@@ -76,25 +153,82 @@ body {
   background: #5a7a95;
   color: white;
   padding: 20px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .header-content {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   max-width: 1200px;
   margin: 0 auto;
+  gap: 20px;
 }
 
 .header-main {
-  text-align: center;
-  width: 100%;
+  text-align: left;
+  flex: 1;
 }
 
-.header-nav {
+.header-actions {
   display: flex;
-  justify-content: center;
-  margin-top: 15px;
+  gap: 15px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  color: white !important;
+  text-decoration: none !important;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.action-btn.btn-nav {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.action-btn.btn-gold {
+  background: var(--accent-gold);
+  border-color: var(--accent-gold);
+}
+
+.action-btn.btn-gray {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.action-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  color: white !important;
+  text-decoration: none !important;
+}
+
+.action-btn.btn-gold:hover {
+  background: #b8985d;
+  border-color: #b8985d;
+}
+
+.action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 .nav-btn {
@@ -161,7 +295,7 @@ body {
   border-radius: 8px;
   padding: 20px;
   box-shadow: 0 4px 12px rgba(127, 179, 179, 0.15);
-  max-width: 800px;
+  width: 100%;
   margin: 0 auto;
 }
 
@@ -200,11 +334,22 @@ body {
   color: #5a7a95;
 }
 
-.upload-section {
-  padding: 20px;
-  text-align: center;
-  background: #f5f7fa;
+.instructions-actions {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+  align-items: center;
+  justify-content: center;
 }
+
+.test-file-hint {
+  margin: 10px 0 0 0;
+  font-size: 14px;
+  color: #666;
+  font-style: italic;
+  text-align: center;
+}
+
 
 /* Basic Configuration Section */
 .basic-config {
@@ -229,7 +374,7 @@ body {
 /* Statistics Section */
 .statistics-section {
   padding: 20px 30px;
-  background: #f5f7fa;
+  background: white;
 }
 
 .file-input-wrapper {
@@ -402,7 +547,7 @@ body {
   padding: 20px;
   box-shadow: 0 4px 12px rgba(107, 158, 127, 0.15);
   width: 100%;
-  display: none;
+  display: block;
 }
 
 .statistics-card h3 {
@@ -497,6 +642,16 @@ body {
 }
 
 .stats-highlight {
+  background: #fff3cd !important;
+  font-weight: bold;
+}
+
+.highlight-mean {
+  background: #fff3cd !important;
+  font-weight: bold;
+}
+
+.highlight-max {
   background: #fff3cd !important;
   font-weight: bold;
 }
@@ -620,7 +775,7 @@ button {
 .info-panel h3 {
   margin: 0 0 20px 0;
   color: #5a7a95;
-  font-size: 24px;
+  font-size: 18px;
   font-weight: 600;
   display: flex;
   align-items: center;
@@ -628,27 +783,7 @@ button {
 }
 
 .sheet-info {
-  display: flex;
-  gap: 30px;
-  flex-wrap: wrap;
-}
-
-.sheet-card {
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  border: 2px solid #7f95b3;
-  box-shadow: 0 4px 12px rgba(90, 122, 149, 0.15);
-  flex: 1;
-  min-width: 300px;
-}
-
-.sheet-card h4 {
-  margin: 0 0 10px 0;
-  color: #5a7a95;
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  /* Table will use existing .stats-table styling */
 }
 
 .import-badge {
@@ -938,7 +1073,7 @@ button {
 /* Notification System */
 .notification-container {
   position: fixed;
-  top: 20px;
+  bottom: 20px;
   right: 20px;
   z-index: 10000;
   display: flex;

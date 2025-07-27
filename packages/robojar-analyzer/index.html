@@ -16,24 +16,36 @@
   </head>
 
   <body>
-    <div class="container">
-      <div class="header">
+    <div class="header">
         <div class="header-content">
           <div class="header-main">
             <h1>🤖 RoboJar Data Analyzer</h1>
             <p>
               Upload your RoboJar Excel report to visualize and analyze the data
             </p>
-            <div class="header-nav">
-              <a href="../../" class="nav-btn" title="Return to Dashboard">
-                <span class="nav-icon">🏠</span>
-                <span class="nav-text">Dashboard</span>
-              </a>
-            </div>
+          </div>
+          <div class="header-actions">
+            <a href="../../" class="action-btn btn-nav" title="Return to Dashboard">
+              <span class="nav-icon">🏠</span>
+              <span class="nav-text">Dashboard</span>
+            </a>
+            <button class="action-btn btn-gold" id="generateChartsHeader" onclick="generateAllCharts()" disabled>
+              <span>📊</span>
+              <span>Generate Charts</span>
+            </button>
+            <button class="action-btn btn-gray" id="exportPngHeader" onclick="exportChart('png')" disabled>
+              <span>📸</span>
+              <span>Export PNG</span>
+            </button>
+            <button class="action-btn btn-gray" id="exportPdfHeader" onclick="generatePdfReport()" disabled>
+              <span>📄</span>
+              <span>Export PDF</span>
+            </button>
           </div>
         </div>
       </div>
 
+    <div class="container">
       <div class="instructions-section">
         <div class="instructions-card">
           <h3>📝 Quick Instructions</h3>
@@ -63,30 +75,38 @@
             💡 <strong>Tip:</strong> Use the "ℹ️" help buttons for detailed
             explanations of statistics and forecast metrics.
           </p>
-        </div>
-      </div>
-
-      <div class="upload-section">
-        <div class="file-input-wrapper">
-          <input
-            type="file"
-            id="fileInput"
-            class="file-input"
-            accept=".xls,.xlsx"
-          />
-          <label
-            for="fileInput"
-            class="btn btn-large btn-teal"
-            style="margin: 10px 0"
-          >
-            📁 Import RoboJar Excel File
-          </label>
+          
+          <div class="instructions-actions">
+            <div class="file-input-wrapper">
+              <input
+                type="file"
+                id="fileInput"
+                class="file-input"
+                accept=".xls,.xlsx"
+              />
+              <label
+                for="fileInput"
+                class="btn btn-large btn-teal"
+              >
+                📁 Import RoboJar Excel File
+              </label>
+            </div>
+            <button
+              id="loadTestFile"
+              class="btn btn-large btn-gold"
+              onclick="loadTestFile()"
+            >
+              🧪 Load Test File
+            </button>
+          </div>
+          <p class="test-file-hint">
+            Load Test File uses RoboJarReport from data folder for quick testing
+          </p>
         </div>
       </div>
 
       <!-- Data Summary Section - Moved up for better UX flow -->
       <div class="info-panel" id="infoPanel" style="display: none">
-        <h3>📋 Data Import Summary</h3>
         <div class="sheet-info" id="sheetInfo"></div>
       </div>
 
@@ -95,12 +115,6 @@
         <div class="control-card">
           <h3>📊 Chart Configuration</h3>
           <div class="control-card-controls">
-            <div class="control-group">
-              <label for="columnSelect">Select Column to Graph:</label>
-              <select id="columnSelect">
-                <option value="">Choose a column...</option>
-              </select>
-            </div>
 
             <div class="control-group">
               <label for="chartType">Chart Type:</label>
@@ -187,166 +201,155 @@
             style="display: none"
           ></div>
 
-          <!-- Generate Chart Button -->
-          <div class="generate-button-section">
-            <button
-              class="btn btn-large btn-gold"
-              id="generateChartMain"
-              onclick="generateChart()"
-            >
-              <span>📊</span>
-              <span>Generate Chart</span>
-            </button>
-            <p class="generate-hint">
-              Create your visualization with the settings above
-            </p>
-          </div>
         </div>
       </div>
 
-      <div class="chart-container" id="chartContainer" style="display: none">
-        <div id="chartTitle" class="chart-title"></div>
-        <div id="customLegend" class="custom-legend"></div>
-        <div class="chart-canvas-container">
-          <canvas id="myChart"></canvas>
-        </div>
-      </div>
-
-      <!-- Statistics Section - Moved below chart for better flow -->
-      <div
-        class="statistics-section"
-        id="statisticsSection"
-        style="display: none"
-      >
-        <div class="statistics-card" id="statisticsCard">
-          <h3>
-            📊 Data Statistics
-            <button
-              class="help-icon"
-              onclick="openStatsHelp()"
-              title="Learn about these statistics"
-              type="button"
-            >
-              ℹ️
-            </button>
-          </h3>
-          <div class="stats-controls">
-            <div class="control-group">
-              <label for="noiseFilter">Noise Filtering:</label>
-              <select id="noiseFilter">
-                <option value="none" selected>No Filtering</option>
-                <option value="outlier">Remove Outliers (IQR Method)</option>
-                <option value="smooth">Smooth Data (Moving Average)</option>
-                <option value="both">Both (Outliers + Smoothing)</option>
-              </select>
-            </div>
-            <div class="control-group">
-              <label for="timeWindow">Analysis Time Window:</label>
-              <select id="timeWindow">
-                <option value="all">Full Duration</option>
-                <option value="steady">Steady State Only (After 5 min)</option>
-                <option value="final">Final 10 Minutes</option>
-                <option value="custom">Custom Range</option>
-              </select>
-            </div>
-            <div
-              class="control-group"
-              id="customRangeGroup"
-              style="
-                display: none;
-                flex-direction: row;
-                gap: 20px;
-                align-items: center;
-              "
-            >
-              <div style="display: flex; flex-direction: column; gap: 5px">
-                <label for="startTime">Start Time (seconds):</label>
-                <select id="startTime" style="width: 120px">
-                  <option value="0">0 (Start)</option>
-                  <option value="50">50</option>
-                  <option value="100">100</option>
-                  <option value="150">150</option>
-                  <option value="200">200</option>
-                  <option value="250">250</option>
-                  <option value="300">300 (5 min)</option>
-                  <option value="350">350</option>
-                  <option value="400">400</option>
-                  <option value="450">450</option>
-                  <option value="500">500</option>
-                  <option value="550">550</option>
-                  <option value="600">600 (10 min)</option>
-                  <option value="650">650</option>
-                  <option value="700">700</option>
-                  <option value="750">750</option>
-                  <option value="800">800</option>
-                  <option value="850">850</option>
-                  <option value="900">900 (15 min)</option>
-                  <option value="950">950</option>
-                  <option value="1000">1000</option>
-                  <option value="1050">1050</option>
-                  <option value="1100">1100</option>
-                  <option value="1150">1150</option>
-                  <option value="1200">1200 (20 min)</option>
-                </select>
-              </div>
-              <div style="display: flex; flex-direction: column; gap: 5px">
-                <label for="endTime">End Time (seconds):</label>
-                <select id="endTime" style="width: 120px">
-                  <option value="300">300 (5 min)</option>
-                  <option value="350">350</option>
-                  <option value="400">400</option>
-                  <option value="450">450</option>
-                  <option value="500">500</option>
-                  <option value="550">550</option>
-                  <option value="600">600 (10 min)</option>
-                  <option value="650">650</option>
-                  <option value="700">700</option>
-                  <option value="750">750</option>
-                  <option value="800">800</option>
-                  <option value="850">850</option>
-                  <option value="900">900 (15 min)</option>
-                  <option value="950">950</option>
-                  <option value="1000">1000</option>
-                  <option value="1050">1050</option>
-                  <option value="1100">1100</option>
-                  <option value="1150">1150</option>
-                  <option value="1200">1200 (20 min)</option>
-                  <option value="1250">1250</option>
-                  <option value="1300">1300</option>
-                  <option value="1350">1350</option>
-                  <option value="1400">1400</option>
-                  <option value="1450">1450</option>
-                  <option value="1500">1500 (25 min)</option>
-                  <option value="1800" selected>1800 (30 min)</option>
-                  <option value="2100">2100 (35 min)</option>
-                  <option value="2400">2400 (40 min)</option>
-                  <option value="2700">2700 (45 min)</option>
-                  <option value="3000">3000 (50 min)</option>
-                  <option value="3600">3600 (60 min)</option>
-                </select>
-              </div>
-            </div>
-          </div>
-          <div id="statisticsTable"></div>
+      <!-- Tabbed Charts Container -->
+      <div class="tabbed-charts-container" id="tabbedChartsContainer" style="display: none">
+        <div class="tabs-header">
+          <button class="tab-button active" onclick="switchTab('mean-diameter')" data-tab="mean-diameter">
+            📏 Mean Diameter
+          </button>
+          <button class="tab-button" onclick="switchTab('mean-volume')" data-tab="mean-volume">
+            🔢 Mean Volume
+          </button>
+          <button class="tab-button" onclick="switchTab('particle-count')" data-tab="particle-count">
+            🔴 Particle Count
+          </button>
+          <button class="tab-button" onclick="switchTab('concentration')" data-tab="concentration">
+            💧 Concentration
+          </button>
         </div>
 
-        <div class="metrics-card" id="metricsCard">
-          <h3>
-            📈 Forecast Quality Metrics
-            <button
-              class="help-icon"
-              onclick="openMetricsHelp()"
-              title="Learn about these metrics"
-              type="button"
-            >
-              ℹ️
-            </button>
-          </h3>
-          <div class="metrics-grid" id="metricsGrid">
-            <!-- Metrics will be populated here -->
+        <!-- Mean Diameter Tab -->
+        <div class="tab-content active" id="mean-diameter-tab">
+          <div class="chart-container">
+            <div id="meanDiameterTitle" class="chart-title"></div>
+            <div id="meanDiameterLegend" class="custom-legend"></div>
+            <div class="chart-canvas-container">
+              <canvas id="meanDiameterChart"></canvas>
+            </div>
           </div>
-          <div class="metrics-summary" id="metricsSummary">
-            <!-- Summary will be populated here -->
+          
+          <div class="statistics-section">
+            <div class="statistics-card">
+              <h3>
+                📊 Mean Diameter Statistics
+                <button class="help-icon" onclick="openStatsHelp()" title="Learn about these statistics" type="button">ℹ️</button>
+              </h3>
+              <div class="stats-controls">
+                <div class="control-group">
+                  <label for="timeWindow">Analysis Time Window:</label>
+                  <select id="timeWindow">
+                    <option value="all">Full Duration</option>
+                    <option value="steady">Steady State Only (After 5 min)</option>
+                    <option value="final">Final 10 Minutes</option>
+                    <option value="custom">Custom Range</option>
+                  </select>
+                </div>
+                <div class="control-group" id="customRangeGroup" style="display: none; flex-direction: row; gap: 20px; align-items: center;">
+                  <div style="display: flex; flex-direction: column; gap: 5px">
+                    <label for="startTime">Start Time (seconds):</label>
+                    <select id="startTime" style="width: 120px">
+                      <option value="0">0 (Start)</option>
+                      <option value="300">300 (5 min)</option>
+                      <option value="600">600 (10 min)</option>
+                      <option value="900">900 (15 min)</option>
+                      <option value="1200">1200 (20 min)</option>
+                    </select>
+                  </div>
+                  <div style="display: flex; flex-direction: column; gap: 5px">
+                    <label for="endTime">End Time (seconds):</label>
+                    <select id="endTime" style="width: 120px">
+                      <option value="600">600 (10 min)</option>
+                      <option value="900">900 (15 min)</option>
+                      <option value="1200">1200 (20 min)</option>
+                      <option value="1500">1500 (25 min)</option>
+                      <option value="1800" selected>1800 (30 min)</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div id="meanDiameterStats"></div>
+            </div>
+
+            <div class="metrics-card">
+              <h3>
+                📈 Forecast Quality Metrics
+                <button class="help-icon" onclick="openMetricsHelp()" title="Learn about these metrics" type="button">ℹ️</button>
+              </h3>
+              <div class="metrics-grid" id="meanDiameterMetrics"></div>
+              <div class="metrics-summary" id="meanDiameterMetricsSummary"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mean Volume Tab -->
+        <div class="tab-content" id="mean-volume-tab">
+          <div class="chart-container">
+            <div id="meanVolumeTitle" class="chart-title"></div>
+            <div id="meanVolumeLegend" class="custom-legend"></div>
+            <div class="chart-canvas-container">
+              <canvas id="meanVolumeChart"></canvas>
+            </div>
+          </div>
+          
+          <div class="statistics-section">
+            <div class="statistics-card">
+              <h3>📊 Mean Volume Statistics</h3>
+              <div id="meanVolumeStats"></div>
+            </div>
+            <div class="metrics-card">
+              <h3>📈 Forecast Quality Metrics</h3>
+              <div class="metrics-grid" id="meanVolumeMetrics"></div>
+              <div class="metrics-summary" id="meanVolumeMetricsSummary"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Particle Count Tab -->
+        <div class="tab-content" id="particle-count-tab">
+          <div class="chart-container">
+            <div id="particleCountTitle" class="chart-title"></div>
+            <div id="particleCountLegend" class="custom-legend"></div>
+            <div class="chart-canvas-container">
+              <canvas id="particleCountChart"></canvas>
+            </div>
+          </div>
+          
+          <div class="statistics-section">
+            <div class="statistics-card">
+              <h3>📊 Particle Count Statistics</h3>
+              <div id="particleCountStats"></div>
+            </div>
+            <div class="metrics-card">
+              <h3>📈 Forecast Quality Metrics</h3>
+              <div class="metrics-grid" id="particleCountMetrics"></div>
+              <div class="metrics-summary" id="particleCountMetricsSummary"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Concentration Tab -->
+        <div class="tab-content" id="concentration-tab">
+          <div class="chart-container">
+            <div id="concentrationTitle" class="chart-title"></div>
+            <div id="concentrationLegend" class="custom-legend"></div>
+            <div class="chart-canvas-container">
+              <canvas id="concentrationChart"></canvas>
+            </div>
+          </div>
+          
+          <div class="statistics-section">
+            <div class="statistics-card">
+              <h3>📊 Concentration Statistics</h3>
+              <div id="concentrationStats"></div>
+            </div>
+            <div class="metrics-card">
+              <h3>📈 Forecast Quality Metrics</h3>
+              <div class="metrics-grid" id="concentrationMetrics"></div>
+              <div class="metrics-summary" id="concentrationMetricsSummary"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -536,26 +539,6 @@
       </div>
     </div>
 
-    <!-- Floating Action Bar -->
-    <div class="floating-action-bar">
-      <button
-        class="btn btn-gray"
-        id="exportPngFloat"
-        onclick="exportChart('png')"
-        disabled
-      >
-        📸 Export Chart PNG
-      </button>
-
-      <button
-        class="btn btn-gray"
-        id="exportPdfFloat"
-        onclick="generatePdfReport()"
-        disabled
-      >
-        📄 Export PDF Report
-      </button>
-    </div>
 
     <!-- Notification System -->
     <div id="notificationContainer" class="notification-container"></div>
