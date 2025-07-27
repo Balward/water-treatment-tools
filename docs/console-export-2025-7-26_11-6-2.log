@@ -1,0 +1,244 @@
+Downsampled sheet NG v1.0 (Raw Temp 60+ F) from 312 to 156 points script.js:1971:17
+Downsampled sheet NG v1.0 (Raw Temp 60+ F) 1 from 312 to 156 points script.js:1971:17
+Downsampled sheet NG v1.0 (Raw Temp 60+ F) 2 from 312 to 156 points script.js:1971:17
+Downsampled sheet NG v1.0 (Raw Temp 60+ F) 3 from 312 to 156 points script.js:1971:17
+Found 4 sheets with Mean Diameter(μm) data script.js:1995:11
+Showing NG v1.0 (Raw Temp 60+ F) data: 0-1200s (121 points) script.js:2004:15
+Showing NG v1.0 (Raw Temp 60+ F) 1 data: 0-1200s (121 points) script.js:2004:15
+Showing NG v1.0 (Raw Temp 60+ F) 2 data: 0-1200s (121 points) script.js:2004:15
+Showing NG v1.0 (Raw Temp 60+ F) 3 data: 0-1200s (121 points) script.js:2004:15
+Generating forecast for NG v1.0 (Raw Temp 60+ F): 121 training points (0-1200s), forecasting 1200-1700s script.js:2068:15
+Forecast result: 
+Object { data: (101) […], coefficients: (3) […], metrics: {…}, trainingData: (121) […] }
+script.js:2078:15
+Forecast points for NG v1.0 (Raw Temp 60+ F): 
+Array(3) [ {…}, {…}, {…} ]
+script.js:2097:17
+Sample forecast point structure: 
+Object { x: 1200, y: NaN }
+script.js:2098:17
+Forecast Y values range: NaN to NaN script.js:2099:17
+Training data Y values range: 130.752636215954 to 343.018218328321 script.js:2100:17
+Added forecast for NG v1.0 (Raw Temp 60+ F): 101 forecast points, time range: 1200 to 1700 script.js:2117:19
+Generating forecast for NG v1.0 (Raw Temp 60+ F) 1: 121 training points (0-1200s), forecasting 1200-1700s script.js:2068:15
+Forecast result: 
+Object { data: (101) […], coefficients: (3) […], metrics: {…}, trainingData: (121) […] }
+script.js:2078:15
+Forecast points for NG v1.0 (Raw Temp 60+ F) 1: 
+Array(3) [ {…}, {…}, {…} ]
+script.js:2097:17
+Sample forecast point structure: 
+Object { x: 1200, y: NaN }
+script.js:2098:17
+Forecast Y values range: NaN to NaN script.js:2099:17
+Training data Y values range: 148.231353695319 to 427.904949663767 script.js:2100:17
+Added forecast for NG v1.0 (Raw Temp 60+ F) 1: 101 forecast points, time range: 1200 to 1700 script.js:2117:19
+Generating forecast for NG v1.0 (Raw Temp 60+ F) 2: 121 training points (0-1200s), forecasting 1200-1700s script.js:2068:15
+Forecast result: 
+Object { data: (101) […], coefficients: (3) […], metrics: {…}, trainingData: (121) […] }
+script.js:2078:15
+Forecast points for NG v1.0 (Raw Temp 60+ F) 2: 
+Array(3) [ {…}, {…}, {…} ]
+script.js:2097:17
+Sample forecast point structure: 
+Object { x: 1200, y: NaN }
+script.js:2098:17
+Forecast Y values range: NaN to NaN script.js:2099:17
+Training data Y values range: 138.331110761664 to 333.137604251425 script.js:2100:17
+Added forecast for NG v1.0 (Raw Temp 60+ F) 2: 101 forecast points, time range: 1200 to 1700 script.js:2117:19
+Generating forecast for NG v1.0 (Raw Temp 60+ F) 3: 121 training points (0-1200s), forecasting 1200-1700s script.js:2068:15
+Forecast result: 
+Object { data: (101) […], coefficients: (3) […], metrics: {…}, trainingData: (121) […] }
+script.js:2078:15
+Forecast points for NG v1.0 (Raw Temp 60+ F) 3: 
+Array(3) [ {…}, {…}, {…} ]
+script.js:2097:17
+Sample forecast point structure: 
+Object { x: 1200, y: NaN }
+script.js:2098:17
+Forecast Y values range: NaN to NaN script.js:2099:17
+Training data Y values range: 145.248117676955 to 382.905677483 script.js:2100:17
+Added forecast for NG v1.0 (Raw Temp 60+ F) 3: 101 forecast points, time range: 1200 to 1700 script.js:2117:19
+Downsampled sheet NG v1.0 (Raw Temp 60+ F) from 312 to 156 points script.js:1971:17
+Downsampled sheet NG v1.0 (Raw Temp 60+ F) 1 from 312 to 156 points script.js:1971:17
+Downsampled sheet NG v1.0 (Raw Temp 60+ F) 2 from 312 to 156 points script.js:1971:17
+Downsampled sheet NG v1.0 (Raw Temp 60+ F) 3 from 312 to 156 points script.js:1971:17
+Found 4 sheets with Mean Volume(cu mm) data script.js:1995:11
+Showing NG v1.0 (Raw Temp 60+ F) data: 0-1200s (121 points) script.js:2004:15
+Showing NG v1.0 (Raw Temp 60+ F) 1 data: 0-1200s (121 points) script.js:2004:15
+Showing NG v1.0 (Raw Temp 60+ F) 2 data: 0-1200s (121 points) script.js:2004:15
+Showing NG v1.0 (Raw Temp 60+ F) 3 data: 0-1200s (121 points) script.js:2004:15
+Generating forecast for NG v1.0 (Raw Temp 60+ F): 121 training points (0-1200s), forecasting 1200-1700s script.js:2068:15
+Forecast result: 
+Object { data: (101) […], coefficients: (3) […], metrics: {…}, trainingData: (121) […] }
+script.js:2078:15
+Forecast points for NG v1.0 (Raw Temp 60+ F): 
+Array(3) [ {…}, {…}, {…} ]
+script.js:2097:17
+Sample forecast point structure: 
+Object { x: 1200, y: NaN }
+script.js:2098:17
+Forecast Y values range: NaN to NaN script.js:2099:17
+Training data Y values range: 0.00134563588668925 to 0.0270381620516638 script.js:2100:17
+Added forecast for NG v1.0 (Raw Temp 60+ F): 101 forecast points, time range: 1200 to 1700 script.js:2117:19
+Generating forecast for NG v1.0 (Raw Temp 60+ F) 1: 121 training points (0-1200s), forecasting 1200-1700s script.js:2068:15
+Forecast result: 
+Object { data: (101) […], coefficients: (3) […], metrics: {…}, trainingData: (121) […] }
+script.js:2078:15
+Forecast points for NG v1.0 (Raw Temp 60+ F) 1: 
+Array(3) [ {…}, {…}, {…} ]
+script.js:2097:17
+Sample forecast point structure: 
+Object { x: 1200, y: NaN }
+script.js:2098:17
+Forecast Y values range: NaN to NaN script.js:2099:17
+Training data Y values range: 0.0021469340541227 to 0.0516157137778718 script.js:2100:17
+Added forecast for NG v1.0 (Raw Temp 60+ F) 1: 101 forecast points, time range: 1200 to 1700 script.js:2117:19
+Generating forecast for NG v1.0 (Raw Temp 60+ F) 2: 121 training points (0-1200s), forecasting 1200-1700s script.js:2068:15
+Forecast result: 
+Object { data: (101) […], coefficients: (3) […], metrics: {…}, trainingData: (121) […] }
+script.js:2078:15
+Forecast points for NG v1.0 (Raw Temp 60+ F) 2: 
+Array(3) [ {…}, {…}, {…} ]
+script.js:2097:17
+Sample forecast point structure: 
+Object { x: 1200, y: NaN }
+script.js:2098:17
+Forecast Y values range: NaN to NaN script.js:2099:17
+Training data Y values range: 0.00173107858546772 to 0.0245166329113393 script.js:2100:17
+Added forecast for NG v1.0 (Raw Temp 60+ F) 2: 101 forecast points, time range: 1200 to 1700 script.js:2117:19
+Generating forecast for NG v1.0 (Raw Temp 60+ F) 3: 121 training points (0-1200s), forecasting 1200-1700s script.js:2068:15
+Forecast result: 
+Object { data: (101) […], coefficients: (3) […], metrics: {…}, trainingData: (121) […] }
+script.js:2078:15
+Forecast points for NG v1.0 (Raw Temp 60+ F) 3: 
+Array(3) [ {…}, {…}, {…} ]
+script.js:2097:17
+Sample forecast point structure: 
+Object { x: 1200, y: NaN }
+script.js:2098:17
+Forecast Y values range: NaN to NaN script.js:2099:17
+Training data Y values range: 0.00192567815455774 to 0.036708020572924 script.js:2100:17
+Added forecast for NG v1.0 (Raw Temp 60+ F) 3: 101 forecast points, time range: 1200 to 1700 script.js:2117:19
+Downsampled sheet NG v1.0 (Raw Temp 60+ F) from 312 to 156 points script.js:1971:17
+Downsampled sheet NG v1.0 (Raw Temp 60+ F) 1 from 312 to 156 points script.js:1971:17
+Downsampled sheet NG v1.0 (Raw Temp 60+ F) 2 from 312 to 156 points script.js:1971:17
+Downsampled sheet NG v1.0 (Raw Temp 60+ F) 3 from 312 to 156 points script.js:1971:17
+Found 4 sheets with Particle Count(per mL) data script.js:1995:11
+Showing NG v1.0 (Raw Temp 60+ F) data: 0-1200s (121 points) script.js:2004:15
+Showing NG v1.0 (Raw Temp 60+ F) 1 data: 0-1200s (121 points) script.js:2004:15
+Showing NG v1.0 (Raw Temp 60+ F) 2 data: 0-1200s (121 points) script.js:2004:15
+Showing NG v1.0 (Raw Temp 60+ F) 3 data: 0-1200s (121 points) script.js:2004:15
+Generating forecast for NG v1.0 (Raw Temp 60+ F): 121 training points (0-1200s), forecasting 1200-1700s script.js:2068:15
+Forecast result: 
+Object { data: (101) […], coefficients: (3) […], metrics: {…}, trainingData: (121) […] }
+script.js:2078:15
+Forecast points for NG v1.0 (Raw Temp 60+ F): 
+Array(3) [ {…}, {…}, {…} ]
+script.js:2097:17
+Sample forecast point structure: 
+Object { x: 1200, y: NaN }
+script.js:2098:17
+Forecast Y values range: NaN to NaN script.js:2099:17
+Training data Y values range: 0.977337251675921 to 35.5643816932041 script.js:2100:17
+Added forecast for NG v1.0 (Raw Temp 60+ F): 101 forecast points, time range: 1200 to 1700 script.js:2117:19
+Generating forecast for NG v1.0 (Raw Temp 60+ F) 1: 121 training points (0-1200s), forecasting 1200-1700s script.js:2068:15
+Forecast result: 
+Object { data: (101) […], coefficients: (3) […], metrics: {…}, trainingData: (121) […] }
+script.js:2078:15
+Forecast points for NG v1.0 (Raw Temp 60+ F) 1: 
+Array(3) [ {…}, {…}, {…} ]
+script.js:2097:17
+Sample forecast point structure: 
+Object { x: 1200, y: NaN }
+script.js:2098:17
+Forecast Y values range: NaN to NaN script.js:2099:17
+Training data Y values range: 3.97155894878732 to 33.6291813194871 script.js:2100:17
+Added forecast for NG v1.0 (Raw Temp 60+ F) 1: 101 forecast points, time range: 1200 to 1700 script.js:2117:19
+Generating forecast for NG v1.0 (Raw Temp 60+ F) 2: 121 training points (0-1200s), forecasting 1200-1700s script.js:2068:15
+Forecast result: 
+Object { data: (101) […], coefficients: (3) […], metrics: {…}, trainingData: (121) […] }
+script.js:2078:15
+Forecast points for NG v1.0 (Raw Temp 60+ F) 2: 
+Array(3) [ {…}, {…}, {…} ]
+script.js:2097:17
+Sample forecast point structure: 
+Object { x: 1200, y: NaN }
+script.js:2098:17
+Forecast Y values range: NaN to NaN script.js:2099:17
+Training data Y values range: 1.9221596083251 to 49.2887935958853 script.js:2100:17
+Added forecast for NG v1.0 (Raw Temp 60+ F) 2: 101 forecast points, time range: 1200 to 1700 script.js:2117:19
+Generating forecast for NG v1.0 (Raw Temp 60+ F) 3: 121 training points (0-1200s), forecasting 1200-1700s script.js:2068:15
+Forecast result: 
+Object { data: (101) […], coefficients: (3) […], metrics: {…}, trainingData: (121) […] }
+script.js:2078:15
+Forecast points for NG v1.0 (Raw Temp 60+ F) 3: 
+Array(3) [ {…}, {…}, {…} ]
+script.js:2097:17
+Sample forecast point structure: 
+Object { x: 1200, y: NaN }
+script.js:2098:17
+Forecast Y values range: NaN to NaN script.js:2099:17
+Training data Y values range: 1.99913151700108 to 47.1318623563256 script.js:2100:17
+Added forecast for NG v1.0 (Raw Temp 60+ F) 3: 101 forecast points, time range: 1200 to 1700 script.js:2117:19
+Downsampled sheet NG v1.0 (Raw Temp 60+ F) from 312 to 156 points script.js:1971:17
+Downsampled sheet NG v1.0 (Raw Temp 60+ F) 1 from 312 to 156 points script.js:1971:17
+Downsampled sheet NG v1.0 (Raw Temp 60+ F) 2 from 312 to 156 points script.js:1971:17
+Downsampled sheet NG v1.0 (Raw Temp 60+ F) 3 from 312 to 156 points script.js:1971:17
+Found 4 sheets with Concentration(cu mm/L) data script.js:1995:11
+Showing NG v1.0 (Raw Temp 60+ F) data: 0-1200s (121 points) script.js:2004:15
+Showing NG v1.0 (Raw Temp 60+ F) 1 data: 0-1200s (121 points) script.js:2004:15
+Showing NG v1.0 (Raw Temp 60+ F) 2 data: 0-1200s (121 points) script.js:2004:15
+Showing NG v1.0 (Raw Temp 60+ F) 3 data: 0-1200s (121 points) script.js:2004:15
+Generating forecast for NG v1.0 (Raw Temp 60+ F): 121 training points (0-1200s), forecasting 1200-1700s script.js:2068:15
+Forecast result: 
+Object { data: (101) […], coefficients: (3) […], metrics: {…}, trainingData: (121) […] }
+script.js:2078:15
+Forecast points for NG v1.0 (Raw Temp 60+ F): 
+Array(3) [ {…}, {…}, {…} ]
+script.js:2097:17
+Sample forecast point structure: 
+Object { x: 1200, y: NaN }
+script.js:2098:17
+Forecast Y values range: NaN to NaN script.js:2099:17
+Training data Y values range: 1.81915785422025 to 661.188499362842 script.js:2100:17
+Added forecast for NG v1.0 (Raw Temp 60+ F): 101 forecast points, time range: 1200 to 1700 script.js:2117:19
+Generating forecast for NG v1.0 (Raw Temp 60+ F) 1: 121 training points (0-1200s), forecasting 1200-1700s script.js:2068:15
+Forecast result: 
+Object { data: (101) […], coefficients: (3) […], metrics: {…}, trainingData: (121) […] }
+script.js:2078:15
+Forecast points for NG v1.0 (Raw Temp 60+ F) 1: 
+Array(3) [ {…}, {…}, {…} ]
+script.js:2097:17
+Sample forecast point structure: 
+Object { x: 1200, y: NaN }
+script.js:2098:17
+Forecast Y values range: NaN to NaN script.js:2099:17
+Training data Y values range: 9.9572725164694 to 860.429432288602 script.js:2100:17
+Added forecast for NG v1.0 (Raw Temp 60+ F) 1: 101 forecast points, time range: 1200 to 1700 script.js:2117:19
+Generating forecast for NG v1.0 (Raw Temp 60+ F) 2: 121 training points (0-1200s), forecasting 1200-1700s script.js:2068:15
+Forecast result: 
+Object { data: (101) […], coefficients: (3) […], metrics: {…}, trainingData: (121) […] }
+script.js:2078:15
+Forecast points for NG v1.0 (Raw Temp 60+ F) 2: 
+Array(3) [ {…}, {…}, {…} ]
+script.js:2097:17
+Sample forecast point structure: 
+Object { x: 1200, y: NaN }
+script.js:2098:17
+Forecast Y values range: NaN to NaN script.js:2099:17
+Training data Y values range: 3.85764551789862 to 893.031840835752 script.js:2100:17
+Added forecast for NG v1.0 (Raw Temp 60+ F) 2: 101 forecast points, time range: 1200 to 1700 script.js:2117:19
+Generating forecast for NG v1.0 (Raw Temp 60+ F) 3: 121 training points (0-1200s), forecasting 1200-1700s script.js:2068:15
+Forecast result: 
+Object { data: (101) […], coefficients: (3) […], metrics: {…}, trainingData: (121) […] }
+script.js:2078:15
+Forecast points for NG v1.0 (Raw Temp 60+ F) 3: 
+Array(3) [ {…}, {…}, {…} ]
+script.js:2097:17
+Sample forecast point structure: 
+Object { x: 1200, y: NaN }
+script.js:2098:17
+Forecast Y values range: NaN to NaN script.js:2099:17
+Training data Y values range: 4.42681230729467 to 1087.18022120586 script.js:2100:17
+Added forecast for NG v1.0 (Raw Temp 60+ F) 3: 101 forecast points, time range: 1200 to 1700 script.js:2117:19
