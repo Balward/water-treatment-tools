@@ -782,9 +782,6 @@ button {
   gap: 8px;
 }
 
-.sheet-info {
-  /* Table will use existing .stats-table styling */
-}
 
 .import-badge {
   display: inline-flex;
