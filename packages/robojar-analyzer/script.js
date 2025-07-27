@@ -602,31 +602,19 @@ document.getElementById("timeWindow").addEventListener("change", function () {
     customGroup.style.display = "none";
   }
 
-  const selectedColumn = document.getElementById("columnSelect").value;
-  if (selectedColumn) {
-    calculateAndDisplayStatistics(selectedColumn);
-  }
+  // Statistics updated automatically in tabbed interface
 });
 
 document.getElementById("noiseFilter").addEventListener("change", function () {
-  const selectedColumn = document.getElementById("columnSelect").value;
-  if (selectedColumn) {
-    calculateAndDisplayStatistics(selectedColumn);
-  }
+  // Statistics updated automatically in tabbed interface
 });
 
 document.getElementById("startTime").addEventListener("change", function () {
-  const selectedColumn = document.getElementById("columnSelect").value;
-  if (selectedColumn) {
-    calculateAndDisplayStatistics(selectedColumn);
-  }
+  // Statistics updated automatically in tabbed interface
 });
 
 document.getElementById("endTime").addEventListener("change", function () {
-  const selectedColumn = document.getElementById("columnSelect").value;
-  if (selectedColumn) {
-    calculateAndDisplayStatistics(selectedColumn);
-  }
+  // Statistics updated automatically in tabbed interface
 });
 
 document
@@ -637,15 +625,7 @@ document
   .getElementById("forecastStart")
   .addEventListener("change", updateForecastInfo);
 
-document.getElementById("columnSelect").addEventListener("change", function () {
-  const selectedColumn = this.value;
-  if (selectedColumn) {
-    calculateAndDisplayStatistics(selectedColumn);
-    document.getElementById("statisticsCard").style.display = "block";
-  } else {
-    document.getElementById("statisticsCard").style.display = "none";
-  }
-});
+// Column select removed - now handled by generateAllCharts()
 
 function updateForecastInfo() {
   const method = document.getElementById("enableForecast").value;
@@ -895,19 +875,22 @@ function getDecimalPrecision(columnName) {
 
 // Helper function to format number with appropriate precision
 function formatStatistic(value, columnName) {
+  if (value === null || value === undefined || isNaN(value)) {
+    return 'N/A';
+  }
   const precision = getDecimalPrecision(columnName);
   return value.toFixed(precision);
 }
 
-function displayStatisticsTable() {
-  const container = document.getElementById("statisticsTable");
-  if (!currentStatistics || Object.keys(currentStatistics).length === 0) {
+function displayStatisticsTable(containerId, statistics, columnName) {
+  const container = document.getElementById(containerId || "statisticsTable");
+  if (!statistics || Object.keys(statistics).length === 0) {
     container.innerHTML = "<p>No statistics available.</p>";
     return;
   }
 
-  // Get the selected column name for formatting precision
-  const selectedColumn = document.getElementById("columnSelect").value;
+  // Use the provided column name for formatting precision
+  const selectedColumn = columnName || "default";
 
   let html = `
                <table class="stats-table">
@@ -930,8 +913,8 @@ function displayStatisticsTable() {
                    <tbody>
            `;
 
-  Object.keys(currentStatistics).forEach((sheetName) => {
-    const data = currentStatistics[sheetName];
+  Object.keys(statistics).forEach((sheetName) => {
+    const data = statistics[sheetName];
     const stats = data.stats;
 
     if (stats) {
@@ -1081,7 +1064,72 @@ function processWorkbook(workbook) {
       const b4Value = jsonData[3]
         ? (jsonData[3][1] || "").toString().trim()
         : "";
-      const sheetTitle = [a4Value, b4Value].filter((v) => v !== "").join(" ");
+      
+      // Parse and reformat the run title to MM-DD-YYYY HH:MM
+      let formattedDateTime = "";
+      const combinedTitle = [a4Value, b4Value].filter((v) => v !== "").join(" ");
+      
+      if (combinedTitle) {
+        try {
+          // Remove MDT/MST/PST etc timezone abbreviations
+          const cleanTitle = combinedTitle.replace(/\s+(MDT|MST|PST|PDT|EDT|EST|CDT|CST)\s*$/i, '');
+          
+          // Try to parse various date/time formats
+          let parsedDate = null;
+          
+          // Pattern 1: YYYY-MM-DD HH:MM:SS or YYYY-MM-DD HH:MM
+          const isoPattern = /(\d{4})-(\d{2})-(\d{2})\s+(\d{1,2}):(\d{2})(?::(\d{2}))?/;
+          const isoMatch = cleanTitle.match(isoPattern);
+          if (isoMatch) {
+            const [, year, month, day, hour, minute] = isoMatch;
+            formattedDateTime = `${month}-${day}-${year} ${hour.padStart(2, '0')}:${minute}`;
+          }
+          
+          // Pattern 2: MM/DD/YYYY HH:MM:SS or MM/DD/YYYY HH:MM
+          if (!formattedDateTime) {
+            const usPattern = /(\d{1,2})\/(\d{1,2})\/(\d{4})\s+(\d{1,2}):(\d{2})(?::(\d{2}))?/;
+            const usMatch = cleanTitle.match(usPattern);
+            if (usMatch) {
+              const [, month, day, year, hour, minute] = usMatch;
+              formattedDateTime = `${month.padStart(2, '0')}-${day.padStart(2, '0')}-${year} ${hour.padStart(2, '0')}:${minute}`;
+            }
+          }
+          
+          // Pattern 3: MM-DD-YYYY HH:MM:SS or MM-DD-YYYY HH:MM
+          if (!formattedDateTime) {
+            const dashPattern = /(\d{1,2})-(\d{1,2})-(\d{4})\s+(\d{1,2}):(\d{2})(?::(\d{2}))?/;
+            const dashMatch = cleanTitle.match(dashPattern);
+            if (dashMatch) {
+              const [, month, day, year, hour, minute] = dashMatch;
+              formattedDateTime = `${month.padStart(2, '0')}-${day.padStart(2, '0')}-${year} ${hour.padStart(2, '0')}:${minute}`;
+            }
+          }
+          
+          // Pattern 4: Try JavaScript Date parsing as fallback
+          if (!formattedDateTime) {
+            const jsDate = new Date(cleanTitle);
+            if (!isNaN(jsDate.getTime())) {
+              const month = (jsDate.getMonth() + 1).toString().padStart(2, '0');
+              const day = jsDate.getDate().toString().padStart(2, '0');
+              const year = jsDate.getFullYear();
+              const hour = jsDate.getHours().toString().padStart(2, '0');
+              const minute = jsDate.getMinutes().toString().padStart(2, '0');
+              formattedDateTime = `${month}-${day}-${year} ${hour}:${minute}`;
+            }
+          }
+          
+          // If all parsing fails, use original format
+          if (!formattedDateTime) {
+            formattedDateTime = combinedTitle;
+          }
+          
+        } catch (error) {
+          // Fallback to original format if any error occurs
+          formattedDateTime = combinedTitle;
+        }
+      }
+      
+      const sheetTitle = formattedDateTime || [a4Value, b4Value].filter((v) => v !== "").join(" ");
 
       const headers = jsonData[2] || [];
       const dataRows = jsonData.slice(3);
@@ -1132,7 +1180,7 @@ function processWorkbook(workbook) {
   updateUI();
 
   // Show success notification for file upload
-  showNotification(`File "${fileName}" loaded successfully!`, "success");
+  showNotification("File loaded successfully!", "success");
 }
 
 function updateUI() {
@@ -1140,389 +1188,62 @@ function updateUI() {
   document.getElementById("infoPanel").style.display = "block";
   document.getElementById("basicConfig").style.display = "block";
 
-  const columnSelect = document.getElementById("columnSelect");
-  columnSelect.innerHTML = '<option value="">Choose a column...</option>';
-
-  const allColumns = new Set();
-  const excludedColumns = [
-    "date",
-    "g value (per sec)",
-    "number of samples",
-    "time",
-    "rpm",
-  ];
-
-  Object.values(processedData).forEach((sheetData) => {
-    sheetData.headers.forEach((header) => {
-      if (
-        header &&
-        header.toString().trim() !== "" &&
-        !header.toString().toLowerCase().includes("timestamp")
-      ) {
-        const headerLower = header.toString().toLowerCase();
-        const shouldExclude = excludedColumns.some((excluded) =>
-          headerLower.includes(excluded)
-        );
-
-        if (!shouldExclude) {
-          allColumns.add(header);
-        }
-      }
-    });
-  });
-
-  Array.from(allColumns)
-    .sort()
-    .forEach((column) => {
-      const option = document.createElement("option");
-      option.value = column;
-      option.textContent = column;
-      columnSelect.appendChild(option);
-    });
-
+  // Column selection removed - all charts generated automatically
   displaySheetInfo();
+  
+  // Update header actions to enable generate button
+  updateHeaderActions();
 }
 
 function displaySheetInfo() {
   const sheetInfo = document.getElementById("sheetInfo");
-  sheetInfo.innerHTML = "";
+  
+  // Create table structure wrapped in a card
+  let tableHTML = `
+    <div class="statistics-card">
+      <h3>📋 Imported Run Summary</h3>
+      <table class="stats-table">
+        <thead>
+          <tr>
+            <th>Run</th>
+            <th>Chemistry</th>
+            <th>Dosage</th>
+            <th>Data Points</th>
+            <th>Duration</th>
+            <th>Comments</th>
+          </tr>
+        </thead>
+        <tbody>
+  `;
 
   Object.keys(processedData).forEach((sheetName) => {
     const sheetData = processedData[sheetName];
-    const card = document.createElement("div");
-    card.className = "sheet-card";
-
-    card.innerHTML = `
-                   <h4 style="color: #5A7A95; margin: 0 0 5px 0; display: flex; align-items: center; gap: 10px;">
-                       ${sheetData.metadata.sheetTitle}
-                       <span class="import-badge">✅ Imported</span>
-                   </h4>
-                   <div style="color: #666; font-size: 13px; margin-bottom: 15px;">${
-                     sheetData.metadata.protocol
-                   }</div>
-                   <div style="margin-bottom: 15px;">
-                       <p style="margin: 5px 0;"><strong>Run Chemistry:</strong> ${
-                         sheetData.metadata.chemistry
-                       }</p>
-                       <p style="margin: 5px 0;"><strong>Run Dosage:</strong> ${
-                         sheetData.metadata.dosage
-                       }</p>
-                       <p style="margin: 5px 0;"><strong>Comments:</strong> ${
-                         sheetData.metadata.comments
-                       }</p>
-                   </div>
-                   <p><strong>Available Columns:</strong> ${sheetData.headers.join(
-                     ", "
-                   )}</p>
-                   <p><strong>Data Points:</strong> ${sheetData.rowCount}</p>
-                   <p><strong>Duration:</strong> ${
-                     sheetData.rowCount * 5
-                   } seconds (${Math.round(
-      (sheetData.rowCount * 5) / 60
-    )} minutes)</p>
-               `;
-
-    sheetInfo.appendChild(card);
+    const metadata = sheetData.metadata;
+    const durationMinutes = Math.round((sheetData.rowCount * 5) / 60);
+    
+    tableHTML += `
+      <tr>
+        <td><strong>${metadata.sheetTitle}</strong></td>
+        <td>${metadata.chemistry || 'N/A'}</td>
+        <td>${metadata.dosage || 'N/A'}</td>
+        <td>${sheetData.rowCount}</td>
+        <td>${durationMinutes} min</td>
+        <td>${metadata.comments || 'None'}</td>
+      </tr>
+    `;
   });
+
+  tableHTML += `
+        </tbody>
+      </table>
+    </div>
+  `;
+
+  sheetInfo.innerHTML = tableHTML;
 }
 
 // Chart generation and remaining original functions
-function generateChart() {
-  const selectedColumn = document.getElementById("columnSelect").value;
-  const chartType = document.getElementById("chartType").value;
-  const includeRPM = document.getElementById("includeRPM").value === "true";
-  const forecastMethod = document.getElementById("enableForecast").value;
-  const polynomialOrder = parseInt(
-    document.getElementById("polynomialOrder").value
-  );
-
-  if (!selectedColumn) {
-    showNotification("Please select a column to graph.", "warning");
-    return;
-  }
-
-  currentForecastMetrics = null;
-  const enableForecast = forecastMethod !== "false";
-  const forecastStartTime = enableForecast
-    ? parseInt(document.getElementById("forecastStart").value)
-    : 1200;
-  console.log(
-    "Generating chart with forecast method:",
-    forecastMethod,
-    "Order:",
-    polynomialOrder,
-    "Start:",
-    forecastStartTime
-  );
-
-  const datasets = [];
-  const colors = [
-    "#5A7A95",
-    "#7FB3B3",
-    "#C9A96E",
-    "#8B7FB3",
-    "#6B9E7F",
-    "#B3956E",
-    "#7F95B3",
-    "#B37F7F",
-    "#95B37F",
-    "#7FB395",
-    "#B3A96E",
-    "#956EB3",
-  ];
-  let colorIndex = 0;
-
-  // Add main data series
-  Object.keys(processedData).forEach((sheetName) => {
-    const sheetData = processedData[sheetName];
-    const columnIndex = sheetData.headers.indexOf(selectedColumn);
-
-    if (columnIndex !== -1) {
-      let values = sheetData.data.map((row, index) => ({
-        x: index * 5,
-        y: parseFloat(row[columnIndex]) || 0,
-      }));
-
-      // Truncate data to forecast start time when forecasting is enabled
-      if (enableForecast) {
-        values = values.filter((point) => point.x <= forecastStartTime);
-        console.log(
-          "Truncated data for",
-          sheetData.metadata.legendLabel,
-          "to",
-          values.length,
-          "points up to",
-          forecastStartTime + "s"
-        );
-      }
-
-      datasets.push({
-        label: sheetData.metadata.legendLabel || sheetName,
-        data: values,
-        borderColor: colors[colorIndex % colors.length],
-        backgroundColor: colors[colorIndex % colors.length] + "20",
-        fill: chartType === "line" ? false : true,
-        tension: chartType === "line" ? 0.4 : 0,
-        yAxisID: "y",
-        order: colorIndex * 2,
-      });
-
-      // Add forecast if enabled
-      if (enableForecast && values.length >= polynomialOrder + 1) {
-        console.log(
-          "Generating",
-          polynomialOrder,
-          "order forecast for:",
-          sheetData.metadata.legendLabel,
-          "with",
-          values.length,
-          "points using",
-          forecastMethod,
-          "method"
-        );
-        const forecastEndTime = forecastStartTime + 500; // Forecast 500 seconds beyond start time
-        const forecastResult = generateForecast(
-          values,
-          polynomialOrder,
-          forecastStartTime,
-          forecastEndTime,
-          forecastMethod
-        );
-        console.log(
-          "Forecast data generated:",
-          forecastResult.data.length,
-          "points",
-          forecastResult.data.slice(0, 3)
-        );
-
-        // Use metrics from the first dataset, or average them later if multiple datasets
-        if (!currentForecastMetrics) {
-          currentForecastMetrics = forecastResult.metrics;
-          console.log("Forecast metrics calculated:", currentForecastMetrics);
-        }
-
-        datasets.push({
-          label: `${sheetData.metadata.legendLabel || sheetName} - Forecast`,
-          data: forecastResult.data,
-          borderColor: colors[colorIndex % colors.length],
-          backgroundColor: colors[colorIndex % colors.length] + "10",
-          fill: false,
-          tension: 0,
-          borderDash: [10, 5],
-          yAxisID: "y",
-          pointRadius: 0,
-          order: colorIndex * 2 + 0.5,
-        });
-      }
-
-      colorIndex++;
-    }
-  });
-
-  // Add RPM series if enabled
-  if (includeRPM) {
-    colorIndex = 0;
-    Object.keys(processedData).forEach((sheetName) => {
-      const sheetData = processedData[sheetName];
-      const columnIndex = sheetData.headers.indexOf(selectedColumn);
-      const rpmIndex = sheetData.headers.findIndex((header) =>
-        header.toString().toLowerCase().includes("rpm")
-      );
-
-      if (columnIndex !== -1 && rpmIndex !== -1) {
-        let rpmValues = sheetData.data.map((row, index) => ({
-          x: index * 5,
-          y: parseFloat(row[rpmIndex]) || 0,
-        }));
-
-        // Also truncate RPM data when forecasting
-        if (enableForecast) {
-          rpmValues = rpmValues.filter((point) => point.x <= forecastStartTime);
-        }
-
-        datasets.push({
-          label: `${sheetData.metadata.legendLabel || sheetName} - RPM`,
-          data: rpmValues,
-          borderColor: colors[colorIndex % colors.length] + "AA",
-          backgroundColor: colors[colorIndex % colors.length] + "10",
-          fill: false,
-          tension: 0.4,
-          yAxisID: "y1",
-          pointRadius: 0,
-          pointStyle: "triangle",
-          order: colorIndex * 2 + 1,
-          type: "line",
-        });
-      }
-
-      colorIndex++;
-    });
-  }
-
-  if (currentChart) {
-    currentChart.destroy();
-  }
-
-  const ctx = document.getElementById("myChart").getContext("2d");
-  currentChart = new Chart(ctx, {
-    type: chartType,
-    data: {
-      datasets: datasets,
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      interaction: {
-        intersect: false,
-        mode: "index",
-      },
-      plugins: {
-        title: {
-          display: false,
-        },
-        legend: {
-          display: false,
-        },
-        tooltip: {
-          callbacks: {
-            title: function (context) {
-              return `Time: ${context[0].parsed.x} seconds`;
-            },
-            afterTitle: function (context) {
-              const datasetIndex = context[0].datasetIndex;
-              const dataset = currentChart.data.datasets[datasetIndex];
-              return dataset.label;
-            },
-            label: function (context) {
-              const isForecast = context.dataset.label.includes("Forecast");
-              const prefix = isForecast ? "Predicted: " : "";
-              const selectedColumn =
-                document.getElementById("columnSelect").value;
-              const formattedValue = formatStatistic(
-                context.parsed.y,
-                selectedColumn
-              );
-              return `${prefix}${context.dataset.label}: ${formattedValue}`;
-            },
-          },
-        },
-      },
-      scales: {
-        x: {
-          type: "linear",
-          title: {
-            display: true,
-            text: enableForecast
-              ? `Time (seconds) - Forecast after ${forecastStartTime}s`
-              : "Time (seconds)",
-          },
-        },
-        y: {
-          type: "linear",
-          display: true,
-          position: "left",
-          min: 0,
-          title: {
-            display: true,
-            text: selectedColumn,
-          },
-        },
-        y1: {
-          type: "linear",
-          display: includeRPM,
-          position: "right",
-          title: {
-            display: includeRPM,
-            text: "RPM",
-          },
-          grid: {
-            drawOnChartArea: false,
-          },
-        },
-      },
-    },
-  });
-
-  document.getElementById("chartContainer").style.display = "block";
-  document.getElementById("statisticsSection").style.display = "block";
-
-  // Show success notification
-  showNotification("Chart generated successfully!", "success");
-
-  let titleSuffix = "";
-  if (enableForecast) {
-    const methodNames = {
-      adaptive: "Adaptive",
-      windowed: "Windowed",
-      weighted: "Weighted",
-      simple: "Simple",
-    };
-    titleSuffix = ` (with ${
-      methodNames[forecastMethod]
-    } ${polynomialOrder}${getOrdinalSuffix(polynomialOrder)} Order Forecast)`;
-  }
-
-  document.getElementById(
-    "chartTitle"
-  ).textContent = `${selectedColumn} Over Time - RoboJar Analysis${titleSuffix}`;
-
-  createCustomLegend(datasets, includeRPM);
-
-  // Show forecast metrics if available
-  if (currentForecastMetrics) {
-    displayForecastMetrics(currentForecastMetrics);
-    document.getElementById("metricsCard").style.display = "block";
-  } else {
-    document.getElementById("metricsCard").style.display = "none";
-  }
-
-  savedCharts[selectedColumn] = {
-    canvas: document.getElementById("myChart").toDataURL("image/png"),
-    title: `${selectedColumn} Over Time - RoboJar Analysis${titleSuffix}`,
-    includeRPM: includeRPM,
-  };
-  updateFloatingActionBar();
-}
+// Old generateChart function removed - replaced with generateAllCharts()
 
 // Helper function for ordinal suffixes
 function getOrdinalSuffix(num) {
@@ -1675,7 +1396,10 @@ function exportChart(format) {
 }
 
 function exportPNG() {
-  const selectedColumn = document.getElementById("columnSelect").value;
+  // Get the currently active tab
+  const activeTab = document.querySelector('.tab-content.active');
+  const activeTabId = activeTab ? activeTab.id : 'mean-diameter-tab';
+  const selectedColumn = activeTabId.replace('-tab', '').replace('-', ' ');
   const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, "-");
 
   const tempCanvas = document.createElement("canvas");
@@ -1693,7 +1417,8 @@ function exportPNG() {
   const title = `${selectedColumn} Over Time - RoboJar Analysis`;
   ctx.fillText(title, tempCanvas.width / 2, 40);
 
-  const chartCanvas = document.getElementById("myChart");
+  const canvasId = activeTabId.replace('-tab', 'Chart');
+  const chartCanvas = document.getElementById(canvasId);
   const chartAspectRatio = chartCanvas.width / chartCanvas.height;
   const chartWidth = tempCanvas.width - 100;
   const chartHeight = Math.min(chartWidth / chartAspectRatio, 450);
@@ -2181,11 +1906,18 @@ function displayForecastMetrics(metrics) {
     `;
 }
 
-function updateFloatingActionBar() {
+function updateHeaderActions() {
   const hasPng = currentChart !== null;
-  const pngBtn = document.getElementById("exportPngFloat");
-  const pdfBtn = document.getElementById("exportPdfFloat");
+  const hasData = Object.keys(processedData).length > 0;
+  
+  // Update header buttons
+  const generateBtn = document.getElementById("generateChartsHeader");
+  const pngBtn = document.getElementById("exportPngHeader");
+  const pdfBtn = document.getElementById("exportPdfHeader");
 
+  if (generateBtn) {
+    generateBtn.disabled = !hasData;
+  }
   if (pngBtn) {
     pngBtn.disabled = !hasPng;
   }
@@ -2195,5 +1927,755 @@ function updateFloatingActionBar() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-  updateFloatingActionBar();
+  updateHeaderActions();
 });
+
+// Load test file function
+async function loadTestFile() {
+  try {
+    showNotification("Loading test file...", "info");
+    
+    // Fetch the test Excel file from data folder
+    const response = await fetch('../../data/RoboJarReportExcel 2025-07-25-10-09-36.xls');
+    if (!response.ok) {
+      throw new Error('Test file not found in data folder');
+    }
+    
+    const arrayBuffer = await response.arrayBuffer();
+    const data = new Uint8Array(arrayBuffer);
+    const workbook = XLSX.read(data, { type: 'array' });
+    
+    // Store filename for reference
+    fileName = "RoboJarReport.xlsx (Test File)";
+    
+    // Process the workbook
+    processWorkbook(workbook);
+  } catch (error) {
+    console.error('Error loading test file:', error);
+    showNotification("Failed to load test file. Make sure RoboJarReport.xlsx exists in the data folder.", "error");
+  }
+}
+
+// New functions for tabbed interface
+
+// Generate all charts simultaneously 
+async function generateAllCharts() {
+  // Disable button during generation
+  const generateButton = document.getElementById("generateChartsHeader");
+  if (generateButton) {
+    generateButton.disabled = true;
+    generateButton.innerHTML = '<span>⏳</span><span>Generating...</span>';
+  }
+  
+  try {
+    const chartType = document.getElementById("chartType").value;
+    const includeRPM = document.getElementById("includeRPM").value === "true";
+    const forecastMethod = document.getElementById("enableForecast").value;
+    const polynomialOrder = parseInt(document.getElementById("polynomialOrder").value);
+
+  // Define the 4 main parameters to chart
+  const parameters = [
+    { name: 'mean diameter', id: 'meanDiameter', icon: '📏' },
+    { name: 'mean volume', id: 'meanVolume', icon: '🔢' },
+    { name: 'particle count', id: 'particleCount', icon: '🔴' },
+    { name: 'concentration', id: 'concentration', icon: '💧' }
+  ];
+
+  // Find available columns that match our parameters
+  const availableParams = parameters.filter(param => {
+    return Object.keys(processedData).some(sheetName => {
+      const sheetData = processedData[sheetName];
+      return sheetData.headers && sheetData.headers.some(header => 
+        header.toLowerCase().includes(param.name.toLowerCase())
+      );
+    });
+  });
+
+  if (availableParams.length === 0) {
+    showNotification("No compatible data columns found for charting.", "warning");
+    return;
+  }
+
+  showNotification(`Generating ${availableParams.length} charts...`, "info");
+
+  // Generate chart for each parameter with small delays to prevent crashes
+  for (let i = 0; i < availableParams.length; i++) {
+    const param = availableParams[i];
+    
+    // Find the actual column name in the data
+    let columnName = null;
+    
+    // Search through all sheets and headers to find matching column
+    Object.keys(processedData).forEach(sheetName => {
+      const sheetData = processedData[sheetName];
+      if (sheetData.headers) {
+        const foundHeader = sheetData.headers.find(header => 
+          header.toLowerCase().includes(param.name.toLowerCase())
+        );
+        if (foundHeader && !columnName) {
+          columnName = foundHeader;
+        }
+      }
+    });
+
+    if (columnName) {
+      await generateChartForParameter(columnName, param.id, chartType, includeRPM, forecastMethod, polynomialOrder);
+      
+      // Add small delay between charts to prevent browser overload
+      if (i < availableParams.length - 1) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
+    }
+  }
+
+  // Show the tabbed container
+  document.getElementById("tabbedChartsContainer").style.display = "block";
+  
+  // Update header actions
+  updateHeaderActions();
+  
+    // Re-enable button
+    if (generateButton) {
+      generateButton.disabled = false;
+      generateButton.innerHTML = '<span>📊</span><span>Generate Charts</span>';
+    }
+    
+    showNotification("All charts generated successfully!", "success");
+  } catch (error) {
+    console.error('Error generating charts:', error);
+    
+    // Re-enable button even on error
+    generateButton.disabled = false;
+    generateButton.innerHTML = '<span>📊</span><span>Generate All Charts</span>';
+    
+    showNotification("Error generating charts. Please try again.", "error");
+  }
+}
+
+// Modified generateChartForParameter to work with tabs
+async function generateChartForParameter(columnName, parameterId, chartType, includeRPM, forecastMethod, polynomialOrder) {
+  const enableForecast = forecastMethod !== "false";
+  const forecastStartTime = enableForecast ? parseInt(document.getElementById("forecastStart").value) : 1200;
+  
+  const datasets = [];
+  const colors = ["#5a7a95", "#7fb3b3", "#c9a96e", "#8b7fb3"];
+
+  // Create separate series for each sheet
+  const sheetSeries = [];
+  
+  Object.keys(processedData).forEach((sheet, sheetIndex) => {
+    const sheetData = processedData[sheet];
+    const columnIndex = sheetData.headers.indexOf(columnName);
+    if (columnIndex !== -1) {
+      // Extract time and value data for this sheet (each starts at 0)
+      let sheetColumnData = sheetData.data.map((row, index) => {
+        const timeInSeconds = index * 5;
+        return [timeInSeconds, row[columnIndex]];
+      });
+      
+      // Optimize data for performance per sheet - be more aggressive
+      if (sheetColumnData.length > 300) {
+        const step = Math.ceil(sheetColumnData.length / 250);
+        sheetColumnData = sheetColumnData.filter((_, index) => index % step === 0);
+        console.log(`Downsampled sheet ${sheet} from ${sheetData.data.length} to ${sheetColumnData.length} points`);
+      }
+      
+      // Get metadata for better legend labels
+      const metadata = sheetData.metadata || {};
+      
+      // Create a short date string from generatedDateTime if available
+      let shortDate = '';
+      if (metadata.generatedDateTime && metadata.generatedDateTime !== 'Unknown') {
+        const datePart = metadata.generatedDateTime.split(' ')[0]; // Get just the date part
+        if (datePart && datePart.includes('-')) {
+          const [year, month, day] = datePart.split('-');
+          shortDate = `${month}/${day}`;  // MM/DD format
+        }
+      }
+      
+      // Build legend label with optional date prefix
+      let baseLegendLabel = metadata.legendLabel || 
+                           `${metadata.chemistry || 'Unknown'}/${metadata.dosage || '0'}/${metadata.chemistryDetails || '0'}` ||
+                           sheet;
+                           
+      const legendLabel = shortDate ? `${shortDate} - ${baseLegendLabel}` : baseLegendLabel;
+      
+      sheetSeries.push({
+        sheetName: sheet,
+        data: sheetColumnData,
+        colorIndex: sheetIndex % colors.length,
+        legendLabel: legendLabel,
+        metadata: metadata
+      });
+    }
+  });
+
+  if (sheetSeries.length === 0) {
+    showNotification(`No data found for ${columnName}`, "warning");
+    return;
+  }
+
+  console.log(`Found ${sheetSeries.length} sheets with ${columnName} data`);
+
+  // Add each sheet as a separate series (show full data or filtered if forecasting)
+  sheetSeries.forEach((series, index) => {
+    let displayData = series.data;
+    
+    // If forecasting is enabled, only show data up to forecast start time
+    if (enableForecast) {
+      displayData = series.data.filter(point => point[0] <= forecastStartTime);
+      console.log(`Showing ${series.sheetName} data: 0-${forecastStartTime}s (${displayData.length} points)`);
+    }
+    
+    const timeData = displayData.map(row => row[0]);
+    const valueData = displayData.map(row => row[1]);
+    
+    datasets.push({
+      label: series.legendLabel,
+      data: timeData.map((time, index) => ({ x: time, y: valueData[index] })),
+      borderColor: colors[series.colorIndex],
+      backgroundColor: colors[series.colorIndex] + "20", 
+      borderWidth: 2,
+      pointRadius: chartType === "scatter" ? (displayData.length > 300 ? 1 : 2) : 0,
+      showLine: chartType === "line",
+      tension: chartType === "line" ? 0.1 : 0,
+    });
+  });
+
+  // Process all data for statistics (combine all sheets)
+  const allValueData = sheetSeries.flatMap(series => series.data.map(row => row[1]));
+
+  // Add RPM data if requested
+  if (includeRPM) {
+    // Find RPM column from first sheet and create time series
+    let rpmData = null;
+    Object.keys(processedData).forEach(sheet => {
+      const sheetData = processedData[sheet];
+      const rpmColumnIndex = sheetData.headers.findIndex(header => 
+        header.toLowerCase().includes('rpm') || header.toLowerCase().includes('paddle')
+      );
+      if (rpmColumnIndex !== -1 && !rpmData) {
+        // Create time series for RPM data (use index * 5 for time)
+        rpmData = sheetData.data.map((row, index) => [index * 5, row[rpmColumnIndex]]);
+      }
+    });
+    
+    if (rpmData) {
+      datasets.push({
+        label: "Paddle RPM",
+        data: rpmData.map(row => ({ x: row[0], y: row[1] })),
+        borderColor: "#9c88ff", // Use purple for RPM
+        backgroundColor: "#9c88ff20",
+        borderWidth: 1,
+        pointRadius: chartType === "scatter" ? 2 : 0.5,
+        showLine: chartType === "line",
+        tension: chartType === "line" ? 0.1 : 0,
+        yAxisID: "y1",
+      });
+    }
+  }
+
+  // Add forecast if enabled (generate forecast for each sheet)
+  if (enableForecast && sheetSeries.length > 0) {
+    sheetSeries.forEach((series, index) => {
+      // Use data up to forecast start time for training the forecast model
+      const trainingData = series.data.filter(point => point[0] <= forecastStartTime);
+      
+      if (trainingData.length < 5) {
+        console.log(`Not enough training data before forecast start time for ${series.sheetName}`);
+        return;
+      }
+      
+      const forecastEndTime = forecastStartTime + 500; // Forecast 500 seconds forward
+      
+      console.log(`Generating forecast for ${series.sheetName}: ${trainingData.length} training points (0-${forecastStartTime}s), forecasting ${forecastStartTime}-${forecastEndTime}s`);
+      console.log('Training data format sample:', trainingData.slice(0, 3));
+      
+      // Convert training data from [x,y] array format to {x,y} object format that polynomialRegression expects
+      const formattedTrainingData = trainingData.map(point => ({
+        x: point[0],
+        y: point[1]
+      }));
+      
+      console.log('Formatted training data sample:', formattedTrainingData.slice(0, 3));
+      
+      const forecastResult = generateForecast(
+        formattedTrainingData, // Now in {x,y} object format
+        polynomialOrder,
+        forecastStartTime, // Start forecast from the specified time
+        forecastEndTime,
+        forecastMethod
+      );
+
+      console.log('Forecast result:', forecastResult);
+
+      if (forecastResult && forecastResult.data && forecastResult.data.length > 0) {
+        // Use a lighter version of the series color for forecast
+        const baseColor = colors[series.colorIndex];
+        const forecastColor = baseColor + "CC"; // Add transparency (80%)
+        
+        // Convert forecast data to proper format
+        const forecastPoints = forecastResult.data.map(point => {
+          if (typeof point === 'object' && point.x !== undefined && point.y !== undefined) {
+            return { x: point.x, y: point.y };
+          } else if (Array.isArray(point)) {
+            return { x: point[0], y: point[1] };
+          } else {
+            console.log('Unknown forecast point format:', point);
+            return null;
+          }
+        }).filter(point => point !== null);
+        
+        console.log(`Forecast points for ${series.sheetName}:`, forecastPoints.slice(0, 3));
+        console.log('Sample forecast point structure:', forecastPoints[0]);
+        console.log('Forecast Y values range:', Math.min(...forecastPoints.map(p => p.y)), 'to', Math.max(...forecastPoints.map(p => p.y)));
+        console.log('Training data Y values range:', Math.min(...trainingData.map(p => p[1])), 'to', Math.max(...trainingData.map(p => p[1])));
+        
+        if (forecastPoints.length > 0) {
+          datasets.push({
+            label: `${series.legendLabel} - Forecast`,
+            data: forecastPoints,
+            borderColor: baseColor,
+            backgroundColor: "transparent",
+            borderWidth: 2, // Same as regular chart lines
+            borderDash: [8, 4], // Dashed line pattern
+            pointRadius: 0, // No points, just line
+            showLine: true,
+            tension: 0.1,
+          });
+          
+          console.log(`Added forecast for ${series.sheetName}: ${forecastPoints.length} forecast points, time range: ${forecastPoints[0]?.x} to ${forecastPoints[forecastPoints.length-1]?.x}`);
+        }
+      } else {
+        console.log(`No forecast data generated for ${series.sheetName}`, forecastResult);
+      }
+    });
+
+    // Store metrics for this parameter (use first series for metrics)
+    if (sheetSeries.length > 0) {
+      const firstSeries = sheetSeries[0];
+      const metricsTrainingData = firstSeries.data.filter(point => point[0] <= forecastStartTime);
+      if (metricsTrainingData.length >= 5) {
+        // Convert to {x,y} object format
+        const formattedMetricsData = metricsTrainingData.map(point => ({
+          x: point[0],
+          y: point[1]
+        }));
+        
+        const metricsResult = generateForecast(
+          formattedMetricsData,
+          polynomialOrder,
+          forecastStartTime,
+          forecastStartTime + 500,
+          forecastMethod
+        );
+        if (metricsResult && metricsResult.metrics) {
+          currentForecastMetrics = metricsResult.metrics;
+          displayForecastMetricsForParameter(parameterId, currentForecastMetrics);
+        }
+      }
+    }
+  }
+
+  // Create chart
+  const canvas = document.getElementById(`${parameterId}Chart`);
+  const ctx = canvas.getContext("2d");
+
+  // Destroy existing chart if it exists
+  if (window[`${parameterId}ChartInstance`]) {
+    window[`${parameterId}ChartInstance`].destroy();
+  }
+
+  // Chart configuration with performance optimizations
+  const config = {
+    type: "scatter",
+    data: { datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: {
+        duration: 0 // Disable animation for better performance
+      },
+      interaction: {
+        intersect: false,
+        mode: 'nearest'
+      },
+      scales: {
+        x: {
+          type: "linear",
+          position: "bottom",
+          title: { display: true, text: "Time (seconds)" },
+        },
+        y: {
+          title: { display: true, text: `${columnName} (units)` },
+        },
+      },
+      plugins: {
+        legend: { display: false },
+        title: {
+          display: false
+        },
+        tooltip: {
+          enabled: true
+        }
+      },
+      elements: {
+        point: {
+          radius: chartType === "scatter" ? 2 : 0
+        }
+      }
+    },
+  };
+
+  // Add secondary y-axis for RPM if needed
+  if (includeRPM) {
+    // Check if we found RPM data earlier
+    let hasRpmData = false;
+    Object.keys(processedData).forEach(sheet => {
+      const sheetData = processedData[sheet];
+      const rpmColumnIndex = sheetData.headers.findIndex(header => 
+        header.toLowerCase().includes('rpm') || header.toLowerCase().includes('paddle')
+      );
+      if (rpmColumnIndex !== -1) {
+        hasRpmData = true;
+      }
+    });
+    
+    if (hasRpmData) {
+      config.options.scales.y1 = {
+        type: "linear",
+        display: true,
+        position: "right",
+        title: { display: true, text: "Paddle RPM" },
+        grid: { drawOnChartArea: false },
+      };
+    }
+  }
+
+  // Create the chart
+  window[`${parameterId}ChartInstance`] = new Chart(ctx, config);
+  
+  // Update title and legend for this parameter
+  document.getElementById(`${parameterId}Title`).textContent = `${columnName} Analysis`;
+  updateCustomLegendForParameter(parameterId, datasets);
+  
+  // Generate statistics for this parameter using per-sheet data
+  generateStatisticsForParameter(parameterId, columnName, sheetSeries);
+}
+
+// Tab switching function
+function switchTab(tabId) {
+  // Remove active class from all tabs and buttons
+  document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+  
+  // Add active class to selected tab and button
+  document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+  document.getElementById(`${tabId}-tab`).classList.add('active');
+}
+
+// Update custom legend for a specific parameter
+function updateCustomLegendForParameter(parameterId, datasets) {
+  const legendElement = document.getElementById(`${parameterId}Legend`);
+  if (!legendElement) return;
+
+  legendElement.innerHTML = datasets.map(dataset => `
+    <div class="legend-item">
+      <div class="legend-marker" style="background-color: ${dataset.borderColor}; border-color: ${dataset.borderColor}"></div>
+      <span class="legend-text">${dataset.label}</span>
+    </div>
+  `).join('');
+}
+
+// Display forecast metrics for a specific parameter
+function displayForecastMetricsForParameter(parameterId, metrics) {
+  if (!metrics) return;
+
+  const metricsGrid = document.getElementById(`${parameterId}Metrics`);
+  const metricsSummary = document.getElementById(`${parameterId}MetricsSummary`);
+  
+  if (!metricsGrid || !metricsSummary) return;
+
+  metricsGrid.innerHTML = '';
+
+  const metricItems = [
+    {
+      value: metrics.rSquared.toFixed(4),
+      label: "R² (Fit Quality)",
+      quality: metrics.rSquared >= 0.9 ? "excellent" : metrics.rSquared >= 0.7 ? "good" : "fair",
+    },
+    {
+      value: metrics.rmse.toFixed(3),
+      label: "RMSE",
+      quality: metrics.rmse < 1 ? "excellent" : metrics.rmse < 5 ? "good" : "fair",
+    },
+    {
+      value: metrics.mae.toFixed(3),
+      label: "MAE",
+      quality: metrics.mae < 1 ? "excellent" : metrics.mae < 3 ? "good" : "fair",
+    },
+    {
+      value: `${metrics.mape.toFixed(1)}%`,
+      label: "MAPE",
+      quality: metrics.mape <= 10 ? "excellent" : metrics.mape <= 25 ? "good" : "fair",
+    },
+  ];
+
+  metricItems.forEach((item) => {
+    const metricDiv = document.createElement("div");
+    metricDiv.className = `metric-item metric-${item.quality}`;
+    metricDiv.innerHTML = `
+      <div class="metric-value">${item.value}</div>
+      <div class="metric-label">${item.label}</div>
+    `;
+    metricsGrid.appendChild(metricDiv);
+  });
+
+  const overallQuality = metrics.rSquared >= 0.9 && metrics.mape <= 10 ? "excellent" :
+                        metrics.rSquared >= 0.7 && metrics.mape <= 25 ? "good" : "fair";
+
+  metricsSummary.innerHTML = `
+    <strong>Forecast Quality Assessment:</strong> 
+    <span class="quality-indicator quality-${overallQuality}">
+      ${overallQuality.charAt(0).toUpperCase() + overallQuality.slice(1)}
+    </span>
+  `;
+}
+
+// Generate statistics for a specific parameter
+function generateStatisticsForParameter(parameterId, columnName, sheetSeries) {
+  const statsElement = document.getElementById(`${parameterId}Stats`);
+  if (!statsElement) {
+    console.log(`Stats element not found: ${parameterId}Stats`);
+    return;
+  }
+  
+  console.log(`Generating statistics for ${parameterId} with ${sheetSeries.length} sheets`);
+  console.log(`Stats element found:`, statsElement);
+
+  // Get filtering settings
+  const timeWindow = document.getElementById("timeWindow").value;
+  
+  // Process each sheet's data
+  const sheetStats = [];
+  
+  sheetSeries.forEach((series, index) => {
+    let sheetData = series.data.map(row => row[1]); // Get Y values
+    
+    // Apply time window filtering
+    if (timeWindow !== 'all') {
+      const timeData = series.data.map(row => row[0]); // Get X values (time)
+      sheetData = applyTimeWindowFilter(sheetData, timeData, timeWindow);
+    }
+    
+    // Filter out any null/undefined values and ensure they're numbers
+    let filteredData = sheetData.filter(val => val !== null && val !== undefined && !isNaN(val))
+                               .map(val => Number(val));
+
+    if (filteredData.length > 0) {
+      const stats = calculateStatistics(filteredData, false);
+      stats.sheetName = series.sheetName;
+      stats.legendLabel = series.legendLabel;
+      stats.originalCount = sheetData.length;
+      sheetStats.push(stats);
+    }
+  });
+
+  if (sheetStats.length === 0) {
+    statsElement.innerHTML = "<p>No valid data available for statistics.</p>";
+    return;
+  }
+
+  // Display statistics table for all sheets
+  const tableHTML = generateMultiSheetStatisticsTable(sheetStats, columnName);
+  console.log(`Generated table HTML for ${parameterId}:`, tableHTML.substring(0, 200) + '...');
+  statsElement.innerHTML = tableHTML;
+  console.log(`Stats table set for ${parameterId}. Element innerHTML length:`, statsElement.innerHTML.length);
+  
+  // Add event listeners for filtering changes
+  addFilteringEventListeners(parameterId, columnName, sheetSeries);
+}
+
+// Generate HTML for multi-sheet statistics table
+function generateMultiSheetStatisticsTable(sheetsStats, columnName) {
+  if (!sheetsStats || sheetsStats.length === 0) {
+    return "<p>No statistics available.</p>";
+  }
+
+  let tableHTML = `
+    <table class="stats-table">
+      <thead>
+        <tr>
+          <th>Run</th>
+          <th>Count</th>
+          <th>Min</th>
+          <th>Max</th>
+          <th>Mean</th>
+          <th>Median</th>
+          <th>Std Dev</th>
+          <th>CV (%)</th>
+          <th>P10</th>
+          <th>P90</th>
+          <th>IQR</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  sheetsStats.forEach((stats, index) => {
+    tableHTML += `
+      <tr>
+        <td><strong>${stats.legendLabel}</strong></td>
+        <td>${stats.count}</td>
+        <td>${formatStatistic(stats.min, columnName)}</td>
+        <td class="highlight-max">${formatStatistic(stats.max, columnName)}</td>
+        <td class="highlight-mean">${formatStatistic(stats.mean, columnName)}</td>
+        <td>${formatStatistic(stats.median, columnName)}</td>
+        <td>${formatStatistic(stats.stdDev, columnName)}</td>
+        <td>${stats.cv.toFixed(1)}%</td>
+        <td>${formatStatistic(stats.p10, columnName)}</td>
+        <td>${formatStatistic(stats.p90, columnName)}</td>
+        <td>${formatStatistic(stats.iqr, columnName)}</td>
+      </tr>
+    `;
+  });
+
+  tableHTML += `
+      </tbody>
+    </table>
+  `;
+
+  return tableHTML;
+}
+
+// Generate HTML for statistics table (for tabbed interface)
+function generateStatisticsTable(stats, columnName) {
+  if (!stats) {
+    return "<p>No statistics available.</p>";
+  }
+
+  const noiseClass = `noise-${getNoiseLevel(stats.cv)}`;
+  const noiseIndicator = `<span class="noise-indicator ${noiseClass}"></span>`;
+
+  return `
+    <table class="stats-table">
+      <thead>
+        <tr>
+          <th>Parameter</th>
+          <th>Count</th>
+          <th>Min</th>
+          <th>Max</th>
+          <th>Mean</th>
+          <th>Median</th>
+          <th>Std Dev</th>
+          <th>CV (%)</th>
+          <th>P10</th>
+          <th>P90</th>
+          <th>IQR</th>
+          <th>Noise</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>${columnName}</strong></td>
+          <td>${stats.count}</td>
+          <td>${formatStatistic(stats.min, columnName)}</td>
+          <td>${formatStatistic(stats.max, columnName)}</td>
+          <td>${formatStatistic(stats.mean, columnName)}</td>
+          <td>${formatStatistic(stats.median, columnName)}</td>
+          <td>${formatStatistic(stats.stdDev, columnName)}</td>
+          <td>${stats.cv.toFixed(1)}%</td>
+          <td>${formatStatistic(stats.p10, columnName)}</td>
+          <td>${formatStatistic(stats.p90, columnName)}</td>
+          <td>${formatStatistic(stats.iqr, columnName)}</td>
+          <td>${noiseIndicator}${capitalizeFirst(getNoiseLevel(stats.cv))}</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="stats-tip">
+      <span class="stats-tip-icon">💡</span>
+      <div class="stats-tip-text">Statistical Summary</div>
+      <div class="stats-tip-secondary">Mean: ${formatStatistic(stats.mean, columnName)} | CV: ${stats.cv.toFixed(1)}% | Noise Level: ${capitalizeFirst(getNoiseLevel(stats.cv))}</div>
+    </div>
+  `;
+}
+
+// Helper function to get noise level from CV
+function getNoiseLevel(cv) {
+  if (cv < 15) return 'low';
+  if (cv < 30) return 'medium';
+  return 'high';
+}
+
+// Helper function to capitalize first letter
+function capitalizeFirst(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+// Apply time window filtering to data
+function applyTimeWindowFilter(data, timeData, timeWindow) {
+  if (timeWindow === 'all') return data;
+  
+  let startTime = 0;
+  let endTime = Math.max(...timeData);
+  
+  switch (timeWindow) {
+    case 'steady':
+      startTime = 300; // After 5 minutes
+      break;
+    case 'final':
+      startTime = Math.max(0, endTime - 600); // Last 10 minutes
+      break;
+    case 'custom':
+      startTime = parseInt(document.getElementById('startTime').value) || 0;
+      endTime = parseInt(document.getElementById('endTime').value) || endTime;
+      break;
+  }
+  
+  const filteredData = [];
+  for (let i = 0; i < timeData.length; i++) {
+    if (timeData[i] >= startTime && timeData[i] <= endTime) {
+      filteredData.push(data[i]);
+    }
+  }
+  
+  return filteredData;
+}
+
+// Add event listeners for filtering changes
+function addFilteringEventListeners(parameterId, columnName, sheetSeries) {
+  const timeWindow = document.getElementById('timeWindow');
+  const startTime = document.getElementById('startTime');
+  const endTime = document.getElementById('endTime');
+  const customRangeGroup = document.getElementById('customRangeGroup');
+  
+  // Handle time window change
+  if (timeWindow) {
+    timeWindow.addEventListener('change', () => {
+      if (timeWindow.value === 'custom') {
+        customRangeGroup.style.display = 'flex';
+      } else {
+        customRangeGroup.style.display = 'none';
+      }
+      // Regenerate statistics with new filter
+      generateStatisticsForParameter(parameterId, columnName, sheetSeries);
+    });
+  }
+  
+  // Handle custom time range changes
+  if (startTime) {
+    startTime.addEventListener('change', () => {
+      if (timeWindow.value === 'custom') {
+        generateStatisticsForParameter(parameterId, columnName, sheetSeries);
+      }
+    });
+  }
+  
+  if (endTime) {
+    endTime.addEventListener('change', () => {
+      if (timeWindow.value === 'custom') {
+        generateStatisticsForParameter(parameterId, columnName, sheetSeries);
+      }
+    });
+  }
+}
