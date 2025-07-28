@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Water Treatment Flashcards - Study Tool</title>
+    <link rel="icon" type="image/png" href="../../city-logos/favicon.png" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+
+  <body>
+    <div class="container">
+      <header class="header">
+        <div class="brand">
+          <div class="logo-container">
+            <img
+              src="../../city-logos/logo-vert.png"
+              alt="City Logo"
+              class="logo-image"
+            />
+          </div>
+          <div class="brand-text">
+            <h1>Water Treatment Flashcards</h1>
+            <p class="tagline" id="headerTagline">
+              Master water treatment terminology with interactive study cards
+            </p>
+            <!-- Study Info - Hidden initially -->
+            <div class="study-info hidden" id="studyInfo">
+              <div class="current-study">
+                <h2 id="currentBookHeader">Water Treatment Grades 3 & 4</h2>
+                <div class="study-navigation">
+                  <button class="change-book-btn" id="backToBooksHeader">
+                    ← Choose Different Book
+                  </button>
+                  <button class="change-chapter-btn hidden" id="backToChaptersHeader">
+                    ← Choose Different Chapter
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Book Selection Screen -->
+      <div id="bookSelection" class="book-selection">
+        <div class="selection-content">
+          <h2>Choose Your Study Level</h2>
+          <p class="selection-subtitle">Select the water treatment grade book you want to study from</p>
+          
+          <div class="books-grid">
+            <div class="book-card" data-book="grade1">
+              <div class="book-icon">
+                <span>📖</span>
+                <div class="book-level">1</div>
+              </div>
+              <div class="book-info">
+                <h3>Water Treatment Grade 1</h3>
+                <p>Fundamental concepts and basic terminology for entry-level operators</p>
+                <div class="book-stats">
+                  <span class="stat">Coming Soon</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="book-card" data-book="grade2">
+              <div class="book-icon">
+                <span>📚</span>
+                <div class="book-level">2</div>
+              </div>
+              <div class="book-info">
+                <h3>Water Treatment Grade 2</h3>
+                <p>Intermediate processes and advanced operational terminology</p>
+                <div class="book-stats">
+                  <span class="stat">Coming Soon</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="book-card available" data-book="grade3-4">
+              <div class="book-icon">
+                <span>📑</span>
+                <div class="book-level">3&4</div>
+              </div>
+              <div class="book-info">
+                <h3>Water Treatment Grades 3 & 4</h3>
+                <p>Advanced treatment processes and complex operational concepts</p>
+                <div class="book-stats">
+                  <span class="stat">43 Terms Available</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="selection-actions">
+            <button class="back-btn" onclick="window.location.href='../dashboard/dashboard.html'">
+              ← Back to Dashboard
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chapter Selection Screen -->
+      <div id="chapterSelection" class="chapter-selection hidden">
+        <div class="selection-content">
+          <h2>Choose Your Chapter</h2>
+          <p class="selection-subtitle">Select which chapter to study or study all cards together</p>
+          
+          <div class="chapters-grid">
+            <div class="chapter-card" data-chapter="all">
+              <div class="chapter-icon">
+                <span>📚</span>
+              </div>
+              <div class="chapter-info">
+                <h3>All Chapters</h3>
+                <p>Study all available terms from both chapters combined</p>
+                <div class="chapter-stats">
+                  <span class="stat" id="allChaptersCount">43 Terms</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="chapter-card" data-chapter="basic-microbiology-chemistry">
+              <div class="chapter-icon">
+                <span>🧪</span>
+              </div>
+              <div class="chapter-info">
+                <h3>Basic Microbiology and Chemistry</h3>
+                <p>Fundamental concepts in water chemistry and biological processes</p>
+                <div class="chapter-stats">
+                  <span class="stat">13 Terms</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="chapter-card" data-chapter="advanced-math-operators">
+              <div class="chapter-icon">
+                <span>📐</span>
+              </div>
+              <div class="chapter-info">
+                <h3>Advanced Math for Operators</h3>
+                <p>Complex hydraulic calculations and operational mathematics</p>
+                <div class="chapter-stats">
+                  <span class="stat">30 Terms</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="selection-actions">
+            <button class="back-btn" id="backToBooks">
+              ← Back to Book Selection
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Flashcard Study Interface -->
+      <div id="studyInterface" class="study-interface hidden">
+        <div class="card-progress">
+          <div class="progress-indicator">
+            Card <span id="currentCard">1</span> of <span id="totalCards">14</span>
+          </div>
+        </div>
+
+        <main class="flashcard-container">
+          <div class="flashcard" id="flashcard">
+            <div class="card-inner">
+              <div class="card-front">
+                <div class="card-header">
+                  <span class="card-type">Term</span>
+                  <button class="flip-hint">Click to reveal definition</button>
+                </div>
+                <div class="card-content">
+                  <h2 id="cardTerm">Loading...</h2>
+                </div>
+              </div>
+              <div class="card-back">
+                <div class="card-header">
+                  <span class="card-type">Definition</span>
+                  <button class="flip-hint">Click to see term</button>
+                </div>
+                <div class="card-content">
+                  <p id="cardDefinition">Loading...</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Main Navigation Controls directly under flashcard -->
+          <div class="main-navigation">
+            <button class="nav-control-btn" id="prevCard">← Previous</button>
+            <button class="nav-control-btn shuffle-btn" id="shuffleBtn">🔀 Shuffle</button>
+            <button class="nav-control-btn" id="nextCard">Next →</button>
+          </div>
+
+          <!-- Difficulty Rating -->
+          <div class="card-actions">
+            <button class="action-btn difficulty-btn easy" id="easyBtn">
+              <span class="btn-icon">😊</span>
+              Easy
+            </button>
+            <button class="action-btn difficulty-btn medium" id="mediumBtn">
+              <span class="btn-icon">🤔</span>
+              Medium
+            </button>
+            <button class="action-btn difficulty-btn hard" id="hardBtn">
+              <span class="btn-icon">😅</span>
+              Hard
+            </button>
+          </div>
+        </main>
+
+        <!-- Secondary Controls -->
+        <div class="secondary-controls">
+          <button class="secondary-btn" id="progressBtn">📊 Progress</button>
+          <button class="secondary-btn" id="favoriteBtn">⭐ Favorite</button>
+          <button class="secondary-btn" id="studyOptions">⚙️ Options</button>
+          <button class="secondary-btn" id="resetBtn">🔄 Reset</button>
+        </div>
+      </div>
+
+      <footer class="footer">
+        <div class="footer-content">
+          <p>&copy; 2025 Water Treatment Flashcards | Enhance your water treatment knowledge</p>
+          <div class="footer-links">
+            <span class="footer-status">
+              <span class="status-dot"></span>
+              Study materials ready
+            </span>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
