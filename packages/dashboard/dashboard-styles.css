@@ -100,7 +100,7 @@ body {
   gap: 1.5rem;
   position: relative;
   overflow: hidden;
-  text-decoration: none;
+  text-decoration: none !important;
   color: inherit;
   cursor: pointer;
 }
@@ -108,8 +108,24 @@ body {
 .app-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
-  text-decoration: none;
+  text-decoration: none !important;
   color: inherit;
+}
+
+.app-card:visited {
+  text-decoration: none !important;
+  color: inherit;
+}
+
+.app-card:focus {
+  text-decoration: none !important;
+  color: inherit;
+  outline: 2px solid #00677f;
+  outline-offset: 2px;
+}
+
+.app-card * {
+  text-decoration: none !important;
 }
 
 .app-card.placeholder {
