@@ -75,6 +75,37 @@ body {
   margin: 0;
 }
 
+/* Header Top Section */
+.header-top {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 1rem;
+}
+
+.back-to-dashboard-btn {
+  background: rgba(0, 103, 127, 0.1);
+  color: #00677f;
+  border: 2px solid rgba(0, 103, 127, 0.2);
+  padding: 0.6rem 1.2rem;
+  border-radius: 25px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.back-to-dashboard-btn:hover {
+  background: rgba(0, 103, 127, 0.2);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 103, 127, 0.2);
+  text-decoration: none;
+  color: #00677f;
+}
+
 /* Study Info in Header */
 .study-info {
   margin-top: 1rem;
@@ -736,6 +767,11 @@ body {
     padding: 0.4rem 0.8rem;
   }
 
+  .back-to-dashboard-btn {
+    font-size: 0.8rem;
+    padding: 0.5rem 1rem;
+  }
+
   .selection-content,
   .flashcard-container {
     padding: 1.5rem;
@@ -811,6 +847,11 @@ body {
   .change-chapter-btn {
     font-size: 0.75rem;
     padding: 0.35rem 0.7rem;
+  }
+
+  .back-to-dashboard-btn {
+    font-size: 0.75rem;
+    padding: 0.4rem 0.8rem;
   }
 
   .flashcard {
