@@ -221,6 +221,281 @@ const flashcardData = {
             definition: 'A mathematical concept representing the product of disinfectant concentration (C) in mg/L and contact time (T) in minutes, used to quantify the effectiveness of disinfection processes. Higher C x T values indicate greater pathogen inactivation, with specific values required by regulations to achieve desired levels of virus, bacteria, and Giardia removal.'
           }
         ]
+      },
+      'water-quality-testing': {
+        title: 'Water Quality Testing',
+        cards: [
+          {
+            term: 'Grab Sample',
+            definition: 'A single water sample collected at a specific location and time, representing water quality conditions at the moment of collection. Grab samples are used for parameters that change rapidly or when instantaneous results are needed, though they may not represent average conditions over time.'
+          },
+          {
+            term: 'Dissolved Oxygen (DO)',
+            definition: 'The amount of oxygen gas dissolved in water, typically measured in mg/L or ppm, which is essential for aquatic life and indicates water quality. DO levels are affected by temperature, pressure, salinity, and biological activity, with higher levels generally indicating better water quality and lower levels suggesting pollution or eutrophication.'
+          },
+          {
+            term: 'Composite Sample',
+            definition: 'A water sample composed of individual samples collected at regular intervals over a specific time period and combined proportionally, providing a more representative average of water quality conditions. Composite sampling is useful for parameters that vary throughout the day and helps reduce analytical costs while providing better overall data.'
+          },
+          {
+            term: 'Chain of Custody',
+            definition: 'A documented procedure that tracks the handling, transfer, and storage of water samples from collection through laboratory analysis to ensure sample integrity and legal admissibility. Chain of custody forms record who collected, transported, received, and analyzed each sample, maintaining an unbroken record of sample possession.'
+          },
+          {
+            term: 'Coliform Bacteria',
+            definition: 'A group of bacteria commonly found in soil, vegetation, and the intestines of warm-blooded animals, used as indicator organisms to detect potential contamination of water supplies. While most coliforms are harmless, their presence suggests possible contamination with disease-causing pathogens and indicates the need for further investigation.'
+          },
+          {
+            term: 'Multiple-Tube Fermentation (MTF) Method',
+            definition: 'A traditional microbiological technique for detecting and enumerating coliform bacteria in water samples using a series of test tubes containing lactose broth. The method involves presumptive, confirmed, and completed tests to progressively identify and quantify coliform bacteria, providing a Most Probable Number (MPN) result.'
+          },
+          {
+            term: 'Presumptive Test',
+            definition: 'The first step in the multiple-tube fermentation method where water samples are inoculated into lactose broth tubes and incubated to detect gas production, indicating possible coliform presence. Positive presumptive tests show gas formation and turbidity, while negative tests show no gas production or growth.'
+          },
+          {
+            term: 'Positive Sample or Presence',
+            definition: 'A test result indicating the detection of the target organism or substance being analyzed, such as coliform bacteria in water quality testing. Positive results require further investigation, confirmation testing, or immediate corrective action depending on the parameter and regulatory requirements.'
+          },
+          {
+            term: 'Negative Sample or Absence',
+            definition: 'A test result indicating that the target organism or substance was not detected in the water sample at the detection limit of the analytical method. Negative results suggest the absence of contamination for the specific parameter tested, though they do not guarantee overall water safety.'
+          },
+          {
+            term: 'Confirmed Test',
+            definition: 'The second step in the multiple-tube fermentation method where positive presumptive tubes are transferred to selective media to confirm the presence of coliform bacteria. This test helps eliminate false positives from other gas-producing bacteria and provides more reliable identification of true coliforms.'
+          },
+          {
+            term: 'Completed Test',
+            definition: 'The final step in the multiple-tube fermentation method where confirmed positive samples are further tested on additional media to verify the presence of typical coliform bacteria. This test provides the highest level of confidence in coliform identification by confirming gram-negative, non-spore forming characteristics.'
+          },
+          {
+            term: 'Presence-Absence (P-A) Method',
+            definition: 'A simplified microbiological test that determines whether coliform bacteria are present or absent in a 100 mL water sample, without providing quantitative enumeration. The P-A method is faster and less expensive than MPN methods, making it suitable for routine monitoring of treated water where any coliform presence is unacceptable.'
+          },
+          {
+            term: 'MMO-MUG Method',
+            definition: 'A rapid microbiological technique using enzyme substrates methylumbelliferyl-β-D-galactopyranoside (MUG) and methylumbelliferyl-β-D-glucuronide (MMO) to simultaneously detect total coliforms and E. coli. This fluorogenic method provides results in 18-24 hours and can differentiate between total coliforms and the more specific indicator E. coli.'
+          },
+          {
+            term: 'Membrane Filter Method',
+            definition: 'A microbiological technique where water samples are filtered through a sterile membrane with 0.45 μm pores to capture bacteria, which are then cultured on selective media to identify and count specific organisms. This method provides direct colony counts and is widely used for coliform analysis and other bacterial indicators.'
+          },
+          {
+            term: 'Heterotrophic Plate Count (HPC)',
+            definition: 'A general measure of bacterial populations in water that grow on nutrient agar under aerobic conditions, providing an indication of overall microbial water quality. While HPC bacteria are generally not pathogenic, elevated counts may indicate biofilm growth, treatment inefficiency, or distribution system problems.'
+          },
+          {
+            term: 'Acidity',
+            definition: 'The capacity of water to neutralize bases, primarily due to the presence of hydrogen ions, carbonic acid, and other weak acids, measured by titration with standard base to a specific pH endpoint. Acidity affects corrosion potential, treatment chemical requirements, and can indicate industrial pollution or acid mine drainage.'
+          },
+          {
+            term: 'Alkalinity',
+            definition: 'The capacity of water to neutralize acids, primarily due to bicarbonate, carbonate, and hydroxide ions, measured by titration with standard acid to specific pH endpoints. Alkalinity provides buffering capacity against pH changes, affects coagulation efficiency, and influences corrosion control in distribution systems.'
+          },
+          {
+            term: 'Color',
+            definition: 'The visual appearance of water that results from dissolved and suspended substances, measured in color units and affecting aesthetic acceptability of drinking water. Color can indicate the presence of organic matter, industrial discharges, or treatment inefficiencies, with standards typically limiting color to 15 color units.'
+          },
+          {
+            term: 'True Color',
+            definition: 'The color of water after removal of suspended matter through filtration, representing only the color contribution from dissolved substances. True color is typically caused by dissolved organic compounds like humic and fulvic acids from natural decomposition of vegetation and is the standard measurement for regulatory compliance.'
+          },
+          {
+            term: 'Apparent Color',
+            definition: 'The color of water including both dissolved and suspended substances, representing the total visual appearance as seen by consumers. Apparent color includes contributions from turbidity and suspended particles in addition to true color, often appearing more intense than true color measurements.'
+          },
+          {
+            term: 'Platinum-Cobalt Method',
+            definition: 'A standardized colorimetric method for measuring water color using platinum-cobalt standards, where color intensity is compared to prepared solutions containing specific concentrations of chloroplatinic acid and cobalt chloride. This method provides reproducible color measurements expressed in Platinum-Cobalt Units (PCU) or Hazen Units.'
+          },
+          {
+            term: 'Threshold Odor Number (TON)',
+            definition: 'A quantitative measure of water odor intensity, defined as the dilution ratio at which odor becomes just detectable to human senses. TON testing involves successive dilutions of the sample with odor-free water until the odor threshold is reached, providing an objective measurement of subjective odor perception.'
+          },
+          {
+            term: 'Turbidity',
+            definition: 'A measure of water clarity that quantifies the scattering of light by suspended particles, measured in Nephelometric Turbidity Units (NTU) using standardized instruments. Turbidity indicates filtration effectiveness, potential for microbial contamination, and aesthetic water quality, with drinking water standards typically requiring less than 1 NTU.'
+          },
+          {
+            term: 'Nephelometer',
+            definition: 'An optical instrument that measures turbidity by detecting the intensity of light scattered at a 90-degree angle from an incident light beam passing through a water sample. Nephelometers provide precise, standardized turbidity measurements and are required for regulatory compliance monitoring in water treatment facilities.'
+          },
+          {
+            term: 'Nomographic Method',
+            definition: 'A mathematical technique using graphical charts or nomographs to solve complex calculations in water treatment, such as determining chemical dosages, contact times, or design parameters. Nomographic methods provide quick solutions to multi-variable problems without requiring detailed calculations or computer software.'
+          },
+          {
+            term: 'Titrimetric Method',
+            definition: 'An analytical technique that determines the concentration of a substance by measuring the volume of a standard solution required to react completely with the analyte. Titrimetric methods are widely used in water testing for parameters like alkalinity, hardness, chlorine residual, and dissolved oxygen analysis.'
+          },
+          {
+            term: 'Combined Chlorine Residual',
+            definition: 'Chlorine that has reacted with ammonia or organic nitrogen compounds to form chloramines, which provide longer-lasting but weaker disinfection compared to free chlorine. Combined chlorine residuals are measured to monitor chloramine formation, evaluate disinfection effectiveness, and control taste and odor problems in distribution systems.'
+          },
+          {
+            term: 'Breakpoint',
+            definition: 'The point in chlorination where chlorine demand has been satisfied and free chlorine residual begins to appear, typically occurring after combined chlorine residuals reach maximum levels and then decline. The breakpoint represents complete oxidation of ammonia and organic matter, marking the transition to effective disinfection conditions.'
+          },
+          {
+            term: 'Breakpoint Chlorination',
+            definition: 'A disinfection strategy that applies chlorine beyond the breakpoint to achieve free chlorine residuals, ensuring maximum disinfection effectiveness and minimizing taste and odor problems. This process destroys ammonia and organic compounds that interfere with disinfection while establishing stable free chlorine residuals for distribution system protection.'
+          },
+          {
+            term: 'Chlorine Demand',
+            definition: 'The amount of chlorine consumed by organic matter, ammonia, and other reducing substances in water before establishing a measurable chlorine residual. Chlorine demand must be satisfied before effective disinfection can occur, and it varies with water quality, temperature, contact time, and the presence of interfering substances.'
+          },
+          {
+            term: 'Electrode Method',
+            definition: 'An analytical technique using ion-selective electrodes or other electrochemical sensors to measure specific parameters in water, such as pH, dissolved oxygen, or chlorine residuals. Electrode methods provide rapid, continuous measurements and are commonly used for process control and online monitoring in water treatment facilities.'
+          },
+          {
+            term: 'Modified Winkler Method',
+            definition: 'A classic titrimetric procedure for measuring dissolved oxygen in water samples, involving the addition of manganese sulfate and alkaline iodide to fix oxygen, followed by acidification and titration with sodium thiosulfate. This method provides accurate DO measurements and serves as a reference standard for calibrating other DO measurement techniques.'
+          },
+          {
+            term: 'SPADNS Method',
+            definition: 'A colorimetric analytical method for measuring fluoride concentrations in water using SPADNS (sodium 2-(parasulfophenylazo)-1,8-dihydroxy-3,6-naphthalene disulfonate) reagent. The method involves adding SPADNS and zirconium chloride to form a colored complex, with fluoride concentration determined by measuring color intensity changes.'
+          },
+          {
+            term: 'Atomic Absorption Spectrophotometer (AA)',
+            definition: 'An analytical instrument that measures the concentration of metallic elements by analyzing the absorption of specific wavelengths of light by atoms in a flame or furnace. AA spectrophotometry provides precise measurements of trace metals in water samples and is essential for monitoring heavy metal contamination and treatment effectiveness.'
+          },
+          {
+            term: 'pH',
+            definition: 'A logarithmic scale from 0 to 14 that measures the hydrogen ion concentration in water, indicating acidity (pH < 7), neutrality (pH = 7), or alkalinity (pH > 7). pH affects chemical reactions, disinfection efficiency, corrosion rates, and treatment processes, making it a fundamental parameter in water quality management.'
+          },
+          {
+            term: 'Total Organic Carbon (TOC)',
+            definition: 'The amount of carbon bound in organic compounds present in water, measured in mg/L and used as an indicator of organic pollution and treatment effectiveness. TOC analysis helps evaluate the potential for disinfection by-product formation, assess biological treatment efficiency, and monitor overall organic water quality.'
+          },
+          {
+            term: 'Gas Chromatography (GC)',
+            definition: 'An analytical separation technique that identifies and quantifies volatile organic compounds by separating them based on their interaction with a stationary phase in a heated column. GC analysis is essential for detecting pesticides, industrial solvents, and other organic contaminants in water samples at very low concentrations.'
+          },
+          {
+            term: 'Jar Test',
+            definition: 'A laboratory simulation of the coagulation and flocculation process using multiple beakers (jars) to optimize chemical dosages and treatment conditions. Jar tests help determine the most effective coagulant type and dose, pH adjustment requirements, and mixing conditions for achieving desired turbidity removal and water quality goals.'
+          }
+        ]
+      },
+      'corrosion-control': {
+        title: 'Corrosion Control',
+        cards: [
+          {
+            term: 'Stabilization',
+            definition: 'The process of adjusting water chemistry to achieve a balance between corrosive and scale-forming tendencies, typically by controlling pH, alkalinity, and hardness levels. Stabilized water neither causes excessive corrosion of pipes and fixtures nor deposits harmful scale, protecting both the distribution system and maintaining water quality.'
+          },
+          {
+            term: 'Corrosion',
+            definition: 'The gradual deterioration of metal pipes, fixtures, and equipment due to electrochemical reactions with water and dissolved substances. Corrosion can release harmful metals into drinking water, weaken infrastructure, cause leaks, and create taste and odor problems, making its control essential for safe water distribution.'
+          },
+          {
+            term: 'Scaling',
+            definition: 'The precipitation and accumulation of mineral deposits, primarily calcium carbonate, on the interior surfaces of pipes, heat exchangers, and equipment. Scaling reduces water flow, increases energy costs, provides sites for bacterial growth, and can interfere with disinfection and other treatment processes.'
+          },
+          {
+            term: 'Tubercles',
+            definition: 'Localized, mound-like corrosion products that form on the interior surfaces of iron and steel pipes, typically containing iron oxides and other corrosion byproducts. Tubercles create rough surfaces that increase friction losses, reduce carrying capacity, and can harbor bacteria while providing sites for continued corrosion.'
+          },
+          {
+            term: 'Iron Bacteria',
+            definition: 'Naturally occurring bacteria that obtain energy by oxidizing dissolved iron or manganese in water, forming characteristic rust-colored, slimy deposits. Iron bacteria can cause taste, odor, and discoloration problems, promote tubercle formation, and accelerate pipe corrosion in distribution systems.'
+          },
+          {
+            term: 'Rust',
+            definition: 'The reddish-brown iron oxide corrosion product that forms when iron or steel is exposed to water and oxygen over time. Rust formation indicates active corrosion processes, can cause discoloration of water, and contributes to the deterioration of iron-based distribution system components.'
+          },
+          {
+            term: 'Corrosive or Aggressive',
+            definition: 'Water characteristics that promote the dissolution or deterioration of materials in contact with the water, typically characterized by low pH, low alkalinity, high dissolved oxygen, or specific ion concentrations. Corrosive water can leach metals from pipes, reduce system lifespan, and create health concerns from elevated metal concentrations.'
+          },
+          {
+            term: 'Concentration Cell Corrosion',
+            definition: 'A type of localized corrosion that occurs when different concentrations of dissolved substances create electrical potential differences along a metal surface. This electrochemical process can cause pitting and accelerated corrosion in areas with varying oxygen, salt, or other dissolved constituent concentrations.'
+          },
+          {
+            term: 'Galvanic Series',
+            definition: 'A ranking of metals and alloys according to their tendency to corrode when in electrical contact with each other in an electrolytic environment like water. The galvanic series helps predict which metals will act as anodes (corrode) and which will act as cathodes (be protected) in galvanic corrosion situations.'
+          },
+          {
+            term: 'Galvanic Corrosion',
+            definition: 'Accelerated corrosion that occurs when two dissimilar metals are in electrical contact while immersed in an electrolytic solution like water. The more active (anodic) metal corrodes faster than it would alone, while the more noble (cathodic) metal is protected, making proper material selection and isolation crucial in system design.'
+          },
+          {
+            term: 'Saturation Point',
+            definition: 'The maximum concentration of a dissolved substance that water can hold at a given temperature and pressure before precipitation begins. Understanding saturation points helps predict scale formation potential and optimize chemical treatment dosages for corrosion control and water conditioning processes.'
+          },
+          {
+            term: 'Quicklime',
+            definition: 'Calcium oxide (CaO), a white, caustic alkaline substance produced by heating limestone, used in water treatment for pH adjustment, softening, and stabilization. Quicklime reacts vigorously with water to form slaked lime, releasing significant heat and requiring careful handling and safety precautions during storage and application.'
+          },
+          {
+            term: 'Slurry',
+            definition: 'A mixture of water and finely divided solid particles, such as lime or other treatment chemicals, that can be pumped and mixed into water systems. Slurries provide a convenient method for feeding solid chemicals, allowing for better mixing and controlled dosing while maintaining chemical reactivity and effectiveness.'
+          },
+          {
+            term: 'Milk of Lime',
+            definition: 'A dilute suspension of slaked lime (calcium hydroxide) in water, appearing as a milky white liquid used for pH adjustment and water softening. Milk of lime provides alkalinity to neutralize acidic water, precipitate hardness-causing minerals, and stabilize water chemistry for corrosion control.'
+          },
+          {
+            term: 'Coupon Test',
+            definition: 'A corrosion monitoring method involving the placement of small metal specimens (coupons) in water systems to measure corrosion rates under actual operating conditions. Coupon tests provide quantitative data on metal loss rates, help evaluate corrosion control effectiveness, and guide material selection and treatment optimization decisions.'
+          }
+        ]
+      },
+      'lime-softening': {
+        title: 'Lime Softening',
+        cards: [
+          {
+            term: 'Lime-Soda Ash Method',
+            definition: 'A water softening process that uses lime (calcium hydroxide) and soda ash (sodium carbonate) to precipitate calcium and magnesium hardness as insoluble compounds. This chemical precipitation method effectively removes both carbonate and noncarbonate hardness, producing soft water while also providing some clarification and pH adjustment benefits.'
+          },
+          {
+            term: 'Slaker',
+            definition: 'A mechanical device used to convert quicklime (calcium oxide) into slaked lime (calcium hydroxide) by controlled addition of water. Slakers ensure proper hydration, control the exothermic reaction temperature, and produce a consistent lime slurry for use in water treatment processes while managing the safety hazards associated with lime handling.'
+          },
+          {
+            term: 'Slake',
+            definition: 'The chemical process of adding water to quicklime (CaO) to produce slaked lime or hydrated lime (Ca(OH)₂), releasing significant heat in an exothermic reaction. Proper slaking requires controlled water addition and mixing to ensure complete hydration and prevent dangerous temperature spikes or dust generation.'
+          },
+          {
+            term: 'Rapid or Flash Mixing',
+            definition: 'The initial high-intensity mixing stage in water treatment that provides immediate and uniform distribution of chemicals throughout the water. Flash mixing typically lasts 30 seconds to 2 minutes with high velocity gradients to ensure proper chemical dispersion and initiate coagulation reactions before flocculation begins.'
+          },
+          {
+            term: 'Flocculation',
+            definition: 'The gentle mixing process following coagulation that promotes the formation of larger, settleable particles (floc) from smaller precipitates and suspended matter. Flocculation uses slow, controlled mixing to allow particle collisions and agglomeration while avoiding floc breakup, preparing particles for effective sedimentation removal.'
+          },
+          {
+            term: 'Sedimentation',
+            definition: 'The gravitational settling process where suspended particles, floc, and precipitates settle to the bottom of a basin due to their greater density than water. Sedimentation is a primary clarification method that removes the majority of suspended solids and chemical precipitates formed during coagulation and softening processes.'
+          },
+          {
+            term: 'Sedimentation Basin',
+            definition: 'A large tank or basin designed to provide sufficient detention time and quiescent conditions for suspended particles to settle by gravity. Sedimentation basins feature inlet and outlet structures to minimize short-circuiting, sludge collection systems, and are sized to achieve desired particle removal efficiency based on settling velocities.'
+          },
+          {
+            term: 'Solids-Contact Basin',
+            definition: 'A treatment unit that combines rapid mix, flocculation, and sedimentation processes in a single basin, often incorporating sludge recirculation to enhance particle contact and removal efficiency. Solids-contact basins provide more compact treatment with improved floc formation through increased particle collision opportunities and reduced detention time requirements.'
+          },
+          {
+            term: 'Dewatering',
+            definition: 'The process of removing water from sludge or settled solids to reduce volume, improve handling characteristics, and prepare waste materials for disposal or beneficial reuse. Dewatering methods include gravity thickening, mechanical dewatering using belt presses or centrifuges, and drying beds to achieve desired solids content.'
+          },
+          {
+            term: 'Magnesium Hardness',
+            definition: 'Water hardness caused by dissolved magnesium ions (Mg²⁺), which requires special treatment considerations in lime softening processes. Magnesium hardness removal requires higher pH conditions (above 10.5) and often necessitates two-stage lime treatment or excess lime addition followed by recarbonation to achieve effective precipitation and removal.'
+          },
+          {
+            term: 'Coagulation-Flocculation',
+            definition: 'The two-stage process of adding coagulant chemicals to destabilize particles (coagulation) followed by gentle mixing to promote particle agglomeration (flocculation). This process is essential for removing suspended solids, turbidity, and associated contaminants, and is often integrated with lime softening to improve overall treatment efficiency.'
+          },
+          {
+            term: 'Trihalomethane (THM)',
+            definition: 'A group of disinfection by-products formed when chlorine reacts with natural organic matter in water, including chloroform and other halogenated compounds. THMs are regulated as potential carcinogens, and lime softening can help reduce THM formation potential by removing organic precursors and providing pH control that affects chlorine chemistry.'
+          }
+        ]
       }
     }
   }
