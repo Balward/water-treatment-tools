@@ -558,6 +558,8 @@ class FlashcardApp {
     document.querySelectorAll('.chapter-card').forEach(card => {
       card.addEventListener('click', () => {
         const chapterId = card.dataset.chapter;
+        console.log('Chapter clicked:', chapterId);
+        console.log('Available chapters:', Object.keys(flashcardData[this.currentBook]?.chapters || {}));
         this.selectChapter(chapterId);
       });
     });
@@ -710,7 +712,12 @@ class FlashcardApp {
   }
 
   selectChapter(chapterId) {
+    console.log('selectChapter called with:', chapterId);
+    console.log('currentBook:', this.currentBook);
+    console.log('available chapters:', flashcardData[this.currentBook]?.chapters ? Object.keys(flashcardData[this.currentBook].chapters) : 'none');
+    
     if (!this.currentBook || !flashcardData[this.currentBook].chapters) {
+      console.log('Early return: no currentBook or chapters');
       return;
     }
 
