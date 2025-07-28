@@ -554,14 +554,13 @@ class FlashcardApp {
       });
     });
 
-    // Chapter selection
-    document.querySelectorAll('.chapter-card').forEach(card => {
-      card.addEventListener('click', () => {
-        const chapterId = card.dataset.chapter;
-        console.log('Chapter clicked:', chapterId);
-        console.log('Available chapters:', Object.keys(flashcardData[this.currentBook]?.chapters || {}));
+    // Chapter selection - using event delegation to ensure all cards are clickable
+    document.addEventListener('click', (e) => {
+      const chapterCard = e.target.closest('.chapter-card');
+      if (chapterCard && chapterCard.dataset.chapter) {
+        const chapterId = chapterCard.dataset.chapter;
         this.selectChapter(chapterId);
-      });
+      }
     });
 
     // Navigation
@@ -712,12 +711,7 @@ class FlashcardApp {
   }
 
   selectChapter(chapterId) {
-    console.log('selectChapter called with:', chapterId);
-    console.log('currentBook:', this.currentBook);
-    console.log('available chapters:', flashcardData[this.currentBook]?.chapters ? Object.keys(flashcardData[this.currentBook].chapters) : 'none');
-    
     if (!this.currentBook || !flashcardData[this.currentBook].chapters) {
-      console.log('Early return: no currentBook or chapters');
       return;
     }
 
