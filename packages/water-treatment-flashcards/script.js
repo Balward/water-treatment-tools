@@ -192,6 +192,35 @@ const flashcardData = {
             definition: 'The measure of water\'s capacity to neutralize acids, primarily due to bicarbonate, carbonate, and hydroxide ions, expressed as milligrams per liter of calcium carbonate equivalent. Total alkalinity affects pH stability, corrosion control, coagulation effectiveness, and disinfection efficiency in water treatment processes.'
           }
         ]
+      },
+      'usepa-water-regulations': {
+        title: 'USEPA Water Regulations',
+        cards: [
+          {
+            term: 'US Environmental Protection Agency',
+            definition: 'A federal agency established in 1970 responsible for protecting human health and the environment by enforcing regulations under existing environmental laws. In water treatment, EPA sets drinking water standards, regulates disinfection requirements, and oversees compliance with the Safe Drinking Water Act to ensure public water systems provide safe drinking water.'
+          },
+          {
+            term: 'Maximum Contaminant Level Goal (MCLG)',
+            definition: 'The level of a contaminant in drinking water below which there is no known or expected risk to health, allowing for an adequate margin of safety. MCLGs are non-enforceable public health goals that consider only health risks and exposure over a lifetime, including sensitive populations like children and pregnant women.'
+          },
+          {
+            term: 'Maximum Contaminant Level (MCL)',
+            definition: 'The highest level of a contaminant that is allowed in drinking water under federal regulations, set as close to the MCLG as feasible using the best available treatment technology. MCLs are legally enforceable standards that balance health protection with technical feasibility and cost considerations for water treatment systems.'
+          },
+          {
+            term: 'Disinfection By-products (DBPs)',
+            definition: 'Chemical compounds formed when disinfectants used to treat drinking water react with naturally occurring organic and inorganic matter in source water. Common DBPs include trihalomethanes (THMs) and haloacetic acids (HAAs), which are regulated due to potential long-term health risks including increased cancer risk.'
+          },
+          {
+            term: 'Running Annual Average (RAA)',
+            definition: 'A compliance calculation method for certain water quality parameters where the average of quarterly sampling results over the most recent four quarters is used to determine regulatory compliance. RAA is commonly used for disinfection by-products monitoring and helps smooth out seasonal variations in contaminant levels.'
+          },
+          {
+            term: 'C x T Value',
+            definition: 'A mathematical concept representing the product of disinfectant concentration (C) in mg/L and contact time (T) in minutes, used to quantify the effectiveness of disinfection processes. Higher C x T values indicate greater pathogen inactivation, with specific values required by regulations to achieve desired levels of virus, bacteria, and Giardia removal.'
+          }
+        ]
       }
     }
   }
