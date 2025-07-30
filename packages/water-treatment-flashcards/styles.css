@@ -113,11 +113,15 @@ body {
   color: #00677f;
 }
 
-/* Study Info in Header */
-.study-info {
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid rgba(0, 103, 127, 0.2);
+/* Study Info Card */
+.study-info-card {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  margin-bottom: 1.5rem;
 }
 
 .current-study {
@@ -129,9 +133,9 @@ body {
 
 .current-study h2 {
   color: #00677f;
-  font-size: 1.2rem;
-  font-weight: 600;
-  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 1rem 0;
   text-align: center;
 }
 
