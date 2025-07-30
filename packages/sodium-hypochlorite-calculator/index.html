@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sodium Hypochlorite Dosing Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #34495e;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .result {
+            margin-top: 25px;
+            padding: 20px;
+            background-color: #ecf0f1;
+            border-radius: 5px;
+            border-left: 5px solid #3498db;
+        }
+        .result h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        .info {
+            background-color: #e8f4f8;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 5px solid #3498db;
+        }
+        .error {
+            background-color: #f8e8e8;
+            color: #e74c3c;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Sodium Hypochlorite Dosing Calculator</h1>
+        
+        <div class="info">
+            <strong>System Information:</strong><br>
+            Filter Basin Volume: 35,400 gallons<br>
+            Sodium Hypochlorite Concentration: 10%
+        </div>
+
+        <div class="input-group">
+            <label for="residualIncrease">Desired Residual Increase (mg/L or ppm):</label>
+            <input type="number" id="residualIncrease" step="0.1" min="0" placeholder="Enter desired increase (e.g., 1.0)">
+        </div>
+
+        <button onclick="calculateDosage()">Calculate Dosage</button>
+
+        <div id="result" class="result" style="display: none;">
+            <h3>Dosage Required:</h3>
+            <p id="dosageAmount"></p>
+            <p id="dosageVolume"></p>
+            <p><small><strong>Note:</strong> This calculation assumes uniform mixing and does not account for chlorine demand or decay. Always verify with residual testing.</small></p>
+        </div>
+
+        <div id="error" class="error" style="display: none;"></div>
+    </div>
+
+    <script>
+        function calculateDosage() {
+            const residualIncrease = parseFloat(document.getElementById('residualIncrease').value);
+            const errorDiv = document.getElementById('error');
+            const resultDiv = document.getElementById('result');
+            
+            errorDiv.style.display = 'none';
+            resultDiv.style.display = 'none';
+            
+            if (isNaN(residualIncrease) || residualIncrease <= 0) {
+                errorDiv.textContent = 'Please enter a valid positive number for residual increase.';
+                errorDiv.style.display = 'block';
+                return;
+            }
+            
+            if (residualIncrease > 10) {
+                errorDiv.textContent = 'Warning: Residual increase over 10 mg/L is unusually high. Please verify your input.';
+                errorDiv.style.display = 'block';
+            }
+            
+            const basinVolume = 35400;
+            const hypochloriteConcentration = 0.10;
+            const conversionFactor = 8.34;
+            
+            const dosageLbsPerDay = (residualIncrease * basinVolume * conversionFactor) / (hypochloriteConcentration * 1000000);
+            const dosageGallons = dosageLbsPerDay / (hypochloriteConcentration * 8.34);
+            const dosageOunces = dosageGallons * 128;
+            const dosageMl = dosageGallons * 3785.41;
+            
+            document.getElementById('dosageAmount').innerHTML = 
+                `<strong>${dosageLbsPerDay.toFixed(3)} lbs</strong> of 10% sodium hypochlorite`;
+            
+            document.getElementById('dosageVolume').innerHTML = 
+                `Volume needed: <strong>${dosageGallons.toFixed(3)} gallons</strong> or <strong>${dosageOunces.toFixed(1)} fl oz</strong> or <strong>${dosageMl.toFixed(0)} mL</strong>`;
+            
+            resultDiv.style.display = 'block';
+        }
+        
+        document.getElementById('residualIncrease').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                calculateDosage();
+            }
+        });
+    </script>
+</body>
+</html>
