@@ -647,22 +647,40 @@
             
             // Show calculation steps
             document.getElementById('step1').innerHTML = 
-                `<strong>Step 1:</strong> Convert basin volume to million gallons<br>
-                Volume (MG) = ${basinVolume.toLocaleString()} gal ÷ 1,000,000 = <strong>${basinVolumeMG.toFixed(6)} MG</strong>`;
+                `<strong>Step 1: Convert basin volume to million gallons</strong><br>
+                <em>Water treatment calculations use million gallons (MG) as the standard unit for large volumes.</em><br>
+                Volume (MG) = ${basinVolume.toLocaleString()} gal ÷ 1,000,000 = <strong>${basinVolumeMG.toFixed(6)} MG</strong><br>
+                <small style="color: #6c757d; margin-top: 5px; display: block;">This conversion allows us to use the standard water treatment dosing formula.</small>`;
             
             document.getElementById('step2').innerHTML = 
-                `<strong>Step 2:</strong> Calculate chemical weight needed<br>
+                `<strong>Step 2: Calculate chemical weight needed</strong><br>
+                <em>Using the standard water treatment formula: Chemical weight = (Target concentration × Volume × Water density) ÷ (Chemical strength × Available chlorine)</em><br>
                 Dosage (lbs) = (${residualIncrease} mg/L × ${basinVolumeMG.toFixed(6)} MG × 8.34) ÷ (${hypochloriteConcentration.toFixed(2)} × ${availableChlorine})<br>
-                Dosage (lbs) = ${(residualIncrease * basinVolumeMG * 8.34).toFixed(6)} ÷ ${(hypochloriteConcentration * availableChlorine).toFixed(3)} = <strong>${dosageLbsPerDay.toFixed(4)} lbs</strong>`;
+                Dosage (lbs) = ${(residualIncrease * basinVolumeMG * 8.34).toFixed(6)} ÷ ${(hypochloriteConcentration * availableChlorine).toFixed(3)} = <strong>${dosageLbsPerDay.toFixed(4)} lbs</strong><br>
+                <small style="color: #6c757d; margin-top: 5px; display: block;">
+                    • 8.34 = lbs per gallon of water (density conversion factor)<br>
+                    • ${hypochloriteConcentration.toFixed(2)} = ${hypochloriteConcentrationPercent}% sodium hypochlorite concentration as decimal<br>
+                    • ${availableChlorine} = available chlorine factor (only 96% of the hypochlorite is available for disinfection)
+                </small>`;
             
             document.getElementById('step3').innerHTML = 
-                `<strong>Step 3:</strong> Convert weight to volume<br>
+                `<strong>Step 3: Convert chemical weight to solution volume</strong><br>
+                <em>Convert pounds of chemical needed to gallons of solution required using the solution's specific gravity.</em><br>
                 Volume (gal) = ${dosageLbsPerDay.toFixed(4)} lbs ÷ (${specificGravity} × 8.34)<br>
-                Volume (gal) = ${dosageLbsPerDay.toFixed(4)} ÷ ${(specificGravity * 8.34).toFixed(2)} = <strong>${dosageGallons.toFixed(4)} gallons</strong>`;
+                Volume (gal) = ${dosageLbsPerDay.toFixed(4)} ÷ ${(specificGravity * 8.34).toFixed(2)} = <strong>${dosageGallons.toFixed(4)} gallons</strong><br>
+                <small style="color: #6c757d; margin-top: 5px; display: block;">
+                    • ${specificGravity} = specific gravity of ${hypochloriteConcentrationPercent}% sodium hypochlorite solution (heavier than water)<br>
+                    • 8.34 = conversion factor to get solution weight per gallon
+                </small>`;
             
             document.getElementById('step4').innerHTML = 
-                `<strong>Summary:</strong> For ${basinVolume.toLocaleString()} gallons at ${hypochloriteConcentrationPercent}% concentration<br>
-                <strong>Required dosage:</strong> ${dosageGallons.toFixed(4)} gallons (${dosageMl.toFixed(0)} mL)`;
+                `<strong>Final Result Summary</strong><br>
+                <em>For a ${basinVolume.toLocaleString()}-gallon filter basin using ${hypochloriteConcentrationPercent}% sodium hypochlorite to achieve a ${residualIncrease} mg/L residual increase:</em><br><br>
+                <strong>Required dosage:</strong> ${dosageGallons.toFixed(4)} gallons (${dosageMl.toFixed(0)} mL)<br>
+                <strong>Chemical weight:</strong> ${dosageLbsPerDay.toFixed(4)} lbs of active chlorine<br>
+                <small style="color: #6c757d; margin-top: 8px; display: block;">
+                    This calculation accounts for the solution's specific gravity, available chlorine content, and uses standard water treatment industry formulas for accurate dosing.
+                </small>`;
             
             resultDiv.style.display = 'block';
             
