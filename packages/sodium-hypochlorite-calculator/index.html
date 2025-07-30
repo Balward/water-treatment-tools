@@ -326,10 +326,19 @@
             
             // Display results
             document.getElementById('dosageAmount').innerHTML = 
-                `<strong>${dosageLbsPerDay.toFixed(4)} lbs</strong> of 10% sodium hypochlorite solution`;
+                `<div style="text-align: center; margin: 20px 0;">
+                    <div style="font-size: 2.5em; font-weight: bold; color: #155724; margin-bottom: 10px;">
+                        ${dosageGallons.toFixed(4)} gallons
+                    </div>
+                    <div style="font-size: 2em; font-weight: bold; color: #155724; margin-bottom: 15px;">
+                        ${dosageMl.toFixed(0)} mL
+                    </div>
+                    <div style="font-size: 1.1em; color: #6c757d;">
+                        (${dosageLbsPerDay.toFixed(4)} lbs of 10% sodium hypochlorite solution)
+                    </div>
+                </div>`;
             
-            document.getElementById('dosageVolume').innerHTML = 
-                `<strong>Volume needed:</strong> ${dosageGallons.toFixed(4)} gallons = ${dosageOunces.toFixed(1)} fl oz = ${dosageMl.toFixed(0)} mL`;
+            document.getElementById('dosageVolume').innerHTML = '';
             
             // Show calculation steps
             document.getElementById('step1').innerHTML = 
