@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sodium Hypochlorite Dosing Calculator</title>
+    <title>Sodium Hypochlorite Filter Dosing Calculator</title>
     <style>
         * {
             box-sizing: border-box;
@@ -321,9 +321,9 @@
             />
           </div>
           <div class="brand-text">
-            <h1>Sodium Hypochlorite Dosing Calculator</h1>
+            <h1>Sodium Hypochlorite Filter Dosing Calculator</h1>
             <p class="tagline">
-              Calculate precise chemical dosing for water treatment systems
+              Calculate chemical addition to filter basins for residual increase
             </p>
           </div>
         </div>
@@ -331,7 +331,7 @@
 
       <main class="main-content">        
         <div class="input-section">
-            <h3 style="margin-top: 0; color: #2c3e50; margin-bottom: 25px;">System Parameters</h3>
+            <h3 style="margin-top: 0; color: #2c3e50; margin-bottom: 25px;">Filter Basin Parameters</h3>
             
             <div class="input-group">
                 <label for="basinVolume">Filter Basin Volume (gallons):</label>
@@ -350,15 +350,15 @@
             </div>
 
             <div class="input-group">
-                <label for="residualIncrease">Desired Residual Increase (mg/L or ppm):</label>
-                <input type="number" id="residualIncrease" step="0.1" min="0" placeholder="Enter desired increase (e.g., 1.0)">
+                <label for="residualIncrease">Desired Filter Basin Residual Increase (mg/L or ppm):</label>
+                <input type="number" id="residualIncrease" step="0.1" min="0" placeholder="Enter desired residual increase (e.g., 1.0)">
             </div>
 
-            <button onclick="calculateDosage()">Calculate Dosage</button>
+            <button onclick="calculateDosage()">Calculate Filter Basin Dosage</button>
         </div>
 
         <div id="result" class="result" style="display: none;">
-            <h3>Dosage Required</h3>
+            <h3>Filter Basin Dosage Required</h3>
             <p id="dosageAmount"></p>
             <p id="dosageVolume"></p>
             
@@ -381,7 +381,7 @@
             </div>
             
             <p style="margin-top: 20px; padding: 15px; background: #fff3cd; border-radius: 8px; border-left: 4px solid #ffc107;">
-                <strong>⚠️ Important Note:</strong> This calculation assumes uniform mixing and does not account for chlorine demand or decay. Always verify with residual testing and adjust based on actual system conditions.
+                <strong>⚠️ Important Note:</strong> This calculation is for filter basin chemical addition to increase residual levels. It assumes uniform mixing and does not account for chlorine demand or decay. Always verify with residual testing and adjust based on actual filter basin conditions.
             </p>
         </div>
 
