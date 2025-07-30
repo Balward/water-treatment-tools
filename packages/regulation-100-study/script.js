@@ -152,15 +152,8 @@ class RegulationStudyApp {
   }
 
   loadProgress() {
-    if (this.studyProgress.lastViewed && this.studyProgress.lastViewed !== 1) {
-      const shouldResume = confirm(
-        `You were last studying slide ${this.studyProgress.lastViewed}. Would you like to resume from there?`
-      );
-      
-      if (shouldResume) {
-        this.goToSlide(this.studyProgress.lastViewed);
-      }
-    }
+    // Progress is still tracked but no resume prompt is shown
+    // Users always start from slide 1
   }
 
   toggleBookmark() {
