@@ -20,26 +20,69 @@
         }
         
         .container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Header Styles */
+        .header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            padding: 1rem 0;
+        }
+
+        .brand {
             background: rgba(255, 255, 255, 0.95);
             border-radius: 16px;
-            padding: 2rem;
+            padding: 1.5rem;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            max-width: 800px;
-            margin: 0 auto;
         }
-        
-        h1 {
-            color: #2c3e50;
+
+        .header-top {
+            display: flex;
+            justify-content: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .logo-image {
+            height: 80px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        .brand-text {
             text-align: center;
-            margin-bottom: 30px;
-            font-size: 2.2em;
-            font-weight: 600;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .brand-text h1 {
+            color: #00677f;
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0 0 0.5rem 0;
+            line-height: 1.2;
+        }
+
+        .tagline {
+            color: #4a90a4;
+            font-size: 1.1rem;
+            font-weight: 400;
+            opacity: 0.8;
+            margin: 0;
         }
         
-        .back-button {
+        .back-to-dashboard-btn {
             background: rgba(0, 103, 127, 0.1);
             color: #00677f;
             border: 2px solid rgba(0, 103, 127, 0.2);
@@ -56,10 +99,12 @@
             margin-bottom: 1.5rem;
         }
         
-        .back-button:hover {
+        .back-to-dashboard-btn:hover {
             background: rgba(0, 103, 127, 0.2);
             transform: translateY(-2px);
             box-shadow: 0 4px 15px rgba(0, 103, 127, 0.3);
+            text-decoration: none;
+            color: #00677f;
         }
         
         .card {
@@ -71,6 +116,16 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
         
+        .main-content {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            flex: 1;
+        }
+
         .input-section {
             background: linear-gradient(145deg, #ffffff, #f8f9fa);
             border-radius: 12px;
@@ -251,10 +306,30 @@
 </head>
 <body>
     <div class="container">
-        <a href="../../" class="back-button">← Back to Dashboard</a>
-        
-        <h1>Sodium Hypochlorite Dosing Calculator</h1>
-        
+      <header class="header">
+        <div class="brand">
+          <div class="header-top">
+            <a href="../../" class="back-to-dashboard-btn">
+              ← Back to Dashboard
+            </a>
+          </div>
+          <div class="logo-container">
+            <img
+              src="../../city-logos/logo-vert.png"
+              alt="City Logo"
+              class="logo-image"
+            />
+          </div>
+          <div class="brand-text">
+            <h1>Sodium Hypochlorite Dosing Calculator</h1>
+            <p class="tagline">
+              Calculate precise chemical dosing for water treatment systems
+            </p>
+          </div>
+        </div>
+      </header>
+
+      <main class="main-content">        
         <div class="input-section">
             <h3 style="margin-top: 0; color: #2c3e50; margin-bottom: 25px;">System Parameters</h3>
             
@@ -311,6 +386,7 @@
         </div>
 
         <div id="error" class="error" style="display: none;"></div>
+      </main>
     </div>
 
     <script>
