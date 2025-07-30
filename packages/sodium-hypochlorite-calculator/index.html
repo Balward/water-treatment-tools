@@ -287,6 +287,132 @@
             font-weight: 500;
         }
         
+        .error-banner {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 8px 25px rgba(220, 53, 69, 0.4);
+            z-index: 1000;
+            max-width: 350px;
+            font-weight: 500;
+            display: none;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+        }
+        
+        .error-banner.show {
+            display: block;
+            transform: translateX(0);
+        }
+        
+        .error-banner-content {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .error-banner-icon {
+            font-size: 1.2em;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+        
+        .error-banner-message {
+            flex: 1;
+            line-height: 1.4;
+        }
+        
+        .error-banner-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2em;
+            cursor: pointer;
+            padding: 0;
+            margin-left: 10px;
+            opacity: 0.8;
+            transition: opacity 0.2s ease;
+            flex-shrink: 0;
+            width: auto;
+            min-width: auto;
+        }
+        
+        .error-banner-close:hover {
+            opacity: 1;
+            background: none;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .warning-banner {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #ffc107, #e0a800);
+            color: #856404;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 8px 25px rgba(255, 193, 7, 0.4);
+            z-index: 1000;
+            max-width: 350px;
+            font-weight: 500;
+            display: none;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+        }
+        
+        .warning-banner.show {
+            display: block;
+            transform: translateX(0);
+        }
+        
+        .warning-banner-content {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .warning-banner-icon {
+            font-size: 1.2em;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+        
+        .warning-banner-message {
+            flex: 1;
+            line-height: 1.4;
+        }
+        
+        .warning-banner-close {
+            background: none;
+            border: none;
+            color: #856404;
+            font-size: 1.2em;
+            cursor: pointer;
+            padding: 0;
+            margin-left: 10px;
+            opacity: 0.8;
+            transition: opacity 0.2s ease;
+            flex-shrink: 0;
+            width: auto;
+            min-width: auto;
+        }
+        
+        .warning-banner-close:hover {
+            opacity: 1;
+            background: none;
+            transform: none;
+            box-shadow: none;
+        }
+        
         .highlight {
             background: #fff3cd;
             padding: 2px 6px;
@@ -397,8 +523,62 @@
         <div id="error" class="error" style="display: none;"></div>
       </main>
     </div>
+    
+    <!-- Floating Error Banner -->
+    <div id="errorBanner" class="error-banner">
+        <div class="error-banner-content">
+            <span class="error-banner-icon">⚠️</span>
+            <span id="errorBannerMessage" class="error-banner-message"></span>
+            <button class="error-banner-close" onclick="hideErrorBanner()" aria-label="Close error message">×</button>
+        </div>
+    </div>
+    
+    <!-- Floating Warning Banner -->
+    <div id="warningBanner" class="warning-banner">
+        <div class="warning-banner-content">
+            <span class="warning-banner-icon">⚠️</span>
+            <span id="warningBannerMessage" class="warning-banner-message"></span>
+            <button class="warning-banner-close" onclick="hideWarningBanner()" aria-label="Close warning message">×</button>
+        </div>
+    </div>
 
     <script>
+        function showErrorBanner(message) {
+            const banner = document.getElementById('errorBanner');
+            const messageElement = document.getElementById('errorBannerMessage');
+            
+            messageElement.textContent = message;
+            banner.classList.add('show');
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                hideErrorBanner();
+            }, 5000);
+        }
+        
+        function hideErrorBanner() {
+            const banner = document.getElementById('errorBanner');
+            banner.classList.remove('show');
+        }
+        
+        function showWarningBanner(message) {
+            const banner = document.getElementById('warningBanner');
+            const messageElement = document.getElementById('warningBannerMessage');
+            
+            messageElement.textContent = message;
+            banner.classList.add('show');
+            
+            // Auto-hide after 7 seconds for warnings
+            setTimeout(() => {
+                hideWarningBanner();
+            }, 7000);
+        }
+        
+        function hideWarningBanner() {
+            const banner = document.getElementById('warningBanner');
+            banner.classList.remove('show');
+        }
+        
         function calculateDosage() {
             const residualIncrease = parseFloat(document.getElementById('residualIncrease').value);
             const basinVolume = parseFloat(document.getElementById('basinVolume').value);
@@ -406,31 +586,30 @@
             const errorDiv = document.getElementById('error');
             const resultDiv = document.getElementById('result');
             
+            // Hide old banners
+            hideErrorBanner();
+            hideWarningBanner();
             errorDiv.style.display = 'none';
             resultDiv.style.display = 'none';
             
             // Validation
             if (isNaN(residualIncrease) || residualIncrease <= 0) {
-                errorDiv.textContent = 'Please enter a valid positive number for residual increase.';
-                errorDiv.style.display = 'block';
+                showErrorBanner('Please enter a valid positive number for residual increase.');
                 return;
             }
             
             if (isNaN(basinVolume) || basinVolume <= 0) {
-                errorDiv.textContent = 'Please enter a valid positive number for basin volume.';
-                errorDiv.style.display = 'block';
+                showErrorBanner('Please enter a valid positive number for basin volume.');
                 return;
             }
             
             if (isNaN(hypochloriteConcentrationPercent) || hypochloriteConcentrationPercent <= 0 || hypochloriteConcentrationPercent > 100) {
-                errorDiv.textContent = 'Please enter a valid concentration between 0 and 100%.';
-                errorDiv.style.display = 'block';
+                showErrorBanner('Please enter a valid concentration between 0 and 100%.');
                 return;
             }
             
             if (residualIncrease > 10) {
-                errorDiv.textContent = 'Warning: Residual increase over 10 mg/L is unusually high. Please verify your input.';
-                errorDiv.style.display = 'block';
+                showWarningBanner('Warning: Residual increase over 10 mg/L is unusually high. Please verify your input.');
             }
             
             // Constants and conversions
