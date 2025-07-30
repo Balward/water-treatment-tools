@@ -246,14 +246,25 @@
         
         <h1>Sodium Hypochlorite Dosing Calculator</h1>
         
-        <div class="info">
-            <h3>System Information</h3>
-            <p><strong>Filter Basin Volume:</strong> <span class="highlight">35,400 gallons</span></p>
-            <p><strong>Sodium Hypochlorite Concentration:</strong> <span class="highlight">10%</span></p>
-            <p><strong>Purpose:</strong> Calculate the required dosage to increase chlorine residual in the filter basin.</p>
-        </div>
-
         <div class="input-section">
+            <h3 style="margin-top: 0; color: #2c3e50; margin-bottom: 25px;">System Parameters</h3>
+            
+            <div class="input-group">
+                <label for="basinVolume">Filter Basin Volume (gallons):</label>
+                <input type="number" id="basinVolume" step="1" min="0" value="35400" placeholder="Enter basin volume">
+                <small style="color: #6c757d; font-size: 0.9em; margin-top: 5px; display: block;">
+                    <em>Note: Our filters are typically 35,000 gallons</em>
+                </small>
+            </div>
+            
+            <div class="input-group">
+                <label for="hypochloriteConcentration">Sodium Hypochlorite Concentration (%):</label>
+                <input type="number" id="hypochloriteConcentration" step="0.1" min="0" max="100" value="10" placeholder="Enter concentration">
+                <small style="color: #6c757d; font-size: 0.9em; margin-top: 5px; display: block;">
+                    <em>Note: Our normal hypochlorite concentration is 10%</em>
+                </small>
+            </div>
+
             <div class="input-group">
                 <label for="residualIncrease">Desired Residual Increase (mg/L or ppm):</label>
                 <input type="number" id="residualIncrease" step="0.1" min="0" placeholder="Enter desired increase (e.g., 1.0)">
@@ -296,14 +307,29 @@
     <script>
         function calculateDosage() {
             const residualIncrease = parseFloat(document.getElementById('residualIncrease').value);
+            const basinVolume = parseFloat(document.getElementById('basinVolume').value);
+            const hypochloriteConcentrationPercent = parseFloat(document.getElementById('hypochloriteConcentration').value);
             const errorDiv = document.getElementById('error');
             const resultDiv = document.getElementById('result');
             
             errorDiv.style.display = 'none';
             resultDiv.style.display = 'none';
             
+            // Validation
             if (isNaN(residualIncrease) || residualIncrease <= 0) {
                 errorDiv.textContent = 'Please enter a valid positive number for residual increase.';
+                errorDiv.style.display = 'block';
+                return;
+            }
+            
+            if (isNaN(basinVolume) || basinVolume <= 0) {
+                errorDiv.textContent = 'Please enter a valid positive number for basin volume.';
+                errorDiv.style.display = 'block';
+                return;
+            }
+            
+            if (isNaN(hypochloriteConcentrationPercent) || hypochloriteConcentrationPercent <= 0 || hypochloriteConcentrationPercent > 100) {
+                errorDiv.textContent = 'Please enter a valid concentration between 0 and 100%.';
                 errorDiv.style.display = 'block';
                 return;
             }
@@ -313,9 +339,8 @@
                 errorDiv.style.display = 'block';
             }
             
-            // Constants
-            const basinVolume = 35400;
-            const hypochloriteConcentration = 0.10;
+            // Constants and conversions
+            const hypochloriteConcentration = hypochloriteConcentrationPercent / 100; // Convert % to decimal
             const conversionFactor = 8.34;
             
             // Main calculation
@@ -328,13 +353,13 @@
             document.getElementById('dosageAmount').innerHTML = 
                 `<div style="text-align: center; margin: 20px 0;">
                     <div style="font-size: 2.5em; font-weight: bold; color: #155724; margin-bottom: 10px;">
-                        ${dosageGallons.toFixed(4)} gallons
+                        ${dosageGallons.toFixed(2)} gallons
                     </div>
                     <div style="font-size: 2em; font-weight: bold; color: #155724; margin-bottom: 15px;">
                         ${dosageMl.toFixed(0)} mL
                     </div>
                     <div style="font-size: 1.1em; color: #6c757d;">
-                        (${dosageLbsPerDay.toFixed(4)} lbs of 10% sodium hypochlorite solution)
+                        (${dosageLbsPerDay.toFixed(4)} lbs of ${hypochloriteConcentrationPercent}% sodium hypochlorite solution)
                     </div>
                 </div>`;
             
@@ -343,21 +368,21 @@
             // Show calculation steps
             document.getElementById('step1').innerHTML = 
                 `<strong>Step 1:</strong> Calculate chemical weight needed<br>
-                Dosage (lbs) = (${residualIncrease} mg/L × 35,400 gal × 8.34) ÷ (0.10 × 1,000,000)<br>
-                Dosage (lbs) = ${(residualIncrease * basinVolume * conversionFactor).toLocaleString()} ÷ 100,000 = <strong>${dosageLbsPerDay.toFixed(4)} lbs</strong>`;
+                Dosage (lbs) = (${residualIncrease} mg/L × ${basinVolume.toLocaleString()} gal × 8.34) ÷ (${hypochloriteConcentration.toFixed(2)} × 1,000,000)<br>
+                Dosage (lbs) = ${(residualIncrease * basinVolume * conversionFactor).toLocaleString()} ÷ ${(hypochloriteConcentration * 1000000).toLocaleString()} = <strong>${dosageLbsPerDay.toFixed(4)} lbs</strong>`;
             
             document.getElementById('step2').innerHTML = 
                 `<strong>Step 2:</strong> Convert weight to volume<br>
                 Volume (gal) = Weight (lbs) ÷ (Concentration × 8.34 lbs/gal)<br>
-                Volume (gal) = ${dosageLbsPerDay.toFixed(4)} ÷ (0.10 × 8.34) = <strong>${dosageGallons.toFixed(4)} gallons</strong>`;
+                Volume (gal) = ${dosageLbsPerDay.toFixed(4)} ÷ (${hypochloriteConcentration.toFixed(2)} × 8.34) = <strong>${dosageGallons.toFixed(4)} gallons</strong>`;
             
             document.getElementById('step3').innerHTML = 
-                `<strong>Step 3:</strong> Convert to fluid ounces<br>
-                Volume (fl oz) = ${dosageGallons.toFixed(4)} gal × 128 fl oz/gal = <strong>${dosageOunces.toFixed(1)} fl oz</strong>`;
+                `<strong>Step 3:</strong> Convert to milliliters<br>
+                Volume (mL) = ${dosageGallons.toFixed(4)} gal × 3,785.41 mL/gal = <strong>${dosageMl.toFixed(0)} mL</strong>`;
             
             document.getElementById('step4').innerHTML = 
-                `<strong>Step 4:</strong> Convert to milliliters<br>
-                Volume (mL) = ${dosageGallons.toFixed(4)} gal × 3,785.41 mL/gal = <strong>${dosageMl.toFixed(0)} mL</strong>`;
+                `<strong>Summary:</strong> For ${basinVolume.toLocaleString()} gallons at ${hypochloriteConcentrationPercent}% concentration<br>
+                <strong>Required dosage:</strong> ${dosageGallons.toFixed(4)} gallons (${dosageMl.toFixed(0)} mL)`;
             
             resultDiv.style.display = 'block';
             
