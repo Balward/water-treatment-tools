@@ -5,104 +5,289 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sodium Hypochlorite Dosing Calculator</title>
     <style>
+        * {
+            box-sizing: border-box;
+        }
+        
         body {
-            font-family: Arial, sans-serif;
-            max-width: 600px;
-            margin: 50px auto;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
             padding: 20px;
-            background-color: #f5f5f5;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            line-height: 1.6;
         }
+        
         .container {
-            background-color: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
+        
         h1 {
             color: #2c3e50;
             text-align: center;
             margin-bottom: 30px;
+            font-size: 2.2em;
+            font-weight: 600;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        .input-group {
+        
+        .back-button {
+            display: inline-block;
             margin-bottom: 20px;
+            padding: 10px 20px;
+            background: #6c757d;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
         }
+        
+        .back-button:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+        
+        .card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .input-section {
+            background: linear-gradient(145deg, #ffffff, #f8f9fa);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
+        }
+        
+        .input-group {
+            margin-bottom: 25px;
+        }
+        
         label {
             display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #34495e;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 1.1em;
         }
+        
         input {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
             font-size: 16px;
-            box-sizing: border-box;
+            transition: all 0.3s ease;
+            background: white;
         }
+        
+        input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+        
         button {
             width: 100%;
-            padding: 15px;
-            background-color: #3498db;
+            padding: 18px;
+            background: linear-gradient(145deg, #3498db, #2980b9);
             color: white;
             border: none;
-            border-radius: 5px;
-            font-size: 16px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
             cursor: pointer;
-            margin-top: 20px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
+        
         button:hover {
-            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.3);
         }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
         .result {
-            margin-top: 25px;
-            padding: 20px;
-            background-color: #ecf0f1;
-            border-radius: 5px;
-            border-left: 5px solid #3498db;
+            margin-top: 30px;
+            padding: 25px;
+            background: linear-gradient(145deg, #d4edda, #c3e6cb);
+            border-radius: 12px;
+            border-left: 5px solid #28a745;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.2);
         }
+        
         .result h3 {
             margin-top: 0;
-            color: #2c3e50;
+            color: #155724;
+            font-size: 1.4em;
+            display: flex;
+            align-items: center;
         }
-        .info {
-            background-color: #e8f4f8;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            border-left: 5px solid #3498db;
+        
+        .result h3::before {
+            content: "🧪";
+            margin-right: 10px;
+            font-size: 1.2em;
         }
-        .error {
-            background-color: #f8e8e8;
-            color: #e74c3c;
+        
+        .calculation-steps {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .calculation-steps h4 {
+            color: #495057;
+            margin-top: 0;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            align-items: center;
+        }
+        
+        .calculation-steps h4::before {
+            content: "📊";
+            margin-right: 8px;
+        }
+        
+        .formula {
+            background: #e9ecef;
             padding: 10px;
             border-radius: 5px;
-            margin-top: 10px;
+            margin: 10px 0;
+            font-weight: bold;
+            color: #495057;
+        }
+        
+        .step {
+            margin: 15px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            border-left: 3px solid #007bff;
+        }
+        
+        .info {
+            background: linear-gradient(145deg, #e3f2fd, #bbdefb);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            border-left: 5px solid #2196f3;
+            box-shadow: 0 2px 8px rgba(33, 150, 243, 0.15);
+        }
+        
+        .info h3 {
+            margin-top: 0;
+            color: #0d47a1;
+            display: flex;
+            align-items: center;
+        }
+        
+        .info h3::before {
+            content: "ℹ️";
+            margin-right: 10px;
+        }
+        
+        .error {
+            background: linear-gradient(145deg, #f8d7da, #f5c6cb);
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border-left: 5px solid #dc3545;
+            font-weight: 500;
+        }
+        
+        .highlight {
+            background: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+            color: #856404;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                margin: 10px;
+                padding: 10px;
+            }
+            
+            .container {
+                padding: 25px;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <a href="../dashboard/" class="back-button">← Back to Dashboard</a>
+        
         <h1>Sodium Hypochlorite Dosing Calculator</h1>
         
         <div class="info">
-            <strong>System Information:</strong><br>
-            Filter Basin Volume: 35,400 gallons<br>
-            Sodium Hypochlorite Concentration: 10%
+            <h3>System Information</h3>
+            <p><strong>Filter Basin Volume:</strong> <span class="highlight">35,400 gallons</span></p>
+            <p><strong>Sodium Hypochlorite Concentration:</strong> <span class="highlight">10%</span></p>
+            <p><strong>Purpose:</strong> Calculate the required dosage to increase chlorine residual in the filter basin.</p>
         </div>
 
-        <div class="input-group">
-            <label for="residualIncrease">Desired Residual Increase (mg/L or ppm):</label>
-            <input type="number" id="residualIncrease" step="0.1" min="0" placeholder="Enter desired increase (e.g., 1.0)">
-        </div>
+        <div class="input-section">
+            <div class="input-group">
+                <label for="residualIncrease">Desired Residual Increase (mg/L or ppm):</label>
+                <input type="number" id="residualIncrease" step="0.1" min="0" placeholder="Enter desired increase (e.g., 1.0)">
+            </div>
 
-        <button onclick="calculateDosage()">Calculate Dosage</button>
+            <button onclick="calculateDosage()">Calculate Dosage</button>
+        </div>
 
         <div id="result" class="result" style="display: none;">
-            <h3>Dosage Required:</h3>
+            <h3>Dosage Required</h3>
             <p id="dosageAmount"></p>
             <p id="dosageVolume"></p>
-            <p><small><strong>Note:</strong> This calculation assumes uniform mixing and does not account for chlorine demand or decay. Always verify with residual testing.</small></p>
+            
+            <div id="calculations" class="calculation-steps">
+                <h4>How This Was Calculated</h4>
+                <div class="formula">Basic Formula: Dosage (lbs) = (Desired Increase × Volume × 8.34) ÷ (Chemical Strength × 1,000,000)</div>
+                
+                <div id="step1" class="step"></div>
+                <div id="step2" class="step"></div>
+                <div id="step3" class="step"></div>
+                <div id="step4" class="step"></div>
+                
+                <div style="margin-top: 15px; padding: 10px; background: #e3f2fd; border-radius: 5px;">
+                    <strong>Key Constants:</strong><br>
+                    • 8.34 = conversion factor (lbs per gallon of water)<br>
+                    • 1,000,000 = converts ppm to decimal<br>
+                    • 128 = fluid ounces per gallon<br>
+                    • 3,785.41 = milliliters per gallon
+                </div>
+            </div>
+            
+            <p style="margin-top: 20px; padding: 15px; background: #fff3cd; border-radius: 8px; border-left: 4px solid #ffc107;">
+                <strong>⚠️ Important Note:</strong> This calculation assumes uniform mixing and does not account for chlorine demand or decay. Always verify with residual testing and adjust based on actual system conditions.
+            </p>
         </div>
 
         <div id="error" class="error" style="display: none;"></div>
@@ -128,27 +313,69 @@
                 errorDiv.style.display = 'block';
             }
             
+            // Constants
             const basinVolume = 35400;
             const hypochloriteConcentration = 0.10;
             const conversionFactor = 8.34;
             
+            // Main calculation
             const dosageLbsPerDay = (residualIncrease * basinVolume * conversionFactor) / (hypochloriteConcentration * 1000000);
             const dosageGallons = dosageLbsPerDay / (hypochloriteConcentration * 8.34);
             const dosageOunces = dosageGallons * 128;
             const dosageMl = dosageGallons * 3785.41;
             
+            // Display results
             document.getElementById('dosageAmount').innerHTML = 
-                `<strong>${dosageLbsPerDay.toFixed(3)} lbs</strong> of 10% sodium hypochlorite`;
+                `<strong>${dosageLbsPerDay.toFixed(4)} lbs</strong> of 10% sodium hypochlorite solution`;
             
             document.getElementById('dosageVolume').innerHTML = 
-                `Volume needed: <strong>${dosageGallons.toFixed(3)} gallons</strong> or <strong>${dosageOunces.toFixed(1)} fl oz</strong> or <strong>${dosageMl.toFixed(0)} mL</strong>`;
+                `<strong>Volume needed:</strong> ${dosageGallons.toFixed(4)} gallons = ${dosageOunces.toFixed(1)} fl oz = ${dosageMl.toFixed(0)} mL`;
+            
+            // Show calculation steps
+            document.getElementById('step1').innerHTML = 
+                `<strong>Step 1:</strong> Calculate chemical weight needed<br>
+                Dosage (lbs) = (${residualIncrease} mg/L × 35,400 gal × 8.34) ÷ (0.10 × 1,000,000)<br>
+                Dosage (lbs) = ${(residualIncrease * basinVolume * conversionFactor).toLocaleString()} ÷ 100,000 = <strong>${dosageLbsPerDay.toFixed(4)} lbs</strong>`;
+            
+            document.getElementById('step2').innerHTML = 
+                `<strong>Step 2:</strong> Convert weight to volume<br>
+                Volume (gal) = Weight (lbs) ÷ (Concentration × 8.34 lbs/gal)<br>
+                Volume (gal) = ${dosageLbsPerDay.toFixed(4)} ÷ (0.10 × 8.34) = <strong>${dosageGallons.toFixed(4)} gallons</strong>`;
+            
+            document.getElementById('step3').innerHTML = 
+                `<strong>Step 3:</strong> Convert to fluid ounces<br>
+                Volume (fl oz) = ${dosageGallons.toFixed(4)} gal × 128 fl oz/gal = <strong>${dosageOunces.toFixed(1)} fl oz</strong>`;
+            
+            document.getElementById('step4').innerHTML = 
+                `<strong>Step 4:</strong> Convert to milliliters<br>
+                Volume (mL) = ${dosageGallons.toFixed(4)} gal × 3,785.41 mL/gal = <strong>${dosageMl.toFixed(0)} mL</strong>`;
             
             resultDiv.style.display = 'block';
+            
+            // Smooth scroll to results
+            setTimeout(() => {
+                resultDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
         }
         
         document.getElementById('residualIncrease').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 calculateDosage();
+            }
+        });
+        
+        // Add input validation styling
+        document.getElementById('residualIncrease').addEventListener('input', function(e) {
+            const value = parseFloat(e.target.value);
+            if (value > 10) {
+                e.target.style.borderColor = '#ffc107';
+                e.target.style.backgroundColor = '#fff3cd';
+            } else if (value > 0) {
+                e.target.style.borderColor = '#28a745';
+                e.target.style.backgroundColor = '#d4edda';
+            } else {
+                e.target.style.borderColor = '#e9ecef';
+                e.target.style.backgroundColor = 'white';
             }
         });
     </script>
