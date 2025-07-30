@@ -46,8 +46,14 @@
 
         .header-top {
             display: flex;
-            justify-content: flex-start;
+            justify-content: center;
             margin-bottom: 1rem;
+        }
+
+        .header-bottom {
+            display: flex;
+            justify-content: flex-start;
+            margin-top: 1.5rem;
         }
 
         .logo-container {
@@ -309,22 +315,24 @@
       <header class="header">
         <div class="brand">
           <div class="header-top">
-            <a href="../../" class="back-to-dashboard-btn">
-              ← Back to Dashboard
-            </a>
-          </div>
-          <div class="logo-container">
-            <img
-              src="../../city-logos/logo-vert.png"
-              alt="City Logo"
-              class="logo-image"
-            />
+            <div class="logo-container">
+              <img
+                src="../../city-logos/logo-vert.png"
+                alt="City Logo"
+                class="logo-image"
+              />
+            </div>
           </div>
           <div class="brand-text">
             <h1>Sodium Hypochlorite Filter Dosing Calculator</h1>
             <p class="tagline">
               Calculate chemical addition to filter basins for residual increase
             </p>
+          </div>
+          <div class="header-bottom">
+            <a href="../../" class="back-to-dashboard-btn">
+              ← Back to Dashboard
+            </a>
           </div>
         </div>
       </header>

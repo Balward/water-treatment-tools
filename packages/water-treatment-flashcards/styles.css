@@ -49,27 +49,26 @@ body {
 }
 
 .logo-image {
-  height: 60px;
+  height: 80px;
   width: auto;
+  object-fit: contain;
 }
 
 .brand-text {
   text-align: center;
 }
 
-.header h1 {
+.brand-text h1 {
+  color: #00677f;
   font-size: 2rem;
   font-weight: 700;
-  background: linear-gradient(45deg, #00677f, #4a90a4);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
   margin: 0 0 0.5rem 0;
+  line-height: 1.2;
 }
 
 .tagline {
-  font-size: 0.9rem;
-  color: #666;
+  color: #4a90a4;
+  font-size: 1.1rem;
   font-weight: 400;
   opacity: 0.8;
   margin: 0;
@@ -78,8 +77,14 @@ body {
 /* Header Top Section */
 .header-top {
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
   margin-bottom: 1rem;
+}
+
+.header-bottom {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 1.5rem;
 }
 
 .back-to-dashboard-btn {
