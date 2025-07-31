@@ -1270,6 +1270,18 @@ function updateUI() {
   updateHeaderActions();
 }
 
+function formatCommentsForDisplay(comments) {
+  if (!comments || comments === "None") {
+    return "None";
+  }
+  
+  // Split on pattern: find metrics like "Sample Time: 07:45" followed by space and next metric
+  // Look for: word(s) (possibly with parentheses): value, then space before next word(s):
+  const formatted = comments.replace(/(\w[\w\s()]*:\s*[^\s]+(?:\.\d+)?)\s+(?=\w[\w\s()]*:)/g, '$1<br>');
+  
+  return formatted;
+}
+
 function displaySheetInfo() {
   const sheetInfo = document.getElementById("sheetInfo");
 
@@ -1303,7 +1315,7 @@ function displaySheetInfo() {
         <td>${metadata.dosage || "N/A"}</td>
         <td>${sheetData.rowCount}</td>
         <td>${durationMinutes} min</td>
-        <td>${metadata.comments || "None"}</td>
+        <td>${formatCommentsForDisplay(metadata.comments)}</td>
       </tr>
     `;
   });
