@@ -1227,6 +1227,7 @@ function processWorkbook(workbook) {
       processedData[sheetName] = {
         metadata: {
           generatedDateTime: generatedDateTime,
+          runDateTime: formattedDateTime,
           protocol: protocol,
           chemistry: chemistry,
           dosage: dosage,
@@ -2192,13 +2193,49 @@ async function generateChartForParameter(
       // Get metadata for better legend labels
       const metadata = sheetData.metadata || {};
 
-      // Create a timestamp for the legend (mm/dd hh:mm format)
-      const now = new Date();
-      const month = (now.getMonth() + 1).toString().padStart(2, '0');
-      const day = now.getDate().toString().padStart(2, '0');
-      const hours = now.getHours().toString().padStart(2, '0');
-      const minutes = now.getMinutes().toString().padStart(2, '0');
-      const timestamp = `${month}/${day} ${hours}:${minutes}`;
+      // Create a timestamp for the legend from the run data (mm/dd hh:mm format)
+      let timestamp = "";
+      if (metadata.runDateTime) {
+        // Parse various formats from runDateTime and convert to mm/dd hh:mm
+        const runDateTime = metadata.runDateTime;
+        
+        // Try to extract date/time parts from different formats
+        let month, day, hour, minute;
+        
+        // Pattern: MM-DD-YYYY HH:MM or MM/DD/YYYY HH:MM
+        const usPattern = /(\d{1,2})[-\/](\d{1,2})[-\/]\d{4}\s+(\d{1,2}):(\d{2})/;
+        const usMatch = runDateTime.match(usPattern);
+        if (usMatch) {
+          [, month, day, hour, minute] = usMatch;
+          timestamp = `${month.padStart(2, '0')}/${day.padStart(2, '0')} ${hour.padStart(2, '0')}:${minute}`;
+        }
+        
+        // Pattern: YYYY-MM-DD HH:MM (ISO format)
+        if (!timestamp) {
+          const isoPattern = /\d{4}-(\d{1,2})-(\d{1,2})\s+(\d{1,2}):(\d{2})/;
+          const isoMatch = runDateTime.match(isoPattern);
+          if (isoMatch) {
+            [, month, day, hour, minute] = isoMatch;
+            timestamp = `${month.padStart(2, '0')}/${day.padStart(2, '0')} ${hour.padStart(2, '0')}:${minute}`;
+          }
+        }
+        
+        // Fallback: try to parse as Date object
+        if (!timestamp) {
+          try {
+            const dateObj = new Date(runDateTime);
+            if (!isNaN(dateObj.getTime())) {
+              const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+              const day = dateObj.getDate().toString().padStart(2, '0');
+              const hour = dateObj.getHours().toString().padStart(2, '0');
+              const minute = dateObj.getMinutes().toString().padStart(2, '0');
+              timestamp = `${month}/${day} ${hour}:${minute}`;
+            }
+          } catch (e) {
+            // Ignore parsing errors
+          }
+        }
+      }
 
       // Build legend label with timestamp prefix
       let baseLegendLabel =
@@ -2208,7 +2245,9 @@ async function generateChartForParameter(
         }` ||
         sheet;
 
-      const legendLabel = `${timestamp} - ${baseLegendLabel}`;
+      const legendLabel = timestamp 
+        ? `${timestamp} - ${baseLegendLabel}`
+        : baseLegendLabel;
 
       sheetSeries.push({
         sheetName: sheet,
