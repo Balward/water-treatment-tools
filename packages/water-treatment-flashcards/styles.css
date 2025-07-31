@@ -372,10 +372,10 @@ body {
 .flashcard-container {
   flex: 1;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 2rem 0;
+  gap: 2rem;
 }
 
 .flashcard {
@@ -383,7 +383,6 @@ body {
   max-width: 600px;
   height: 400px;
   perspective: 1000px;
-  margin-bottom: 2rem;
 }
 
 .card-inner {
@@ -477,113 +476,65 @@ body {
   max-width: 90%;
 }
 
-/* Card Actions */
-.card-actions {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-  margin-bottom: 2rem;
-}
-
-.action-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.8rem 1.5rem;
-  border: none;
-  border-radius: 25px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.difficulty-btn.easy {
-  background: linear-gradient(45deg, #4caf50, #66bb6a);
-  color: white;
-}
-
-.difficulty-btn.medium {
-  background: linear-gradient(45deg, #ff9800, #ffb74d);
-  color: white;
-}
-
-.difficulty-btn.hard {
-  background: linear-gradient(45deg, #f44336, #ef5350);
-  color: white;
-}
-
-.action-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-}
-
-.btn-icon {
-  font-size: 1.2rem;
-}
-
-/* Main Navigation Controls (directly under flashcard) */
-.main-navigation {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-  margin: 1.5rem 0;
-}
-
-.nav-control-btn {
+/* Side Navigation Buttons */
+.side-nav-btn {
   background: linear-gradient(45deg, #00677f, #4a90a4);
   color: white;
   border: none;
-  padding: 0.8rem 1.8rem;
-  border-radius: 25px;
-  font-size: 1rem;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  font-size: 1.5rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 12px rgba(0, 103, 127, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
-.nav-control-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 103, 127, 0.4);
+.side-nav-btn:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 6px 20px rgba(0, 103, 127, 0.4);
 }
 
-.nav-control-btn.shuffle-btn {
+.side-nav-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.side-nav-btn:disabled:hover {
+  transform: none;
+  box-shadow: 0 4px 12px rgba(0, 103, 127, 0.3);
+}
+
+/* Simple Controls */
+.simple-controls {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.control-btn {
   background: linear-gradient(45deg, #9c27b0, #ba68c8);
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 25px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
   box-shadow: 0 4px 12px rgba(156, 39, 176, 0.3);
 }
 
-.nav-control-btn.shuffle-btn:hover {
+.control-btn:hover {
+  transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(156, 39, 176, 0.4);
-}
-
-/* Secondary Controls */
-.secondary-controls {
-  display: flex;
-  justify-content: center;
-  gap: 0.8rem;
-  margin-bottom: 1.5rem;
-  flex-wrap: wrap;
-}
-
-.secondary-btn {
-  background: rgba(255, 255, 255, 0.8);
-  color: #00677f;
-  border: 1px solid rgba(0, 103, 127, 0.2);
-  padding: 0.6rem 1.2rem;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
-
-.secondary-btn:hover {
-  background: rgba(0, 103, 127, 0.1);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 /* Footer Styles */
@@ -793,6 +744,11 @@ body {
     gap: 1.5rem;
   }
 
+  .flashcard-container {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
   .flashcard {
     height: 350px;
   }
@@ -805,14 +761,17 @@ body {
     font-size: 1.1rem;
   }
 
-  .card-actions,
-  .navigation-controls,
-  .study-controls {
+  .side-nav-btn {
+    width: 50px;
+    height: 50px;
+    font-size: 1.2rem;
+  }
+
+  .simple-controls {
     flex-wrap: wrap;
     gap: 0.8rem;
   }
 
-  .action-btn,
   .control-btn {
     padding: 0.7rem 1.2rem;
     font-size: 0.9rem;
@@ -885,12 +844,12 @@ body {
     padding: 1.5rem;
   }
 
-  .card-actions {
+  .simple-controls {
     flex-direction: column;
     align-items: center;
   }
 
-  .action-btn {
+  .control-btn {
     width: 100%;
     max-width: 200px;
   }

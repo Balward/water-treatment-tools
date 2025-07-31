@@ -222,6 +222,9 @@
         </div>
 
         <main class="flashcard-container">
+          <!-- Navigation Controls on sides -->
+          <button class="side-nav-btn left" id="prevCard">←</button>
+          
           <div class="flashcard" id="flashcard">
             <div class="card-inner">
               <div class="card-front">
@@ -245,36 +248,13 @@
             </div>
           </div>
 
-          <!-- Main Navigation Controls directly under flashcard -->
-          <div class="main-navigation">
-            <button class="nav-control-btn" id="prevCard">← Previous</button>
-            <button class="nav-control-btn shuffle-btn" id="shuffleBtn">🔀 Shuffle</button>
-            <button class="nav-control-btn" id="nextCard">Next →</button>
-          </div>
-
-          <!-- Difficulty Rating -->
-          <div class="card-actions">
-            <button class="action-btn difficulty-btn easy" id="easyBtn">
-              <span class="btn-icon">😊</span>
-              Easy
-            </button>
-            <button class="action-btn difficulty-btn medium" id="mediumBtn">
-              <span class="btn-icon">🤔</span>
-              Medium
-            </button>
-            <button class="action-btn difficulty-btn hard" id="hardBtn">
-              <span class="btn-icon">😅</span>
-              Hard
-            </button>
-          </div>
+          <button class="side-nav-btn right" id="nextCard">→</button>
         </main>
 
-        <!-- Secondary Controls -->
-        <div class="secondary-controls">
-          <button class="secondary-btn" id="progressBtn">📊 Progress</button>
-          <button class="secondary-btn" id="favoriteBtn">⭐ Favorite</button>
-          <button class="secondary-btn" id="studyOptions">⚙️ Options</button>
-          <button class="secondary-btn" id="resetBtn">🔄 Reset</button>
+        <!-- Simple Controls -->
+        <div class="simple-controls">
+          <button class="control-btn" id="shuffleBtn">🔀 Shuffle</button>
+          <button class="control-btn" id="resetBtn">🔄 Reset</button>
         </div>
       </div>
 

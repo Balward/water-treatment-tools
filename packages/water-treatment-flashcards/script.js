@@ -590,38 +590,13 @@ class FlashcardApp {
       this.nextCard();
     });
 
-    // Difficulty buttons
-    document.getElementById('easyBtn').addEventListener('click', () => {
-      this.rateDifficulty('easy');
-    });
-
-    document.getElementById('mediumBtn').addEventListener('click', () => {
-      this.rateDifficulty('medium');
-    });
-
-    document.getElementById('hardBtn').addEventListener('click', () => {
-      this.rateDifficulty('hard');
-    });
-
     // Control buttons
     document.getElementById('shuffleBtn').addEventListener('click', () => {
       this.shuffleCards();
     });
 
-    document.getElementById('progressBtn').addEventListener('click', () => {
-      this.showProgress();
-    });
-
-    document.getElementById('favoriteBtn').addEventListener('click', () => {
-      this.toggleFavorite();
-    });
-
     document.getElementById('resetBtn').addEventListener('click', () => {
       this.resetProgress();
-    });
-
-    document.getElementById('studyOptions').addEventListener('click', () => {
-      this.showStudyOptions();
     });
 
     // Keyboard navigation
@@ -640,18 +615,6 @@ class FlashcardApp {
           case 'ArrowRight':
             e.preventDefault();
             this.nextCard();
-            break;
-          case '1':
-            this.rateDifficulty('easy');
-            break;
-          case '2':
-            this.rateDifficulty('medium');
-            break;
-          case '3':
-            this.rateDifficulty('hard');
-            break;
-          case 'f':
-            this.toggleFavorite();
             break;
           case 's':
             this.shuffleCards();
@@ -763,7 +726,6 @@ class FlashcardApp {
 
     this.displayCurrentCard();
     this.updateNavigationButtons();
-    this.updateFavoriteButton();
   }
 
   displayCurrentCard() {
@@ -778,7 +740,6 @@ class FlashcardApp {
     this.isFlipped = false;
     document.getElementById('flashcard').classList.remove('flipped');
 
-    this.updateFavoriteButton();
   }
 
   flipCard() {
@@ -834,141 +795,9 @@ class FlashcardApp {
     this.showToast('Cards shuffled!');
   }
 
-  rateDifficulty(difficulty) {
-    if (this.currentCards.length === 0) return;
 
-    const currentCard = this.currentCards[this.currentCardIndex];
-    const cardKey = `${this.currentBook}-${this.currentChapter || 'all'}-${currentCard.term}`;
-    
-    this.cardDifficulties[cardKey] = difficulty;
-    this.studyStats.cardsStudied++;
-    
-    if (difficulty === 'easy') {
-      this.studyStats.correctAnswers++;
-    }
 
-    this.saveData();
-    
-    // Visual feedback
-    const buttons = document.querySelectorAll('.difficulty-btn');
-    buttons.forEach(btn => btn.style.transform = 'scale(1)');
-    
-    const clickedBtn = document.getElementById(difficulty + 'Btn');
-    clickedBtn.style.transform = 'scale(1.1)';
-    
-    setTimeout(() => {
-      clickedBtn.style.transform = 'scale(1)';
-      this.nextCard();
-    }, 500);
 
-    this.showToast(`Marked as ${difficulty}!`);
-  }
-
-  toggleFavorite() {
-    if (this.currentCards.length === 0) return;
-
-    const currentCard = this.currentCards[this.currentCardIndex];
-    const cardKey = `${this.currentBook}-${this.currentChapter || 'all'}-${currentCard.term}`;
-    
-    if (this.favorites.has(cardKey)) {
-      this.favorites.delete(cardKey);
-      this.showToast('Removed from favorites');
-    } else {
-      this.favorites.add(cardKey);
-      this.showToast('Added to favorites');
-    }
-
-    this.saveData();
-    this.updateFavoriteButton();
-  }
-
-  updateFavoriteButton() {
-    if (this.currentCards.length === 0) return;
-
-    const currentCard = this.currentCards[this.currentCardIndex];
-    const cardKey = `${this.currentBook}-${this.currentChapter || 'all'}-${currentCard.term}`;
-    const favoriteBtn = document.getElementById('favoriteBtn');
-    
-    if (this.favorites.has(cardKey)) {
-      favoriteBtn.style.background = 'linear-gradient(45deg, #ffc107, #ffb300)';
-      favoriteBtn.textContent = '⭐ Favorited';
-    } else {
-      favoriteBtn.style.background = 'rgba(255, 255, 255, 0.9)';
-      favoriteBtn.style.color = '#00677f';
-      favoriteBtn.textContent = '⭐ Favorite';
-    }
-  }
-
-  showProgress() {
-    const totalCards = this.currentCards.length;
-    const studiedCount = this.studyStats.cardsStudied;
-    const accuracy = studiedCount > 0 ? Math.round((this.studyStats.correctAnswers / studiedCount) * 100) : 0;
-    const studyTime = this.studyStats.startTime ? Math.round((Date.now() - this.studyStats.startTime) / 60000) : 0;
-
-    const progressHTML = `
-      <div class="modal-content">
-        <h3>📊 Study Progress</h3>
-        <div class="progress-stats">
-          <div class="stat-item">
-            <span class="stat-value">${studiedCount}/${totalCards}</span>
-            <span class="stat-label">Cards Studied</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-value">${accuracy}%</span>
-            <span class="stat-label">Accuracy</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-value">${studyTime}</span>
-            <span class="stat-label">Minutes</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-value">${this.favorites.size}</span>
-            <span class="stat-label">Favorites</span>
-          </div>
-        </div>
-        <div class="modal-actions">
-          <button onclick="app.showFavoritesOnly()" class="modal-btn" ${this.favorites.size === 0 ? 'disabled' : ''}>
-            Study Favorites Only
-          </button>
-          <button onclick="app.closeModal()" class="modal-btn primary">Close</button>
-        </div>
-      </div>
-    `;
-
-    this.showModal(progressHTML);
-  }
-
-  showStudyOptions() {
-    const optionsHTML = `
-      <div class="modal-content">
-        <h3>⚙️ Study Options</h3>
-        <div class="option-group">
-          <h4>Study Mode</h4>
-          <button onclick="app.setStudyMode('sequential')" class="modal-btn ${this.studyMode === 'sequential' ? 'primary' : ''}">
-            Sequential Order
-          </button>
-          <button onclick="app.setStudyMode('random')" class="modal-btn ${this.studyMode === 'random' ? 'primary' : ''}">
-            Random Order
-          </button>
-        </div>
-        <div class="option-group">
-          <h4>Keyboard Shortcuts</h4>
-          <div class="shortcuts-info">
-            <p><strong>Space/Enter:</strong> Flip card</p>
-            <p><strong>←/→:</strong> Navigate cards</p>
-            <p><strong>1/2/3:</strong> Rate difficulty</p>
-            <p><strong>F:</strong> Toggle favorite</p>
-            <p><strong>S:</strong> Shuffle cards</p>
-          </div>
-        </div>
-        <div class="modal-actions">
-          <button onclick="app.closeModal()" class="modal-btn primary">Close</button>
-        </div>
-      </div>
-    `;
-
-    this.showModal(optionsHTML);
-  }
 
   setStudyMode(mode) {
     this.studyMode = mode;
@@ -1039,8 +868,7 @@ class FlashcardApp {
       this.saveData();
       this.displayCurrentCard();
       this.updateNavigationButtons();
-      this.updateFavoriteButton();
-      
+        
       document.getElementById('totalCards').textContent = this.currentCards.length;
       
       this.showToast('Progress reset successfully!');
