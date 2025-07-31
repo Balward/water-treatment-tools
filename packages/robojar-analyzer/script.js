@@ -2192,20 +2192,15 @@ async function generateChartForParameter(
       // Get metadata for better legend labels
       const metadata = sheetData.metadata || {};
 
-      // Create a short date string from generatedDateTime if available
-      let shortDate = "";
-      if (
-        metadata.generatedDateTime &&
-        metadata.generatedDateTime !== "Unknown"
-      ) {
-        const datePart = metadata.generatedDateTime.split(" ")[0]; // Get just the date part
-        if (datePart && datePart.includes("-")) {
-          const [year, month, day] = datePart.split("-");
-          shortDate = `${month}/${day}`; // MM/DD format
-        }
-      }
+      // Create a timestamp for the legend (mm/dd hh:mm format)
+      const now = new Date();
+      const month = (now.getMonth() + 1).toString().padStart(2, '0');
+      const day = now.getDate().toString().padStart(2, '0');
+      const hours = now.getHours().toString().padStart(2, '0');
+      const minutes = now.getMinutes().toString().padStart(2, '0');
+      const timestamp = `${month}/${day} ${hours}:${minutes}`;
 
-      // Build legend label with optional date prefix
+      // Build legend label with timestamp prefix
       let baseLegendLabel =
         metadata.legendLabel ||
         `${metadata.chemistry || "Unknown"}/${metadata.dosage || "0"}/${
@@ -2213,9 +2208,7 @@ async function generateChartForParameter(
         }` ||
         sheet;
 
-      const legendLabel = shortDate
-        ? `${shortDate} - ${baseLegendLabel}`
-        : baseLegendLabel;
+      const legendLabel = `${timestamp} - ${baseLegendLabel}`;
 
       sheetSeries.push({
         sheetName: sheet,
