@@ -2195,9 +2195,9 @@ async function generateChartForParameter(
 
       // Create a timestamp for the legend from the run data (mm/dd hh:mm format)
       let timestamp = "";
-      if (metadata.runDateTime) {
-        // Parse various formats from runDateTime and convert to mm/dd hh:mm
-        const runDateTime = metadata.runDateTime;
+      if (metadata.sheetTitle) {
+        // Parse various formats from sheetTitle and convert to mm/dd hh:mm
+        const runDateTime = metadata.sheetTitle;
         
         // Try to extract date/time parts from different formats
         let month, day, hour, minute;
