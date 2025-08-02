@@ -490,11 +490,25 @@
             }
 
             .btn {
-                padding: 12px 20px;
+                padding: 12px 16px;
                 font-size: 14px;
-                margin: 5px;
-                width: calc(50% - 10px);
+                margin: 5px 2px;
+                width: calc(50% - 4px);
                 display: inline-block;
+                text-align: center;
+            }
+
+            .form-actions {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 8px;
+            }
+
+            .form-actions .btn {
+                flex: 1 1 calc(50% - 4px);
+                min-width: 120px;
+                max-width: 200px;
             }
 
             .stats-cards {
@@ -643,7 +657,14 @@
 
             .btn {
                 width: 100%;
-                margin: 5px 0;
+                margin: 4px 0;
+                padding: 14px 20px;
+                font-size: 15px;
+            }
+
+            .form-actions .btn {
+                flex: 1 1 100%;
+                max-width: none;
             }
 
             .form-section {
@@ -843,6 +864,10 @@
                     <strong>💡 Quick Start:</strong> Enter your Fan Press run data below. All fields are optional, but more data provides better insights. Click "Load Demo Data" above to see sample data.
                 </div>
 
+                <div class="alert alert-success">
+                    <strong>📱 Cross-Device Sync:</strong> Use "Export Data" to save your data as a JSON file, then "Import Data" on another device to sync your records between phone and laptop.
+                </div>
+
                 <form id="fanPressForm">
                     <!-- Run Information & Speed Controls -->
                     <div class="form-section">
@@ -963,7 +988,10 @@
                     <div class="form-actions">
                         <button type="submit" class="btn btn-success">💾 Save Run Data</button>
                         <button type="button" class="btn btn-secondary" onclick="clearForm()">🗑️ Clear Form</button>
+                        <button type="button" class="btn" onclick="exportData()">📤 Export Data</button>
+                        <button type="button" class="btn" onclick="document.getElementById('importFile').click()">📥 Import Data</button>
                         <button type="button" class="btn btn-danger" onclick="clearAllData()">⚠️ Clear All Data</button>
+                        <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importData(event)">
                     </div>
                 </form>
 
@@ -1876,6 +1904,87 @@ NTU","GT Solids
             if (event.target === modal) {
                 closeMaxSolidsModal();
             }
+        }
+
+        // Export data
+        function exportData() {
+            if (fanPressData.length === 0) {
+                showAlert('No data to export. Add some Fan Press runs first.', 'warning');
+                return;
+            }
+
+            try {
+                const exportObj = {
+                    exportDate: new Date().toISOString(),
+                    version: '1.0',
+                    appName: 'Fan Press Data Tracker',
+                    dataCount: fanPressData.length,
+                    data: fanPressData
+                };
+
+                const dataStr = JSON.stringify(exportObj, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(dataBlob);
+                link.download = `fan-press-data-${new Date().toISOString().split('T')[0]}.json`;
+                
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                showAlert(`Successfully exported ${fanPressData.length} records to JSON file.`, 'success');
+            } catch (error) {
+                console.error('Export error:', error);
+                showAlert('Error exporting data. Please try again.', 'warning');
+            }
+        }
+
+        // Import data
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    
+                    // Validate the imported data
+                    if (!importedData.data || !Array.isArray(importedData.data)) {
+                        throw new Error('Invalid file format');
+                    }
+
+                    const importCount = importedData.data.length;
+                    const currentCount = fanPressData.length;
+
+                    // Ask user how to handle the import
+                    const action = confirm(`This will import ${importCount} records.\n\nClick OK to ADD to existing data (${currentCount} records).\nClick Cancel to REPLACE all existing data.`);
+
+                    if (action) {
+                        // Add to existing data
+                        fanPressData = [...fanPressData, ...importedData.data];
+                        showAlert(`Successfully imported ${importCount} records. Total: ${fanPressData.length}`, 'success');
+                    } else {
+                        // Replace existing data
+                        fanPressData = [...importedData.data];
+                        showAlert(`Successfully replaced all data with ${importCount} imported records.`, 'success');
+                    }
+
+                    // Save and refresh UI
+                    saveDataToStorage();
+                    updateDataSummary();
+                    updateDataTable();
+
+                } catch (error) {
+                    console.error('Import error:', error);
+                    showAlert('Error importing data. Please check the file format and try again.', 'warning');
+                }
+            };
+            
+            reader.readAsText(file);
+            // Clear the input so the same file can be imported again
+            event.target.value = '';
         }
 
         // Show alert
