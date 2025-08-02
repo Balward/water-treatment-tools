@@ -1918,7 +1918,8 @@ NTU","GT Solids
             }
 
             const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-            const wsUrl = `${protocol}//${window.location.hostname}:3002`;
+            // Use same domain as current page, with WebSocket path
+            const wsUrl = `${protocol}//${window.location.host}/ws`;
             
             try {
                 ws = new WebSocket(wsUrl);
