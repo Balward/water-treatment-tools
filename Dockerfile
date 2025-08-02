@@ -37,12 +37,12 @@ COPY nginx.conf /etc/nginx/nginx.conf
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
 
-# Expose ports 80 (nginx) and 3001 (WebSocket server)
-EXPOSE 80 3001
+# Expose ports 80 (nginx) and 3002 (WebSocket server)
+EXPOSE 80 3002
 
 # Add health check for both services
 HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
-  CMD curl -f http://localhost/ && curl -f http://localhost:3001/health || exit 1
+  CMD curl -f http://localhost/ && curl -f http://localhost:3002/health || exit 1
 
 # Start both nginx and Node.js server
 CMD ["/start.sh"]

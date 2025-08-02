@@ -8,7 +8,7 @@ services:
     restart: unless-stopped
     ports:
       - "6767:80"
-      - "3001:3001"  # WebSocket server port
+      - "3002:3002"  # WebSocket server port
     environment:
       - TZ=America/New_York  # Adjust to your timezone
     labels:
