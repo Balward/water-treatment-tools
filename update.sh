@@ -151,6 +151,7 @@ echo "🌐 Application URLs:"
 echo "   • Dashboard: http://$(hostname -I | awk '{print $1}'):6767/"
 echo "   • RoboJar Analyzer: http://$(hostname -I | awk '{print $1}'):6767/robojar-analyzer/"
 echo "   • Dose Predictor: http://$(hostname -I | awk '{print $1}'):6767/dose-predictor/"
+echo "   • Fan Press Tracker: http://$(hostname -I | awk '{print $1}'):6767/fan-press-tracker/"
 echo
 echo "📊 Container Status:"
 docker-compose ps --format "table {{.Name}}\t{{.Status}}\t{{.Ports}}"
