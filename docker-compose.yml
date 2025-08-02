@@ -8,6 +8,7 @@ services:
     restart: unless-stopped
     ports:
       - "6767:80"
+      - "3001:3001"  # WebSocket server port
     environment:
       - TZ=America/New_York  # Adjust to your timezone
     labels:
@@ -19,23 +20,7 @@ services:
     volumes:
       # Optional: Mount a volume for data persistence if needed
       - ./data:/usr/share/nginx/html/data:ro
-    networks:
-      - cerberusnet
-
-  fan-press-server:
-    build:
-      context: ./packages/fan-press-tracker
-      dockerfile: Dockerfile.server
-    image: fan-press-server:latest
-    container_name: fan-press-server
-    restart: unless-stopped
-    ports:
-      - "3001:3001"
-    environment:
-      - TZ=America/New_York
-      - NODE_ENV=production
-    volumes:
-      - fan-press-data:/app/data
+      - fan-press-data:/app/data  # WebSocket server data persistence
     networks:
       - cerberusnet
 

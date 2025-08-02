@@ -19,7 +19,10 @@
       "Bash(cmd /c 'move \"\"C:\\Users\\Blain\\Downloads\\DMR2025(1).xlsx\"\" \"\"C:\\Users\\Blain\\Downloads\\01_Data_Files\\\"\"')",
       "Bash(cmd /c 'move \"\"C:\\Users\\Blain\\Downloads\\DMR2025.xlsx\"\" \"\"C:\\Users\\Blain\\Downloads\\01_Data_Files\\\"\"')",
       "Bash(node:*)",
-      "Bash(docker build:*)"
+      "Bash(docker build:*)",
+      "Bash(docker-compose:*)",
+      "Bash(npm install)",
+      "Bash(rm:*)"
     ],
     "deny": []
   }

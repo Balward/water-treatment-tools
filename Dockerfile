@@ -1,8 +1,8 @@
 # Use nginx alpine image for lightweight static file serving
 FROM nginx:alpine
 
-# Install curl for health checks
-RUN apk add --no-cache curl
+# Install Node.js and npm for WebSocket server
+RUN apk add --no-cache curl nodejs npm
 
 # Set working directory
 WORKDIR /usr/share/nginx/html
@@ -20,15 +20,29 @@ COPY data/ ./data/
 COPY packages/dashboard/dashboard.html ./index.html
 COPY packages/dashboard/dashboard-styles.css ./dashboard-styles.css
 
+# Install Node.js dependencies for WebSocket server
+WORKDIR /usr/share/nginx/html/packages/fan-press-tracker
+RUN npm ci --only=production
+
+# Create data directory for WebSocket server
+RUN mkdir -p /app/data && chown nginx:nginx /app/data
+
+# Go back to web root
+WORKDIR /usr/share/nginx/html
+
 # Create nginx configuration
 COPY nginx.conf /etc/nginx/nginx.conf
 
-# Expose port 80
-EXPOSE 80
+# Copy startup script
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
 
-# Add health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost/ || exit 1
+# Expose ports 80 (nginx) and 3001 (WebSocket server)
+EXPOSE 80 3001
 
-# Start nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Add health check for both services
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
+  CMD curl -f http://localhost/ && curl -f http://localhost:3001/health || exit 1
+
+# Start both nginx and Node.js server
+CMD ["/start.sh"]
