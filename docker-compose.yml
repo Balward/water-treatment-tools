@@ -8,29 +8,17 @@ services:
     restart: unless-stopped
     ports:
       - "6767:80"
-      - "3002:3002"  # WebSocket server port
     environment:
       - TZ=America/New_York  # Adjust to your timezone
     labels:
       - "traefik.enable=true"
-      # Main HTTP service for web content
-      - "traefik.http.routers.water-treatment-web.rule=Host(`water-treatment.yourdomain.com`)"
-      - "traefik.http.routers.water-treatment-web.priority=1"
-      - "traefik.http.routers.water-treatment-web.tls=true"
-      - "traefik.http.routers.water-treatment-web.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.water-treatment-web.service=water-treatment-web"
-      - "traefik.http.services.water-treatment-web.loadbalancer.server.port=80"
-      # WebSocket and API service (higher priority)
-      - "traefik.http.routers.water-treatment-ws.rule=Host(`water-treatment.yourdomain.com`) && (Path(`/ws`) || PathPrefix(`/api`) || Path(`/health`))"
-      - "traefik.http.routers.water-treatment-ws.priority=2"
-      - "traefik.http.routers.water-treatment-ws.tls=true"
-      - "traefik.http.routers.water-treatment-ws.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.water-treatment-ws.service=water-treatment-ws"
-      - "traefik.http.services.water-treatment-ws.loadbalancer.server.port=3002"
+      - "traefik.http.routers.water-treatment.rule=Host(`water-treatment.yourdomain.com`)"
+      - "traefik.http.routers.water-treatment.tls=true"
+      - "traefik.http.routers.water-treatment.tls.certresolver=letsencrypt"
+      - "traefik.http.services.water-treatment.loadbalancer.server.port=80"
     volumes:
       # Optional: Mount a volume for data persistence if needed
       - ./data:/usr/share/nginx/html/data:ro
-      - fan-press-data:/app/data  # WebSocket server data persistence
     networks:
       - cerberusnet
 
@@ -54,9 +42,6 @@ services:
 networks:
   cerberusnet:
     external: true
-
-volumes:
-  fan-press-data:
 
 # Alternative compose file for simple local deployment
 ---
