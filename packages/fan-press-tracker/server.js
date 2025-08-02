@@ -5,7 +5,10 @@ const fs = require('fs');
 
 const app = express();
 const server = require('http').createServer(app);
-const wss = new WebSocket.Server({ server });
+const wss = new WebSocket.Server({ 
+    server,
+    path: '/ws'
+});
 
 // Store data in memory and optionally persist to file
 let fanPressData = [];
