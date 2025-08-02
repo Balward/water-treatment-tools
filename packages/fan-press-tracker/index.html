@@ -290,8 +290,14 @@
 
         .charts-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 25px;
+        }
+
+        @media (max-width: 600px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         .chart-container {
@@ -299,6 +305,10 @@
             padding: 25px;
             border-radius: 12px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+            overflow: hidden;
         }
 
         .chart-container h4 {
@@ -310,6 +320,14 @@
         .chart-wrapper {
             height: 300px;
             position: relative;
+            width: 100%;
+            max-width: 100%;
+            overflow: hidden;
+        }
+
+        .chart-wrapper canvas {
+            max-width: 100% !important;
+            height: auto !important;
         }
 
         .stats-cards {
@@ -1433,6 +1451,9 @@ NTU","GT Solids
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    layout: {
+                        padding: 10
+                    },
                     scales: {
                         x: {
                             title: {
@@ -1489,6 +1510,9 @@ NTU","GT Solids
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    layout: {
+                        padding: 10
+                    },
                     scales: {
                         x: {
                             type: isTimeData ? 'time' : 'linear',
@@ -1559,6 +1583,9 @@ NTU","GT Solids
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    layout: {
+                        padding: 10
+                    },
                     scales: {
                         x: {
                             title: {
@@ -1618,6 +1645,9 @@ NTU","GT Solids
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    layout: {
+                        padding: 10
+                    },
                     scales: {
                         y: {
                             min: -1,
