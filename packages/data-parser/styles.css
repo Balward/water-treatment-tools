@@ -273,19 +273,20 @@ input[type="file"] {
 }
 
 .date-group label {
-    font-weight: 600;
-    color: #495057;
-    font-size: 0.95rem;
+    font-weight: 700;
+    color: #2c5aa0;
+    font-size: 1.1rem;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
 }
 
 .date-group label::before {
-    content: "🕐";
-    font-size: 0.9rem;
+    content: "📅";
+    font-size: 1.2rem;
 }
 
 .discharge-periods-section {
@@ -460,19 +461,24 @@ input[type="file"] {
     position: relative;
 }
 
-input[type="datetime-local"] {
+input[type="datetime-local"],
+input[type="date"] {
     width: 100%;
-    padding: 1rem 1.25rem;
+    padding: 1.25rem 1.5rem;
     border: 2px solid #e9ecef;
     border-radius: 12px;
-    font-size: 1rem;
+    font-size: 1.2rem;
     font-family: inherit;
+    font-weight: 500;
     background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+    color: #495057;
+    letter-spacing: 0.5px;
 }
 
-input[type="datetime-local"]:focus {
+input[type="datetime-local"]:focus,
+input[type="date"]:focus {
     outline: none;
     border-color: #2c5aa0;
     background: #ffffff;
@@ -480,9 +486,12 @@ input[type="datetime-local"]:focus {
     transform: translateY(-1px);
 }
 
-input[type="datetime-local"]:hover:not(:focus) {
+input[type="datetime-local"]:hover:not(:focus),
+input[type="date"]:hover:not(:focus) {
     border-color: #adb5bd;
     background: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .process-button-section {
@@ -525,6 +534,27 @@ input[type="datetime-local"]:hover:not(:focus) {
 
 .btn-secondary:hover:not(:disabled) {
     box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+}
+
+.test-data-section {
+    text-align: center;
+    padding: 1.5rem;
+    background: linear-gradient(145deg, #e8f5e8 0%, #d4edda 100%);
+    border-radius: 12px;
+    margin: 1.5rem 0;
+    border: 1px solid rgba(40, 167, 69, 0.2);
+}
+
+.test-data-section .btn {
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+}
+
+.test-data-description {
+    color: #155724;
+    font-size: 0.95rem;
+    margin: 0;
+    font-style: italic;
 }
 
 .results {
