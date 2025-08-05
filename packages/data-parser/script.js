@@ -4,6 +4,12 @@ let dailyMaxResults = [];
 let dischargePeriods = [];
 let dataSource = 'none'; // 'none', 'files', 'test'
 
+// Calendar state
+let currentMonth = new Date().getMonth();
+let currentYear = new Date().getFullYear();
+let selectedStartDate = null;
+let selectedEndDate = null;
+
 console.log('Script loaded - Updated version with new Daily Max table format');
 
 // Log management functions
@@ -94,49 +100,8 @@ document.addEventListener('DOMContentLoaded', function() {
         checkFiles(); 
     });
     
-    // Initialize Flatpickr date pickers with calendar update callbacks
-    const startPicker = flatpickr("#startDate", {
-        dateFormat: "Y-m-d",
-        altInput: true,
-        altFormat: "F j, Y",
-        allowInput: true,
-        clickOpens: true,
-        placeholder: "Select start date...",
-        onChange: function(selectedDates, dateStr) {
-            console.log('Start date changed:', dateStr, selectedDates);
-            setTimeout(() => {
-                updateCalendarDisplay();
-                updateDateRangeInfo();
-            }, 10);
-        }
-    });
-    
-    const endPicker = flatpickr("#endDate", {
-        dateFormat: "Y-m-d", 
-        altInput: true,
-        altFormat: "F j, Y",
-        allowInput: true,
-        clickOpens: true,
-        placeholder: "Select end date...",
-        onChange: function(selectedDates, dateStr) {
-            console.log('End date changed:', dateStr, selectedDates);
-            setTimeout(() => {
-                updateCalendarDisplay();
-                updateDateRangeInfo();
-            }, 10);
-        }
-    });
-    
-    // Store picker references globally for debugging
-    window.startPicker = startPicker;
-    window.endPicker = endPicker;
-    
-    // Initialize calendar display
-    setTimeout(() => {
-        console.log('Initializing calendar display...');
-        updateCalendarDisplay();
-        updateDateRangeInfo();
-    }, 100);
+    // Initialize interactive calendar
+    initializeCalendar();
 });
 
 function handleFileUpload(fileInputId) {
@@ -204,18 +169,49 @@ function checkFiles() {
     }
 }
 
-// Calendar Display Functions
+// Interactive Calendar Functions
+function initializeCalendar() {
+    // Set up navigation buttons
+    document.getElementById('prevMonth').addEventListener('click', () => {
+        currentMonth--;
+        if (currentMonth < 0) {
+            currentMonth = 11;
+            currentYear--;
+        }
+        renderCalendar();
+    });
+    
+    document.getElementById('nextMonth').addEventListener('click', () => {
+        currentMonth++;
+        if (currentMonth > 11) {
+            currentMonth = 0;
+            currentYear++;
+        }
+        renderCalendar();
+    });
+    
+    // Set up reset button
+    document.getElementById('resetDates').addEventListener('click', () => {
+        selectedStartDate = null;
+        selectedEndDate = null;
+        updateDateRangeInfo();
+        renderCalendar();
+    });
+    
+    // Initial render
+    renderCalendar();
+    updateDateRangeInfo();
+}
+
 function updateDateRangeInfo() {
-    const startDate = document.getElementById('startDate').value;
-    const endDate = document.getElementById('endDate').value;
     const dateRangeInfo = document.getElementById('dateRangeInfo');
     const dateRangeText = document.getElementById('dateRangeText');
     
-    if (startDate || endDate) {
-        const startText = startDate ? new Date(startDate).toLocaleDateString('en-US', { 
+    if (selectedStartDate || selectedEndDate) {
+        const startText = selectedStartDate ? selectedStartDate.toLocaleDateString('en-US', { 
             year: 'numeric', month: 'long', day: 'numeric' 
         }) : 'Not selected';
-        const endText = endDate ? new Date(endDate).toLocaleDateString('en-US', { 
+        const endText = selectedEndDate ? selectedEndDate.toLocaleDateString('en-US', { 
             year: 'numeric', month: 'long', day: 'numeric' 
         }) : 'Not selected';
         
@@ -226,106 +222,31 @@ function updateDateRangeInfo() {
     }
 }
 
-function updateCalendarDisplay() {
-    console.log('updateCalendarDisplay called');
-    
-    // Try getting dates from both the visible input and the Flatpickr instances
-    const startDateInput = document.getElementById('startDate');
-    const endDateInput = document.getElementById('endDate');
+function renderCalendar() {
     const calendarContent = document.getElementById('calendarContent');
+    const currentMonthYear = document.getElementById('currentMonthYear');
     
-    let startDate = startDateInput ? startDateInput.value : '';
-    let endDate = endDateInput ? endDateInput.value : '';
-    
-    // Try getting dates from Flatpickr instances if available
-    if (window.startPicker && window.startPicker.selectedDates.length > 0) {
-        startDate = window.startPicker.formatDate(window.startPicker.selectedDates[0], 'Y-m-d');
-    }
-    if (window.endPicker && window.endPicker.selectedDates.length > 0) {
-        endDate = window.endPicker.formatDate(window.endPicker.selectedDates[0], 'Y-m-d');
-    }
-    
-    console.log('Start date value:', startDate);
-    console.log('End date value:', endDate);
-    console.log('Calendar content element:', calendarContent);
-    
-    if (!calendarContent) {
-        console.error('Calendar content element not found!');
-        return;
-    }
-    
-    if (!startDate && !endDate) {
-        console.log('No dates selected, showing default message');
-        calendarContent.innerHTML = '<div class="text-center text-gray-500 py-8">Select start and end dates to see calendar view</div>';
-        return;
-    }
-    
-    const start = startDate ? new Date(startDate) : null;
-    const end = endDate ? new Date(endDate) : null;
-    
-    console.log('Parsed dates - Start:', start, 'End:', end);
-    
-    // Determine which month(s) to show
-    const monthsToShow = getMonthsToShow(start, end);
-    console.log('Months to show:', monthsToShow);
-    
-    let calendarHTML = '';
-    monthsToShow.forEach(date => {
-        calendarHTML += generateMonthCalendar(date, start, end);
+    // Update month/year display
+    const monthName = new Date(currentYear, currentMonth).toLocaleDateString('en-US', { 
+        month: 'long', year: 'numeric' 
     });
+    currentMonthYear.textContent = monthName;
     
-    console.log('Generated calendar HTML length:', calendarHTML.length);
-    calendarContent.innerHTML = calendarHTML;
+    // Generate calendar HTML
+    const html = generateInteractiveCalendar();
+    calendarContent.innerHTML = html;
+    
+    // Add click handlers to calendar days
+    addCalendarClickHandlers();
 }
 
-function getMonthsToShow(start, end) {
-    console.log('getMonthsToShow called with:', start, end);
-    const months = [];
-    
-    if (!start && !end) {
-        console.log('No start or end date, returning empty array');
-        return months;
-    }
-    
-    const baseDate = start || end;
-    console.log('Base date:', baseDate);
-    months.push(new Date(baseDate.getFullYear(), baseDate.getMonth(), 1));
-    
-    if (start && end && (start.getFullYear() !== end.getFullYear() || start.getMonth() !== end.getMonth())) {
-        console.log('Different months detected, adding additional months');
-        const current = new Date(start.getFullYear(), start.getMonth(), 1);
-        const endMonth = new Date(end.getFullYear(), end.getMonth(), 1);
-        
-        while (current < endMonth) {
-            current.setMonth(current.getMonth() + 1);
-            if (current <= endMonth) {
-                months.push(new Date(current));
-            }
-        }
-    }
-    
-    console.log('Final months array:', months);
-    return months;
-}
-
-function generateMonthCalendar(monthDate, startDate, endDate) {
-    console.log('generateMonthCalendar called for:', monthDate, 'with date range:', startDate, endDate);
-    
-    const year = monthDate.getFullYear();
-    const month = monthDate.getMonth();
-    
-    const monthName = monthDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-    console.log('Generating calendar for:', monthName);
-    
-    // Get first day of month and number of days
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
+function generateInteractiveCalendar() {
+    const firstDay = new Date(currentYear, currentMonth, 1);
+    const lastDay = new Date(currentYear, currentMonth + 1, 0);
     const daysInMonth = lastDay.getDate();
     const startingDayOfWeek = firstDay.getDay();
     
-    let html = `<div class="mb-4">
-                  <div class="calendar-month-header">${monthName}</div>
-                  <div class="calendar-grid">`;
+    let html = '<div class="calendar-grid">';
     
     // Day headers
     const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -335,21 +256,21 @@ function generateMonthCalendar(monthDate, startDate, endDate) {
     
     // Empty cells for days before month starts
     for (let i = 0; i < startingDayOfWeek; i++) {
-        const prevMonthDay = new Date(year, month, -(startingDayOfWeek - 1 - i));
+        const prevMonthDay = new Date(currentYear, currentMonth, -(startingDayOfWeek - 1 - i));
         html += `<div class="calendar-day other-month">${prevMonthDay.getDate()}</div>`;
     }
     
     // Days of the month
     for (let day = 1; day <= daysInMonth; day++) {
-        const currentDate = new Date(year, month, day);
+        const currentDate = new Date(currentYear, currentMonth, day);
         const dateString = currentDate.toISOString().split('T')[0];
         
-        let classes = 'calendar-day current-month';
+        let classes = 'calendar-day current-month interactive';
         
         // Determine if this day is in the selected range
-        if (startDate && endDate) {
-            const start = startDate.toISOString().split('T')[0];
-            const end = endDate.toISOString().split('T')[0];
+        if (selectedStartDate && selectedEndDate) {
+            const start = selectedStartDate.toISOString().split('T')[0];
+            const end = selectedEndDate.toISOString().split('T')[0];
             
             if (dateString === start && dateString === end) {
                 classes += ' single-day';
@@ -360,13 +281,13 @@ function generateMonthCalendar(monthDate, startDate, endDate) {
             } else if (dateString > start && dateString < end) {
                 classes += ' in-range';
             }
-        } else if (startDate && dateString === startDate.toISOString().split('T')[0]) {
+        } else if (selectedStartDate && dateString === selectedStartDate.toISOString().split('T')[0]) {
             classes += ' start-date';
-        } else if (endDate && dateString === endDate.toISOString().split('T')[0]) {
+        } else if (selectedEndDate && dateString === selectedEndDate.toISOString().split('T')[0]) {
             classes += ' end-date';
         }
         
-        html += `<div class="${classes}">${day}</div>`;
+        html += `<div class="${classes}" data-date="${dateString}">${day}</div>`;
     }
     
     // Fill remaining cells
@@ -377,8 +298,53 @@ function generateMonthCalendar(monthDate, startDate, endDate) {
         html += `<div class="calendar-day other-month">${i}</div>`;
     }
     
-    html += '</div></div>';
+    html += '</div>';
     return html;
+}
+
+function addCalendarClickHandlers() {
+    const interactiveDays = document.querySelectorAll('.calendar-day.interactive');
+    
+    interactiveDays.forEach(day => {
+        day.addEventListener('click', (e) => {
+            const dateString = e.target.getAttribute('data-date');
+            const clickedDate = new Date(dateString);
+            
+            handleDateClick(clickedDate);
+        });
+    });
+}
+
+function handleDateClick(clickedDate) {
+    if (!selectedStartDate) {
+        // First click - set start date
+        selectedStartDate = clickedDate;
+        selectedEndDate = null;
+    } else if (!selectedEndDate) {
+        // Second click - set end date
+        if (clickedDate >= selectedStartDate) {
+            selectedEndDate = clickedDate;
+        } else {
+            // If clicked date is before start date, make it the new start date
+            selectedEndDate = selectedStartDate;
+            selectedStartDate = clickedDate;
+        }
+    } else {
+        // Third click - reset and set new start date
+        selectedStartDate = clickedDate;
+        selectedEndDate = null;
+    }
+    
+    updateDateRangeInfo();
+    renderCalendar();
+}
+
+// Helper function to get selected date values for other parts of the application
+function getSelectedDateRange() {
+    return {
+        startDate: selectedStartDate ? selectedStartDate.toISOString().split('T')[0] : '',
+        endDate: selectedEndDate ? selectedEndDate.toISOString().split('T')[0] : ''
+    };
 }
 
 function addDischargePeriod() {
@@ -826,8 +792,9 @@ async function loadTestData() {
 async function calculateMWATAndDailyMax() {
     const file1 = document.getElementById('file1');
     const file2 = document.getElementById('file2');
-    const startDate = document.getElementById('startDate').value;
-    const endDate = document.getElementById('endDate').value;
+    const dateRange = getSelectedDateRange();
+    const startDate = dateRange.startDate;
+    const endDate = dateRange.endDate;
     
     clearLog();
     

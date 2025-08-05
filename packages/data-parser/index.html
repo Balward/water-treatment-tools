@@ -79,8 +79,15 @@
             font-size: 12px;
             font-weight: 500;
             border-radius: 4px;
-            cursor: default;
+            cursor: pointer;
             transition: all 0.2s ease;
+            position: relative;
+        }
+        
+        .calendar-day.interactive:hover {
+            transform: scale(1.1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            z-index: 10;
         }
         
         .calendar-day.other-month {
@@ -231,42 +238,52 @@
                     <h2 class="text-2xl font-bold text-gray-800">Pick Reporting Date Range</h2>
                 </div>
                 
-                <div class="grid lg:grid-cols-2 gap-8">
-                    <!-- Left Side: Date Pickers -->
-                    <div class="space-y-6">
-                        <div class="space-y-3">
-                            <label for="startDate" class="block text-sm font-bold text-gray-700 uppercase tracking-wide flex items-center gap-2">
-                                📅 Start Date
-                            </label>
-                            <input type="text" id="startDate" placeholder="Select start date..." 
-                                   class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:ring-4 focus:ring-primary-100 transition-all duration-300 text-lg font-medium bg-white hover:border-gray-300" />
-                        </div>
-                        <div class="space-y-3">
-                            <label for="endDate" class="block text-sm font-bold text-gray-700 uppercase tracking-wide flex items-center gap-2">
-                                📅 End Date
-                            </label>
-                            <input type="text" id="endDate" placeholder="Select end date..." 
-                                   class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:ring-4 focus:ring-primary-100 transition-all duration-300 text-lg font-medium bg-white hover:border-gray-300" />
-                        </div>
-                        <div id="dateRangeInfo" class="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl p-4 border border-purple-200 hidden">
-                            <div class="text-sm font-semibold text-purple-700 mb-1">Selected Range:</div>
-                            <div id="dateRangeText" class="text-purple-600"></div>
+                <!-- Interactive Calendar -->
+                <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-6 border border-gray-200">
+                    <div class="text-center mb-6">
+                        <h3 class="text-xl font-bold text-gray-800 flex items-center justify-center gap-2 mb-2">
+                            📅 Select Reporting Date Range
+                        </h3>
+                        <p class="text-sm text-gray-600">Click to select start date, then click to select end date</p>
+                    </div>
+                    
+                    <!-- Date Range Info -->
+                    <div id="dateRangeInfo" class="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl p-4 border border-purple-200 mb-6 hidden">
+                        <div class="text-center">
+                            <div class="text-sm font-semibold text-purple-700 mb-1">Selected Reporting Period:</div>
+                            <div id="dateRangeText" class="text-lg font-bold text-purple-600"></div>
                         </div>
                     </div>
                     
-                    <!-- Right Side: Calendar Display -->
-                    <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-6 border border-gray-200">
-                        <div class="text-center mb-4">
-                            <h3 class="text-lg font-bold text-gray-800 flex items-center justify-center gap-2">
-                                📅 Date Range Calendar
-                            </h3>
-                            <p class="text-sm text-gray-600 mt-1">Visual representation of selected reporting period</p>
+                    <!-- Calendar Navigation -->
+                    <div class="flex items-center justify-between mb-4">
+                        <button id="prevMonth" class="bg-white hover:bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-gray-600 hover:text-gray-800 transition-all duration-200 flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                            </svg>
+                            Previous
+                        </button>
+                        <div id="currentMonthYear" class="text-lg font-bold text-gray-800"></div>
+                        <button id="nextMonth" class="bg-white hover:bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-gray-600 hover:text-gray-800 transition-all duration-200 flex items-center gap-2">
+                            Next
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <!-- Interactive Calendar -->
+                    <div id="calendarDisplay" class="bg-white rounded-xl p-4 shadow-inner border border-gray-200">
+                        <div id="calendarContent" class="text-center text-gray-500 py-8">
+                            Loading calendar...
                         </div>
-                        <div id="calendarDisplay" class="bg-white rounded-xl p-4 shadow-inner border border-gray-200">
-                            <div id="calendarContent" class="text-center text-gray-500 py-8">
-                                Select start and end dates to see calendar view
-                            </div>
-                        </div>
+                    </div>
+                    
+                    <!-- Reset Button -->
+                    <div class="text-center mt-4">
+                        <button id="resetDates" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200">
+                            Clear Selection
+                        </button>
                     </div>
                 </div>
             </div>
@@ -374,6 +391,6 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script src="script.js?v=1735987200"></script>
+    <script src="script.js?v=1735988000"></script>
 </body>
 </html>
