@@ -748,9 +748,9 @@ function displayMWATResults(rawData, dailyMax, mwat) {
                     <thead>
                         <tr class="bg-gradient-to-r from-orange-600 via-orange-700 to-amber-700 text-white">
                             <th class="px-6 py-5 text-left font-bold text-sm uppercase tracking-wider">Date</th>
-                            <th class="px-6 py-5 text-left font-bold text-sm uppercase tracking-wider">Daily Maximum (°C)</th>
                             <th class="px-6 py-5 text-left font-bold text-sm uppercase tracking-wider">Time Range</th>
-                            <th class="px-6 py-5 text-left font-bold text-sm uppercase tracking-wider">Readings in 2-Hour Window</th>
+                            <th class="px-6 py-5 text-left font-bold text-sm uppercase tracking-wider">Daily Maximum (°C)</th>
+                            <th class="px-6 py-5 text-left font-bold text-sm uppercase tracking-wider">Status</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -761,16 +761,18 @@ function displayMWATResults(rawData, dailyMax, mwat) {
     topDailyMax.forEach((day, index) => {
         const rowClass = index % 2 === 0 ? 'bg-gradient-to-r from-orange-50/50 to-amber-50/50' : 'bg-white';
         const isHighest = index === 0;
-        const tempClass = isHighest ? 'text-2xl font-black text-transparent bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text' : 'text-xl font-bold text-orange-700';
+        const statusClass = isHighest 
+            ? 'bg-gradient-to-r from-yellow-400 to-orange-400 text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg animate-pulse' 
+            : 'bg-gradient-to-r from-orange-500 to-amber-500 text-white px-4 py-2 rounded-full text-xs font-bold shadow-md';
+        const statusText = isHighest ? '🏆 MAX VALUE' : '🌡️ Daily Max';
+        const tempClass = isHighest ? 'text-2xl font-black text-transparent bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text' : 'text-xl font-bold text-orange-700';
         
         tableHTML += `
             <tr class="${rowClass} hover:bg-gradient-to-r hover:from-orange-100 hover:to-amber-100 transition-all duration-300 border-b border-orange-100/50">
                 <td class="px-6 py-4 font-semibold text-gray-800">${day.date.toLocaleDateString()}</td>
-                <td class="px-6 py-4 ${tempClass}">${day.temperature.toFixed(3)}</td>
                 <td class="px-6 py-4 text-gray-600 font-medium">${day.timeRange}</td>
-                <td class="px-6 py-4 text-center">
-                    <span class="bg-gradient-to-r from-gray-500 to-gray-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-md">${day.readingCount}</span>
-                </td>
+                <td class="px-6 py-4 ${tempClass}">${day.temperature.toFixed(3)}</td>
+                <td class="px-6 py-4"><span class="${statusClass}">${statusText}</span></td>
             </tr>
         `;
     });
