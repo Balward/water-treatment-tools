@@ -741,7 +741,7 @@ function displayMWATResults(rawData, dailyMax, mwat) {
 
         <div class="bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 rounded-3xl p-8 border border-orange-200 shadow-2xl">
             <h3 class="text-2xl font-bold text-transparent bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text mb-6 flex items-center gap-3">
-                🌡️ Top Daily Maximum Temperatures (2-Hour Rolling Averages)
+                🌡️ Top Daily Maximum Temperatures (UPDATED FORMAT)
             </h3>
             <div class="overflow-hidden rounded-2xl shadow-lg bg-white border border-orange-100">
                 <table class="w-full">
