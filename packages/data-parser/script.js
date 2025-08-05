@@ -82,10 +82,24 @@ function clearLog() {
 
 // Initialize
 document.addEventListener('DOMContentLoaded', function() {
+    // Set up all file inputs
     document.getElementById('file1').addEventListener('change', function() { 
         updateFileDisplay('file1'); 
         checkFiles(); 
     });
+    
+    document.getElementById('file2').addEventListener('change', function() { 
+        updateIndividualFileDisplay('file2', 'File 1'); 
+        checkFiles(); 
+    });
+    
+    document.getElementById('file3').addEventListener('change', function() { 
+        updateIndividualFileDisplay('file3', 'File 2'); 
+        checkFiles(); 
+    });
+    
+    // Set up drag and drop functionality
+    setupDragAndDrop();
     
     // Initialize Flatpickr date pickers
     flatpickr("#startDate", {
@@ -149,11 +163,87 @@ function formatFileSize(bytes) {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
-function checkFiles() {
+// Set up drag and drop functionality
+function setupDragAndDrop() {
+    const dropArea = document.getElementById('file1-wrapper');
     const fileInput = document.getElementById('file1');
-    const processBtn = document.getElementById('processBtn');
+    
+    // Prevent default drag behaviors
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropArea.addEventListener(eventName, preventDefaults, false);
+        document.body.addEventListener(eventName, preventDefaults, false);
+    });
+    
+    // Highlight drop area when item is dragged over it
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropArea.addEventListener(eventName, highlight, false);
+    });
+    
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropArea.addEventListener(eventName, unhighlight, false);
+    });
+    
+    // Handle dropped files
+    dropArea.addEventListener('drop', handleDrop, false);
+    
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+    
+    function highlight(e) {
+        dropArea.classList.add('border-primary-500', 'bg-primary-100/50', 'scale-102');
+        dropArea.classList.remove('border-gray-300');
+    }
+    
+    function unhighlight(e) {
+        dropArea.classList.remove('border-primary-500', 'bg-primary-100/50', 'scale-102');
+        dropArea.classList.add('border-gray-300');
+    }
+    
+    function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        
+        // Update the file input with dropped files
+        fileInput.files = files;
+        
+        // Trigger the change event to update display
+        const changeEvent = new Event('change', { bubbles: true });
+        fileInput.dispatchEvent(changeEvent);
+        
+        addLogMessage(`${files.length} file(s) dropped successfully`, 'success');
+    }
+}
+
+// Update display for individual file inputs
+function updateIndividualFileDisplay(fileInputId, label) {
+    const fileInput = document.getElementById(fileInputId);
+    const labelElement = document.querySelector(`label[for="${fileInputId}"]`);
     
     if (fileInput.files.length > 0) {
+        const fileName = fileInput.files[0].name;
+        const fileSize = formatFileSize(fileInput.files[0].size);
+        labelElement.innerHTML = `📄 ${label}: ${fileName} (${fileSize})`;
+        labelElement.classList.add('text-green-700', 'font-semibold');
+        fileInput.classList.add('border-green-400');
+    } else {
+        labelElement.innerHTML = `📂 ${label}:`;
+        labelElement.classList.remove('text-green-700', 'font-semibold');
+        fileInput.classList.remove('border-green-400');
+    }
+}
+
+function checkFiles() {
+    const file1 = document.getElementById('file1');
+    const file2 = document.getElementById('file2');
+    const file3 = document.getElementById('file3');
+    const processBtn = document.getElementById('processBtn');
+    
+    // Check if we have files in any of the inputs
+    const hasFiles = file1.files.length > 0 || file2.files.length > 0 || file3.files.length > 0;
+    
+    if (hasFiles) {
         processBtn.disabled = false;
     } else {
         processBtn.disabled = true;
@@ -578,7 +668,9 @@ async function loadTestData() {
 }
 
 async function calculateMWATAndDailyMax() {
-    const fileInput = document.getElementById('file1');
+    const file1 = document.getElementById('file1');
+    const file2 = document.getElementById('file2');
+    const file3 = document.getElementById('file3');
     const startDate = document.getElementById('startDate').value;
     const endDate = document.getElementById('endDate').value;
     
@@ -589,13 +681,34 @@ async function calculateMWATAndDailyMax() {
         if (temperatureData.length === 0) {
             addLogMessage('Reading uploaded CSV files...', 'info');
             
+            // Collect all files from different inputs
+            const allFiles = [];
+            
+            // Add files from drag & drop area
+            for (let i = 0; i < file1.files.length; i++) {
+                allFiles.push(file1.files[i]);
+            }
+            
+            // Add files from individual inputs
+            if (file2.files.length > 0) {
+                allFiles.push(file2.files[0]);
+            }
+            if (file3.files.length > 0) {
+                allFiles.push(file3.files[0]);
+            }
+            
+            if (allFiles.length === 0) {
+                addLogMessage('No files selected. Please upload CSV files first.', 'error');
+                return;
+            }
+            
             // Read all files
             const allData = [];
-            for (let i = 0; i < fileInput.files.length; i++) {
-                const text = await fileInput.files[i].text();
+            for (let i = 0; i < allFiles.length; i++) {
+                const text = await allFiles[i].text();
                 const data = parseCSV(text);
                 allData.push(data);
-                addLogMessage(`Parsed ${data.length} records from ${fileInput.files[i].name}`, 'success');
+                addLogMessage(`Parsed ${data.length} records from ${allFiles[i].name}`, 'success');
             }
             
             // Combine all files

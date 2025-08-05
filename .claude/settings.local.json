@@ -25,7 +25,8 @@
       "Bash(rm:*)",
       "Bash(start \"C:\\Users\\Blain\\OneDrive\\Documents\\water-treatment-tools\\packages\\data-parser\\index.html\")",
       "Bash(cmd /c start:*)",
-      "Bash(start:*)"
+      "Bash(start:*)",
+      "Bash(ls:*)"
     ],
     "deny": []
   }
