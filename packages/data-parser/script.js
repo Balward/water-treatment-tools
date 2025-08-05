@@ -2,6 +2,7 @@ let temperatureData = [];
 let mwatResults = [];
 let dailyMaxResults = [];
 let dischargePeriods = [];
+let dataSource = 'none'; // 'none', 'files', 'test'
 
 console.log('Script loaded - Updated version with new Daily Max table format');
 
@@ -82,24 +83,16 @@ function clearLog() {
 
 // Initialize
 document.addEventListener('DOMContentLoaded', function() {
-    // Set up all file inputs
+    // Set up file inputs
     document.getElementById('file1').addEventListener('change', function() { 
-        updateFileDisplay('file1'); 
+        handleFileUpload('file1'); 
         checkFiles(); 
     });
     
     document.getElementById('file2').addEventListener('change', function() { 
-        updateIndividualFileDisplay('file2', 'File 1'); 
+        handleFileUpload('file2'); 
         checkFiles(); 
     });
-    
-    document.getElementById('file3').addEventListener('change', function() { 
-        updateIndividualFileDisplay('file3', 'File 2'); 
-        checkFiles(); 
-    });
-    
-    // Set up drag and drop functionality
-    setupDragAndDrop();
     
     // Initialize Flatpickr date pickers
     flatpickr("#startDate", {
@@ -121,37 +114,26 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-function updateFileDisplay(fileInputId) {
+function handleFileUpload(fileInputId) {
     const fileInput = document.getElementById(fileInputId);
-    const wrapper = document.getElementById(fileInputId + '-wrapper');
-    const display = wrapper.querySelector('.file-input-display');
-    const textElement = display.querySelector('.file-input-text');
-    const subtextElement = display.querySelector('.file-input-subtext');
-    const iconElement = display.querySelector('.file-input-icon');
+    const statusDiv = document.getElementById(fileInputId + '-status');
     
     if (fileInput.files.length > 0) {
-        wrapper.classList.remove('border-gray-300', 'hover:border-primary-400', 'hover:bg-primary-50/50');
-        wrapper.classList.add('border-green-400', 'bg-green-50/50');
+        const file = fileInput.files[0];
+        statusDiv.textContent = `${file.name} (${formatFileSize(file.size)})`;
+        statusDiv.classList.add('text-green-600', 'font-semibold');
+        statusDiv.classList.remove('text-gray-500');
         
-        if (fileInput.files.length === 1) {
-            textElement.textContent = fileInput.files[0].name;
-            subtextElement.textContent = `File selected (${formatFileSize(fileInput.files[0].size)})`;
-        } else {
-            textElement.textContent = `${fileInput.files.length} files selected`;
-            subtextElement.textContent = `Multiple files selected`;
+        // Clear test data if files are uploaded
+        if (dataSource === 'test') {
+            clearTestDataState();
+            addLogMessage('Uploaded files detected - cleared test data', 'info');
         }
-        iconElement.textContent = '✅';
-        textElement.classList.add('text-green-700');
-        subtextElement.classList.add('text-green-600');
+        dataSource = 'files';
     } else {
-        wrapper.classList.remove('border-green-400', 'bg-green-50/50');
-        wrapper.classList.add('border-gray-300', 'hover:border-primary-400', 'hover:bg-primary-50/50');
-        
-        textElement.textContent = 'Click to select file(s)';
-        subtextElement.textContent = 'Continuous temperature monitoring data - select multiple files if needed';
-        iconElement.textContent = '📁';
-        textElement.classList.remove('text-green-700');
-        subtextElement.classList.remove('text-green-600');
+        statusDiv.textContent = '';
+        statusDiv.classList.remove('text-green-600', 'font-semibold');
+        statusDiv.classList.add('text-gray-500');
     }
 }
 
@@ -163,87 +145,34 @@ function formatFileSize(bytes) {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
-// Set up drag and drop functionality
-function setupDragAndDrop() {
-    const dropArea = document.getElementById('file1-wrapper');
-    const fileInput = document.getElementById('file1');
-    
-    // Prevent default drag behaviors
-    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-        dropArea.addEventListener(eventName, preventDefaults, false);
-        document.body.addEventListener(eventName, preventDefaults, false);
-    });
-    
-    // Highlight drop area when item is dragged over it
-    ['dragenter', 'dragover'].forEach(eventName => {
-        dropArea.addEventListener(eventName, highlight, false);
-    });
-    
-    ['dragleave', 'drop'].forEach(eventName => {
-        dropArea.addEventListener(eventName, unhighlight, false);
-    });
-    
-    // Handle dropped files
-    dropArea.addEventListener('drop', handleDrop, false);
-    
-    function preventDefaults(e) {
-        e.preventDefault();
-        e.stopPropagation();
-    }
-    
-    function highlight(e) {
-        dropArea.classList.add('border-primary-500', 'bg-primary-100/50', 'scale-102');
-        dropArea.classList.remove('border-gray-300');
-    }
-    
-    function unhighlight(e) {
-        dropArea.classList.remove('border-primary-500', 'bg-primary-100/50', 'scale-102');
-        dropArea.classList.add('border-gray-300');
-    }
-    
-    function handleDrop(e) {
-        const dt = e.dataTransfer;
-        const files = dt.files;
-        
-        // Update the file input with dropped files
-        fileInput.files = files;
-        
-        // Trigger the change event to update display
-        const changeEvent = new Event('change', { bubbles: true });
-        fileInput.dispatchEvent(changeEvent);
-        
-        addLogMessage(`${files.length} file(s) dropped successfully`, 'success');
-    }
+function clearTestDataState() {
+    temperatureData = [];
+    dataSource = 'none';
+    addLogMessage('Test data cleared', 'info');
 }
 
-// Update display for individual file inputs
-function updateIndividualFileDisplay(fileInputId, label) {
-    const fileInput = document.getElementById(fileInputId);
-    const labelElement = document.querySelector(`label[for="${fileInputId}"]`);
-    
-    if (fileInput.files.length > 0) {
-        const fileName = fileInput.files[0].name;
-        const fileSize = formatFileSize(fileInput.files[0].size);
-        labelElement.innerHTML = `📄 ${label}: ${fileName} (${fileSize})`;
-        labelElement.classList.add('text-green-700', 'font-semibold');
-        fileInput.classList.add('border-green-400');
-    } else {
-        labelElement.innerHTML = `📂 ${label}:`;
-        labelElement.classList.remove('text-green-700', 'font-semibold');
-        fileInput.classList.remove('border-green-400');
-    }
+function clearFileInputs() {
+    document.getElementById('file1').value = '';
+    document.getElementById('file2').value = '';
+    document.getElementById('file1-status').textContent = '';
+    document.getElementById('file2-status').textContent = '';
+    document.getElementById('file1-status').classList.remove('text-green-600', 'font-semibold');
+    document.getElementById('file2-status').classList.remove('text-green-600', 'font-semibold');
+    document.getElementById('file1-status').classList.add('text-gray-500');
+    document.getElementById('file2-status').classList.add('text-gray-500');
+    addLogMessage('File inputs cleared', 'info');
 }
 
 function checkFiles() {
     const file1 = document.getElementById('file1');
     const file2 = document.getElementById('file2');
-    const file3 = document.getElementById('file3');
     const processBtn = document.getElementById('processBtn');
     
-    // Check if we have files in any of the inputs
-    const hasFiles = file1.files.length > 0 || file2.files.length > 0 || file3.files.length > 0;
+    // Check if we have files uploaded or test data loaded
+    const hasFiles = file1.files.length > 0 || file2.files.length > 0;
+    const hasData = dataSource === 'test' || hasFiles;
     
-    if (hasFiles) {
+    if (hasData) {
         processBtn.disabled = false;
     } else {
         processBtn.disabled = true;
@@ -636,6 +565,12 @@ function calculateMWAT(data) {
 async function loadTestData() {
     clearLog();
     
+    // Clear any uploaded files if test data is being loaded
+    if (dataSource === 'files') {
+        clearFileInputs();
+        addLogMessage('File uploads detected - cleared uploaded files', 'info');
+    }
+    
     try {
         addLogMessage('Loading test data from UST1A CSV files...', 'info');
         
@@ -669,25 +604,15 @@ async function loadTestData() {
         
         // Combine and process the test data
         temperatureData = combineMultipleFiles(allData);
+        dataSource = 'test';
         
-        // Update the file input display to show test data is loaded
-        const wrapper = document.getElementById('file1-wrapper');
-        const display = wrapper.querySelector('.file-input-display');
-        const textElement = display.querySelector('.file-input-text');
-        const subtextElement = display.querySelector('.file-input-subtext');
-        const iconElement = display.querySelector('.file-input-icon');
-        
-        wrapper.classList.remove('border-gray-300', 'hover:border-primary-400', 'hover:bg-primary-50/50');
-        wrapper.classList.add('border-secondary-400', 'bg-secondary-50/50');
-        
-        textElement.textContent = 'Test Data Loaded';
-        subtextElement.textContent = `${allData.length} UST1A files loaded (${temperatureData.length} total records)`;
-        iconElement.textContent = '🧪';
-        textElement.classList.add('text-secondary-700');
-        subtextElement.classList.add('text-secondary-600');
+        // Update the file status displays to show test data is loaded
+        document.getElementById('file1-status').textContent = `Test Data: ${allData.length} UST1A files (${temperatureData.length} records)`;
+        document.getElementById('file1-status').classList.add('text-secondary-600', 'font-semibold');
+        document.getElementById('file1-status').classList.remove('text-gray-500');
         
         // Enable the process button
-        document.getElementById('processBtn').disabled = false;
+        checkFiles();
         
         addLogMessage(`Test data loaded successfully! Combined ${temperatureData.length} temperature readings from ${allData.length} files.`, 'success');
         
@@ -699,31 +624,24 @@ async function loadTestData() {
 async function calculateMWATAndDailyMax() {
     const file1 = document.getElementById('file1');
     const file2 = document.getElementById('file2');
-    const file3 = document.getElementById('file3');
     const startDate = document.getElementById('startDate').value;
     const endDate = document.getElementById('endDate').value;
     
     clearLog();
     
     try {
-        // Check if we already have test data loaded, otherwise read from files
-        if (temperatureData.length === 0) {
+        // Check if we already have data loaded, otherwise read from files
+        if (temperatureData.length === 0 || dataSource === 'none') {
             addLogMessage('Reading uploaded CSV files...', 'info');
             
-            // Collect all files from different inputs
+            // Collect files from the two inputs
             const allFiles = [];
             
-            // Add files from drag & drop area
-            for (let i = 0; i < file1.files.length; i++) {
-                allFiles.push(file1.files[i]);
+            if (file1.files.length > 0) {
+                allFiles.push(file1.files[0]);
             }
-            
-            // Add files from individual inputs
             if (file2.files.length > 0) {
                 allFiles.push(file2.files[0]);
-            }
-            if (file3.files.length > 0) {
-                allFiles.push(file3.files[0]);
             }
             
             if (allFiles.length === 0) {
@@ -742,9 +660,10 @@ async function calculateMWATAndDailyMax() {
             
             // Combine all files
             temperatureData = combineMultipleFiles(allData);
+            dataSource = 'files';
             addLogMessage(`Combined data from ${allData.length} file(s) - ${temperatureData.length} total records`, 'success');
         } else {
-            addLogMessage(`Using previously loaded data (${temperatureData.length} records)`, 'info');
+            addLogMessage(`Using previously loaded data (${temperatureData.length} records from ${dataSource})`, 'info');
         }
         
         // Filter by date range if specified
