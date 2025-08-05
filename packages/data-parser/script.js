@@ -513,30 +513,37 @@ function displayMWATResults(rawData, dailyMax, mwat) {
         <h3 class="text-2xl font-bold text-green-800 mb-6 flex items-center gap-2">
             📊 DMR Calculation Results
         </h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-6 border border-blue-200 text-center">
-                <div class="text-3xl font-bold text-blue-700 mb-2">${overallMWAT.toFixed(2)}°C</div>
-                <div class="text-blue-600 font-semibold">Maximum Weekly Average Temperature (MWAT)</div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Left Column: MWAT -->
+            <div class="space-y-4">
+                <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-6 border border-blue-200 text-center">
+                    <div class="text-4xl font-bold text-blue-700 mb-2">${overallMWAT.toFixed(2)}°C</div>
+                    <div class="text-blue-600 font-semibold">Maximum Weekly Average Temperature (MWAT)</div>
+                </div>
+                <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-4 border border-gray-200 text-center">
+                    <div class="text-2xl font-bold text-gray-700 mb-1">${mwat.length}</div>
+                    <div class="text-gray-600 font-semibold">7-Day MWAT Periods</div>
+                </div>
+                <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-4 border border-gray-200 text-center">
+                    <div class="text-2xl font-bold text-gray-700 mb-1">${rawData.length}</div>
+                    <div class="text-gray-600 font-semibold">Total Temperature Readings</div>
+                </div>
             </div>
-            <div class="bg-gradient-to-br from-red-50 to-red-100 rounded-2xl p-6 border border-red-200 text-center">
-                <div class="text-3xl font-bold text-red-700 mb-2">${overallDailyMax.toFixed(2)}°C</div>
-                <div class="text-red-600 font-semibold">Highest Daily Maximum Temperature</div>
-            </div>
-            <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-2xl p-6 border border-green-200 text-center">
-                <div class="text-3xl font-bold text-green-700 mb-2">${rawData.length}</div>
-                <div class="text-green-600 font-semibold">Total Temperature Readings</div>
-            </div>
-            <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl p-6 border border-purple-200 text-center">
-                <div class="text-3xl font-bold text-purple-700 mb-2">${dailyMax.length}</div>
-                <div class="text-purple-600 font-semibold">Days with Daily Maximum</div>
-            </div>
-            <div class="bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-2xl p-6 border border-indigo-200 text-center">
-                <div class="text-3xl font-bold text-indigo-700 mb-2">${mwat.length}</div>
-                <div class="text-indigo-600 font-semibold">7-Day MWAT Periods</div>
-            </div>
-            <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-6 border border-gray-200 text-center">
-                <div class="text-xl font-bold text-gray-700 mb-2">${dateRange}</div>
-                <div class="text-gray-600 font-semibold">Date Range</div>
+            
+            <!-- Right Column: Daily Maximum -->
+            <div class="space-y-4">
+                <div class="bg-gradient-to-br from-orange-50 to-amber-100 rounded-2xl p-6 border border-orange-200 text-center">
+                    <div class="text-4xl font-bold text-orange-700 mb-2">${overallDailyMax.toFixed(2)}°C</div>
+                    <div class="text-orange-600 font-semibold">Highest Daily Maximum Temperature</div>
+                </div>
+                <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-4 border border-gray-200 text-center">
+                    <div class="text-2xl font-bold text-gray-700 mb-1">${dailyMax.length}</div>
+                    <div class="text-gray-600 font-semibold">Days with Daily Maximum</div>
+                </div>
+                <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-4 border border-gray-200 text-center">
+                    <div class="text-xl font-bold text-gray-700 mb-1">${dateRange}</div>
+                    <div class="text-gray-600 font-semibold">Date Range</div>
+                </div>
             </div>
         </div>
     `;
@@ -587,14 +594,14 @@ function displayMWATResults(rawData, dailyMax, mwat) {
             </div>
         </div>
 
-        <div class="bg-gradient-to-br from-red-50 via-pink-50 to-rose-50 rounded-3xl p-8 border border-red-200 shadow-2xl">
-            <h3 class="text-2xl font-bold text-transparent bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text mb-6 flex items-center gap-3">
+        <div class="bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 rounded-3xl p-8 border border-orange-200 shadow-2xl">
+            <h3 class="text-2xl font-bold text-transparent bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text mb-6 flex items-center gap-3">
                 🌡️ Top Daily Maximum Temperatures (2-Hour Rolling Averages)
             </h3>
-            <div class="overflow-hidden rounded-2xl shadow-lg bg-white border border-red-100">
+            <div class="overflow-hidden rounded-2xl shadow-lg bg-white border border-orange-100">
                 <table class="w-full">
                     <thead>
-                        <tr class="bg-gradient-to-r from-red-600 via-red-700 to-pink-700 text-white">
+                        <tr class="bg-gradient-to-r from-orange-600 via-orange-700 to-amber-700 text-white">
                             <th class="px-6 py-5 text-left font-bold text-sm uppercase tracking-wider">Date</th>
                             <th class="px-6 py-5 text-left font-bold text-sm uppercase tracking-wider">Daily Maximum (°C)</th>
                             <th class="px-6 py-5 text-left font-bold text-sm uppercase tracking-wider">Time Range</th>
@@ -607,12 +614,12 @@ function displayMWATResults(rawData, dailyMax, mwat) {
     // Show top 10 daily maximum temperatures
     const topDailyMax = [...dailyMax].sort((a, b) => b.temperature - a.temperature).slice(0, 10);
     topDailyMax.forEach((day, index) => {
-        const rowClass = index % 2 === 0 ? 'bg-gradient-to-r from-red-50/50 to-pink-50/50' : 'bg-white';
+        const rowClass = index % 2 === 0 ? 'bg-gradient-to-r from-orange-50/50 to-amber-50/50' : 'bg-white';
         const isHighest = index === 0;
-        const tempClass = isHighest ? 'text-2xl font-black text-transparent bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text' : 'text-xl font-bold text-red-700';
+        const tempClass = isHighest ? 'text-2xl font-black text-transparent bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text' : 'text-xl font-bold text-orange-700';
         
         tableHTML += `
-            <tr class="${rowClass} hover:bg-gradient-to-r hover:from-red-100 hover:to-pink-100 transition-all duration-300 border-b border-red-100/50">
+            <tr class="${rowClass} hover:bg-gradient-to-r hover:from-orange-100 hover:to-amber-100 transition-all duration-300 border-b border-orange-100/50">
                 <td class="px-6 py-4 font-semibold text-gray-800">${day.date.toLocaleDateString()}</td>
                 <td class="px-6 py-4 ${tempClass}">${day.temperature.toFixed(3)}</td>
                 <td class="px-6 py-4 text-gray-600 font-medium">${day.timeRange}</td>
