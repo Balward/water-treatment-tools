@@ -9,6 +9,25 @@ document.addEventListener('DOMContentLoaded', function() {
         updateFileDisplay('file1'); 
         checkFiles(); 
     });
+    
+    // Initialize Flatpickr date pickers
+    flatpickr("#startDate", {
+        dateFormat: "Y-m-d",
+        altInput: true,
+        altFormat: "F j, Y",
+        theme: "light",
+        allowInput: false,
+        clickOpens: true
+    });
+    
+    flatpickr("#endDate", {
+        dateFormat: "Y-m-d", 
+        altInput: true,
+        altFormat: "F j, Y",
+        theme: "light",
+        allowInput: false,
+        clickOpens: true
+    });
 });
 
 function updateFileDisplay(fileInputId) {
