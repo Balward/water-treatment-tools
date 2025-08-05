@@ -348,6 +348,69 @@ function calculateMWAT(data) {
     return mwatResults;
 }
 
+async function loadTestData() {
+    const messagesDiv = document.getElementById('messages');
+    const fileInput = document.getElementById('file1');
+    
+    messagesDiv.innerHTML = '';
+    
+    try {
+        messagesDiv.innerHTML += '<div class="message info">Loading test data from UST1A CSV files...</div>';
+        
+        // Paths to the test data files (relative to the root of the project)
+        const testFiles = [
+            '../../data/UST1A-03112025_2025-04-16_11_55_34_MDT_(Data_MDT).csv',
+            '../../data/UST1A-04162025_2025-05-16_12_19_32_MDT_(Data_MDT).csv'
+        ];
+        
+        const allData = [];
+        
+        for (const filePath of testFiles) {
+            try {
+                const response = await fetch(filePath);
+                if (!response.ok) {
+                    throw new Error(`Failed to load ${filePath}: ${response.status}`);
+                }
+                const text = await response.text();
+                const data = parseCSV(text);
+                allData.push(data);
+                messagesDiv.innerHTML += `<div class="message success">Loaded ${data.length} records from ${filePath.split('/').pop()}</div>`;
+            } catch (error) {
+                console.warn(`Error loading ${filePath}:`, error);
+                messagesDiv.innerHTML += `<div class="message error">Failed to load ${filePath.split('/').pop()}: ${error.message}</div>`;
+            }
+        }
+        
+        if (allData.length === 0) {
+            throw new Error('No test data files could be loaded');
+        }
+        
+        // Combine and process the test data
+        temperatureData = combineMultipleFiles(allData);
+        
+        // Update the file input display to show test data is loaded
+        const wrapper = document.getElementById('file1-wrapper');
+        const display = wrapper.querySelector('.file-input-display');
+        const textElement = display.querySelector('.file-input-text');
+        const subtextElement = display.querySelector('.file-input-subtext');
+        const iconElement = display.querySelector('.file-input-icon');
+        
+        wrapper.classList.add('has-file');
+        display.classList.add('file-selected');
+        textElement.textContent = 'Test Data Loaded';
+        subtextElement.textContent = `${allData.length} UST1A files loaded (${temperatureData.length} total records)`;
+        iconElement.textContent = '🧪';
+        
+        // Enable the process button
+        document.getElementById('processBtn').disabled = false;
+        
+        messagesDiv.innerHTML += `<div class="message success">Test data loaded successfully! Combined ${temperatureData.length} temperature readings from ${allData.length} files.</div>`;
+        
+    } catch (error) {
+        messagesDiv.innerHTML += `<div class="message error">Error loading test data: ${error.message}</div>`;
+    }
+}
+
 async function calculateMWATAndDailyMax() {
     const fileInput = document.getElementById('file1');
     const startDate = document.getElementById('startDate').value;
@@ -357,17 +420,22 @@ async function calculateMWATAndDailyMax() {
     messagesDiv.innerHTML = '';
     
     try {
-        // Read all files
-        const allData = [];
-        for (let i = 0; i < fileInput.files.length; i++) {
-            const text = await fileInput.files[i].text();
-            const data = parseCSV(text);
-            allData.push(data);
-            messagesDiv.innerHTML += `<div class="message success">Parsed ${data.length} records from ${fileInput.files[i].name}</div>`;
+        // Check if we already have test data loaded, otherwise read from files
+        if (temperatureData.length === 0) {
+            // Read all files
+            const allData = [];
+            for (let i = 0; i < fileInput.files.length; i++) {
+                const text = await fileInput.files[i].text();
+                const data = parseCSV(text);
+                allData.push(data);
+                messagesDiv.innerHTML += `<div class="message success">Parsed ${data.length} records from ${fileInput.files[i].name}</div>`;
+            }
+            
+            // Combine all files
+            temperatureData = combineMultipleFiles(allData);
+        } else {
+            messagesDiv.innerHTML += `<div class="message info">Using previously loaded data (${temperatureData.length} records)</div>`;
         }
-        
-        // Combine all files
-        temperatureData = combineMultipleFiles(allData);
         
         // Filter by date range if specified
         let filteredData = filterByDateRange(temperatureData, startDate, endDate);
