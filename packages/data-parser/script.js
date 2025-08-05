@@ -337,32 +337,48 @@ function updateDischargePeriodTitles() {
 }
 
 function parseDateTime(dateStr) {
-    // Parse MM/DD/YY HH:MM:SS AM/PM format
     const parts = dateStr.split(' ');
     const datePart = parts[0];
     const timePart = parts[1];
-    const ampm = parts[2];
+    const ampm = parts[2]; // May be undefined for 24-hour format
     
     const [month, day, year] = datePart.split('/');
     const [hours, minutes, seconds] = timePart.split(':');
     
     let hour24 = parseInt(hours);
-    if (ampm === 'PM' && hour24 !== 12) {
-        hour24 += 12;
-    } else if (ampm === 'AM' && hour24 === 12) {
-        hour24 = 0;
+    
+    // Handle AM/PM conversion if present
+    if (ampm) {
+        if (ampm === 'PM' && hour24 !== 12) {
+            hour24 += 12;
+        } else if (ampm === 'AM' && hour24 === 12) {
+            hour24 = 0;
+        }
     }
     
-    const fullYear = 2000 + parseInt(year);
-    return new Date(fullYear, parseInt(month) - 1, parseInt(day), hour24, parseInt(minutes), parseInt(seconds));
+    // Handle both 2-digit and 4-digit years
+    let fullYear = parseInt(year);
+    if (fullYear < 100) {
+        fullYear = 2000 + fullYear;
+    }
+    
+    return new Date(fullYear, parseInt(month) - 1, parseInt(day), hour24, parseInt(minutes), parseInt(seconds || 0));
 }
 
 function parseCSV(text) {
     const lines = text.split('\n');
     const data = [];
     
-    // Skip header rows and start from row 3 (index 2)
-    for (let i = 2; i < lines.length; i++) {
+    // Detect CSV format by checking if first line contains "Plot Title"
+    let dataStartIndex = 1; // Default: data starts at row 2 (index 1)
+    
+    if (lines.length > 0 && lines[0].toLowerCase().includes('plot title')) {
+        // Format 2: Has plot title row, data starts at row 3 (index 2)
+        dataStartIndex = 2;
+    }
+    
+    // Parse data starting from the detected index
+    for (let i = dataStartIndex; i < lines.length; i++) {
         const line = lines[i].trim();
         if (!line) continue;
         
@@ -430,7 +446,10 @@ function combineMultipleFiles(allData) {
 function filterByDateRange(data, startDate, endDate) {
     if (!startDate && !endDate) return data;
     
-    return data.filter(row => {
+    // Debug logging
+    console.log('filterByDateRange called with:', { startDate, endDate, dataLength: data.length });
+    
+    const filtered = data.filter(row => {
         const rowTime = row.dateTime.getTime();
         
         // Start date: 00:00:00 (beginning of day)
@@ -438,6 +457,7 @@ function filterByDateRange(data, startDate, endDate) {
         if (startDate) {
             const startDateTime = new Date(startDate + 'T00:00:00');
             start = startDateTime.getTime();
+            console.log('Start filter:', startDate, startDateTime.toLocaleString(), start);
         }
         
         // End date: 23:59:59.999 (end of day)
@@ -445,10 +465,19 @@ function filterByDateRange(data, startDate, endDate) {
         if (endDate) {
             const endDateTime = new Date(endDate + 'T23:59:59.999');
             end = endDateTime.getTime();
+            console.log('End filter:', endDate, endDateTime.toLocaleString(), end);
         }
         
-        return rowTime >= start && rowTime <= end;
+        const isInRange = rowTime >= start && rowTime <= end;
+        if (!isInRange) {
+            console.log('Row filtered out:', row.dateTime.toLocaleString(), 'not in range', new Date(start).toLocaleString(), 'to', new Date(end).toLocaleString());
+        }
+        
+        return isInRange;
     });
+    
+    console.log('Filter result:', filtered.length, 'records remain');
+    return filtered;
 }
 
 function filterByDischargePeriods(data) {
@@ -721,7 +750,14 @@ async function calculateMWATAndDailyMax() {
         // Filter by date range if specified
         let filteredData = filterByDateRange(temperatureData, startDate, endDate);
         if (startDate || endDate) {
-            addLogMessage(`Applied date range filter - ${filteredData.length} records remain`, 'info');
+            addLogMessage(`Applied date range filter (${startDate || 'no start'} to ${endDate || 'no end'}) - ${filteredData.length} records remain`, 'info');
+            
+            // Debug: Show first and last dates in original data
+            if (temperatureData.length > 0) {
+                const firstDate = temperatureData[0].dateTime.toLocaleDateString();
+                const lastDate = temperatureData[temperatureData.length - 1].dateTime.toLocaleDateString();
+                addLogMessage(`Original data range: ${firstDate} to ${lastDate}`, 'info');
+            }
         }
         
         // Filter by discharge periods
