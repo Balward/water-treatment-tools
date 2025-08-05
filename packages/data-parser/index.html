@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MWAT & Daily Maximum Temperature Calculator - Water Treatment Tools</title>
+    <link rel="icon" type="image/png" href="../../city-logos/favicon.png" />
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="brand">
+                <div class="header-top">
+                    <div class="logo-container">
+                        <img src="../../city-logos/logo-vert.png" alt="City Logo" class="logo-image" />
+                    </div>
+                </div>
+                <div class="brand-text">
+                    <h1>MWAT & Daily Maximum Calculator</h1>
+                    <p class="tagline">Calculate Maximum Weekly Average Temperature (MWAT) and Daily Maximum Temperature per Colorado DMR requirements</p>
+                    <p class="subtitle">Official water treatment analysis tool</p>
+                </div>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <div class="card">
+                <h2>File Upload</h2>
+                <p>Upload temperature monitoring CSV files to calculate MWAT and Daily Maximum Temperature values according to Colorado DMR Guidance requirements.</p>
+                
+                <div class="file-upload-section">
+                    <div class="file-input-group">
+                        <label for="file1">Temperature Data CSV File:</label>
+                        <div class="file-input-wrapper" id="file1-wrapper">
+                            <input type="file" id="file1" accept=".csv" multiple />
+                            <div class="file-input-display" onclick="document.getElementById('file1').click()">
+                                <span class="file-input-icon">📁</span>
+                                <div class="file-input-text">Click to select file(s)</div>
+                                <div class="file-input-subtext">Continuous temperature monitoring data - select multiple files if needed</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="calculation-requirements">
+                        <h3>📋 DMR Calculation Requirements</h3>
+                        <div class="requirement-grid">
+                            <div class="requirement-item">
+                                <strong>Daily Maximum Temperature (DM):</strong>
+                                <span>Highest 2-hour rolling average temperature in each 24-hour period</span>
+                            </div>
+                            <div class="requirement-item">
+                                <strong>Maximum Weekly Average Temperature (MWAT):</strong>
+                                <span>Highest 7-day rolling average of daily average temperatures</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <h2>Date Range Filter (Optional)</h2>
+                <p>Leave blank to include all data from files.</p>
+                
+                <div class="date-inputs">
+                    <div class="date-section">
+                        <h3>Start Range</h3>
+                        <div class="date-group">
+                            <label for="startDate">From Date & Time:</label>
+                            <div class="date-input-wrapper">
+                                <input type="datetime-local" id="startDate" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="date-section">
+                        <h3>End Range</h3>
+                        <div class="date-group">
+                            <label for="endDate">To Date & Time:</label>
+                            <div class="date-input-wrapper">
+                                <input type="datetime-local" id="endDate" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="discharge-periods-section">
+                    <h3>Discharge Periods</h3>
+                    <p>Specify when the plant is discharging into the river. Only data within these periods will be used for MWAT and Daily Maximum calculations. Leave blank to use all data.</p>
+                    
+                    <div class="discharge-entry">
+                        <div class="discharge-dates">
+                            <div class="date-group">
+                                <label for="dischargeStart">Start Date & Time:</label>
+                                <div class="date-input-wrapper">
+                                    <input type="datetime-local" id="dischargeStart" />
+                                </div>
+                            </div>
+                            <div class="date-group">
+                                <label for="dischargeEnd">End Date & Time:</label>
+                                <div class="date-input-wrapper">
+                                    <input type="datetime-local" id="dischargeEnd" />
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button class="add-period-btn" onclick="addDischargePeriod()">
+                            Add Discharge Period
+                        </button>
+                    </div>
+                    
+                    <div class="discharge-list" id="dischargeList" style="display: none;">
+                        <h4>Added Discharge Periods:</h4>
+                        <div id="dischargePeriods">
+                            <!-- Added discharge periods will appear here -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="process-button-section">
+                    <button class="btn" onclick="calculateMWATAndDailyMax()" id="processBtn" disabled>
+                        Calculate MWAT & Daily Max
+                    </button>
+                </div>
+            </div>
+            
+            <div id="results" class="card results">
+                <h2>MWAT & Daily Maximum Temperature Results</h2>
+                <div id="stats" class="stats"></div>
+                <div class="results-actions">
+                    <button class="btn btn-secondary" onclick="downloadResults()">
+                        Download Results
+                    </button>
+                    <button class="btn btn-secondary" onclick="downloadRawData()">
+                        Download Processed Data
+                    </button>
+                </div>
+                <div id="dataTable"></div>
+            </div>
+        </div>
+        
+        <div id="messages"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
