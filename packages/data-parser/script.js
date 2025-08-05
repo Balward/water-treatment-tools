@@ -94,14 +94,18 @@ document.addEventListener('DOMContentLoaded', function() {
         checkFiles(); 
     });
     
-    // Initialize Flatpickr date pickers
+    // Initialize Flatpickr date pickers with calendar update callbacks
     flatpickr("#startDate", {
         dateFormat: "Y-m-d",
         altInput: true,
         altFormat: "F j, Y",
         allowInput: true,
         clickOpens: true,
-        placeholder: "Select start date..."
+        placeholder: "Select start date...",
+        onChange: function(selectedDates, dateStr) {
+            updateCalendarDisplay();
+            updateDateRangeInfo();
+        }
     });
     
     flatpickr("#endDate", {
@@ -110,7 +114,11 @@ document.addEventListener('DOMContentLoaded', function() {
         altFormat: "F j, Y",
         allowInput: true,
         clickOpens: true,
-        placeholder: "Select end date..."
+        placeholder: "Select end date...",
+        onChange: function(selectedDates, dateStr) {
+            updateCalendarDisplay();
+            updateDateRangeInfo();
+        }
     });
 });
 
@@ -177,6 +185,145 @@ function checkFiles() {
     } else {
         processBtn.disabled = true;
     }
+}
+
+// Calendar Display Functions
+function updateDateRangeInfo() {
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+    const dateRangeInfo = document.getElementById('dateRangeInfo');
+    const dateRangeText = document.getElementById('dateRangeText');
+    
+    if (startDate || endDate) {
+        const startText = startDate ? new Date(startDate).toLocaleDateString('en-US', { 
+            year: 'numeric', month: 'long', day: 'numeric' 
+        }) : 'Not selected';
+        const endText = endDate ? new Date(endDate).toLocaleDateString('en-US', { 
+            year: 'numeric', month: 'long', day: 'numeric' 
+        }) : 'Not selected';
+        
+        dateRangeText.textContent = `${startText} → ${endText}`;
+        dateRangeInfo.classList.remove('hidden');
+    } else {
+        dateRangeInfo.classList.add('hidden');
+    }
+}
+
+function updateCalendarDisplay() {
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+    const calendarContent = document.getElementById('calendarContent');
+    
+    if (!startDate && !endDate) {
+        calendarContent.innerHTML = '<div class="text-center text-gray-500 py-8">Select start and end dates to see calendar view</div>';
+        return;
+    }
+    
+    const start = startDate ? new Date(startDate) : null;
+    const end = endDate ? new Date(endDate) : null;
+    
+    // Determine which month(s) to show
+    const monthsToShow = getMonthsToShow(start, end);
+    
+    let calendarHTML = '';
+    monthsToShow.forEach(date => {
+        calendarHTML += generateMonthCalendar(date, start, end);
+    });
+    
+    calendarContent.innerHTML = calendarHTML;
+}
+
+function getMonthsToShow(start, end) {
+    const months = [];
+    
+    if (!start && !end) return months;
+    
+    const baseDate = start || end;
+    months.push(new Date(baseDate.getFullYear(), baseDate.getMonth(), 1));
+    
+    if (start && end && start.getMonth() !== end.getMonth()) {
+        const current = new Date(start.getFullYear(), start.getMonth(), 1);
+        const endMonth = new Date(end.getFullYear(), end.getMonth(), 1);
+        
+        while (current < endMonth) {
+            current.setMonth(current.getMonth() + 1);
+            if (current <= endMonth) {
+                months.push(new Date(current));
+            }
+        }
+    }
+    
+    return months;
+}
+
+function generateMonthCalendar(monthDate, startDate, endDate) {
+    const year = monthDate.getFullYear();
+    const month = monthDate.getMonth();
+    
+    const monthName = monthDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    
+    // Get first day of month and number of days
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const daysInMonth = lastDay.getDate();
+    const startingDayOfWeek = firstDay.getDay();
+    
+    let html = `<div class="mb-4">
+                  <div class="calendar-month-header">${monthName}</div>
+                  <div class="calendar-grid">`;
+    
+    // Day headers
+    const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    dayHeaders.forEach(day => {
+        html += `<div class="calendar-header">${day}</div>`;
+    });
+    
+    // Empty cells for days before month starts
+    for (let i = 0; i < startingDayOfWeek; i++) {
+        const prevMonthDay = new Date(year, month, -(startingDayOfWeek - 1 - i));
+        html += `<div class="calendar-day other-month">${prevMonthDay.getDate()}</div>`;
+    }
+    
+    // Days of the month
+    for (let day = 1; day <= daysInMonth; day++) {
+        const currentDate = new Date(year, month, day);
+        const dateString = currentDate.toISOString().split('T')[0];
+        
+        let classes = 'calendar-day current-month';
+        
+        // Determine if this day is in the selected range
+        if (startDate && endDate) {
+            const start = startDate.toISOString().split('T')[0];
+            const end = endDate.toISOString().split('T')[0];
+            
+            if (dateString === start && dateString === end) {
+                classes += ' single-day';
+            } else if (dateString === start) {
+                classes += ' start-date';
+            } else if (dateString === end) {
+                classes += ' end-date';
+            } else if (dateString > start && dateString < end) {
+                classes += ' in-range';
+            }
+        } else if (startDate && dateString === startDate.toISOString().split('T')[0]) {
+            classes += ' start-date';
+        } else if (endDate && dateString === endDate.toISOString().split('T')[0]) {
+            classes += ' end-date';
+        }
+        
+        html += `<div class="${classes}">${day}</div>`;
+    }
+    
+    // Fill remaining cells
+    const totalCells = Math.ceil((daysInMonth + startingDayOfWeek) / 7) * 7;
+    const remainingCells = totalCells - (daysInMonth + startingDayOfWeek);
+    
+    for (let i = 1; i <= remainingCells; i++) {
+        html += `<div class="calendar-day other-month">${i}</div>`;
+    }
+    
+    html += '</div></div>';
+    return html;
 }
 
 function addDischargePeriod() {
