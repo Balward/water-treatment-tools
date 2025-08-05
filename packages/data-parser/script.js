@@ -664,7 +664,7 @@ function displayMWATResults(rawData, dailyMax, mwat) {
             <!-- Left Column: MWAT -->
             <div class="space-y-4">
                 <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-6 border border-blue-200 text-center">
-                    <div class="text-4xl font-bold text-blue-700 mb-2">${overallMWAT.toFixed(2)}°C</div>
+                    <div class="text-4xl font-bold text-blue-700 mb-2">${overallMWAT.toFixed(3)}°C</div>
                     <div class="text-blue-600 font-semibold">Maximum Weekly Average Temperature (MWAT)</div>
                 </div>
                 <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-4 border border-gray-200 text-center">
@@ -680,7 +680,7 @@ function displayMWATResults(rawData, dailyMax, mwat) {
             <!-- Right Column: Daily Maximum -->
             <div class="space-y-4">
                 <div class="bg-gradient-to-br from-orange-50 to-amber-100 rounded-2xl p-6 border border-orange-200 text-center">
-                    <div class="text-4xl font-bold text-orange-700 mb-2">${overallDailyMax.toFixed(2)}°C</div>
+                    <div class="text-4xl font-bold text-orange-700 mb-2">${overallDailyMax.toFixed(3)}°C</div>
                     <div class="text-orange-600 font-semibold">Highest Daily Maximum Temperature</div>
                 </div>
                 <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-4 border border-gray-200 text-center">
@@ -743,7 +743,7 @@ function displayMWATResults(rawData, dailyMax, mwat) {
 
         <div class="bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 rounded-3xl p-8 border border-orange-200 shadow-2xl">
             <h3 class="text-2xl font-bold text-transparent bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text mb-6 flex items-center gap-3">
-                🌡️ Top Daily Maximum Temperatures (UPDATED FORMAT)
+                🌡️ Top Daily Maximum Temperatures (2-Hour Rolling Averages)
             </h3>
             <div class="overflow-hidden rounded-2xl shadow-lg bg-white border border-orange-100">
                 <table class="w-full">
@@ -797,28 +797,32 @@ function downloadResults() {
     const overallDailyMax = dailyMaxResults.length > 0 ? Math.max(...dailyMaxResults.map(d => d.temperature)) : 0;
     
     let csvContent = 'DMR Temperature Calculation Results\n';
-    csvContent += `Maximum Weekly Average Temperature (MWAT),${overallMWAT.toFixed(3)}°C\n`;
-    csvContent += `Highest Daily Maximum Temperature,${overallDailyMax.toFixed(3)}°C\n\n`;
+    csvContent += `Maximum Weekly Average Temperature (MWAT),${overallMWAT.toFixed(3)}C\n`;
+    csvContent += `Highest Daily Maximum Temperature,${overallDailyMax.toFixed(3)}C\n\n`;
     
     csvContent += 'MWAT 7-Day Rolling Averages\n';
-    csvContent += 'Period End Date,Start Date,Weekly Average (°C)\n';
+    csvContent += 'Period End Date,Start Date,Weekly Average (C)\n';
     
     mwatResults.forEach(period => {
         csvContent += `${period.endDate.toLocaleDateString()},${period.startDate.toLocaleDateString()},${period.weeklyAverage.toFixed(3)}\n`;
     });
     
     csvContent += '\nDaily Maximum Temperatures\n';
-    csvContent += 'Date,Daily Maximum (°C),Time Range,Reading Count\n';
+    csvContent += 'Date,Daily Maximum (C),Time Range,Reading Count\n';
     
     dailyMaxResults.forEach(day => {
         csvContent += `${day.date.toLocaleDateString()},${day.temperature.toFixed(3)},"${day.timeRange}",${day.readingCount}\n`;
     });
     
-    const blob = new Blob([csvContent], { type: 'text/csv' });
+    // Create timestamp for filename
+    const now = new Date();
+    const timestamp = now.toISOString().slice(0, 19).replace(/[:-]/g, '').replace('T', '_');
+    
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'MWAT_DailyMax_Results.csv';
+    a.download = `MWAT_DailyMax_Results_${timestamp}.csv`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -828,7 +832,7 @@ function downloadResults() {
 function downloadRawData() {
     if (temperatureData.length === 0) return;
     
-    let csvContent = 'Date Time,Temperature (°C),Source\n';
+    let csvContent = 'Date Time,Temperature (C),Source\n';
     
     temperatureData.forEach(row => {
         const dateStr = row.dateTime.toLocaleString();
@@ -837,11 +841,15 @@ function downloadRawData() {
         csvContent += `"${dateStr}",${temp},"${source}"\n`;
     });
     
-    const blob = new Blob([csvContent], { type: 'text/csv' });
+    // Create timestamp for filename
+    const now = new Date();
+    const timestamp = now.toISOString().slice(0, 19).replace(/[:-]/g, '').replace('T', '_');
+    
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'processed_temperature_data.csv';
+    a.download = `processed_temperature_data_${timestamp}.csv`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
