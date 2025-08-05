@@ -45,6 +45,14 @@
                             </div>
                         </div>
                     </div>
+                    
+                    <div class="test-data-section">
+                        <button class="btn btn-secondary" onclick="loadTestData()" id="testDataBtn">
+                            Load Test Data (UST1A Files)
+                        </button>
+                        <p class="test-data-description">Or click here to load sample UST1A temperature data files to try out the calculator</p>
+                    </div>
+                    
                     <div class="calculation-requirements">
                         <h3>📋 DMR Calculation Requirements</h3>
                         <div class="requirement-grid">
@@ -118,9 +126,6 @@
                 </div>
                 
                 <div class="process-button-section">
-                    <button class="btn btn-secondary" onclick="loadTestData()" id="testDataBtn">
-                        Load Test Data (UST1A Files)
-                    </button>
                     <button class="btn" onclick="calculateMWATAndDailyMax()" id="processBtn" disabled>
                         Calculate MWAT & Daily Max
                     </button>
