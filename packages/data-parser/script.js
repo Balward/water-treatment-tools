@@ -543,80 +543,90 @@ function displayMWATResults(rawData, dailyMax, mwat) {
     
     // Create results table showing top MWAT periods and daily maximums
     let tableHTML = `
-        <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-            📈 Top MWAT Periods (7-Day Rolling Averages)
-        </h3>
-        <div class="bg-white rounded-2xl shadow-lg overflow-hidden mb-8">
-            <table class="w-full">
-                <thead>
-                    <tr class="bg-gradient-to-r from-blue-600 to-blue-700 text-white">
-                        <th class="px-6 py-4 text-left font-bold">Period End Date</th>
-                        <th class="px-6 py-4 text-left font-bold">7-Day Period</th>
-                        <th class="px-6 py-4 text-left font-bold">Weekly Average (°C)</th>
-                        <th class="px-6 py-4 text-left font-bold">Status</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-200">
+        <div class="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 rounded-3xl p-8 mb-8 border border-blue-200 shadow-2xl">
+            <h3 class="text-2xl font-bold text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text mb-6 flex items-center gap-3">
+                📈 Top MWAT Periods (7-Day Rolling Averages)
+            </h3>
+            <div class="overflow-hidden rounded-2xl shadow-lg bg-white border border-blue-100">
+                <table class="w-full">
+                    <thead>
+                        <tr class="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 text-white">
+                            <th class="px-6 py-5 text-left font-bold text-sm uppercase tracking-wider">Period End Date</th>
+                            <th class="px-6 py-5 text-left font-bold text-sm uppercase tracking-wider">7-Day Period</th>
+                            <th class="px-6 py-5 text-left font-bold text-sm uppercase tracking-wider">Weekly Average (°C)</th>
+                            <th class="px-6 py-5 text-left font-bold text-sm uppercase tracking-wider">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
     `;
     
     // Show top 10 MWAT periods
     const topMWAT = [...mwat].sort((a, b) => b.weeklyAverage - a.weeklyAverage).slice(0, 10);
     topMWAT.forEach((period, index) => {
         const isHighest = index === 0;
-        const rowClass = index % 2 === 0 ? 'bg-gray-50' : 'bg-white';
-        const statusClass = isHighest ? 'bg-yellow-200 text-yellow-800 px-3 py-1 rounded-full text-xs font-bold' : 'bg-blue-200 text-blue-800 px-3 py-1 rounded-full text-xs font-bold';
+        const rowClass = index % 2 === 0 ? 'bg-gradient-to-r from-blue-50/50 to-indigo-50/50' : 'bg-white';
+        const statusClass = isHighest 
+            ? 'bg-gradient-to-r from-yellow-400 to-orange-400 text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg animate-pulse' 
+            : 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-4 py-2 rounded-full text-xs font-bold shadow-md';
         const statusText = isHighest ? '🏆 MWAT VALUE' : '📊 Weekly Avg';
+        const tempClass = isHighest ? 'text-2xl font-black text-transparent bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text' : 'text-xl font-bold text-blue-700';
         
         tableHTML += `
-            <tr class="${rowClass} hover:bg-blue-50 transition-colors duration-200">
-                <td class="px-6 py-4 font-medium text-gray-900">${period.endDate.toLocaleDateString()}</td>
-                <td class="px-6 py-4 text-gray-700">${period.startDate.toLocaleDateString()} - ${period.endDate.toLocaleDateString()}</td>
-                <td class="px-6 py-4 font-bold text-lg text-blue-700">${period.weeklyAverage.toFixed(3)}</td>
+            <tr class="${rowClass} hover:bg-gradient-to-r hover:from-blue-100 hover:to-indigo-100 transition-all duration-300 border-b border-blue-100/50">
+                <td class="px-6 py-4 font-semibold text-gray-800">${period.endDate.toLocaleDateString()}</td>
+                <td class="px-6 py-4 text-gray-600 font-medium">${period.startDate.toLocaleDateString()} - ${period.endDate.toLocaleDateString()}</td>
+                <td class="px-6 py-4 ${tempClass}">${period.weeklyAverage.toFixed(3)}</td>
                 <td class="px-6 py-4"><span class="${statusClass}">${statusText}</span></td>
             </tr>
         `;
     });
     
     tableHTML += `
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
-        <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-            🌡️ Top Daily Maximum Temperatures (2-Hour Rolling Averages)
-        </h3>
-        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-            <table class="w-full">
-                <thead>
-                    <tr class="bg-gradient-to-r from-red-600 to-red-700 text-white">
-                        <th class="px-6 py-4 text-left font-bold">Date</th>
-                        <th class="px-6 py-4 text-left font-bold">Daily Maximum (°C)</th>
-                        <th class="px-6 py-4 text-left font-bold">Time Range</th>
-                        <th class="px-6 py-4 text-left font-bold">Readings in 2-Hour Window</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-200">
+        <div class="bg-gradient-to-br from-red-50 via-pink-50 to-rose-50 rounded-3xl p-8 border border-red-200 shadow-2xl">
+            <h3 class="text-2xl font-bold text-transparent bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text mb-6 flex items-center gap-3">
+                🌡️ Top Daily Maximum Temperatures (2-Hour Rolling Averages)
+            </h3>
+            <div class="overflow-hidden rounded-2xl shadow-lg bg-white border border-red-100">
+                <table class="w-full">
+                    <thead>
+                        <tr class="bg-gradient-to-r from-red-600 via-red-700 to-pink-700 text-white">
+                            <th class="px-6 py-5 text-left font-bold text-sm uppercase tracking-wider">Date</th>
+                            <th class="px-6 py-5 text-left font-bold text-sm uppercase tracking-wider">Daily Maximum (°C)</th>
+                            <th class="px-6 py-5 text-left font-bold text-sm uppercase tracking-wider">Time Range</th>
+                            <th class="px-6 py-5 text-left font-bold text-sm uppercase tracking-wider">Readings in 2-Hour Window</th>
+                        </tr>
+                    </thead>
+                    <tbody>
     `;
     
     // Show top 10 daily maximum temperatures
     const topDailyMax = [...dailyMax].sort((a, b) => b.temperature - a.temperature).slice(0, 10);
     topDailyMax.forEach((day, index) => {
-        const rowClass = index % 2 === 0 ? 'bg-gray-50' : 'bg-white';
+        const rowClass = index % 2 === 0 ? 'bg-gradient-to-r from-red-50/50 to-pink-50/50' : 'bg-white';
+        const isHighest = index === 0;
+        const tempClass = isHighest ? 'text-2xl font-black text-transparent bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text' : 'text-xl font-bold text-red-700';
+        
         tableHTML += `
-            <tr class="${rowClass} hover:bg-red-50 transition-colors duration-200">
-                <td class="px-6 py-4 font-medium text-gray-900">${day.date.toLocaleDateString()}</td>
-                <td class="px-6 py-4 font-bold text-lg text-red-700">${day.temperature.toFixed(3)}</td>
-                <td class="px-6 py-4 text-gray-700">${day.timeRange}</td>
+            <tr class="${rowClass} hover:bg-gradient-to-r hover:from-red-100 hover:to-pink-100 transition-all duration-300 border-b border-red-100/50">
+                <td class="px-6 py-4 font-semibold text-gray-800">${day.date.toLocaleDateString()}</td>
+                <td class="px-6 py-4 ${tempClass}">${day.temperature.toFixed(3)}</td>
+                <td class="px-6 py-4 text-gray-600 font-medium">${day.timeRange}</td>
                 <td class="px-6 py-4 text-center">
-                    <span class="bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm font-semibold">${day.readingCount}</span>
+                    <span class="bg-gradient-to-r from-gray-500 to-gray-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-md">${day.readingCount}</span>
                 </td>
             </tr>
         `;
     });
     
     tableHTML += `
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
         </div>
     `;
     
