@@ -3,6 +3,8 @@ let mwatResults = [];
 let dailyMaxResults = [];
 let dischargePeriods = [];
 
+console.log('Script loaded - Updated version with new Daily Max table format');
+
 // Log management functions
 function showLogContainer() {
     const logContainer = document.getElementById('logContainer');
