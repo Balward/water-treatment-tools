@@ -333,6 +333,7 @@ function calculateDailyMaximum(data) {
 
 // DMR Guidance: Maximum Weekly Average Temperature (MWAT)
 // Largest mathematical mean of multiple, equally spaced, daily temperatures over 7 consecutive days
+// IMPORTANT: 7 consecutive days must be within the same discharge period - cannot span across gaps
 function calculateMWAT(data) {
     // First, calculate daily averages
     const dailyAverages = {};
@@ -357,18 +358,79 @@ function calculateMWAT(data) {
         readingCount: day.count
     })).sort((a, b) => a.date - b.date);
     
-    // Calculate 7-day rolling averages
     const mwatResults = [];
     
-    for (let i = 6; i < dailyAvgArray.length; i++) { // Start from index 6 to have 7 days
-        const sevenDayPeriod = dailyAvgArray.slice(i - 6, i + 1);
-        const weeklyAverage = sevenDayPeriod.reduce((sum, day) => sum + day.averageTemp, 0) / 7;
-        
-        mwatResults.push({
-            endDate: sevenDayPeriod[6].date,
-            startDate: sevenDayPeriod[0].date,
-            weeklyAverage: weeklyAverage,
-            dailyAverages: sevenDayPeriod.map(d => d.averageTemp)
+    // If no discharge periods are specified, calculate MWAT for all consecutive days
+    if (dischargePeriods.length === 0) {
+        // Calculate 7-day rolling averages for consecutive calendar days
+        for (let i = 6; i < dailyAvgArray.length; i++) {
+            const sevenDayPeriod = dailyAvgArray.slice(i - 6, i + 1);
+            
+            // Check if these 7 days are actually consecutive (no gaps)
+            let isConsecutive = true;
+            for (let j = 1; j < sevenDayPeriod.length; j++) {
+                const prevDate = sevenDayPeriod[j - 1].date;
+                const currentDate = sevenDayPeriod[j].date;
+                const dayDiff = (currentDate - prevDate) / (1000 * 60 * 60 * 24);
+                
+                if (dayDiff !== 1) {
+                    isConsecutive = false;
+                    break;
+                }
+            }
+            
+            if (isConsecutive) {
+                const weeklyAverage = sevenDayPeriod.reduce((sum, day) => sum + day.averageTemp, 0) / 7;
+                
+                mwatResults.push({
+                    endDate: sevenDayPeriod[6].date,
+                    startDate: sevenDayPeriod[0].date,
+                    weeklyAverage: weeklyAverage,
+                    dailyAverages: sevenDayPeriod.map(d => d.averageTemp)
+                });
+            }
+        }
+    } else {
+        // Calculate MWAT only within individual discharge periods
+        dischargePeriods.forEach(period => {
+            // Get daily averages that fall within this discharge period
+            const periodDays = dailyAvgArray.filter(day => {
+                const dayTime = day.date.getTime();
+                return dayTime >= period.start.getTime() && dayTime <= period.end.getTime();
+            });
+            
+            // Only calculate MWAT if we have at least 7 consecutive days in this period
+            if (periodDays.length >= 7) {
+                // Check for consecutive days and calculate 7-day rolling averages
+                for (let i = 6; i < periodDays.length; i++) {
+                    const sevenDayPeriod = periodDays.slice(i - 6, i + 1);
+                    
+                    // Verify these 7 days are consecutive calendar days
+                    let isConsecutive = true;
+                    for (let j = 1; j < sevenDayPeriod.length; j++) {
+                        const prevDate = sevenDayPeriod[j - 1].date;
+                        const currentDate = sevenDayPeriod[j].date;
+                        const dayDiff = (currentDate - prevDate) / (1000 * 60 * 60 * 24);
+                        
+                        if (dayDiff !== 1) {
+                            isConsecutive = false;
+                            break;
+                        }
+                    }
+                    
+                    if (isConsecutive) {
+                        const weeklyAverage = sevenDayPeriod.reduce((sum, day) => sum + day.averageTemp, 0) / 7;
+                        
+                        mwatResults.push({
+                            endDate: sevenDayPeriod[6].date,
+                            startDate: sevenDayPeriod[0].date,
+                            weeklyAverage: weeklyAverage,
+                            dailyAverages: sevenDayPeriod.map(d => d.averageTemp),
+                            dischargePeriod: `${period.start.toLocaleDateString()} - ${period.end.toLocaleDateString()}`
+                        });
+                    }
+                }
+            }
         });
     }
     
