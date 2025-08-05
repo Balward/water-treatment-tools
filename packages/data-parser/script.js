@@ -3,6 +3,81 @@ let mwatResults = [];
 let dailyMaxResults = [];
 let dischargePeriods = [];
 
+// Log management functions
+function showLogContainer() {
+    const logContainer = document.getElementById('logContainer');
+    logContainer.classList.remove('hidden');
+}
+
+function addLogMessage(message, type = 'info') {
+    const messagesDiv = document.getElementById('messages');
+    const timestamp = new Date().toLocaleTimeString();
+    
+    let iconAndClass;
+    switch(type) {
+        case 'success':
+            iconAndClass = {
+                icon: '✅',
+                bgClass: 'bg-green-50 border-l-4 border-green-400',
+                textClass: 'text-green-800',
+                iconClass: 'text-green-600'
+            };
+            break;
+        case 'error':
+            iconAndClass = {
+                icon: '❌',
+                bgClass: 'bg-red-50 border-l-4 border-red-400',
+                textClass: 'text-red-800',
+                iconClass: 'text-red-600'
+            };
+            break;
+        case 'warning':
+            iconAndClass = {
+                icon: '⚠️',
+                bgClass: 'bg-amber-50 border-l-4 border-amber-400',
+                textClass: 'text-amber-800',
+                iconClass: 'text-amber-600'
+            };
+            break;
+        case 'info':
+        default:
+            iconAndClass = {
+                icon: 'ℹ️',
+                bgClass: 'bg-blue-50 border-l-4 border-blue-400',
+                textClass: 'text-blue-800',
+                iconClass: 'text-blue-600'
+            };
+            break;
+    }
+    
+    const logEntry = document.createElement('div');
+    logEntry.className = `${iconAndClass.bgClass} p-4 rounded-lg transition-all duration-300 animate-slide-up`;
+    logEntry.innerHTML = `
+        <div class="flex items-start gap-3">
+            <span class="text-lg ${iconAndClass.iconClass}">${iconAndClass.icon}</span>
+            <div class="flex-1">
+                <div class="${iconAndClass.textClass} font-medium">${message}</div>
+                <div class="text-gray-500 text-xs mt-1">${timestamp}</div>
+            </div>
+        </div>
+    `;
+    
+    messagesDiv.appendChild(logEntry);
+    showLogContainer();
+    
+    // Auto-scroll to bottom
+    setTimeout(() => {
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }, 100);
+}
+
+function clearLog() {
+    const messagesDiv = document.getElementById('messages');
+    messagesDiv.innerHTML = '';
+    const logContainer = document.getElementById('logContainer');
+    logContainer.classList.add('hidden');
+}
+
 // Initialize
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('file1').addEventListener('change', function() { 
@@ -438,13 +513,10 @@ function calculateMWAT(data) {
 }
 
 async function loadTestData() {
-    const messagesDiv = document.getElementById('messages');
-    const fileInput = document.getElementById('file1');
-    
-    messagesDiv.innerHTML = '';
+    clearLog();
     
     try {
-        messagesDiv.innerHTML += '<div class="message info">Loading test data from UST1A CSV files...</div>';
+        addLogMessage('Loading test data from UST1A CSV files...', 'info');
         
         // Paths to the test data files (relative to the root of the project)
         const testFiles = [
@@ -463,10 +535,10 @@ async function loadTestData() {
                 const text = await response.text();
                 const data = parseCSV(text);
                 allData.push(data);
-                messagesDiv.innerHTML += `<div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-xl font-medium animate-slide-up">✅ Loaded ${data.length} records from ${filePath.split('/').pop()}</div>`;
+                addLogMessage(`Loaded ${data.length} records from ${filePath.split('/').pop()}`, 'success');
             } catch (error) {
                 console.warn(`Error loading ${filePath}:`, error);
-                messagesDiv.innerHTML += `<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl font-medium">❌ Failed to load ${filePath.split('/').pop()}: ${error.message}</div>`;
+                addLogMessage(`Failed to load ${filePath.split('/').pop()}: ${error.message}`, 'error');
             }
         }
         
@@ -496,10 +568,10 @@ async function loadTestData() {
         // Enable the process button
         document.getElementById('processBtn').disabled = false;
         
-        messagesDiv.innerHTML += `<div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-xl font-medium animate-slide-up">🎉 Test data loaded successfully! Combined ${temperatureData.length} temperature readings from ${allData.length} files.</div>`;
+        addLogMessage(`Test data loaded successfully! Combined ${temperatureData.length} temperature readings from ${allData.length} files.`, 'success');
         
     } catch (error) {
-        messagesDiv.innerHTML += `<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl font-medium">❌ Error loading test data: ${error.message}</div>`;
+        addLogMessage(`Error loading test data: ${error.message}`, 'error');
     }
 }
 
@@ -507,30 +579,35 @@ async function calculateMWATAndDailyMax() {
     const fileInput = document.getElementById('file1');
     const startDate = document.getElementById('startDate').value;
     const endDate = document.getElementById('endDate').value;
-    const messagesDiv = document.getElementById('messages');
     
-    messagesDiv.innerHTML = '';
+    clearLog();
     
     try {
         // Check if we already have test data loaded, otherwise read from files
         if (temperatureData.length === 0) {
+            addLogMessage('Reading uploaded CSV files...', 'info');
+            
             // Read all files
             const allData = [];
             for (let i = 0; i < fileInput.files.length; i++) {
                 const text = await fileInput.files[i].text();
                 const data = parseCSV(text);
                 allData.push(data);
-                messagesDiv.innerHTML += `<div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-xl font-medium animate-slide-up">✅ Parsed ${data.length} records from ${fileInput.files[i].name}</div>`;
+                addLogMessage(`Parsed ${data.length} records from ${fileInput.files[i].name}`, 'success');
             }
             
             // Combine all files
             temperatureData = combineMultipleFiles(allData);
+            addLogMessage(`Combined data from ${allData.length} file(s) - ${temperatureData.length} total records`, 'success');
         } else {
-            messagesDiv.innerHTML += `<div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded-xl font-medium">ℹ️ Using previously loaded data (${temperatureData.length} records)</div>`;
+            addLogMessage(`Using previously loaded data (${temperatureData.length} records)`, 'info');
         }
         
         // Filter by date range if specified
         let filteredData = filterByDateRange(temperatureData, startDate, endDate);
+        if (startDate || endDate) {
+            addLogMessage(`Applied date range filter - ${filteredData.length} records remain`, 'info');
+        }
         
         // Filter by discharge periods
         filteredData = filterByDischargePeriods(filteredData);
@@ -541,20 +618,26 @@ async function calculateMWATAndDailyMax() {
         
         // Show discharge period filtering info
         if (dischargePeriods.length > 0) {
-            messagesDiv.innerHTML += `<div class="bg-amber-100 border border-amber-400 text-amber-700 px-4 py-3 rounded-xl font-medium">🏭 Applied ${dischargePeriods.length} discharge period filter(s). Only data within discharge periods will be used for calculations.</div>`;
+            addLogMessage(`Applied ${dischargePeriods.length} discharge period filter(s) - ${filteredData.length} records within discharge periods`, 'warning');
         }
         
+        addLogMessage('Calculating Daily Maximum Temperature values...', 'info');
         // Calculate Daily Maximum Temperature
         dailyMaxResults = calculateDailyMaximum(filteredData);
+        addLogMessage(`Calculated ${dailyMaxResults.length} Daily Maximum values`, 'success');
         
+        addLogMessage('Calculating MWAT (7-day rolling averages)...', 'info');
         // Calculate MWAT
         mwatResults = calculateMWAT(filteredData);
+        addLogMessage(`Calculated ${mwatResults.length} MWAT periods`, 'success');
+        
+        addLogMessage('Calculations completed successfully! Results displayed below.', 'success');
         
         // Display results
         displayMWATResults(filteredData, dailyMaxResults, mwatResults);
         
     } catch (error) {
-        messagesDiv.innerHTML += `<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl font-medium">❌ Error calculating MWAT and Daily Max: ${error.message}</div>`;
+        addLogMessage(`Error calculating MWAT and Daily Max: ${error.message}`, 'error');
     }
 }
 
