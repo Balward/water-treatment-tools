@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // Initialize Flatpickr date pickers with calendar update callbacks
-    flatpickr("#startDate", {
+    const startPicker = flatpickr("#startDate", {
         dateFormat: "Y-m-d",
         altInput: true,
         altFormat: "F j, Y",
@@ -103,12 +103,15 @@ document.addEventListener('DOMContentLoaded', function() {
         clickOpens: true,
         placeholder: "Select start date...",
         onChange: function(selectedDates, dateStr) {
-            updateCalendarDisplay();
-            updateDateRangeInfo();
+            console.log('Start date changed:', dateStr, selectedDates);
+            setTimeout(() => {
+                updateCalendarDisplay();
+                updateDateRangeInfo();
+            }, 10);
         }
     });
     
-    flatpickr("#endDate", {
+    const endPicker = flatpickr("#endDate", {
         dateFormat: "Y-m-d", 
         altInput: true,
         altFormat: "F j, Y",
@@ -116,10 +119,24 @@ document.addEventListener('DOMContentLoaded', function() {
         clickOpens: true,
         placeholder: "Select end date...",
         onChange: function(selectedDates, dateStr) {
-            updateCalendarDisplay();
-            updateDateRangeInfo();
+            console.log('End date changed:', dateStr, selectedDates);
+            setTimeout(() => {
+                updateCalendarDisplay();
+                updateDateRangeInfo();
+            }, 10);
         }
     });
+    
+    // Store picker references globally for debugging
+    window.startPicker = startPicker;
+    window.endPicker = endPicker;
+    
+    // Initialize calendar display
+    setTimeout(() => {
+        console.log('Initializing calendar display...');
+        updateCalendarDisplay();
+        updateDateRangeInfo();
+    }, 100);
 });
 
 function handleFileUpload(fileInputId) {
@@ -210,11 +227,35 @@ function updateDateRangeInfo() {
 }
 
 function updateCalendarDisplay() {
-    const startDate = document.getElementById('startDate').value;
-    const endDate = document.getElementById('endDate').value;
+    console.log('updateCalendarDisplay called');
+    
+    // Try getting dates from both the visible input and the Flatpickr instances
+    const startDateInput = document.getElementById('startDate');
+    const endDateInput = document.getElementById('endDate');
     const calendarContent = document.getElementById('calendarContent');
     
+    let startDate = startDateInput ? startDateInput.value : '';
+    let endDate = endDateInput ? endDateInput.value : '';
+    
+    // Try getting dates from Flatpickr instances if available
+    if (window.startPicker && window.startPicker.selectedDates.length > 0) {
+        startDate = window.startPicker.formatDate(window.startPicker.selectedDates[0], 'Y-m-d');
+    }
+    if (window.endPicker && window.endPicker.selectedDates.length > 0) {
+        endDate = window.endPicker.formatDate(window.endPicker.selectedDates[0], 'Y-m-d');
+    }
+    
+    console.log('Start date value:', startDate);
+    console.log('End date value:', endDate);
+    console.log('Calendar content element:', calendarContent);
+    
+    if (!calendarContent) {
+        console.error('Calendar content element not found!');
+        return;
+    }
+    
     if (!startDate && !endDate) {
+        console.log('No dates selected, showing default message');
         calendarContent.innerHTML = '<div class="text-center text-gray-500 py-8">Select start and end dates to see calendar view</div>';
         return;
     }
@@ -222,26 +263,36 @@ function updateCalendarDisplay() {
     const start = startDate ? new Date(startDate) : null;
     const end = endDate ? new Date(endDate) : null;
     
+    console.log('Parsed dates - Start:', start, 'End:', end);
+    
     // Determine which month(s) to show
     const monthsToShow = getMonthsToShow(start, end);
+    console.log('Months to show:', monthsToShow);
     
     let calendarHTML = '';
     monthsToShow.forEach(date => {
         calendarHTML += generateMonthCalendar(date, start, end);
     });
     
+    console.log('Generated calendar HTML length:', calendarHTML.length);
     calendarContent.innerHTML = calendarHTML;
 }
 
 function getMonthsToShow(start, end) {
+    console.log('getMonthsToShow called with:', start, end);
     const months = [];
     
-    if (!start && !end) return months;
+    if (!start && !end) {
+        console.log('No start or end date, returning empty array');
+        return months;
+    }
     
     const baseDate = start || end;
+    console.log('Base date:', baseDate);
     months.push(new Date(baseDate.getFullYear(), baseDate.getMonth(), 1));
     
-    if (start && end && start.getMonth() !== end.getMonth()) {
+    if (start && end && (start.getFullYear() !== end.getFullYear() || start.getMonth() !== end.getMonth())) {
+        console.log('Different months detected, adding additional months');
         const current = new Date(start.getFullYear(), start.getMonth(), 1);
         const endMonth = new Date(end.getFullYear(), end.getMonth(), 1);
         
@@ -253,14 +304,18 @@ function getMonthsToShow(start, end) {
         }
     }
     
+    console.log('Final months array:', months);
     return months;
 }
 
 function generateMonthCalendar(monthDate, startDate, endDate) {
+    console.log('generateMonthCalendar called for:', monthDate, 'with date range:', startDate, endDate);
+    
     const year = monthDate.getFullYear();
     const month = monthDate.getMonth();
     
     const monthName = monthDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    console.log('Generating calendar for:', monthName);
     
     // Get first day of month and number of days
     const firstDay = new Date(year, month, 1);
