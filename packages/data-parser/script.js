@@ -239,18 +239,18 @@ function filterByDateRange(data, startDate, endDate) {
     return data.filter(row => {
         const rowTime = row.dateTime.getTime();
         
-        // Start date: 12:00 AM (beginning of day)
+        // Start date: 00:00:00 (beginning of day)
         let start = 0;
         if (startDate) {
-            const startDateTime = new Date(startDate);
-            start = new Date(startDateTime.getFullYear(), startDateTime.getMonth(), startDateTime.getDate(), 0, 0, 0).getTime();
+            const startDateTime = new Date(startDate + 'T00:00:00');
+            start = startDateTime.getTime();
         }
         
-        // End date: 11:59:59 PM (end of day)
+        // End date: 23:59:59.999 (end of day)
         let end = Infinity;
         if (endDate) {
-            const endDateTime = new Date(endDate);
-            end = new Date(endDateTime.getFullYear(), endDateTime.getMonth(), endDateTime.getDate(), 23, 59, 59, 999).getTime();
+            const endDateTime = new Date(endDate + 'T23:59:59.999');
+            end = endDateTime.getTime();
         }
         
         return rowTime >= start && rowTime <= end;
