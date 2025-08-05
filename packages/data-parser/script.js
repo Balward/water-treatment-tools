@@ -15,18 +15,18 @@ document.addEventListener('DOMContentLoaded', function() {
         dateFormat: "Y-m-d",
         altInput: true,
         altFormat: "F j, Y",
-        theme: "light",
-        allowInput: false,
-        clickOpens: true
+        allowInput: true,
+        clickOpens: true,
+        placeholder: "Select start date..."
     });
     
     flatpickr("#endDate", {
         dateFormat: "Y-m-d", 
         altInput: true,
         altFormat: "F j, Y",
-        theme: "light",
-        allowInput: false,
-        clickOpens: true
+        allowInput: true,
+        clickOpens: true,
+        placeholder: "Select end date..."
     });
 });
 
