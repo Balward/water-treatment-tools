@@ -5,147 +5,248 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MWAT & Daily Maximum Temperature Calculator - Water Treatment Tools</title>
     <link rel="icon" type="image/png" href="../../city-logos/favicon.png" />
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <link rel="stylesheet" href="styles.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0891b2',
+                            600: '#0e7490',
+                            700: '#0f766e',
+                            800: '#155e75',
+                            900: '#164e63'
+                        },
+                        secondary: {
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857'
+                        }
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                        'slide-up': 'slideUp 0.3s ease-out',
+                        'bounce-gentle': 'bounceGentle 0.6s ease-in-out'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes bounceGentle {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+    </style>
 </head>
-<body>
-    <div class="container">
-        <header class="header">
-            <div class="brand">
-                <div class="header-top">
-                    <div class="logo-container">
-                        <img src="../../city-logos/logo-vert.png" alt="City Logo" class="logo-image" />
-                    </div>
+<body class="min-h-screen bg-gradient-to-br from-primary-50 via-primary-100 to-cyan-50">
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <!-- Header -->
+        <header class="text-center mb-12 animate-fade-in">
+            <div class="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/20 p-8 mx-auto max-w-4xl">
+                <div class="flex items-center justify-center mb-6">
+                    <img src="../../city-logos/logo-vert.png" alt="City Logo" class="h-20 w-auto object-contain" />
                 </div>
-                <div class="brand-text">
-                    <h1>MWAT & Daily Maximum Calculator</h1>
-                    <p class="tagline">Calculate Maximum Weekly Average Temperature (MWAT) and Daily Maximum Temperature per Colorado DMR requirements</p>
-                </div>
-                <div class="header-bottom">
-                    <a href="../dashboard/dashboard.html" class="back-to-dashboard-btn">
-                        ← Back to Dashboard
-                    </a>
-                </div>
+                <h1 class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary-600 to-primary-800 bg-clip-text text-transparent mb-4">
+                    MWAT & Daily Maximum Calculator
+                </h1>
+                <p class="text-primary-600 text-lg md:text-xl font-medium mb-6 max-w-3xl mx-auto">
+                    Calculate Maximum Weekly Average Temperature (MWAT) and Daily Maximum Temperature per Colorado DMR requirements
+                </p>
+                <a href="../dashboard/dashboard.html" 
+                   class="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                    Back to Dashboard
+                </a>
             </div>
         </header>
 
-        <div class="main-content">
-            <div class="card">
-                <h2>File Upload</h2>
-                <p>Upload temperature monitoring CSV files to calculate MWAT and Daily Maximum Temperature values according to Colorado DMR Guidance requirements.</p>
-                
-                <div class="file-upload-section">
-                    <div class="file-input-group">
-                        <label for="file1">Temperature Data CSV File:</label>
-                        <div class="file-input-wrapper" id="file1-wrapper">
-                            <input type="file" id="file1" accept=".csv" multiple />
-                            <div class="file-input-display" onclick="document.getElementById('file1').click()">
-                                <span class="file-input-icon">📁</span>
-                                <div class="file-input-text">Click to select file(s)</div>
-                                <div class="file-input-subtext">Continuous temperature monitoring data - select multiple files if needed</div>
-                            </div>
-                        </div>
+        <!-- Main Content -->
+        <main class="space-y-8">
+            <!-- File Upload Card -->
+            <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8 animate-slide-up">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-10 h-10 bg-gradient-to-r from-primary-500 to-primary-600 rounded-full flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                        </svg>
                     </div>
-                    
-                    <div class="test-data-section">
-                        <button class="btn btn-secondary" onclick="loadTestData()" id="testDataBtn">
-                            Load Test Data (UST1A Files)
-                        </button>
-                        <p class="test-data-description">Or click here to load sample UST1A temperature data files to try out the calculator</p>
-                    </div>
-                    
-                    <div class="calculation-requirements">
-                        <h3>📋 DMR Calculation Requirements</h3>
-                        <div class="requirement-grid">
-                            <div class="requirement-item">
-                                <strong>Daily Maximum Temperature (DM):</strong>
-                                <span>Highest 2-hour rolling average temperature in each 24-hour period</span>
-                            </div>
-                            <div class="requirement-item">
-                                <strong>Maximum Weekly Average Temperature (MWAT):</strong>
-                                <span>Highest 7-day rolling average of daily average temperatures</span>
-                            </div>
-                        </div>
-                    </div>
+                    <h2 class="text-2xl font-bold text-gray-800">Upload Temperature Data</h2>
                 </div>
                 
-                <h2>Pick Reporting Date Range</h2>
+                <p class="text-gray-600 mb-6">Upload continuous temperature monitoring CSV files to calculate MWAT and Daily Maximum values.</p>
                 
-                <div class="date-inputs">
-                    <div class="date-section">
-                        <div class="date-group">
-                            <label for="startDate">Start Date</label>
-                            <div class="date-input-wrapper">
-                                <input type="text" id="startDate" placeholder="Select start date..." />
-                            </div>
-                        </div>
-                    </div>
-                    <div class="date-section">
-                        <div class="date-group">
-                            <label for="endDate">End Date</label>
-                            <div class="date-input-wrapper">
-                                <input type="text" id="endDate" placeholder="Select end date..." />
-                            </div>
+                <!-- File Upload Area -->
+                <div class="relative">
+                    <input type="file" id="file1" accept=".csv" multiple class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
+                    <div id="file1-wrapper" class="border-3 border-dashed border-gray-300 rounded-2xl p-8 text-center transition-all duration-300 hover:border-primary-400 hover:bg-primary-50/50 group">
+                        <div class="file-input-display">
+                            <div class="file-input-icon text-6xl mb-4 transition-transform duration-300 group-hover:scale-110">📁</div>
+                            <div class="file-input-text text-xl font-semibold text-gray-700 mb-2">Click to select file(s)</div>
+                            <div class="file-input-subtext text-gray-500">Continuous temperature monitoring data - select multiple files if needed</div>
                         </div>
                     </div>
                 </div>
 
-                <div class="discharge-periods-section">
-                    <h3>Discharge Periods</h3>
-                    <p>Specify when the plant is discharging into the river. Only data within these periods will be used for MWAT and Daily Maximum calculations. Leave blank to use all data.</p>
-                    
-                    <div class="discharge-entry">
-                        <div class="discharge-dates">
-                            <div class="date-group">
-                                <label for="dischargeStart">Start Date & Time:</label>
-                                <div class="date-input-wrapper">
-                                    <input type="datetime-local" id="dischargeStart" />
-                                </div>
-                            </div>
-                            <div class="date-group">
-                                <label for="dischargeEnd">End Date & Time:</label>
-                                <div class="date-input-wrapper">
-                                    <input type="datetime-local" id="dischargeEnd" />
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <button class="add-period-btn" onclick="addDischargePeriod()">
-                            Add Discharge Period
+                <!-- Test Data Section -->
+                <div class="mt-8 text-center">
+                    <div class="bg-gradient-to-r from-secondary-50 to-secondary-100 rounded-2xl p-6 border border-secondary-200">
+                        <button onclick="loadTestData()" id="testDataBtn" 
+                                class="bg-gradient-to-r from-secondary-500 to-secondary-600 hover:from-secondary-600 hover:to-secondary-700 text-white px-8 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-lg mb-3">
+                            🧪 Load Test Data (UST1A Files)
                         </button>
+                        <p class="text-secondary-700 font-medium">Or click here to load sample UST1A temperature data files to try out the calculator</p>
                     </div>
-                    
-                    <div class="discharge-list" id="dischargeList" style="display: none;">
-                        <h4>Added Discharge Periods:</h4>
-                        <div id="dischargePeriods">
-                            <!-- Added discharge periods will appear here -->
+                </div>
+
+                <!-- DMR Requirements -->
+                <div class="mt-8 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-200">
+                    <h3 class="text-lg font-bold text-blue-800 mb-4 flex items-center gap-2">
+                        📋 DMR Calculation Requirements
+                    </h3>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="bg-white/70 rounded-xl p-4 border-l-4 border-blue-500">
+                            <h4 class="font-bold text-blue-700 mb-2">Daily Maximum Temperature (DM)</h4>
+                            <p class="text-gray-600 text-sm">Highest 2-hour rolling average temperature in each 24-hour period</p>
+                        </div>
+                        <div class="bg-white/70 rounded-xl p-4 border-l-4 border-blue-500">
+                            <h4 class="font-bold text-blue-700 mb-2">Maximum Weekly Average Temperature (MWAT)</h4>
+                            <p class="text-gray-600 text-sm">Highest 7-day rolling average of daily average temperatures</p>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <!-- Date Range Card -->
+            <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8 animate-slide-up">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-10 h-10 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-800">Pick Reporting Date Range</h2>
                 </div>
                 
-                <div class="process-button-section">
-                    <button class="btn" onclick="calculateMWATAndDailyMax()" id="processBtn" disabled>
-                        Calculate MWAT & Daily Max
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label for="startDate" class="block text-sm font-bold text-gray-700 uppercase tracking-wide flex items-center gap-2">
+                            📅 Start Date
+                        </label>
+                        <input type="text" id="startDate" placeholder="Select start date..." 
+                               class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:ring-4 focus:ring-primary-100 transition-all duration-300 text-lg font-medium bg-white hover:border-gray-300" />
+                    </div>
+                    <div class="space-y-2">
+                        <label for="endDate" class="block text-sm font-bold text-gray-700 uppercase tracking-wide flex items-center gap-2">
+                            📅 End Date
+                        </label>
+                        <input type="text" id="endDate" placeholder="Select end date..." 
+                               class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:ring-4 focus:ring-primary-100 transition-all duration-300 text-lg font-medium bg-white hover:border-gray-300" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Discharge Periods Card -->
+            <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8 animate-slide-up">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-10 h-10 bg-gradient-to-r from-amber-500 to-orange-500 rounded-full flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-800">Discharge Periods</h2>
+                </div>
+                
+                <p class="text-gray-600 mb-6">Specify when the plant is discharging into the river. Only data within these periods will be used for calculations.</p>
+                
+                <div class="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-6 border border-amber-200">
+                    <div class="grid md:grid-cols-2 gap-4 mb-6">
+                        <div class="space-y-2">
+                            <label for="dischargeStart" class="block text-sm font-bold text-amber-700 uppercase tracking-wide">Start Date & Time</label>
+                            <input type="datetime-local" id="dischargeStart" 
+                                   class="w-full px-4 py-3 border-2 border-amber-200 rounded-xl focus:border-amber-400 focus:ring-4 focus:ring-amber-100 transition-all duration-300 bg-white" />
+                        </div>
+                        <div class="space-y-2">
+                            <label for="dischargeEnd" class="block text-sm font-bold text-amber-700 uppercase tracking-wide">End Date & Time</label>
+                            <input type="datetime-local" id="dischargeEnd" 
+                                   class="w-full px-4 py-3 border-2 border-amber-200 rounded-xl focus:border-amber-400 focus:ring-4 focus:ring-amber-100 transition-all duration-300 bg-white" />
+                        </div>
+                    </div>
+                    
+                    <button onclick="addDischargePeriod()" 
+                            class="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105">
+                        ➕ Add Discharge Period
                     </button>
                 </div>
+                
+                <div id="dischargeList" class="mt-6 hidden">
+                    <h4 class="text-lg font-bold text-amber-700 mb-4 flex items-center gap-2">
+                        📋 Added Discharge Periods
+                    </h4>
+                    <div id="dischargePeriods" class="space-y-3">
+                        <!-- Discharge periods will be added here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Process Button -->
+            <div class="text-center animate-slide-up">
+                <button onclick="calculateMWATAndDailyMax()" id="processBtn" disabled
+                        class="bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 disabled:from-gray-400 disabled:to-gray-500 text-white px-12 py-4 rounded-full text-xl font-bold transition-all duration-300 transform hover:scale-105 hover:shadow-xl disabled:cursor-not-allowed disabled:transform-none">
+                    🚀 Calculate MWAT & Daily Max
+                </button>
+            </div>
+        </main>
+
+        <!-- Results Section -->
+        <div id="results" class="hidden mt-12 bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8 animate-fade-in">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800">MWAT & Daily Maximum Temperature Results</h2>
             </div>
             
-            <div id="results" class="card results">
-                <h2>MWAT & Daily Maximum Temperature Results</h2>
-                <div id="stats" class="stats"></div>
-                <div class="results-actions">
-                    <button class="btn btn-secondary" onclick="downloadResults()">
-                        Download Results
-                    </button>
-                    <button class="btn btn-secondary" onclick="downloadRawData()">
-                        Download Processed Data
-                    </button>
-                </div>
-                <div id="dataTable"></div>
+            <div id="stats" class="mb-8"></div>
+            
+            <div class="flex flex-wrap gap-4 mb-8">
+                <button onclick="downloadResults()" 
+                        class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    Download Results
+                </button>
+                <button onclick="downloadRawData()" 
+                        class="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                    </svg>
+                    Download Processed Data
+                </button>
             </div>
+            
+            <div id="dataTable" class="overflow-x-auto"></div>
         </div>
-        
-        <div id="messages"></div>
+
+        <!-- Messages -->
+        <div id="messages" class="mt-8 space-y-4"></div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>

@@ -39,8 +39,9 @@ function updateFileDisplay(fileInputId) {
     const iconElement = display.querySelector('.file-input-icon');
     
     if (fileInput.files.length > 0) {
-        wrapper.classList.add('has-file');
-        display.classList.add('file-selected');
+        wrapper.classList.remove('border-gray-300', 'hover:border-primary-400', 'hover:bg-primary-50/50');
+        wrapper.classList.add('border-green-400', 'bg-green-50/50');
+        
         if (fileInput.files.length === 1) {
             textElement.textContent = fileInput.files[0].name;
             subtextElement.textContent = `File selected (${formatFileSize(fileInput.files[0].size)})`;
@@ -49,12 +50,17 @@ function updateFileDisplay(fileInputId) {
             subtextElement.textContent = `Multiple files selected`;
         }
         iconElement.textContent = '✅';
+        textElement.classList.add('text-green-700');
+        subtextElement.classList.add('text-green-600');
     } else {
-        wrapper.classList.remove('has-file');
-        display.classList.remove('file-selected');
+        wrapper.classList.remove('border-green-400', 'bg-green-50/50');
+        wrapper.classList.add('border-gray-300', 'hover:border-primary-400', 'hover:bg-primary-50/50');
+        
         textElement.textContent = 'Click to select file(s)';
         subtextElement.textContent = 'Continuous temperature monitoring data - select multiple files if needed';
         iconElement.textContent = '📁';
+        textElement.classList.remove('text-green-700');
+        subtextElement.classList.remove('text-green-600');
     }
 }
 
@@ -110,21 +116,23 @@ function addDischargePeriod() {
     const listDiv = document.getElementById('dischargeList');
     
     const periodDiv = document.createElement('div');
-    periodDiv.className = 'discharge-item';
+    periodDiv.className = 'bg-white/80 rounded-xl p-4 border border-amber-200 flex items-center justify-between transition-all duration-300 hover:shadow-md';
     periodDiv.id = `dischargePeriod${periodIndex}`;
     
     periodDiv.innerHTML = `
-        <div class="discharge-info">
-            <div class="discharge-period-text">Discharge Period ${periodIndex + 1}</div>
-            <div class="discharge-dates-text">${startDate.toLocaleString()} - ${endDate.toLocaleString()}</div>
+        <div class="flex-1">
+            <div class="font-bold text-amber-700 mb-1">Discharge Period ${periodIndex + 1}</div>
+            <div class="text-amber-600 text-sm">${startDate.toLocaleString()} - ${endDate.toLocaleString()}</div>
         </div>
-        <button class="remove-period-btn" onclick="removeDischargePeriod(${periodIndex})">Remove</button>
+        <button class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105" onclick="removeDischargePeriod(${periodIndex})">
+            🗑️ Remove
+        </button>
     `;
     
     container.appendChild(periodDiv);
     
     // Show the list and clear inputs
-    listDiv.style.display = 'block';
+    listDiv.classList.remove('hidden');
     startInput.value = '';
     endInput.value = '';
     
@@ -144,20 +152,20 @@ function removeDischargePeriod(periodIndex) {
         
         // Hide list if empty
         if (dischargePeriods.length === 0) {
-            document.getElementById('dischargeList').style.display = 'none';
-            const addButton = document.querySelector('.add-period-btn');
-            addButton.textContent = 'Add Discharge Period';
+            document.getElementById('dischargeList').classList.add('hidden');
         }
     }
 }
 
 function updateDischargePeriodTitles() {
     const container = document.getElementById('dischargePeriods');
-    const periods = container.querySelectorAll('.discharge-item');
+    const periods = container.children;
     
-    periods.forEach((period, index) => {
-        const title = period.querySelector('.discharge-period-text');
-        title.textContent = `Discharge Period ${index + 1}`;
+    Array.from(periods).forEach((period, index) => {
+        const title = period.querySelector('.font-bold');
+        if (title) {
+            title.textContent = `Discharge Period ${index + 1}`;
+        }
     });
 }
 
@@ -393,10 +401,10 @@ async function loadTestData() {
                 const text = await response.text();
                 const data = parseCSV(text);
                 allData.push(data);
-                messagesDiv.innerHTML += `<div class="message success">Loaded ${data.length} records from ${filePath.split('/').pop()}</div>`;
+                messagesDiv.innerHTML += `<div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-xl font-medium animate-slide-up">✅ Loaded ${data.length} records from ${filePath.split('/').pop()}</div>`;
             } catch (error) {
                 console.warn(`Error loading ${filePath}:`, error);
-                messagesDiv.innerHTML += `<div class="message error">Failed to load ${filePath.split('/').pop()}: ${error.message}</div>`;
+                messagesDiv.innerHTML += `<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl font-medium">❌ Failed to load ${filePath.split('/').pop()}: ${error.message}</div>`;
             }
         }
         
@@ -414,19 +422,22 @@ async function loadTestData() {
         const subtextElement = display.querySelector('.file-input-subtext');
         const iconElement = display.querySelector('.file-input-icon');
         
-        wrapper.classList.add('has-file');
-        display.classList.add('file-selected');
+        wrapper.classList.remove('border-gray-300', 'hover:border-primary-400', 'hover:bg-primary-50/50');
+        wrapper.classList.add('border-secondary-400', 'bg-secondary-50/50');
+        
         textElement.textContent = 'Test Data Loaded';
         subtextElement.textContent = `${allData.length} UST1A files loaded (${temperatureData.length} total records)`;
         iconElement.textContent = '🧪';
+        textElement.classList.add('text-secondary-700');
+        subtextElement.classList.add('text-secondary-600');
         
         // Enable the process button
         document.getElementById('processBtn').disabled = false;
         
-        messagesDiv.innerHTML += `<div class="message success">Test data loaded successfully! Combined ${temperatureData.length} temperature readings from ${allData.length} files.</div>`;
+        messagesDiv.innerHTML += `<div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-xl font-medium animate-slide-up">🎉 Test data loaded successfully! Combined ${temperatureData.length} temperature readings from ${allData.length} files.</div>`;
         
     } catch (error) {
-        messagesDiv.innerHTML += `<div class="message error">Error loading test data: ${error.message}</div>`;
+        messagesDiv.innerHTML += `<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl font-medium">❌ Error loading test data: ${error.message}</div>`;
     }
 }
 
@@ -447,13 +458,13 @@ async function calculateMWATAndDailyMax() {
                 const text = await fileInput.files[i].text();
                 const data = parseCSV(text);
                 allData.push(data);
-                messagesDiv.innerHTML += `<div class="message success">Parsed ${data.length} records from ${fileInput.files[i].name}</div>`;
+                messagesDiv.innerHTML += `<div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-xl font-medium animate-slide-up">✅ Parsed ${data.length} records from ${fileInput.files[i].name}</div>`;
             }
             
             // Combine all files
             temperatureData = combineMultipleFiles(allData);
         } else {
-            messagesDiv.innerHTML += `<div class="message info">Using previously loaded data (${temperatureData.length} records)</div>`;
+            messagesDiv.innerHTML += `<div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded-xl font-medium">ℹ️ Using previously loaded data (${temperatureData.length} records)</div>`;
         }
         
         // Filter by date range if specified
@@ -468,7 +479,7 @@ async function calculateMWATAndDailyMax() {
         
         // Show discharge period filtering info
         if (dischargePeriods.length > 0) {
-            messagesDiv.innerHTML += `<div class="message info">Applied ${dischargePeriods.length} discharge period filter(s). Only data within discharge periods will be used for calculations.</div>`;
+            messagesDiv.innerHTML += `<div class="bg-amber-100 border border-amber-400 text-amber-700 px-4 py-3 rounded-xl font-medium">🏭 Applied ${dischargePeriods.length} discharge period filter(s). Only data within discharge periods will be used for calculations.</div>`;
         }
         
         // Calculate Daily Maximum Temperature
@@ -481,7 +492,7 @@ async function calculateMWATAndDailyMax() {
         displayMWATResults(filteredData, dailyMaxResults, mwatResults);
         
     } catch (error) {
-        messagesDiv.innerHTML += `<div class="message error">Error calculating MWAT and Daily Max: ${error.message}</div>`;
+        messagesDiv.innerHTML += `<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl font-medium">❌ Error calculating MWAT and Daily Max: ${error.message}</div>`;
     }
 }
 
@@ -499,98 +510,118 @@ function displayMWATResults(rawData, dailyMax, mwat) {
         'N/A';
     
     statsDiv.innerHTML = `
-        <h3>DMR Calculation Results</h3>
-        <div class="stats-grid">
-            <div class="stat-item">
-                <div class="stat-value">${overallMWAT.toFixed(2)}°C</div>
-                <div class="stat-label">Maximum Weekly Average Temperature (MWAT)</div>
+        <h3 class="text-2xl font-bold text-green-800 mb-6 flex items-center gap-2">
+            📊 DMR Calculation Results
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-6 border border-blue-200 text-center">
+                <div class="text-3xl font-bold text-blue-700 mb-2">${overallMWAT.toFixed(2)}°C</div>
+                <div class="text-blue-600 font-semibold">Maximum Weekly Average Temperature (MWAT)</div>
             </div>
-            <div class="stat-item">
-                <div class="stat-value">${overallDailyMax.toFixed(2)}°C</div>
-                <div class="stat-label">Highest Daily Maximum Temperature</div>
+            <div class="bg-gradient-to-br from-red-50 to-red-100 rounded-2xl p-6 border border-red-200 text-center">
+                <div class="text-3xl font-bold text-red-700 mb-2">${overallDailyMax.toFixed(2)}°C</div>
+                <div class="text-red-600 font-semibold">Highest Daily Maximum Temperature</div>
             </div>
-            <div class="stat-item">
-                <div class="stat-value">${rawData.length}</div>
-                <div class="stat-label">Total Temperature Readings</div>
+            <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-2xl p-6 border border-green-200 text-center">
+                <div class="text-3xl font-bold text-green-700 mb-2">${rawData.length}</div>
+                <div class="text-green-600 font-semibold">Total Temperature Readings</div>
             </div>
-            <div class="stat-item">
-                <div class="stat-value">${dailyMax.length}</div>
-                <div class="stat-label">Days with Daily Maximum</div>
+            <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl p-6 border border-purple-200 text-center">
+                <div class="text-3xl font-bold text-purple-700 mb-2">${dailyMax.length}</div>
+                <div class="text-purple-600 font-semibold">Days with Daily Maximum</div>
             </div>
-            <div class="stat-item">
-                <div class="stat-value">${mwat.length}</div>
-                <div class="stat-label">7-Day MWAT Periods</div>
+            <div class="bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-2xl p-6 border border-indigo-200 text-center">
+                <div class="text-3xl font-bold text-indigo-700 mb-2">${mwat.length}</div>
+                <div class="text-indigo-600 font-semibold">7-Day MWAT Periods</div>
             </div>
-            <div class="stat-item">
-                <div class="stat-value">${dateRange}</div>
-                <div class="stat-label">Date Range</div>
+            <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-6 border border-gray-200 text-center">
+                <div class="text-xl font-bold text-gray-700 mb-2">${dateRange}</div>
+                <div class="text-gray-600 font-semibold">Date Range</div>
             </div>
         </div>
     `;
     
     // Create results table showing top MWAT periods and daily maximums
     let tableHTML = `
-        <h3>Top MWAT Periods (7-Day Rolling Averages)</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Period End Date</th>
-                    <th>7-Day Period</th>
-                    <th>Weekly Average (°C)</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
+        <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+            📈 Top MWAT Periods (7-Day Rolling Averages)
+        </h3>
+        <div class="bg-white rounded-2xl shadow-lg overflow-hidden mb-8">
+            <table class="w-full">
+                <thead>
+                    <tr class="bg-gradient-to-r from-blue-600 to-blue-700 text-white">
+                        <th class="px-6 py-4 text-left font-bold">Period End Date</th>
+                        <th class="px-6 py-4 text-left font-bold">7-Day Period</th>
+                        <th class="px-6 py-4 text-left font-bold">Weekly Average (°C)</th>
+                        <th class="px-6 py-4 text-left font-bold">Status</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
     `;
     
     // Show top 10 MWAT periods
     const topMWAT = [...mwat].sort((a, b) => b.weeklyAverage - a.weeklyAverage).slice(0, 10);
     topMWAT.forEach((period, index) => {
         const isHighest = index === 0;
-        const statusClass = isHighest ? 'status-averaged' : 'status-single';
-        const statusText = isHighest ? 'MWAT VALUE' : 'Weekly Avg';
+        const rowClass = index % 2 === 0 ? 'bg-gray-50' : 'bg-white';
+        const statusClass = isHighest ? 'bg-yellow-200 text-yellow-800 px-3 py-1 rounded-full text-xs font-bold' : 'bg-blue-200 text-blue-800 px-3 py-1 rounded-full text-xs font-bold';
+        const statusText = isHighest ? '🏆 MWAT VALUE' : '📊 Weekly Avg';
         
         tableHTML += `
-            <tr>
-                <td>${period.endDate.toLocaleDateString()}</td>
-                <td>${period.startDate.toLocaleDateString()} - ${period.endDate.toLocaleDateString()}</td>
-                <td>${period.weeklyAverage.toFixed(3)}</td>
-                <td><span class="${statusClass}">${statusText}</span></td>
+            <tr class="${rowClass} hover:bg-blue-50 transition-colors duration-200">
+                <td class="px-6 py-4 font-medium text-gray-900">${period.endDate.toLocaleDateString()}</td>
+                <td class="px-6 py-4 text-gray-700">${period.startDate.toLocaleDateString()} - ${period.endDate.toLocaleDateString()}</td>
+                <td class="px-6 py-4 font-bold text-lg text-blue-700">${period.weeklyAverage.toFixed(3)}</td>
+                <td class="px-6 py-4"><span class="${statusClass}">${statusText}</span></td>
             </tr>
         `;
     });
     
-    tableHTML += `</tbody></table>
-        <h3 style="margin-top: 2rem;">Top Daily Maximum Temperatures (2-Hour Rolling Averages)</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Daily Maximum (°C)</th>
-                    <th>Time Range</th>
-                    <th>Readings in 2-Hour Window</th>
-                </tr>
-            </thead>
-            <tbody>
+    tableHTML += `
+                </tbody>
+            </table>
+        </div>
+
+        <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+            🌡️ Top Daily Maximum Temperatures (2-Hour Rolling Averages)
+        </h3>
+        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+            <table class="w-full">
+                <thead>
+                    <tr class="bg-gradient-to-r from-red-600 to-red-700 text-white">
+                        <th class="px-6 py-4 text-left font-bold">Date</th>
+                        <th class="px-6 py-4 text-left font-bold">Daily Maximum (°C)</th>
+                        <th class="px-6 py-4 text-left font-bold">Time Range</th>
+                        <th class="px-6 py-4 text-left font-bold">Readings in 2-Hour Window</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
     `;
     
     // Show top 10 daily maximum temperatures
     const topDailyMax = [...dailyMax].sort((a, b) => b.temperature - a.temperature).slice(0, 10);
-    topDailyMax.forEach(day => {
+    topDailyMax.forEach((day, index) => {
+        const rowClass = index % 2 === 0 ? 'bg-gray-50' : 'bg-white';
         tableHTML += `
-            <tr>
-                <td>${day.date.toLocaleDateString()}</td>
-                <td>${day.temperature.toFixed(3)}</td>
-                <td>${day.timeRange}</td>
-                <td>${day.readingCount}</td>
+            <tr class="${rowClass} hover:bg-red-50 transition-colors duration-200">
+                <td class="px-6 py-4 font-medium text-gray-900">${day.date.toLocaleDateString()}</td>
+                <td class="px-6 py-4 font-bold text-lg text-red-700">${day.temperature.toFixed(3)}</td>
+                <td class="px-6 py-4 text-gray-700">${day.timeRange}</td>
+                <td class="px-6 py-4 text-center">
+                    <span class="bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm font-semibold">${day.readingCount}</span>
+                </td>
             </tr>
         `;
     });
     
-    tableHTML += '</tbody></table>';
+    tableHTML += `
+                </tbody>
+            </table>
+        </div>
+    `;
     
     tableDiv.innerHTML = tableHTML;
-    resultsDiv.style.display = 'block';
+    resultsDiv.classList.remove('hidden');
 }
 
 function downloadResults() {
