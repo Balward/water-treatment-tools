@@ -285,3 +285,102 @@ button:hover {
 
 /* Min height */
 .min-h-screen { min-height: 100vh; }
+
+/* Additional utility classes needed for game cards */
+.col-span-full { grid-column: 1 / -1; }
+.line-clamp-2 { 
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.leading-tight { line-height: 1.25; }
+.object-cover { object-fit: cover; }
+.overflow-hidden { overflow: hidden; }
+
+/* Height utilities */
+.h-48 { height: 12rem; }
+.h-4 { height: 1rem; }
+
+/* Width utilities */
+.w-4 { width: 1rem; }
+
+/* Positioning */
+.relative { position: relative; }
+.absolute { position: absolute; }
+.top-3 { top: 0.75rem; }
+.right-3 { right: 0.75rem; }
+.left-3 { left: 0.75rem; }
+
+/* Colors */
+.text-yellow-600 { color: #d97706; }
+.text-black { color: #000000; }
+.bg-black { background-color: #000000; }
+
+/* Opacity */
+.bg-black\/70 { background-color: rgba(0, 0, 0, 0.7); }
+
+/* Stroke utilities for SVG */
+svg { stroke: currentColor; }
+.stroke-currentColor { stroke: currentColor; }
+
+/* Fill utilities for SVG */
+.fill-none { fill: none; }
+
+/* Grid utilities */
+.gap-1 { gap: 0.25rem; }
+
+/* Text colors for ratings */
+.text-yellow-600 { color: #d97706; }
+
+/* Additional layout utilities */
+.justify-between { justify-content: space-between; }
+
+/* Additional responsive grid columns */
+@media (min-width: 1536px) {
+  .xl\\:grid-cols-5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+}
+
+/* More specific margin utilities */
+.mb-1 { margin-bottom: 0.25rem; }
+.mb-3 { margin-bottom: 0.75rem; }
+.py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+.py-16 { padding-top: 4rem; padding-bottom: 4rem; }
+.p-1 { padding: 0.25rem; }
+.p-3 { padding: 0.75rem; }
+.p-6 { padding: 1.5rem; }
+
+/* Border utilities */
+.border-gray-200 { border-color: #e5e7eb; }
+.border-blue-300 { border-color: #93c5fd; }
+.rounded-lg { border-radius: 0.5rem; }
+
+/* Background colors */
+.bg-gray-50 { background-color: #f9fafb; }
+.bg-blue-600 { background-color: #2563eb; }
+
+/* Text sizes */
+.text-xs { font-size: 0.75rem; line-height: 1rem; }
+
+/* Additional hover states */
+.hover\\:border-blue-300:hover { border-color: #93c5fd; }
+.hover\\:text-blue-600:hover { color: #2563eb; }
+.hover\\:text-red-600:hover { color: #dc2626; }
+
+/* Color utilities */
+.text-gray-400 { color: #9ca3af; }
+
+/* Transition utilities */
+.transition-colors { transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out; }
+
+/* SVG sizing and stroke */
+svg {
+  flex-shrink: 0;
+}
+svg[stroke="currentColor"] {
+  stroke: currentColor;
+  fill: none;
+}
+
+/* Text transform utilities */
+.uppercase { text-transform: uppercase; }
