@@ -31,7 +31,8 @@
       "Bash(npm init:*)",
       "Bash(npm install:*)",
       "Bash(npx tailwindcss:*)",
-      "Bash(npm run build-css-prod:*)"
+      "Bash(npm run build-css-prod:*)",
+      "WebFetch(domain:water.gibbhub.io)"
     ],
     "deny": []
   }
