@@ -652,18 +652,21 @@ function createGameCard(game) {
                 <img src="${game.thumbnail}" alt="${game.name}" 
                      class="w-full h-48 object-cover"
                      onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'" />
-                <div class="absolute top-3 right-3 bg-black/70 text-white px-4.5 py-2.5 rounded-lg text-sm font-medium">
-                    ${game.yearPublished || 'N/A'}
-                </div>
-                ${game.numPlays > 0 ? `
-                    <div class="absolute top-3 left-3 bg-blue-600 text-white px-4 py-2.5 rounded-lg text-sm font-medium">
-                        ${game.numPlays} plays
-                    </div>
-                ` : ''}
             </div>
             
             <div class="p-6">
-                <h3 class="font-bold text-lg text-gray-800 mb-3 line-clamp-2 leading-tight">${game.name}</h3>
+                <h3 class="font-bold text-lg text-gray-800 mb-3 leading-tight" style="height: 3.5rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${game.name}</h3>
+                
+                <div class="flex items-center justify-between mb-4">
+                    <div class="bg-black/70 text-white px-4 py-2.5 rounded-lg text-sm font-medium">
+                        ${game.yearPublished || 'N/A'}
+                    </div>
+                    ${game.numPlays > 0 ? `
+                        <div class="bg-blue-600 text-white px-4 py-2.5 rounded-lg text-sm font-medium">
+                            ${game.numPlays} plays
+                        </div>
+                    ` : ''}
+                </div>
                 
                 <div class="grid grid-cols-2 gap-4 mb-4">
                     <div class="text-center">
