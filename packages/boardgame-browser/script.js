@@ -640,7 +640,7 @@ function createGameCard(game) {
         (game.complexity <= 2.0 ? 'Light' : 
          game.complexity <= 3.5 ? 'Medium' : 'Heavy') : 'Unknown';
     
-    const rating = game.userRating > 0 ? game.userRating : game.bggRating;
+    const rating = game.bggRating > 0 ? game.bggRating : (game.userRating > 0 ? game.userRating : 0);
     const ratingColor = rating >= 8 ? 'text-green-600' : 
                        rating >= 7 ? 'text-blue-600' : 
                        rating >= 6 ? 'text-yellow-600' : 'text-gray-600';
