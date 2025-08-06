@@ -15,6 +15,22 @@ console.log('Board Game Collection Browser loaded');
 // API configuration - use same origin since nginx proxies to backend
 const API_BASE_URL = window.location.origin;
 
+// Check if API server is available
+let apiServerAvailable = false;
+async function checkApiAvailability() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/health`, { 
+            method: 'GET',
+            timeout: 5000 // 5 second timeout
+        });
+        apiServerAvailable = response.ok;
+        console.log('API server available:', apiServerAvailable);
+    } catch (error) {
+        apiServerAvailable = false;
+        console.log('API server not available, using localStorage fallback only');
+    }
+}
+
 // Collection management via API
 async function saveCollectionToCache(username, games) {
     const cacheData = {
@@ -24,90 +40,104 @@ async function saveCollectionToCache(username, games) {
         version: '1.0'
     };
     
-    try {
-        const response = await fetch(`${API_BASE_URL}/api/collections/${username}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(cacheData)
-        });
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+    // Try API server first if available
+    if (apiServerAvailable) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/collections/${username}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(cacheData)
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const result = await response.json();
+            console.log('Collection saved to server:', result);
+            updateSavedCollectionsList();
+            return;
+        } catch (error) {
+            console.warn('Failed to save to server, falling back to localStorage:', error);
         }
-        
-        const result = await response.json();
-        console.log('Collection saved to server:', result);
-        updateSavedCollectionsList();
-    } catch (error) {
-        console.warn('Failed to save to server, falling back to localStorage:', error);
-        // Fallback to localStorage if server is unavailable
-        localStorage.setItem(`bgg_collection_${username.toLowerCase()}`, JSON.stringify(cacheData));
-        updateSavedCollectionsList();
     }
+    
+    // Fallback to localStorage if server is unavailable
+    localStorage.setItem(`bgg_collection_${username.toLowerCase()}`, JSON.stringify(cacheData));
+    console.log(`Saved collection for ${username} to localStorage`);
+    updateSavedCollectionsList();
 }
 
 async function loadCollectionFromCache(username) {
-    try {
-        const response = await fetch(`${API_BASE_URL}/api/collections/${username}`);
-        
-        if (response.ok) {
-            const data = await response.json();
-            return data;
-        } else if (response.status === 404) {
-            return null; // Collection not found
-        } else {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-    } catch (error) {
-        console.warn('Failed to load from server, checking localStorage:', error);
-        // Fallback to localStorage
-        const cacheKey = `bgg_collection_${username.toLowerCase()}`;
-        const cached = localStorage.getItem(cacheKey);
-        if (cached) {
-            try {
-                return JSON.parse(cached);
-            } catch (e) {
-                console.warn('Failed to parse localStorage data for', username);
-                localStorage.removeItem(cacheKey);
+    // Try API server first if available
+    if (apiServerAvailable) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/collections/${username}`);
+            
+            if (response.ok) {
+                const data = await response.json();
+                return data;
+            } else if (response.status === 404) {
+                // Not found on server, try localStorage
+            } else {
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
+        } catch (error) {
+            console.warn('Failed to load from server, checking localStorage:', error);
         }
-        return null;
     }
+    
+    // Fallback to localStorage
+    const cacheKey = `bgg_collection_${username.toLowerCase()}`;
+    const cached = localStorage.getItem(cacheKey);
+    if (cached) {
+        try {
+            return JSON.parse(cached);
+        } catch (e) {
+            console.warn('Failed to parse localStorage data for', username);
+            localStorage.removeItem(cacheKey);
+        }
+    }
+    return null;
 }
 
 async function getSavedCollections() {
-    try {
-        const response = await fetch(`${API_BASE_URL}/api/collections`);
-        
-        if (response.ok) {
-            const collections = await response.json();
-            return collections;
-        } else {
-            throw new Error(`HTTP error! status: ${response.status}`);
+    // Try API server first if available
+    if (apiServerAvailable) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/collections`);
+            
+            if (response.ok) {
+                const collections = await response.json();
+                return collections;
+            } else {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+        } catch (error) {
+            console.warn('Failed to load collections from server, checking localStorage:', error);
         }
-    } catch (error) {
-        console.warn('Failed to load collections from server, checking localStorage:', error);
-        // Fallback to localStorage
-        const collections = [];
-        for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i);
-            if (key && key.startsWith('bgg_collection_')) {
-                try {
-                    const data = JSON.parse(localStorage.getItem(key));
-                    collections.push({
-                        username: data.username,
-                        timestamp: data.timestamp,
-                        gameCount: data.games ? data.games.length : 0
-                    });
-                } catch (e) {
-                    console.warn('Failed to parse collection:', key);
-                }
+    }
+    
+    // Fallback to localStorage
+    const collections = [];
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('bgg_collection_')) {
+            try {
+                const data = JSON.parse(localStorage.getItem(key));
+                collections.push({
+                    username: data.username,
+                    timestamp: data.timestamp,
+                    gameCount: data.games ? data.games.length : 0
+                });
+            } catch (e) {
+                console.warn('Failed to parse collection:', key);
             }
         }
-        return collections.sort((a, b) => b.timestamp - a.timestamp);
     }
+    return collections.sort((a, b) => b.timestamp - a.timestamp);
 }
 
 async function deleteCachedCollection(username) {
@@ -197,7 +227,10 @@ function deleteSavedCollection(username) {
 }
 
 // Initialize the application
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
+    // Check API server availability first
+    await checkApiAvailability();
+    
     setupEventListeners();
     updateSavedCollectionsList();
     
@@ -286,15 +319,16 @@ async function loadCollection(username = null) {
         showLoading();
         updateLoadingProgress('Connecting to BoardGameGeek...');
         
-        // Use the JSON wrapper API for easier parsing
-        const response = await fetch(`https://bgg-json.azurewebsites.net/collection/${username}?grouped=false`);
+        // Use CORS proxy to access BGG JSON API
+        const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(`https://bgg-json.azurewebsites.net/collection/${username}?grouped=false`)}`);
         
         if (!response.ok) {
             throw new Error(`Failed to fetch collection: ${response.status}`);
         }
         
         updateLoadingProgress('Processing collection data...');
-        const data = await response.json();
+        const proxyResponse = await response.json();
+        const data = JSON.parse(proxyResponse.contents);
         
         // Debug: log the first game to see the structure
         console.log('BGG API Response sample:', data[0]);
