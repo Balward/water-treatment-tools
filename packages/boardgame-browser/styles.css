@@ -38,7 +38,7 @@ body::before {
 .flex-wrap { flex-wrap: wrap; }
 .items-center { align-items: center; }
 .items-end { align-items: flex-end; }
-.justify-center { justify-content: center; }
+.justify-center { justify-content: center !important; }
 .justify-between { justify-content: space-between; }
 .gap-1 { gap: 0.25rem !important; }
 .gap-2 { gap: 0.5rem !important; }
@@ -424,6 +424,15 @@ button:hover {
 /* Min height */
 .min-h-screen { min-height: 100vh; }
 
+/* Title enhancements */
+.title-glow {
+  text-shadow: 
+    0 0 20px rgba(168, 85, 247, 0.8),
+    0 0 40px rgba(139, 92, 246, 0.6),
+    0 0 60px rgba(124, 58, 237, 0.4);
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+}
+
 /* Additional utility classes needed for game cards */
 .col-span-full { grid-column: 1 / -1; }
 .line-clamp-2 { 
@@ -465,7 +474,47 @@ svg { stroke: currentColor; }
 /* Fill utilities for SVG */
 .fill-none { fill: none; }
 
-/* Additional layout utilities - already defined above, removing duplicates */
+/* Saved Collections styling - Dark Purple Theme */
+#savedCollectionsList .bg-gray-50 {
+  background: rgba(40, 40, 56, 0.9) !important;
+  border: 1px solid rgba(139, 92, 246, 0.3) !important;
+  backdrop-filter: blur(10px);
+}
+
+#savedCollectionsList .text-gray-600 {
+  color: #cbd5e1 !important;
+}
+
+#savedCollectionsList .bg-blue-500 {
+  background: linear-gradient(135deg, #7c3aed, #a855f7) !important;
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.3);
+}
+
+#savedCollectionsList .bg-blue-500:hover {
+  background: linear-gradient(135deg, #6d28d9, #9333ea) !important;
+  box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4);
+  transform: translateY(-2px);
+}
+
+/* View Details button styling - Dark Purple Theme */
+.game-card .text-blue-600 {
+  color: #c084fc !important;
+  background: rgba(40, 40, 56, 0.8);
+  padding: 0.5rem 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  backdrop-filter: blur(5px);
+  text-decoration: none;
+}
+
+.game-card .text-blue-600:hover {
+  color: #f8fafc !important;
+  background: rgba(168, 85, 247, 0.8);
+  border-color: rgba(168, 85, 247, 0.6);
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+  transform: translateY(-1px);
+}
 
 /* Additional responsive grid columns */
 @media (min-width: 1536px) {
