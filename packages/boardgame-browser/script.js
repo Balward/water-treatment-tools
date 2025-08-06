@@ -103,6 +103,9 @@ async function loadCollection() {
         updateLoadingProgress('Fetching detailed game information...');
         allGames = await processGameData(data);
         
+        updateLoadingProgress('Fetching complexity ratings...');
+        await enrichWithComplexityData(allGames);
+        
         hideLoading();
         showCollection();
         displayStats();
@@ -136,8 +139,8 @@ async function processGameData(rawData) {
         const processedGame = {
             id: game.gameId || game.id || game.objectId,
             name: game.name || game.gameName || 'Unknown Game',
-            image: game.image || game.imageUrl || 'https://via.placeholder.com/300x300?text=No+Image',
-            thumbnail: game.thumbnail || game.thumbnailUrl || game.image || 'https://via.placeholder.com/150x150?text=No+Image',
+            image: game.image || game.imageUrl || 'https://via.placeholder.com/400x400?text=No+Image',
+            thumbnail: game.image || game.thumbnail || game.thumbnailUrl || 'https://via.placeholder.com/300x300?text=No+Image',
             yearPublished: parseInt(game.yearPublished) || parseInt(game.year) || 0,
             minPlayers: parseInt(game.minPlayers) || parseInt(game.minplaytime) || 1,
             maxPlayers: parseInt(game.maxPlayers) || parseInt(game.maxplaytime) || parseInt(game.minPlayers) || 1,
@@ -153,6 +156,8 @@ async function processGameData(rawData) {
             // User specific data - rating is -1.0 when not rated
             userRating: (game.rating && game.rating > 0) ? parseFloat(game.rating) : 0,
             owned: game.owned === 'true' || game.owned === true || game.own === 'true' || game.own === true,
+            wantToPlay: game.wantToPlay === 'true' || game.wantToPlay === true,
+            wishlist: game.wishlist === 'true' || game.wishlist === true,
             numPlays: parseInt(game.numPlays) || parseInt(game.plays) || 0,
             
             // Categories and mechanics (if available)
@@ -169,6 +174,55 @@ async function processGameData(rawData) {
     }
     
     return games;
+}
+
+async function enrichWithComplexityData(games) {
+    // Batch fetch complexity data from BGG XML API in groups to avoid rate limiting
+    const batchSize = 20;
+    const batches = [];
+    
+    for (let i = 0; i < games.length; i += batchSize) {
+        batches.push(games.slice(i, i + batchSize));
+    }
+    
+    for (let batchIndex = 0; batchIndex < batches.length; batchIndex++) {
+        const batch = batches[batchIndex];
+        const gameIds = batch.map(game => game.id).join(',');
+        
+        try {
+            updateLoadingProgress(`Fetching complexity data (batch ${batchIndex + 1}/${batches.length})...`);
+            
+            // Use CORS proxy to access BGG XML API
+            const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(`https://api.geekdo.com/xmlapi2/thing?id=${gameIds}&stats=1`)}`);
+            const data = await response.json();
+            
+            if (data.contents) {
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(data.contents, 'text/xml');
+                const items = xmlDoc.querySelectorAll('item');
+                
+                items.forEach(item => {
+                    const gameId = parseInt(item.getAttribute('id'));
+                    const game = batch.find(g => g.id === gameId);
+                    
+                    if (game) {
+                        const averageWeight = item.querySelector('averageweight');
+                        if (averageWeight) {
+                            game.complexity = parseFloat(averageWeight.getAttribute('value')) || 0;
+                        }
+                    }
+                });
+            }
+            
+            // Rate limiting - wait between batches
+            if (batchIndex < batches.length - 1) {
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+            
+        } catch (error) {
+            console.warn(`Failed to fetch complexity for batch ${batchIndex + 1}:`, error);
+        }
+    }
 }
 
 function showLoading() {
@@ -204,7 +258,7 @@ function displayStats() {
         (allGames.reduce((sum, game) => sum + (game.userRating || game.bggRating), 0) / totalGames).toFixed(1) : 
         '0.0';
     const totalPlays = allGames.reduce((sum, game) => sum + game.numPlays, 0);
-    const wishlistCount = allGames.filter(game => !game.owned).length;
+    const wishlistCount = allGames.filter(game => game.wishlist || game.wantToPlay || !game.owned).length;
     
     document.getElementById('totalGames').textContent = totalGames;
     document.getElementById('avgRating').textContent = avgRating;
@@ -279,6 +333,18 @@ function applyFiltersAndSort() {
                 return b.numPlays - a.numPlays;
             case 'complexity':
                 return b.complexity - a.complexity;
+            case 'owned':
+                if (a.owned && !b.owned) return -1;
+                if (!a.owned && b.owned) return 1;
+                return a.name.localeCompare(b.name);
+            case 'wishlist':
+                if (a.wishlist && !b.wishlist) return -1;
+                if (!a.wishlist && b.wishlist) return 1;
+                return a.name.localeCompare(b.name);
+            case 'wantToPlay':
+                if (a.wantToPlay && !b.wantToPlay) return -1;
+                if (!a.wantToPlay && b.wantToPlay) return 1;
+                return a.name.localeCompare(b.name);
             default:
                 return 0;
         }
@@ -370,13 +436,21 @@ function createGameCard(game) {
                 </div>
                 
                 <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-2 flex-wrap">
                         ${game.owned ? 
-                            '<span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">Owned</span>' :
-                            '<span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">Wishlist</span>'
+                            '<span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">Owned</span>' : ''
+                        }
+                        ${game.wishlist ? 
+                            '<span class="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-xs font-medium">Wishlist</span>' : ''
+                        }
+                        ${game.wantToPlay ? 
+                            '<span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium">Want to Play</span>' : ''
+                        }
+                        ${!game.owned && !game.wishlist && !game.wantToPlay ? 
+                            '<span class="bg-gray-100 text-gray-600 px-2 py-1 rounded-full text-xs font-medium">Other</span>' : ''
                         }
                     </div>
-                    <button onclick="showGameDetails(${game.id})" class="text-blue-600 hover:text-blue-800 font-medium text-sm transition-colors duration-200">
+                    <button onclick="showGameDetails(${game.id})" class="text-blue-600 hover:text-blue-800 font-medium text-sm transition-colors duration-200 flex-shrink-0">
                         View Details →
                     </button>
                 </div>
