@@ -652,7 +652,7 @@ function createGameCard(game) {
                 <img src="${game.thumbnail}" alt="${game.name}" 
                      class="w-full h-48 object-cover"
                      onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'" />
-                <div class="absolute top-3 right-3 bg-black/70 text-white px-4 py-1.5 rounded-lg text-sm font-medium inline-block">
+                <div class="absolute top-3 right-3 bg-black/70 text-white px-1.5 py-1.5 rounded-lg text-sm font-medium inline-block">
                     ${game.yearPublished || 'N/A'}
                 </div>
                 ${game.numPlays > 0 ? `
