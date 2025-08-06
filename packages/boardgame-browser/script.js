@@ -268,8 +268,8 @@ async function loadCollection(username = null) {
     }
     
     // Check cache first
-    const cached = loadCollectionFromCache(username);
-    if (cached) {
+    const cached = await loadCollectionFromCache(username);
+    if (cached && cached.games) {
         const cacheAge = Date.now() - cached.timestamp;
         const hours = Math.floor(cacheAge / (1000 * 60 * 60));
         
