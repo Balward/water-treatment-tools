@@ -5,14 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Board Game Collection Browser - Water Treatment Tools</title>
     <link rel="icon" type="image/png" href="../../city-logos/favicon.png" />
-    <link rel="stylesheet" href="styles.css?v=1736135000">
+    <link rel="stylesheet" href="styles.css?v=1736135500">
 </head>
 <body class="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
     <div class="container mx-auto px-4 py-8 max-w-7xl">
         <!-- Header -->
         <header class="text-center mb-12 animate-fade-in">
             <div class="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/20 p-8">
-                <h1 class="text-5xl md:text-6xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-red-500 bg-clip-text text-transparent mb-4 title-glow">
+                <h1 class="text-5xl md:text-6xl font-bold mb-4 title-teal">
                     🎲 Board Game Collection Browser
                 </h1>
                 <p class="text-xl text-gray-600 font-medium mb-6 max-w-3xl mx-auto">
@@ -103,81 +103,71 @@
         </div>
 
         <!-- Filters and Search -->
-        <div id="filtersSection" class="hidden bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/20 p-8 mb-8 animate-slide-up">
-            <h3 class="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
-                <svg class="w-7 h-7 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div id="filtersSection" class="hidden bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/20 p-6 mb-8 animate-slide-up">
+            <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z"></path>
                 </svg>
-                Filter & Search Your Collection
+                Filter & Search
             </h3>
             
-            <!-- Search Bar -->
-            <div class="mb-6">
-                <input type="text" id="searchInput" placeholder="Search games by name..." 
-                       class="w-full px-6 py-4 border-2 border-gray-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-300 text-lg bg-white hover:border-gray-300 shadow-inner" />
-            </div>
-            
-            <!-- Filter Controls -->
-            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- Collection Status Filter -->
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">Collection Status</label>
-                    <div class="flex flex-wrap gap-2">
-                        <button class="filter-chip px-4 py-2 bg-gray-100 hover:bg-green-100 text-gray-700 rounded-full text-sm font-medium" data-filter="status" data-value="owned">Owned</button>
-                        <button class="filter-chip px-4 py-2 bg-gray-100 hover:bg-purple-100 text-gray-700 rounded-full text-sm font-medium" data-filter="status" data-value="wishlist">Wishlist</button>
-                        <button class="filter-chip px-4 py-2 bg-gray-100 hover:bg-yellow-100 text-gray-700 rounded-full text-sm font-medium" data-filter="status" data-value="wantToPlay">Want to Play</button>
-                    </div>
+            <!-- Search and Sort Row -->
+            <div class="flex flex-col lg:flex-row gap-4 mb-4">
+                <div class="flex-1">
+                    <input type="text" id="searchInput" placeholder="Search games by name..." 
+                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-300 bg-white hover:border-gray-300 shadow-inner" />
                 </div>
-
-                <!-- Player Count Filter -->
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">Player Count</label>
-                    <div class="flex flex-wrap gap-2">
-                        <button class="filter-chip px-4 py-2 bg-gray-100 hover:bg-blue-100 text-gray-700 rounded-full text-sm font-medium" data-filter="players" data-value="1">1 Player</button>
-                        <button class="filter-chip px-4 py-2 bg-gray-100 hover:bg-blue-100 text-gray-700 rounded-full text-sm font-medium" data-filter="players" data-value="2">2 Players</button>
-                        <button class="filter-chip px-4 py-2 bg-gray-100 hover:bg-blue-100 text-gray-700 rounded-full text-sm font-medium" data-filter="players" data-value="3-4">3-4 Players</button>
-                        <button class="filter-chip px-4 py-2 bg-gray-100 hover:bg-blue-100 text-gray-700 rounded-full text-sm font-medium" data-filter="players" data-value="5+">5+ Players</button>
-                    </div>
-                </div>
-                
-                <!-- Complexity Filter -->
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">Complexity</label>
-                    <div class="flex flex-wrap gap-2">
-                        <button class="filter-chip px-4 py-2 bg-gray-100 hover:bg-green-100 text-gray-700 rounded-full text-sm font-medium" data-filter="complexity" data-value="light">Light</button>
-                        <button class="filter-chip px-4 py-2 bg-gray-100 hover:bg-yellow-100 text-gray-700 rounded-full text-sm font-medium" data-filter="complexity" data-value="medium">Medium</button>
-                        <button class="filter-chip px-4 py-2 bg-gray-100 hover:bg-red-100 text-gray-700 rounded-full text-sm font-medium" data-filter="complexity" data-value="heavy">Heavy</button>
-                    </div>
-                </div>
-                
-                <!-- Rating Filter -->
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">Minimum Rating</label>
-                    <div class="flex flex-wrap gap-2">
-                        <button class="filter-chip px-4 py-2 bg-gray-100 hover:bg-purple-100 text-gray-700 rounded-full text-sm font-medium" data-filter="rating" data-value="7">7.0+</button>
-                        <button class="filter-chip px-4 py-2 bg-gray-100 hover:bg-purple-100 text-gray-700 rounded-full text-sm font-medium" data-filter="rating" data-value="8">8.0+</button>
-                        <button class="filter-chip px-4 py-2 bg-gray-100 hover:bg-purple-100 text-gray-700 rounded-full text-sm font-medium" data-filter="rating" data-value="9">9.0+</button>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Sort Controls -->
-            <div class="mt-6 pt-6 border-t border-gray-200">
-                <div class="flex flex-wrap items-center gap-4">
-                    <span class="text-sm font-bold text-gray-700 uppercase tracking-wide">Sort By:</span>
-                    <select id="sortSelect" class="px-4 py-2 border border-gray-300 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-100 bg-white">
+                <div class="flex items-center gap-3 flex-wrap">
+                    <span class="text-sm font-medium text-gray-700">Sort:</span>
+                    <select id="sortSelect" class="px-3 py-2 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-100 bg-white text-sm">
                         <option value="name">Name</option>
                         <option value="rating">Rating</option>
-                        <option value="year">Year Published</option>
-                        <option value="plays">Play Count</option>
+                        <option value="year">Year</option>
+                        <option value="plays">Plays</option>
                         <option value="complexity">Complexity</option>
                         <option value="owned">Owned First</option>
                         <option value="wishlist">Wishlist First</option>
                         <option value="wantToPlay">Want to Play First</option>
                     </select>
-                    <button id="clearFilters" class="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-xl font-medium transition-all duration-200">
-                        Clear All Filters
+                    <button id="clearFilters" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg text-sm font-medium transition-all duration-200">
+                        Clear All
                     </button>
+                </div>
+            </div>
+            
+            <!-- Compact Filter Chips -->
+            <div class="flex flex-wrap gap-2">
+                <!-- Collection Status -->
+                <div class="flex items-center gap-2 bg-green-50 rounded-lg px-2 py-1">
+                    <span class="text-xs font-medium text-gray-600">Status:</span>
+                    <button class="filter-chip px-3 py-1 bg-gray-100 hover:bg-green-100 text-gray-700 rounded-full text-xs font-medium" data-filter="status" data-value="owned">Owned</button>
+                    <button class="filter-chip px-3 py-1 bg-gray-100 hover:bg-purple-100 text-gray-700 rounded-full text-xs font-medium" data-filter="status" data-value="wishlist">Wishlist</button>
+                    <button class="filter-chip px-3 py-1 bg-gray-100 hover:bg-yellow-100 text-gray-700 rounded-full text-xs font-medium" data-filter="status" data-value="wantToPlay">Want to Play</button>
+                </div>
+                
+                <!-- Player Count -->
+                <div class="flex items-center gap-2 bg-blue-50 rounded-lg px-2 py-1">
+                    <span class="text-xs font-medium text-gray-600">Players:</span>
+                    <button class="filter-chip px-3 py-1 bg-gray-100 hover:bg-blue-100 text-gray-700 rounded-full text-xs font-medium" data-filter="players" data-value="1">1</button>
+                    <button class="filter-chip px-3 py-1 bg-gray-100 hover:bg-blue-100 text-gray-700 rounded-full text-xs font-medium" data-filter="players" data-value="2">2</button>
+                    <button class="filter-chip px-3 py-1 bg-gray-100 hover:bg-blue-100 text-gray-700 rounded-full text-xs font-medium" data-filter="players" data-value="3-4">3-4</button>
+                    <button class="filter-chip px-3 py-1 bg-gray-100 hover:bg-blue-100 text-gray-700 rounded-full text-xs font-medium" data-filter="players" data-value="5+">5+</button>
+                </div>
+                
+                <!-- Complexity -->
+                <div class="flex items-center gap-2 bg-purple-50 rounded-lg px-2 py-1">
+                    <span class="text-xs font-medium text-gray-600">Weight:</span>
+                    <button class="filter-chip px-3 py-1 bg-gray-100 hover:bg-green-100 text-gray-700 rounded-full text-xs font-medium" data-filter="complexity" data-value="light">Light</button>
+                    <button class="filter-chip px-3 py-1 bg-gray-100 hover:bg-yellow-100 text-gray-700 rounded-full text-xs font-medium" data-filter="complexity" data-value="medium">Med</button>
+                    <button class="filter-chip px-3 py-1 bg-gray-100 hover:bg-red-100 text-gray-700 rounded-full text-xs font-medium" data-filter="complexity" data-value="heavy">Heavy</button>
+                </div>
+                
+                <!-- Rating -->
+                <div class="flex items-center gap-2 bg-orange-50 rounded-lg px-2 py-1">
+                    <span class="text-xs font-medium text-gray-600">Rating:</span>
+                    <button class="filter-chip px-3 py-1 bg-gray-100 hover:bg-purple-100 text-gray-700 rounded-full text-xs font-medium" data-filter="rating" data-value="7">7.0+</button>
+                    <button class="filter-chip px-3 py-1 bg-gray-100 hover:bg-purple-100 text-gray-700 rounded-full text-xs font-medium" data-filter="rating" data-value="8">8.0+</button>
+                    <button class="filter-chip px-3 py-1 bg-gray-100 hover:bg-purple-100 text-gray-700 rounded-full text-xs font-medium" data-filter="rating" data-value="9">9.0+</button>
                 </div>
             </div>
         </div>

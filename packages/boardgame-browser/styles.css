@@ -122,6 +122,10 @@ body::before {
 .bg-blue-100 { background-color: rgba(59, 130, 246, 0.2); }
 .bg-purple-100 { background-color: rgba(168, 85, 247, 0.3); }
 .bg-yellow-100 { background-color: rgba(245, 158, 11, 0.2); }
+.bg-green-50 { background-color: rgba(16, 185, 129, 0.1); }
+.bg-blue-50 { background-color: rgba(59, 130, 246, 0.1); }
+.bg-purple-50 { background-color: rgba(168, 85, 247, 0.1); }
+.bg-orange-50 { background-color: rgba(249, 115, 22, 0.1); }
 .bg-black { background-color: #000000; }
 .bg-blue-600 { background-color: #7c3aed; }
 .bg-black\/70 { background-color: rgba(0, 0, 0, 0.8); }
@@ -424,13 +428,10 @@ button:hover {
 /* Min height */
 .min-h-screen { min-height: 100vh; }
 
-/* Title enhancements */
-.title-glow {
-  text-shadow: 
-    0 0 20px rgba(168, 85, 247, 0.8),
-    0 0 40px rgba(139, 92, 246, 0.6),
-    0 0 60px rgba(124, 58, 237, 0.4);
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+/* Title styling - Teal accent */
+.title-teal {
+  color: #14b8a6;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 /* Additional utility classes needed for game cards */
@@ -498,7 +499,7 @@ svg { stroke: currentColor; }
 }
 
 /* View Details button styling - Dark Purple Theme */
-.game-card .text-blue-600 {
+.game-card button.text-blue-600 {
   color: #c084fc !important;
   background: rgba(40, 40, 56, 0.8);
   padding: 0.5rem 1rem;
@@ -508,12 +509,21 @@ svg { stroke: currentColor; }
   text-decoration: none;
 }
 
-.game-card .text-blue-600:hover {
+.game-card button.text-blue-600:hover {
   color: #f8fafc !important;
   background: rgba(168, 85, 247, 0.8);
   border-color: rgba(168, 85, 247, 0.6);
   box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
   transform: translateY(-1px);
+}
+
+/* Purple rating text should not get button styling */
+.game-card .text-purple-600 {
+  color: #c084fc !important;
+  background: none !important;
+  padding: 0 !important;
+  border: none !important;
+  backdrop-filter: none !important;
 }
 
 /* Additional responsive grid columns */
