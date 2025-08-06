@@ -4,7 +4,6 @@ let filteredGames = [];
 let activeFilters = {
     search: '',
     players: null,
-    complexity: null,
     rating: null
 };
 let currentSort = 'name';
@@ -100,11 +99,8 @@ async function loadCollection() {
             throw new Error('No games found in collection. Make sure your collection is public.');
         }
         
-        updateLoadingProgress('Fetching detailed game information...');
+        updateLoadingProgress('Processing game information...');
         allGames = await processGameData(data);
-        
-        updateLoadingProgress('Fetching complexity ratings...');
-        await enrichWithComplexityData(allGames);
         
         hideLoading();
         showCollection();
@@ -176,54 +172,6 @@ async function processGameData(rawData) {
     return games;
 }
 
-async function enrichWithComplexityData(games) {
-    // Batch fetch complexity data from BGG XML API in groups to avoid rate limiting
-    const batchSize = 20;
-    const batches = [];
-    
-    for (let i = 0; i < games.length; i += batchSize) {
-        batches.push(games.slice(i, i + batchSize));
-    }
-    
-    for (let batchIndex = 0; batchIndex < batches.length; batchIndex++) {
-        const batch = batches[batchIndex];
-        const gameIds = batch.map(game => game.id).join(',');
-        
-        try {
-            updateLoadingProgress(`Fetching complexity data (batch ${batchIndex + 1}/${batches.length})...`);
-            
-            // Use CORS proxy to access BGG XML API
-            const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(`https://api.geekdo.com/xmlapi2/thing?id=${gameIds}&stats=1`)}`);
-            const data = await response.json();
-            
-            if (data.contents) {
-                const parser = new DOMParser();
-                const xmlDoc = parser.parseFromString(data.contents, 'text/xml');
-                const items = xmlDoc.querySelectorAll('item');
-                
-                items.forEach(item => {
-                    const gameId = parseInt(item.getAttribute('id'));
-                    const game = batch.find(g => g.id === gameId);
-                    
-                    if (game) {
-                        const averageWeight = item.querySelector('averageweight');
-                        if (averageWeight) {
-                            game.complexity = parseFloat(averageWeight.getAttribute('value')) || 0;
-                        }
-                    }
-                });
-            }
-            
-            // Rate limiting - wait between batches
-            if (batchIndex < batches.length - 1) {
-                await new Promise(resolve => setTimeout(resolve, 1000));
-            }
-            
-        } catch (error) {
-            console.warn(`Failed to fetch complexity for batch ${batchIndex + 1}:`, error);
-        }
-    }
-}
 
 function showLoading() {
     document.getElementById('usernameSection').classList.add('hidden');
@@ -295,22 +243,6 @@ function applyFiltersAndSort() {
         });
     }
     
-    // Apply complexity filter (only if games have complexity data)
-    if (activeFilters.complexity) {
-        filteredGames = filteredGames.filter(game => {
-            if (game.complexity === 0) return true; // Include games without complexity data
-            switch (activeFilters.complexity) {
-                case 'light':
-                    return game.complexity <= 2.0;
-                case 'medium':
-                    return game.complexity > 2.0 && game.complexity <= 3.5;
-                case 'heavy':
-                    return game.complexity > 3.5;
-                default:
-                    return true;
-            }
-        });
-    }
     
     // Apply rating filter
     if (activeFilters.rating) {
@@ -331,8 +263,6 @@ function applyFiltersAndSort() {
                 return b.yearPublished - a.yearPublished;
             case 'plays':
                 return b.numPlays - a.numPlays;
-            case 'complexity':
-                return b.complexity - a.complexity;
             case 'owned':
                 if (a.owned && !b.owned) return -1;
                 if (!a.owned && b.owned) return 1;
@@ -374,15 +304,6 @@ function renderGames() {
 }
 
 function createGameCard(game) {
-    // Since BGG JSON API doesn't provide complexity, we'll estimate based on other factors or hide it
-    const hasComplexity = game.complexity > 0;
-    const complexityColor = hasComplexity ? 
-        (game.complexity <= 2.0 ? 'text-green-600' : 
-         game.complexity <= 3.5 ? 'text-yellow-600' : 'text-red-600') : 'text-gray-500';
-    
-    const complexityText = hasComplexity ? 
-        (game.complexity <= 2.0 ? 'Light' : 
-         game.complexity <= 3.5 ? 'Medium' : 'Heavy') : 'Unknown';
     
     const rating = game.userRating > 0 ? game.userRating : game.bggRating;
     const ratingColor = rating >= 8 ? 'text-green-600' : 
@@ -415,8 +336,8 @@ function createGameCard(game) {
                         <div class="text-xs text-gray-600 uppercase tracking-wide">Rating</div>
                     </div>
                     <div class="text-center">
-                        <div class="text-2xl font-bold ${complexityColor} mb-1">${game.complexity > 0 ? game.complexity.toFixed(1) : 'N/A'}</div>
-                        <div class="text-xs text-gray-600 uppercase tracking-wide">${game.complexity > 0 ? complexityText : 'Unknown'}</div>
+                        <div class="text-2xl font-bold text-blue-600 mb-1">#${game.bggRank < 999999 ? game.bggRank : 'NR'}</div>
+                        <div class="text-xs text-gray-600 uppercase tracking-wide">BGG Rank</div>
                     </div>
                 </div>
                 
@@ -472,7 +393,6 @@ function clearAllFilters() {
     activeFilters = {
         search: '',
         players: null,
-        complexity: null,
         rating: null
     };
     
