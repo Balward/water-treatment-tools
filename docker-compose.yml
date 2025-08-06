@@ -7,8 +7,7 @@ services:
     container_name: water-treatment-tools
     restart: unless-stopped
     ports:
-      - "6767:80"   # Web interface
-      - "3001:3001" # API server
+      - "6767:80"   # Web interface (API accessible via nginx proxy)
     environment:
       - TZ=America/New_York  # Adjust to your timezone
       - NODE_ENV=production
@@ -62,8 +61,7 @@ services:
     container_name: water-treatment-tools-local
     restart: unless-stopped
     ports:
-      - "6767:80"   # Web interface
-      - "3001:3001" # API server
+      - "6767:80"   # Web interface (API accessible via nginx proxy)
     environment:
       - TZ=America/New_York
       - NODE_ENV=production

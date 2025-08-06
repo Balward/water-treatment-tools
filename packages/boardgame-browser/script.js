@@ -12,8 +12,8 @@ let currentSort = 'name';
 
 console.log('Board Game Collection Browser loaded');
 
-// API configuration
-const API_BASE_URL = window.location.origin.replace('8080', '3001'); // Adjust port for API
+// API configuration - use same origin since nginx proxies to backend
+const API_BASE_URL = window.location.origin;
 
 // Collection management via API
 async function saveCollectionToCache(username, games) {

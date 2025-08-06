@@ -69,8 +69,8 @@ RUN echo '[supervisord]' > /etc/supervisor/conf.d/supervisord.conf && \
 RUN mkdir -p /app/api/data
 VOLUME ["/app/api/data"]
 
-# Expose ports
-EXPOSE 80 3001
+# Expose only web port (API is internal and proxied by nginx)
+EXPOSE 80
 
 # Add health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
