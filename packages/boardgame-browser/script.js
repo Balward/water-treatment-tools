@@ -93,6 +93,9 @@ async function loadCollection() {
         updateLoadingProgress('Processing collection data...');
         const data = await response.json();
         
+        // Debug: log the first game to see the structure
+        console.log('BGG API Response sample:', data[0]);
+        
         if (!data || data.length === 0) {
             throw new Error('No games found in collection. Make sure your collection is public.');
         }
@@ -124,28 +127,33 @@ async function processGameData(rawData) {
             await new Promise(resolve => setTimeout(resolve, 10)); // Allow UI update
         }
         
-        // Extract game data
+        // Debug first few games to understand structure
+        if (i < 3) {
+            console.log(`Game ${i}:`, game);
+        }
+        
+        // Extract game data - try multiple possible field names
         const processedGame = {
-            id: game.gameId,
-            name: game.name || 'Unknown Game',
-            image: game.image || 'https://via.placeholder.com/300x300?text=No+Image',
-            thumbnail: game.thumbnail || 'https://via.placeholder.com/150x150?text=No+Image',
-            yearPublished: game.yearPublished || 0,
-            minPlayers: game.minPlayers || 1,
-            maxPlayers: game.maxPlayers || 1,
-            playingTime: game.playingTime || 0,
-            minAge: game.minAge || 0,
+            id: game.gameId || game.id || game.objectId,
+            name: game.name || game.gameName || 'Unknown Game',
+            image: game.image || game.imageUrl || 'https://via.placeholder.com/300x300?text=No+Image',
+            thumbnail: game.thumbnail || game.thumbnailUrl || game.image || 'https://via.placeholder.com/150x150?text=No+Image',
+            yearPublished: parseInt(game.yearPublished) || parseInt(game.year) || 0,
+            minPlayers: parseInt(game.minPlayers) || parseInt(game.minplaytime) || 1,
+            maxPlayers: parseInt(game.maxPlayers) || parseInt(game.maxplaytime) || parseInt(game.minPlayers) || 1,
+            playingTime: parseInt(game.playingTime) || parseInt(game.playTime) || parseInt(game.maxplaytime) || 0,
+            minAge: parseInt(game.minAge) || parseInt(game.minage) || 0,
             
             // BGG ratings and stats
-            bggRating: parseFloat(game.bggRating) || 0,
+            bggRating: parseFloat(game.averageRating) || 0, // averageRating is the community rating
             averageRating: parseFloat(game.averageRating) || 0,
-            bggRank: parseInt(game.bggRank) || 999999,
-            complexity: parseFloat(game.averageWeight) || 0,
+            bggRank: parseInt(game.rank) || parseInt(game.bggRank) || 999999,
+            complexity: parseFloat(game.averageWeight) || parseFloat(game.complexity) || parseFloat(game.weight) || 0,
             
-            // User specific data
-            userRating: parseFloat(game.rating) || 0,
-            owned: game.owned === 'true' || game.owned === true,
-            numPlays: parseInt(game.numPlays) || 0,
+            // User specific data - rating is -1.0 when not rated
+            userRating: (game.rating && game.rating > 0) ? parseFloat(game.rating) : 0,
+            owned: game.owned === 'true' || game.owned === true || game.own === 'true' || game.own === true,
+            numPlays: parseInt(game.numPlays) || parseInt(game.plays) || 0,
             
             // Categories and mechanics (if available)
             categories: game.categories || [],
@@ -233,9 +241,10 @@ function applyFiltersAndSort() {
         });
     }
     
-    // Apply complexity filter
+    // Apply complexity filter (only if games have complexity data)
     if (activeFilters.complexity) {
         filteredGames = filteredGames.filter(game => {
+            if (game.complexity === 0) return true; // Include games without complexity data
             switch (activeFilters.complexity) {
                 case 'light':
                     return game.complexity <= 2.0;
@@ -299,16 +308,21 @@ function renderGames() {
 }
 
 function createGameCard(game) {
-    const complexityColor = game.complexity <= 2.0 ? 'text-green-600' : 
-                           game.complexity <= 3.5 ? 'text-yellow-600' : 'text-red-600';
+    // Since BGG JSON API doesn't provide complexity, we'll estimate based on other factors or hide it
+    const hasComplexity = game.complexity > 0;
+    const complexityColor = hasComplexity ? 
+        (game.complexity <= 2.0 ? 'text-green-600' : 
+         game.complexity <= 3.5 ? 'text-yellow-600' : 'text-red-600') : 'text-gray-500';
     
-    const complexityText = game.complexity <= 2.0 ? 'Light' : 
-                          game.complexity <= 3.5 ? 'Medium' : 'Heavy';
+    const complexityText = hasComplexity ? 
+        (game.complexity <= 2.0 ? 'Light' : 
+         game.complexity <= 3.5 ? 'Medium' : 'Heavy') : 'Unknown';
     
-    const rating = game.userRating || game.bggRating;
+    const rating = game.userRating > 0 ? game.userRating : game.bggRating;
     const ratingColor = rating >= 8 ? 'text-green-600' : 
                        rating >= 7 ? 'text-blue-600' : 
                        rating >= 6 ? 'text-yellow-600' : 'text-gray-600';
+    const displayRating = rating > 0 ? rating.toFixed(1) : 'N/A';
     
     return `
         <div class="game-card bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200 hover:border-blue-300">
@@ -331,12 +345,12 @@ function createGameCard(game) {
                 
                 <div class="grid grid-cols-2 gap-4 mb-4">
                     <div class="text-center">
-                        <div class="text-2xl font-bold ${ratingColor} mb-1">${rating.toFixed(1)}</div>
+                        <div class="text-2xl font-bold ${ratingColor} mb-1">${displayRating}</div>
                         <div class="text-xs text-gray-600 uppercase tracking-wide">Rating</div>
                     </div>
                     <div class="text-center">
-                        <div class="text-2xl font-bold ${complexityColor} mb-1">${game.complexity.toFixed(1)}</div>
-                        <div class="text-xs text-gray-600 uppercase tracking-wide">${complexityText}</div>
+                        <div class="text-2xl font-bold ${complexityColor} mb-1">${game.complexity > 0 ? game.complexity.toFixed(1) : 'N/A'}</div>
+                        <div class="text-xs text-gray-600 uppercase tracking-wide">${game.complexity > 0 ? complexityText : 'Unknown'}</div>
                     </div>
                 </div>
                 
