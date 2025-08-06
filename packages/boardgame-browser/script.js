@@ -12,9 +12,122 @@ let currentSort = 'name';
 
 console.log('Board Game Collection Browser loaded');
 
+// Cache management
+function saveCollectionToCache(username, games) {
+    const cacheData = {
+        username: username,
+        games: games,
+        timestamp: Date.now(),
+        version: '1.0'
+    };
+    localStorage.setItem(`bgg_collection_${username.toLowerCase()}`, JSON.stringify(cacheData));
+    updateSavedCollectionsList();
+}
+
+function loadCollectionFromCache(username) {
+    const cacheKey = `bgg_collection_${username.toLowerCase()}`;
+    const cached = localStorage.getItem(cacheKey);
+    if (cached) {
+        try {
+            const data = JSON.parse(cached);
+            return data;
+        } catch (e) {
+            console.warn('Failed to parse cached data for', username);
+            localStorage.removeItem(cacheKey);
+        }
+    }
+    return null;
+}
+
+function getSavedCollections() {
+    const collections = [];
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('bgg_collection_')) {
+            try {
+                const data = JSON.parse(localStorage.getItem(key));
+                collections.push({
+                    username: data.username,
+                    timestamp: data.timestamp,
+                    gameCount: data.games ? data.games.length : 0
+                });
+            } catch (e) {
+                console.warn('Failed to parse collection:', key);
+            }
+        }
+    }
+    return collections.sort((a, b) => b.timestamp - a.timestamp);
+}
+
+function deleteCachedCollection(username) {
+    localStorage.removeItem(`bgg_collection_${username.toLowerCase()}`);
+    updateSavedCollectionsList();
+}
+
+function updateSavedCollectionsList() {
+    const savedCollectionsList = document.getElementById('savedCollectionsList');
+    const savedCollectionsSection = document.getElementById('savedCollections');
+    const collections = getSavedCollections();
+    
+    if (collections.length === 0) {
+        savedCollectionsSection.style.display = 'none';
+        return;
+    }
+    
+    savedCollectionsSection.style.display = 'block';
+    
+    savedCollectionsList.innerHTML = collections.map(collection => {
+        const ageHours = Math.floor((Date.now() - collection.timestamp) / (1000 * 60 * 60));
+        const ageText = ageHours < 1 ? 'Just now' : 
+                       ageHours < 24 ? `${ageHours}h ago` : 
+                       `${Math.floor(ageHours / 24)}d ago`;
+        
+        return `
+            <div class="flex items-center gap-2 bg-gray-50 rounded-lg p-3 border">
+                <button onclick="loadCollection('${collection.username}')" 
+                        class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium text-sm transition-colors">
+                    🎲 ${collection.username}
+                </button>
+                <div class="text-xs text-gray-600">
+                    <div>${collection.gameCount} games</div>
+                    <div>${ageText}</div>
+                </div>
+                <button onclick="refreshCollection('${collection.username}')" 
+                        class="text-gray-400 hover:text-blue-600 p-1 rounded transition-colors" 
+                        title="Refresh collection">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                    </svg>
+                </button>
+                <button onclick="deleteSavedCollection('${collection.username}')" 
+                        class="text-gray-400 hover:text-red-600 p-1 rounded transition-colors"
+                        title="Delete saved collection">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                </button>
+            </div>
+        `;
+    }).join('');
+}
+
+function refreshCollection(username) {
+    // Delete cache and reload fresh
+    deleteCachedCollection(username);
+    document.getElementById('bggUsername').value = username;
+    loadCollection(username);
+}
+
+function deleteSavedCollection(username) {
+    if (confirm(`Delete saved collection for ${username}?`)) {
+        deleteCachedCollection(username);
+    }
+}
+
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
     setupEventListeners();
+    updateSavedCollectionsList();
     
     // Handle Enter key on username input
     document.getElementById('bggUsername').addEventListener('keypress', function(e) {
@@ -72,12 +185,29 @@ function setupEventListeners() {
     });
 }
 
-async function loadCollection() {
-    const username = document.getElementById('bggUsername').value.trim();
+async function loadCollection(username = null) {
+    if (!username) {
+        username = document.getElementById('bggUsername').value.trim();
+    }
     
     if (!username) {
         showError('Please enter a BoardGameGeek username');
         return;
+    }
+    
+    // Check cache first
+    const cached = loadCollectionFromCache(username);
+    if (cached) {
+        const cacheAge = Date.now() - cached.timestamp;
+        const hours = Math.floor(cacheAge / (1000 * 60 * 60));
+        
+        if (confirm(`Found cached collection for ${username} (${hours} hours old, ${cached.games.length} games). Load from cache or fetch fresh data?\n\nClick OK for cache, Cancel for fresh data.`)) {
+            allGames = cached.games;
+            showCollection();
+            displayStats();
+            applyFiltersAndSort();
+            return;
+        }
     }
     
     try {
@@ -106,6 +236,9 @@ async function loadCollection() {
         
         updateLoadingProgress('Fetching complexity ratings...');
         await enrichWithComplexityData(allGames);
+        
+        // Save to cache
+        saveCollectionToCache(username, allGames);
         
         hideLoading();
         showCollection();
