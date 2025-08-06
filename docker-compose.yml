@@ -7,9 +7,11 @@ services:
     container_name: water-treatment-tools
     restart: unless-stopped
     ports:
-      - "6767:80"
+      - "6767:80"   # Web interface
+      - "3001:3001" # API server
     environment:
       - TZ=America/New_York  # Adjust to your timezone
+      - NODE_ENV=production
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.water-treatment.rule=Host(`water-treatment.yourdomain.com`)"
@@ -19,6 +21,8 @@ services:
     volumes:
       # Optional: Mount a volume for data persistence if needed
       - ./data:/usr/share/nginx/html/data:ro
+      # BGG collection data persistence
+      - bgg_collections:/app/api/data
     networks:
       - cerberusnet
 
@@ -39,6 +43,10 @@ services:
     networks:
       - cerberusnet
 
+volumes:
+  bgg_collections:
+    driver: local
+
 networks:
   cerberusnet:
     external: true
@@ -54,13 +62,20 @@ services:
     container_name: water-treatment-tools-local
     restart: unless-stopped
     ports:
-      - "6767:80"
+      - "6767:80"   # Web interface
+      - "3001:3001" # API server
     environment:
       - TZ=America/New_York
+      - NODE_ENV=production
     volumes:
       - ./data:/usr/share/nginx/html/data:ro
+      - bgg_collections_local:/app/api/data
     networks:
       - cerberusnet
+
+volumes:
+  bgg_collections_local:
+    driver: local
 
 networks:
   cerberusnet:

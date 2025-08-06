@@ -12,71 +12,139 @@ let currentSort = 'name';
 
 console.log('Board Game Collection Browser loaded');
 
-// Cache management
-function saveCollectionToCache(username, games) {
+// API configuration
+const API_BASE_URL = window.location.origin.replace('8080', '3001'); // Adjust port for API
+
+// Collection management via API
+async function saveCollectionToCache(username, games) {
     const cacheData = {
         username: username,
         games: games,
         timestamp: Date.now(),
         version: '1.0'
     };
-    localStorage.setItem(`bgg_collection_${username.toLowerCase()}`, JSON.stringify(cacheData));
-    updateSavedCollectionsList();
-}
-
-function loadCollectionFromCache(username) {
-    const cacheKey = `bgg_collection_${username.toLowerCase()}`;
-    const cached = localStorage.getItem(cacheKey);
-    if (cached) {
-        try {
-            const data = JSON.parse(cached);
-            return data;
-        } catch (e) {
-            console.warn('Failed to parse cached data for', username);
-            localStorage.removeItem(cacheKey);
+    
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/collections/${username}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(cacheData)
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
+        
+        const result = await response.json();
+        console.log('Collection saved to server:', result);
+        updateSavedCollectionsList();
+    } catch (error) {
+        console.warn('Failed to save to server, falling back to localStorage:', error);
+        // Fallback to localStorage if server is unavailable
+        localStorage.setItem(`bgg_collection_${username.toLowerCase()}`, JSON.stringify(cacheData));
+        updateSavedCollectionsList();
     }
-    return null;
 }
 
-function getSavedCollections() {
-    const collections = [];
-    for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key && key.startsWith('bgg_collection_')) {
+async function loadCollectionFromCache(username) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/collections/${username}`);
+        
+        if (response.ok) {
+            const data = await response.json();
+            return data;
+        } else if (response.status === 404) {
+            return null; // Collection not found
+        } else {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+    } catch (error) {
+        console.warn('Failed to load from server, checking localStorage:', error);
+        // Fallback to localStorage
+        const cacheKey = `bgg_collection_${username.toLowerCase()}`;
+        const cached = localStorage.getItem(cacheKey);
+        if (cached) {
             try {
-                const data = JSON.parse(localStorage.getItem(key));
-                collections.push({
-                    username: data.username,
-                    timestamp: data.timestamp,
-                    gameCount: data.games ? data.games.length : 0
-                });
+                return JSON.parse(cached);
             } catch (e) {
-                console.warn('Failed to parse collection:', key);
+                console.warn('Failed to parse localStorage data for', username);
+                localStorage.removeItem(cacheKey);
             }
         }
+        return null;
     }
-    return collections.sort((a, b) => b.timestamp - a.timestamp);
 }
 
-function deleteCachedCollection(username) {
-    localStorage.removeItem(`bgg_collection_${username.toLowerCase()}`);
+async function getSavedCollections() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/collections`);
+        
+        if (response.ok) {
+            const collections = await response.json();
+            return collections;
+        } else {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+    } catch (error) {
+        console.warn('Failed to load collections from server, checking localStorage:', error);
+        // Fallback to localStorage
+        const collections = [];
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key && key.startsWith('bgg_collection_')) {
+                try {
+                    const data = JSON.parse(localStorage.getItem(key));
+                    collections.push({
+                        username: data.username,
+                        timestamp: data.timestamp,
+                        gameCount: data.games ? data.games.length : 0
+                    });
+                } catch (e) {
+                    console.warn('Failed to parse collection:', key);
+                }
+            }
+        }
+        return collections.sort((a, b) => b.timestamp - a.timestamp);
+    }
+}
+
+async function deleteCachedCollection(username) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/collections/${username}`, {
+            method: 'DELETE'
+        });
+        
+        if (response.ok) {
+            console.log(`Deleted collection for ${username} from server`);
+        } else {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+    } catch (error) {
+        console.warn('Failed to delete from server, removing from localStorage:', error);
+        // Fallback to localStorage
+        localStorage.removeItem(`bgg_collection_${username.toLowerCase()}`);
+    }
+    
     updateSavedCollectionsList();
 }
 
-function updateSavedCollectionsList() {
+async function updateSavedCollectionsList() {
     const savedCollectionsList = document.getElementById('savedCollectionsList');
     const savedCollectionsSection = document.getElementById('savedCollections');
-    const collections = getSavedCollections();
     
-    if (collections.length === 0) {
-        savedCollectionsSection.style.display = 'none';
-        return;
-    }
-    
-    savedCollectionsSection.style.display = 'block';
-    
-    savedCollectionsList.innerHTML = collections.map(collection => {
+    try {
+        const collections = await getSavedCollections();
+        
+        if (collections.length === 0) {
+            savedCollectionsSection.style.display = 'none';
+            return;
+        }
+        
+        savedCollectionsSection.style.display = 'block';
+        
+        savedCollectionsList.innerHTML = collections.map(collection => {
         const ageHours = Math.floor((Date.now() - collection.timestamp) / (1000 * 60 * 60));
         const ageText = ageHours < 1 ? 'Just now' : 
                        ageHours < 24 ? `${ageHours}h ago` : 
@@ -109,6 +177,10 @@ function updateSavedCollectionsList() {
             </div>
         `;
     }).join('');
+    } catch (error) {
+        console.error('Error updating saved collections list:', error);
+        savedCollectionsList.innerHTML = '<p class="text-red-500 text-sm">Error loading saved collections</p>';
+    }
 }
 
 function refreshCollection(username) {
