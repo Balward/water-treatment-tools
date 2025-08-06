@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Board Game Collection Browser - Water Treatment Tools</title>
     <link rel="icon" type="image/png" href="../../city-logos/favicon.png" />
-    <link rel="stylesheet" href="styles.css?v=1736135500">
+    <link rel="stylesheet" href="styles.css?v=1736136000">
 </head>
 <body class="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
     <div class="container mx-auto px-4 py-8 max-w-7xl">
@@ -135,39 +135,39 @@
                 </div>
             </div>
             
-            <!-- Compact Filter Chips -->
-            <div class="flex flex-wrap gap-2">
+            <!-- Filter Chips with Better Spacing -->
+            <div class="flex flex-wrap gap-4">
                 <!-- Collection Status -->
-                <div class="flex items-center gap-2 bg-green-50 rounded-lg px-2 py-1">
-                    <span class="text-xs font-medium text-gray-600">Status:</span>
-                    <button class="filter-chip px-3 py-1 bg-gray-100 hover:bg-green-100 text-gray-700 rounded-full text-xs font-medium" data-filter="status" data-value="owned">Owned</button>
-                    <button class="filter-chip px-3 py-1 bg-gray-100 hover:bg-purple-100 text-gray-700 rounded-full text-xs font-medium" data-filter="status" data-value="wishlist">Wishlist</button>
-                    <button class="filter-chip px-3 py-1 bg-gray-100 hover:bg-yellow-100 text-gray-700 rounded-full text-xs font-medium" data-filter="status" data-value="wantToPlay">Want to Play</button>
+                <div class="flex items-center gap-3 bg-green-50 rounded-lg px-3 py-2">
+                    <span class="text-sm font-medium text-gray-700">Status:</span>
+                    <button class="filter-chip px-4 py-1.5 bg-gray-100 hover:bg-green-100 text-gray-700 rounded-full text-sm font-medium" data-filter="status" data-value="owned">Owned</button>
+                    <button class="filter-chip px-4 py-1.5 bg-gray-100 hover:bg-purple-100 text-gray-700 rounded-full text-sm font-medium" data-filter="status" data-value="wishlist">Wishlist</button>
+                    <button class="filter-chip px-4 py-1.5 bg-gray-100 hover:bg-yellow-100 text-gray-700 rounded-full text-sm font-medium" data-filter="status" data-value="wantToPlay">Want to Play</button>
                 </div>
                 
                 <!-- Player Count -->
-                <div class="flex items-center gap-2 bg-blue-50 rounded-lg px-2 py-1">
-                    <span class="text-xs font-medium text-gray-600">Players:</span>
-                    <button class="filter-chip px-3 py-1 bg-gray-100 hover:bg-blue-100 text-gray-700 rounded-full text-xs font-medium" data-filter="players" data-value="1">1</button>
-                    <button class="filter-chip px-3 py-1 bg-gray-100 hover:bg-blue-100 text-gray-700 rounded-full text-xs font-medium" data-filter="players" data-value="2">2</button>
-                    <button class="filter-chip px-3 py-1 bg-gray-100 hover:bg-blue-100 text-gray-700 rounded-full text-xs font-medium" data-filter="players" data-value="3-4">3-4</button>
-                    <button class="filter-chip px-3 py-1 bg-gray-100 hover:bg-blue-100 text-gray-700 rounded-full text-xs font-medium" data-filter="players" data-value="5+">5+</button>
+                <div class="flex items-center gap-3 bg-blue-50 rounded-lg px-3 py-2">
+                    <span class="text-sm font-medium text-gray-700">Players:</span>
+                    <button class="filter-chip px-4 py-1.5 bg-gray-100 hover:bg-blue-100 text-gray-700 rounded-full text-sm font-medium" data-filter="players" data-value="1">1</button>
+                    <button class="filter-chip px-4 py-1.5 bg-gray-100 hover:bg-blue-100 text-gray-700 rounded-full text-sm font-medium" data-filter="players" data-value="2">2</button>
+                    <button class="filter-chip px-4 py-1.5 bg-gray-100 hover:bg-blue-100 text-gray-700 rounded-full text-sm font-medium" data-filter="players" data-value="3-4">3-4</button>
+                    <button class="filter-chip px-4 py-1.5 bg-gray-100 hover:bg-blue-100 text-gray-700 rounded-full text-sm font-medium" data-filter="players" data-value="5+">5+</button>
                 </div>
                 
                 <!-- Complexity -->
-                <div class="flex items-center gap-2 bg-purple-50 rounded-lg px-2 py-1">
-                    <span class="text-xs font-medium text-gray-600">Weight:</span>
-                    <button class="filter-chip px-3 py-1 bg-gray-100 hover:bg-green-100 text-gray-700 rounded-full text-xs font-medium" data-filter="complexity" data-value="light">Light</button>
-                    <button class="filter-chip px-3 py-1 bg-gray-100 hover:bg-yellow-100 text-gray-700 rounded-full text-xs font-medium" data-filter="complexity" data-value="medium">Med</button>
-                    <button class="filter-chip px-3 py-1 bg-gray-100 hover:bg-red-100 text-gray-700 rounded-full text-xs font-medium" data-filter="complexity" data-value="heavy">Heavy</button>
+                <div class="flex items-center gap-3 bg-purple-50 rounded-lg px-3 py-2">
+                    <span class="text-sm font-medium text-gray-700">Weight:</span>
+                    <button class="filter-chip px-4 py-1.5 bg-gray-100 hover:bg-green-100 text-gray-700 rounded-full text-sm font-medium" data-filter="complexity" data-value="light">Light</button>
+                    <button class="filter-chip px-4 py-1.5 bg-gray-100 hover:bg-yellow-100 text-gray-700 rounded-full text-sm font-medium" data-filter="complexity" data-value="medium">Medium</button>
+                    <button class="filter-chip px-4 py-1.5 bg-gray-100 hover:bg-red-100 text-gray-700 rounded-full text-sm font-medium" data-filter="complexity" data-value="heavy">Heavy</button>
                 </div>
                 
                 <!-- Rating -->
-                <div class="flex items-center gap-2 bg-orange-50 rounded-lg px-2 py-1">
-                    <span class="text-xs font-medium text-gray-600">Rating:</span>
-                    <button class="filter-chip px-3 py-1 bg-gray-100 hover:bg-purple-100 text-gray-700 rounded-full text-xs font-medium" data-filter="rating" data-value="7">7.0+</button>
-                    <button class="filter-chip px-3 py-1 bg-gray-100 hover:bg-purple-100 text-gray-700 rounded-full text-xs font-medium" data-filter="rating" data-value="8">8.0+</button>
-                    <button class="filter-chip px-3 py-1 bg-gray-100 hover:bg-purple-100 text-gray-700 rounded-full text-xs font-medium" data-filter="rating" data-value="9">9.0+</button>
+                <div class="flex items-center gap-3 bg-orange-50 rounded-lg px-3 py-2">
+                    <span class="text-sm font-medium text-gray-700">Rating:</span>
+                    <button class="filter-chip px-4 py-1.5 bg-gray-100 hover:bg-purple-100 text-gray-700 rounded-full text-sm font-medium" data-filter="rating" data-value="7">7.0+</button>
+                    <button class="filter-chip px-4 py-1.5 bg-gray-100 hover:bg-purple-100 text-gray-700 rounded-full text-sm font-medium" data-filter="rating" data-value="8">8.0+</button>
+                    <button class="filter-chip px-4 py-1.5 bg-gray-100 hover:bg-purple-100 text-gray-700 rounded-full text-sm font-medium" data-filter="rating" data-value="9">9.0+</button>
                 </div>
             </div>
         </div>

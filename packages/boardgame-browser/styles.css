@@ -535,6 +535,8 @@ svg { stroke: currentColor; }
 .mb-1 { margin-bottom: 0.25rem; }
 .mb-3 { margin-bottom: 0.75rem; }
 .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+.py-1\.5 { padding-top: 0.375rem; padding-bottom: 0.375rem; }
+.py-2\.5 { padding-top: 0.625rem; padding-bottom: 0.625rem; }
 .py-16 { padding-top: 4rem; padding-bottom: 4rem; }
 .p-1 { padding: 0.25rem; }
 .p-3 { padding: 0.75rem; }
