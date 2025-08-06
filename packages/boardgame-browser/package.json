@@ -1,0 +1,17 @@
+{
+  "name": "boardgame-browser",
+  "version": "1.0.0",
+  "main": "script.js",
+  "scripts": {
+    "build-css": "npx tailwindcss -i ./src/input.css -o ./dist/output.css --watch",
+    "build-css-prod": "npx tailwindcss -i ./src/input.css -o ./dist/output.css --minify",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "tailwindcss": "^4.1.11"
+  }
+}
