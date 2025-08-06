@@ -27,7 +27,11 @@
       "Bash(cmd /c start:*)",
       "Bash(start:*)",
       "Bash(ls:*)",
-      "WebFetch(domain:bgg-json.azurewebsites.net)"
+      "WebFetch(domain:bgg-json.azurewebsites.net)",
+      "Bash(npm init:*)",
+      "Bash(npm install:*)",
+      "Bash(npx tailwindcss:*)",
+      "Bash(npm run build-css-prod:*)"
     ],
     "deny": []
   }
