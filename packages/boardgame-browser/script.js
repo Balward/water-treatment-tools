@@ -4,6 +4,7 @@ let filteredGames = [];
 let activeFilters = {
     search: '',
     players: null,
+    playtime: null,
     complexity: null,
     rating: null,
     status: null
@@ -127,10 +128,12 @@ async function getSavedCollections() {
         if (key && key.startsWith('bgg_collection_')) {
             try {
                 const data = JSON.parse(localStorage.getItem(key));
+                const gameCount = data.games && Array.isArray(data.games) ? data.games.length : 0;
+                console.log(`Collection ${data.username}: ${gameCount} games`);
                 collections.push({
                     username: data.username,
                     timestamp: data.timestamp,
-                    gameCount: data.games ? data.games.length : 0
+                    gameCount: gameCount
                 });
             } catch (e) {
                 console.warn('Failed to parse collection:', key);
@@ -181,28 +184,28 @@ async function updateSavedCollectionsList() {
                        `${Math.floor(ageHours / 24)}d ago`;
         
         return `
-            <div class="flex items-center gap-3 bg-gray-50 rounded-2xl p-4 border shadow-sm hover:shadow-md transition-all duration-200">
+            <div class="relative flex items-center gap-4 bg-gray-800 rounded-2xl p-5 border border-purple-500/30 shadow-lg hover:shadow-purple-500/20 hover:border-purple-400/50 transition-all duration-300 group">
                 <button onclick="loadCollection('${collection.username}')" 
-                        class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold text-sm transition-all duration-200 hover:scale-105 hover:shadow-lg flex items-center gap-2">
+                        class="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white px-8 py-4 rounded-xl font-bold text-base transition-all duration-200 hover:scale-105 hover:shadow-lg flex items-center gap-3">
                     🎲 ${collection.username}
                 </button>
-                <div class="flex-1 text-sm text-gray-600">
-                    <div class="font-medium">${collection.gameCount || 0} games</div>
-                    <div class="text-xs">${ageText}</div>
+                <div class="flex-1 text-sm">
+                    <div class="font-semibold text-white">${collection.gameCount || 0} games</div>
+                    <div class="text-xs text-gray-400">Last refreshed: ${ageText}</div>
                 </div>
-                <div class="flex gap-2">
+                <div class="absolute top-3 right-3 flex gap-2 opacity-60 group-hover:opacity-100 transition-opacity duration-200">
                     <button onclick="refreshCollection('${collection.username}')" 
-                            class="collection-action-btn bg-blue-50 hover:bg-blue-100 text-blue-600 hover:text-blue-700 p-2.5 rounded-xl transition-all duration-200 hover:scale-110" 
+                            class="floating-action-btn text-blue-400 hover:text-blue-300 hover:scale-125 transition-all duration-200" 
                             title="Refresh collection">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                         </svg>
                     </button>
                     <button onclick="deleteSavedCollection('${collection.username}')" 
-                            class="collection-action-btn bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 p-2.5 rounded-xl transition-all duration-200 hover:scale-110"
+                            class="floating-action-btn text-red-400 hover:text-red-300 hover:scale-125 transition-all duration-200"
                             title="Delete saved collection">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                         </svg>
                     </button>
                 </div>
@@ -524,13 +527,24 @@ function applyFiltersAndSort() {
                     return game.minPlayers <= 1;
                 case '2':
                     return game.minPlayers <= 2 && game.maxPlayers >= 2;
-                case '3-4':
-                    return game.minPlayers <= 4 && game.maxPlayers >= 3;
+                case '3':
+                    return game.minPlayers <= 3 && game.maxPlayers >= 3;
+                case '4':
+                    return game.minPlayers <= 4 && game.maxPlayers >= 4;
                 case '5+':
                     return game.maxPlayers >= 5;
                 default:
                     return true;
             }
+        });
+    }
+    
+    // Apply playtime filter
+    if (activeFilters.playtime) {
+        filteredGames = filteredGames.filter(game => {
+            if (!game.playingTime) return true; // Include games without playtime data
+            const maxTime = parseInt(activeFilters.playtime);
+            return game.playingTime <= maxTime;
         });
     }
     
@@ -719,6 +733,7 @@ function clearAllFilters() {
     activeFilters = {
         search: '',
         players: null,
+        playtime: null,
         complexity: null,
         rating: null,
         status: null

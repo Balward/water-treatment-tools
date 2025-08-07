@@ -475,26 +475,29 @@ svg { stroke: currentColor; }
 /* Fill utilities for SVG */
 .fill-none { fill: none; }
 
-/* Saved Collections styling - Modern Clean Theme */
-#savedCollectionsList .bg-gray-50 {
-  background: rgba(255, 255, 255, 0.95) !important;
-  border: 1px solid rgba(59, 130, 246, 0.15) !important;
+/* Saved Collections styling - Dark Purple Theme */
+#savedCollectionsList .bg-gray-800 {
+  background: rgba(31, 41, 55, 0.95) !important;
+  border: 1px solid rgba(139, 92, 246, 0.3) !important;
   backdrop-filter: blur(10px);
 }
 
-#savedCollectionsList .text-gray-600 {
-  color: #4b5563 !important;
+#savedCollectionsList .text-white {
+  color: #f9fafb !important;
 }
 
-#savedCollectionsList .bg-blue-500 {
-  background: linear-gradient(135deg, #3b82f6, #1d4ed8) !important;
-  border: 1px solid rgba(59, 130, 246, 0.3);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+#savedCollectionsList .text-gray-400 {
+  color: #9ca3af !important;
 }
 
-#savedCollectionsList .bg-blue-500:hover {
-  background: linear-gradient(135deg, #2563eb, #1e40af) !important;
-  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.35);
+#savedCollectionsList .bg-gradient-to-r {
+  background: linear-gradient(135deg, #7c3aed, #2563eb) !important;
+  box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4);
+}
+
+#savedCollectionsList .bg-gradient-to-r:hover {
+  background: linear-gradient(135deg, #6d28d9, #1d4ed8) !important;
+  box-shadow: 0 6px 20px rgba(124, 58, 237, 0.5);
   transform: translateY(-2px);
 }
 
@@ -508,13 +511,37 @@ svg { stroke: currentColor; }
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Improved saved collections container */
+/* Improved saved collections container - Dark Theme */
 #savedCollections {
-  background: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(8px);
+  background: rgba(40, 40, 56, 0.85);
+  backdrop-filter: blur(12px);
   border-radius: 24px;
   padding: 2rem;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+}
+
+#savedCollections h3 {
+  color: #e5e7eb !important;
+}
+
+#savedCollections p {
+  color: #9ca3af !important;
+}
+
+/* Floating action buttons */
+.floating-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.floating-action-btn:hover {
+  filter: drop-shadow(0 0 8px currentColor);
 }
 
 /* Filter chip selected states */
