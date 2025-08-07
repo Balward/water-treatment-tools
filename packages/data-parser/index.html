@@ -144,25 +144,25 @@
         }
         
         .calendar-day.start-date {
-            background: linear-gradient(135deg, #8b5cf6, #a855f7);
+            background: linear-gradient(135deg, #a1cf6e, #84BD00);
             color: white;
             font-weight: 700;
         }
         
         .calendar-day.end-date {
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            background: linear-gradient(135deg, #84BD00, #a1cf6e);
             color: white;
             font-weight: 700;
         }
         
         .calendar-day.in-range {
-            background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
-            color: #4f46e5;
+            background: linear-gradient(135deg, #ddeccb, #bfdd9b);
+            color: #84BD00;
             font-weight: 600;
         }
         
         .calendar-day.single-day {
-            background: linear-gradient(135deg, #8b5cf6, #6366f1);
+            background: linear-gradient(135deg, #a1cf6e, #84BD00);
             color: white;
             font-weight: 700;
         }
@@ -291,10 +291,16 @@
                 <!-- File Upload Area -->
                 <div class="space-y-6">
                     <!-- File Upload Inputs -->
-                    <div class="bg-gray-50 rounded-2xl p-6 border border-gray-200">
-                        <h4 class="text-lg font-semibold text-gray-700 mb-4 flex items-center gap-2">
-                            📂 Select Temperature Data Files
-                        </h4>
+                    <div class="bg-white/70 rounded-2xl p-8 border-l-4 border-primary-500">
+                        <div class="flex items-center justify-center mb-4">
+                            <div class="w-10 h-10 bg-gradient-to-r from-primary-500 to-primary-500 rounded-full flex items-center justify-center">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <h4 class="text-xl font-bold text-primary-500 mb-4 text-center">Select Temperature Data Files</h4>
+                        <p class="text-gray-600 font-medium mb-6 text-center">Upload continuous temperature monitoring CSV files</p>
                         <div class="grid md:grid-cols-2 gap-4">
                             <div class="space-y-2">
                                 <label for="file1" class="block text-sm font-semibold text-gray-600">Temperature File 1:</label>
@@ -363,10 +369,10 @@
                     </div>
                     
                     <!-- Date Range Info -->
-                    <div id="dateRangeInfo" class="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl p-4 border border-purple-200 mb-6 hidden">
+                    <div id="dateRangeInfo" class="bg-gradient-to-r from-success-50 to-success-100 rounded-xl p-4 border border-success-200 mb-6 hidden">
                         <div class="text-center">
-                            <div class="text-sm font-semibold text-purple-700 mb-1">Selected Reporting Period:</div>
-                            <div id="dateRangeText" class="text-lg font-bold text-purple-600"></div>
+                            <div class="text-sm font-semibold text-success-300 mb-1">Selected Reporting Period:</div>
+                            <div id="dateRangeText" class="text-lg font-bold text-success-300"></div>
                         </div>
                     </div>
                     
