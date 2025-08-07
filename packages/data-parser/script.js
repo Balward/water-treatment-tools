@@ -945,40 +945,46 @@ function displayMWATResults(rawData, dailyMax, mwat) {
         'N/A';
     
     statsDiv.innerHTML = `
-        <h3 class="text-2xl font-bold text-green-800 mb-6 flex items-center gap-2">
-            📊 DMR Calculation Results
-        </h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Left Column: MWAT -->
-            <div class="space-y-4">
-                <div class="bg-gradient-to-br from-primary-50 to-primary-200 rounded-2xl p-6 border border-primary-200 text-center">
-                    <div class="text-4xl font-bold text-primary-700 mb-2">${overallMWAT.toFixed(3)}°C</div>
-                    <div class="text-primary-600 font-semibold">Maximum Weekly Average Temperature (MWAT)</div>
+        <!-- Main Results Summary -->
+        <div class="bg-white/70 rounded-2xl p-8 border-l-4 border-success-300 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- MWAT Result -->
+                <div class="text-center">
+                    <div class="text-5xl font-bold text-primary-700 mb-3">${overallMWAT.toFixed(3)}°C</div>
+                    <div class="text-lg font-semibold text-primary-600 mb-2">Maximum Weekly Average Temperature</div>
+                    <div class="text-sm text-gray-600">${mwat.length} MWAT periods analyzed</div>
                 </div>
-                <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-4 border border-gray-200 text-center">
-                    <div class="text-2xl font-bold text-gray-700 mb-1">${mwat.length}</div>
-                    <div class="text-gray-600 font-semibold">7-Day MWAT Periods</div>
-                </div>
-                <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-4 border border-gray-200 text-center">
-                    <div class="text-2xl font-bold text-gray-700 mb-1">${rawData.length}</div>
-                    <div class="text-gray-600 font-semibold">Total Temperature Readings</div>
+                
+                <!-- Daily Max Result -->
+                <div class="text-center">
+                    <div class="text-5xl font-bold text-secondary-600 mb-3">${overallDailyMax.toFixed(3)}°C</div>
+                    <div class="text-lg font-semibold text-secondary-500 mb-2">Highest Daily Maximum Temperature</div>
+                    <div class="text-sm text-gray-600">${dailyMax.length} days analyzed</div>
                 </div>
             </div>
             
-            <!-- Right Column: Daily Maximum -->
-            <div class="space-y-4">
-                <div class="bg-gradient-to-br from-secondary-50 to-secondary-200 rounded-2xl p-6 border border-secondary-200 text-center">
-                    <div class="text-4xl font-bold text-secondary-600 mb-2">${overallDailyMax.toFixed(3)}°C</div>
-                    <div class="text-secondary-500 font-semibold">Highest Daily Maximum Temperature</div>
-                </div>
-                <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-4 border border-gray-200 text-center">
-                    <div class="text-2xl font-bold text-gray-700 mb-1">${dailyMax.length}</div>
-                    <div class="text-gray-600 font-semibold">Days with Daily Maximum</div>
-                </div>
-                <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-4 border border-gray-200 text-center">
-                    <div class="text-xl font-bold text-gray-700 mb-1">${dateRange}</div>
-                    <div class="text-gray-600 font-semibold">Date Range</div>
-                </div>
+            <!-- Data Summary Bar -->
+            <div class="mt-8 pt-6 border-t border-gray-200 flex items-center justify-between text-sm text-gray-600">
+                <div><strong>${rawData.length}</strong> total temperature readings</div>
+                <div><strong>${dateRange}</strong> date range</div>
+            </div>
+            
+            <!-- Download Actions -->
+            <div class="mt-6 flex flex-wrap gap-4 justify-center">
+                <button onclick="downloadResults()" 
+                        class="bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    Download Results
+                </button>
+                <button onclick="downloadRawData()" 
+                        class="bg-gradient-to-r from-secondary-400 to-secondary-500 hover:from-secondary-500 hover:to-secondary-600 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                    </svg>
+                    Download Processed Data
+                </button>
             </div>
         </div>
     `;
