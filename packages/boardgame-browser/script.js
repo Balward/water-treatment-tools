@@ -66,9 +66,21 @@ async function saveCollectionToCache(username, games) {
     }
     
     // Fallback to localStorage if server is unavailable
-    localStorage.setItem(`bgg_collection_${username.toLowerCase()}`, JSON.stringify(cacheData));
-    console.log(`Saved collection for ${username} to localStorage`);
-    updateSavedCollectionsList();
+    try {
+        const cacheKey = `bgg_collection_${username.toLowerCase()}`;
+        localStorage.setItem(cacheKey, JSON.stringify(cacheData));
+        console.log(`Saved collection for ${username} to localStorage with ${games.length} games`);
+        
+        // Verify the save worked
+        const saved = localStorage.getItem(cacheKey);
+        if (saved) {
+            const parsed = JSON.parse(saved);
+            console.log(`Verification: saved collection has ${parsed.games?.length || 0} games`);
+        }
+        updateSavedCollectionsList();
+    } catch (saveError) {
+        console.error('Failed to save to localStorage:', saveError);
+    }
 }
 
 async function loadCollectionFromCache(username) {
@@ -290,6 +302,22 @@ function setupEventListeners() {
     document.getElementById('clearFilters').addEventListener('click', function() {
         clearAllFilters();
     });
+    
+    // Load complexity data button
+    document.getElementById('loadComplexityBtn').addEventListener('click', async function() {
+        this.disabled = true;
+        this.textContent = 'Loading...';
+        
+        try {
+            await enrichWithComplexityData(allGames);
+            applyFiltersAndSort();
+            this.classList.add('hidden');
+        } catch (error) {
+            console.error('Failed to load complexity data:', error);
+            this.textContent = 'Load Complexity Data';
+            this.disabled = false;
+        }
+    });
 }
 
 async function loadCollection(username = null) {
@@ -342,10 +370,22 @@ async function loadCollection(username = null) {
         updateLoadingProgress('Processing game information...');
         allGames = await processGameData(data);
         
-        updateLoadingProgress('Fetching complexity ratings...');
-        await enrichWithComplexityData(allGames);
+        // Ask user if they want complexity data (speeds up loading significantly)
+        const skipComplexity = !confirm('Load complexity/weight data? This will make loading slower but provides better filtering.\n\nClick OK to load complexity data (slower)\nClick Cancel to skip (faster)');
+        
+        if (!skipComplexity) {
+            updateLoadingProgress('Fetching complexity ratings...');
+            await enrichWithComplexityData(allGames);
+        } else {
+            updateLoadingProgress('Skipping complexity data for faster loading...');
+            // Set default complexity to 0 for all games
+            allGames.forEach(game => game.complexity = 0);
+            // Show button to load complexity data later
+            document.getElementById('loadComplexityBtn').classList.remove('hidden');
+        }
         
         // Save to cache
+        console.log(`Saving collection for ${username} with ${allGames.length} games`);
         saveCollectionToCache(username, allGames);
         
         hideLoading();
@@ -419,52 +459,84 @@ async function processGameData(rawData) {
 }
 
 async function enrichWithComplexityData(games) {
-    // Batch fetch complexity data from BGG XML API in smaller groups
-    const batchSize = 10; // Smaller batches to avoid issues
+    // Check if we have cached complexity data
+    const complexityCache = JSON.parse(localStorage.getItem('bgg_complexity_cache') || '{}');
+    const cacheAge = Date.now() - (complexityCache.timestamp || 0);
+    const maxCacheAge = 7 * 24 * 60 * 60 * 1000; // 1 week
+    
+    // Filter games that need complexity data
+    const gamesNeedingComplexity = games.filter(game => {
+        if (complexityCache.data && complexityCache.data[game.id] && cacheAge < maxCacheAge) {
+            game.complexity = complexityCache.data[game.id];
+            return false;
+        }
+        return true;
+    });
+    
+    if (gamesNeedingComplexity.length === 0) {
+        updateLoadingProgress('Using cached complexity data...');
+        return;
+    }
+    
+    // Parallel batch processing for faster API calls
+    const batchSize = 20; // Increased batch size for better performance
+    const maxConcurrentBatches = 3; // Process multiple batches in parallel
     const batches = [];
     
-    for (let i = 0; i < games.length; i += batchSize) {
-        batches.push(games.slice(i, i + batchSize));
+    for (let i = 0; i < gamesNeedingComplexity.length; i += batchSize) {
+        batches.push(gamesNeedingComplexity.slice(i, i + batchSize));
     }
     
-    for (let batchIndex = 0; batchIndex < batches.length; batchIndex++) {
-        const batch = batches[batchIndex];
-        const gameIds = batch.map(game => game.id).join(',');
-        
-        try {
-            updateLoadingProgress(`Fetching complexity data (batch ${batchIndex + 1}/${batches.length})...`);
+    // Process batches in parallel chunks
+    for (let i = 0; i < batches.length; i += maxConcurrentBatches) {
+        const batchChunk = batches.slice(i, i + maxConcurrentBatches);
+        const batchPromises = batchChunk.map(async (batch, localIndex) => {
+            const batchIndex = i + localIndex;
+            const gameIds = batch.map(game => game.id).join(',');
             
-            // Use BGG XML API directly with stats=1 to get averageweight
-            const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(`https://boardgamegeek.com/xmlapi/boardgame/${gameIds}?stats=1`)}`);
-            const data = await response.json();
-            
-            if (data.contents) {
-                const parser = new DOMParser();
-                const xmlDoc = parser.parseFromString(data.contents, 'text/xml');
-                const boardgames = xmlDoc.querySelectorAll('boardgame');
+            try {
+                updateLoadingProgress(`Fetching complexity data (${batchIndex + 1}/${batches.length})...`);
                 
-                boardgames.forEach(boardgame => {
-                    const gameId = parseInt(boardgame.getAttribute('objectid'));
-                    const game = batch.find(g => g.id === gameId);
+                const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(`https://boardgamegeek.com/xmlapi/boardgame/${gameIds}?stats=1`)}`);
+                const data = await response.json();
+                
+                if (data.contents) {
+                    const parser = new DOMParser();
+                    const xmlDoc = parser.parseFromString(data.contents, 'text/xml');
+                    const boardgames = xmlDoc.querySelectorAll('boardgame');
                     
-                    if (game) {
-                        const averageWeight = boardgame.querySelector('averageweight');
-                        if (averageWeight) {
-                            game.complexity = parseFloat(averageWeight.textContent) || 0;
+                    boardgames.forEach(boardgame => {
+                        const gameId = parseInt(boardgame.getAttribute('objectid'));
+                        const game = batch.find(g => g.id === gameId);
+                        
+                        if (game) {
+                            const averageWeight = boardgame.querySelector('averageweight');
+                            const complexity = parseFloat(averageWeight?.textContent) || 0;
+                            game.complexity = complexity;
+                            
+                            // Cache the result
+                            if (!complexityCache.data) complexityCache.data = {};
+                            complexityCache.data[gameId] = complexity;
                         }
-                    }
-                });
+                    });
+                }
+            } catch (error) {
+                console.warn(`Failed to fetch complexity for batch ${batchIndex + 1}:`, error);
             }
-            
-            // Rate limiting - wait between batches
-            if (batchIndex < batches.length - 1) {
-                await new Promise(resolve => setTimeout(resolve, 1500));
-            }
-            
-        } catch (error) {
-            console.warn(`Failed to fetch complexity for batch ${batchIndex + 1}:`, error);
+        });
+        
+        // Wait for this chunk to complete
+        await Promise.all(batchPromises);
+        
+        // Shorter delay between chunks
+        if (i + maxConcurrentBatches < batches.length) {
+            await new Promise(resolve => setTimeout(resolve, 800)); // Reduced from 1500ms
         }
     }
+    
+    // Update cache
+    complexityCache.timestamp = Date.now();
+    localStorage.setItem('bgg_complexity_cache', JSON.stringify(complexityCache));
 }
 
 function showLoading() {
