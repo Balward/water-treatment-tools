@@ -490,7 +490,25 @@
                     Clear Log
                 </button>
             </div>
-            <div id="messages" class="space-y-3 max-h-80 overflow-y-auto"></div>
+            <div class="max-h-80 overflow-y-auto">
+                <table id="logTable" class="w-full">
+                    <thead>
+                        <tr class="bg-gray-100 text-gray-700">
+                            <th class="px-4 py-2 text-left font-semibold text-xs uppercase tracking-wider w-16">Status</th>
+                            <th class="px-4 py-2 text-left font-semibold text-xs uppercase tracking-wider">Message</th>
+                            <th class="px-4 py-2 text-left font-semibold text-xs uppercase tracking-wider w-20">Time</th>
+                        </tr>
+                    </thead>
+                    <tbody id="messages" class="divide-y divide-gray-200">
+                        <!-- Log messages will be added here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Status Messages -->
+        <div id="statusMessages" class="fixed top-4 right-4 z-50 space-y-2" style="max-width: 400px;">
+            <!-- Status messages will appear here -->
         </div>
     </div>
 

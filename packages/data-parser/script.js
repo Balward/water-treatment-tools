@@ -19,70 +19,139 @@ function showLogContainer() {
 }
 
 function addLogMessage(message, type = 'info') {
-    const messagesDiv = document.getElementById('messages');
+    const messagesBody = document.getElementById('messages');
     const timestamp = new Date().toLocaleTimeString();
     
-    let iconAndClass;
+    let statusInfo;
     switch(type) {
         case 'success':
-            iconAndClass = {
-                icon: '✅',
-                bgClass: 'bg-success-50 border-l-4 border-success-200',
-                textClass: 'text-success-500',
-                iconClass: 'text-success-300'
+            statusInfo = {
+                icon: '✓',
+                bgClass: 'bg-success-50',
+                textClass: 'text-success-600',
+                iconClass: 'text-success-500 bg-success-100 rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold'
             };
             break;
         case 'error':
-            iconAndClass = {
-                icon: '❌',
-                bgClass: 'bg-warning-50 border-l-4 border-warning-200',
-                textClass: 'text-warning-500',
-                iconClass: 'text-warning-300'
+            statusInfo = {
+                icon: '×',
+                bgClass: 'bg-warning-50',
+                textClass: 'text-warning-600',
+                iconClass: 'text-warning-500 bg-warning-100 rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold'
             };
             break;
         case 'warning':
-            iconAndClass = {
-                icon: '⚠️',
-                bgClass: 'bg-secondary-50 border-l-4 border-secondary-100',
+            statusInfo = {
+                icon: '!',
+                bgClass: 'bg-secondary-50',
                 textClass: 'text-secondary-700',
-                iconClass: 'text-secondary-400'
+                iconClass: 'text-secondary-500 bg-secondary-100 rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold'
             };
             break;
         case 'info':
         default:
-            iconAndClass = {
-                icon: 'ℹ️',
-                bgClass: 'bg-primary-50 border-l-4 border-primary-200',
+            statusInfo = {
+                icon: 'i',
+                bgClass: 'bg-primary-50',
                 textClass: 'text-primary-700',
-                iconClass: 'text-primary-500'
+                iconClass: 'text-primary-500 bg-primary-100 rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold'
             };
             break;
     }
     
-    const logEntry = document.createElement('div');
-    logEntry.className = `${iconAndClass.bgClass} p-4 rounded-lg transition-all duration-300 animate-slide-up`;
-    logEntry.innerHTML = `
-        <div class="flex items-start gap-3">
-            <span class="text-lg ${iconAndClass.iconClass}">${iconAndClass.icon}</span>
-            <div class="flex-1">
-                <div class="${iconAndClass.textClass} font-medium">${message}</div>
-                <div class="text-gray-500 text-xs mt-1">${timestamp}</div>
-            </div>
-        </div>
+    const logRow = document.createElement('tr');
+    logRow.className = `${statusInfo.bgClass} hover:bg-opacity-75 transition-all duration-200`;
+    logRow.innerHTML = `
+        <td class="px-4 py-3">
+            <div class="${statusInfo.iconClass}">${statusInfo.icon}</div>
+        </td>
+        <td class="px-4 py-3 ${statusInfo.textClass} text-sm">${message}</td>
+        <td class="px-4 py-3 text-gray-500 text-xs">${timestamp}</td>
     `;
     
-    messagesDiv.appendChild(logEntry);
+    messagesBody.appendChild(logRow);
     showLogContainer();
     
     // Auto-scroll to bottom
+    const tableContainer = messagesBody.closest('.max-h-80');
+    if (tableContainer) {
+        setTimeout(() => {
+            tableContainer.scrollTop = tableContainer.scrollHeight;
+        }, 100);
+    }
+}
+
+// New minimal status message system
+function showStatusMessage(message, type = 'info', duration = 4000) {
+    const container = document.getElementById('statusMessages');
+    
+    let statusInfo;
+    switch(type) {
+        case 'success':
+            statusInfo = {
+                bgClass: 'bg-success-500',
+                icon: '✓'
+            };
+            break;
+        case 'error':
+            statusInfo = {
+                bgClass: 'bg-warning-500',
+                icon: '×'
+            };
+            break;
+        case 'warning':
+            statusInfo = {
+                bgClass: 'bg-secondary-500',
+                icon: '!'
+            };
+            break;
+        case 'info':
+        default:
+            statusInfo = {
+                bgClass: 'bg-primary-500',
+                icon: 'i'
+            };
+            break;
+    }
+    
+    // Clear existing messages to avoid clutter
+    container.innerHTML = '';
+    
+    const messageEl = document.createElement('div');
+    messageEl.className = `${statusInfo.bgClass} text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-3 transition-all duration-300 transform translate-x-full opacity-0`;
+    messageEl.innerHTML = `
+        <div class="w-6 h-6 bg-white bg-opacity-20 rounded-full flex items-center justify-center text-sm font-bold">
+            ${statusInfo.icon}
+        </div>
+        <span class="font-medium">${message}</span>
+        <button onclick="this.parentElement.remove()" class="ml-2 text-white hover:text-gray-200 transition-colors">
+            ×
+        </button>
+    `;
+    
+    container.appendChild(messageEl);
+    
+    // Animate in
     setTimeout(() => {
-        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        messageEl.classList.remove('translate-x-full', 'opacity-0');
     }, 100);
+    
+    // Auto-remove after duration
+    setTimeout(() => {
+        if (messageEl.parentElement) {
+            messageEl.classList.add('translate-x-full', 'opacity-0');
+            setTimeout(() => {
+                if (messageEl.parentElement) {
+                    messageEl.remove();
+                }
+            }, 300);
+        }
+    }, duration);
 }
 
 function clearLog() {
-    const messagesDiv = document.getElementById('messages');
-    messagesDiv.innerHTML = '';
+    const messagesBody = document.getElementById('messages');
+    messagesBody.innerHTML = '';
     const logContainer = document.getElementById('logContainer');
     logContainer.classList.add('hidden');
 }
@@ -834,6 +903,7 @@ async function loadTestData() {
         checkFiles();
         
         addLogMessage(`Test data loaded successfully! Combined ${temperatureData.length} temperature readings from ${allData.length} files.`, 'success');
+        showStatusMessage('Test data loaded successfully', 'success');
         
         // Auto-set date range to March 30, 2025 - April 30, 2025 for test data
         selectedStartDate = new Date(2025, 2, 30); // March is month 2 (0-indexed)
@@ -844,6 +914,7 @@ async function loadTestData() {
         
     } catch (error) {
         addLogMessage(`Error loading test data: ${error.message}`, 'error');
+        showStatusMessage('Failed to load test data', 'error');
     }
 }
 
@@ -889,6 +960,7 @@ async function calculateMWATAndDailyMax() {
             temperatureData = combineMultipleFiles(allData);
             dataSource = 'files';
             addLogMessage(`Combined data from ${allData.length} file(s) - ${temperatureData.length} total records`, 'success');
+            showStatusMessage(`Files uploaded: ${allData.length} file(s)`, 'success');
         } else {
             addLogMessage(`Using previously loaded data (${temperatureData.length} records from ${dataSource})`, 'info');
         }
@@ -929,12 +1001,14 @@ async function calculateMWATAndDailyMax() {
         addLogMessage(`Calculated ${mwatResults.length} MWAT periods`, 'success');
         
         addLogMessage('Calculations completed successfully! Results displayed below.', 'success');
+        showStatusMessage('Calculations completed successfully', 'success');
         
         // Display results
         displayMWATResults(filteredData, dailyMaxResults, mwatResults);
         
     } catch (error) {
         addLogMessage(`Error calculating MWAT and Daily Max: ${error.message}`, 'error');
+        showStatusMessage('Calculation failed', 'error');
     }
 }
 
