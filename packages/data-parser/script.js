@@ -984,14 +984,14 @@ function displayMWATResults(rawData, dailyMax, mwat) {
     
     // Create results table showing top MWAT periods and daily maximums
     let tableHTML = `
-        <div class="bg-gradient-to-br from-primary-50 via-primary-100 to-primary-200 rounded-3xl p-8 mb-8 border border-primary-200 shadow-2xl">
-            <h3 class="text-2xl font-bold text-transparent bg-gradient-to-r from-primary-500 to-primary-500 bg-clip-text mb-6 flex items-center gap-3">
+        <div class="bg-white/70 rounded-2xl p-8 mb-8 border-l-4 border-primary-500">
+            <h3 class="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
                 📈 Top MWAT Periods (7-Day Rolling Averages)
             </h3>
             <div class="overflow-hidden rounded-2xl shadow-lg bg-white border border-primary-100">
                 <table class="w-full">
                     <thead>
-                        <tr class="bg-gradient-to-r from-primary-500 via-primary-500 to-primary-500 text-white">
+                        <tr class="bg-primary-500 text-white">
                             <th class="px-6 py-5 text-left font-bold text-sm uppercase tracking-wider">Period End Date</th>
                             <th class="px-6 py-5 text-left font-bold text-sm uppercase tracking-wider">7-Day Period</th>
                             <th class="px-6 py-5 text-left font-bold text-sm uppercase tracking-wider">Weekly Average (°C)</th>
@@ -1005,15 +1005,15 @@ function displayMWATResults(rawData, dailyMax, mwat) {
     const topMWAT = [...mwat].sort((a, b) => b.weeklyAverage - a.weeklyAverage).slice(0, 10);
     topMWAT.forEach((period, index) => {
         const isHighest = index === 0;
-        const rowClass = index % 2 === 0 ? 'bg-gradient-to-r from-primary-50/50 to-primary-100/50' : 'bg-white';
+        const rowClass = index % 2 === 0 ? 'bg-primary-50' : 'bg-white';
         const statusClass = isHighest 
-            ? 'bg-gradient-to-r from-secondary-400 to-secondary-500 text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg animate-pulse' 
-            : 'bg-gradient-to-r from-primary-500 to-primary-500 text-white px-4 py-2 rounded-full text-xs font-bold shadow-md';
+            ? 'bg-primary-600 text-white px-4 py-2 rounded-full text-xs font-bold animate-pulse' 
+            : 'bg-primary-500 text-white px-4 py-2 rounded-full text-xs font-bold';
         const statusText = isHighest ? '🏆 MWAT VALUE' : '📊 Weekly Avg';
-        const tempClass = isHighest ? 'text-2xl font-black text-transparent bg-gradient-to-r from-secondary-500 to-secondary-600 bg-clip-text' : 'text-xl font-bold text-primary-700';
+        const tempClass = isHighest ? 'text-2xl font-black text-primary-700' : 'text-xl font-bold text-primary-700';
         
         tableHTML += `
-            <tr class="${rowClass} hover:bg-gradient-to-r hover:from-primary-100 hover:to-primary-200 transition-all duration-300 border-b border-primary-100/50">
+            <tr class="${rowClass} hover:bg-primary-100 transition-all duration-300 border-b border-primary-100">
                 <td class="px-6 py-4 font-semibold text-gray-800">${period.endDate.toLocaleDateString()}</td>
                 <td class="px-6 py-4 text-gray-600 font-medium">${period.startDate.toLocaleDateString()} - ${period.endDate.toLocaleDateString()}</td>
                 <td class="px-6 py-4 ${tempClass}">${period.weeklyAverage.toFixed(3)}</td>
@@ -1028,14 +1028,14 @@ function displayMWATResults(rawData, dailyMax, mwat) {
             </div>
         </div>
 
-        <div class="bg-gradient-to-br from-secondary-50 via-secondary-100 to-secondary-200 rounded-3xl p-8 border border-secondary-200 shadow-2xl">
-            <h3 class="text-2xl font-bold text-transparent bg-gradient-to-r from-secondary-500 to-secondary-600 bg-clip-text mb-6 flex items-center gap-3">
+        <div class="bg-white/70 rounded-2xl p-8 border-l-4 border-primary-500">
+            <h3 class="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
                 🌡️ Top Daily Maximum Temperatures (2-Hour Rolling Averages)
             </h3>
-            <div class="overflow-hidden rounded-2xl shadow-lg bg-white border border-secondary-100">
+            <div class="overflow-hidden rounded-2xl shadow-lg bg-white border border-primary-100">
                 <table class="w-full">
                     <thead>
-                        <tr class="bg-gradient-to-r from-secondary-400 via-secondary-500 to-secondary-600 text-white">
+                        <tr class="bg-primary-500 text-white">
                             <th class="px-6 py-5 text-left font-bold text-sm uppercase tracking-wider">Date</th>
                             <th class="px-6 py-5 text-left font-bold text-sm uppercase tracking-wider">Time Range</th>
                             <th class="px-6 py-5 text-left font-bold text-sm uppercase tracking-wider">Daily Maximum (°C)</th>
@@ -1048,16 +1048,16 @@ function displayMWATResults(rawData, dailyMax, mwat) {
     // Show top 10 daily maximum temperatures
     const topDailyMax = [...dailyMax].sort((a, b) => b.temperature - a.temperature).slice(0, 10);
     topDailyMax.forEach((day, index) => {
-        const rowClass = index % 2 === 0 ? 'bg-gradient-to-r from-secondary-50/50 to-secondary-100/50' : 'bg-white';
+        const rowClass = index % 2 === 0 ? 'bg-primary-50' : 'bg-white';
         const isHighest = index === 0;
         const statusClass = isHighest 
-            ? 'bg-gradient-to-r from-secondary-400 to-secondary-500 text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg animate-pulse' 
-            : 'bg-gradient-to-r from-secondary-300 to-secondary-400 text-white px-4 py-2 rounded-full text-xs font-bold shadow-md';
+            ? 'bg-primary-600 text-white px-4 py-2 rounded-full text-xs font-bold animate-pulse' 
+            : 'bg-primary-500 text-white px-4 py-2 rounded-full text-xs font-bold';
         const statusText = isHighest ? '🏆 MAX VALUE' : '🌡️ Daily Max';
-        const tempClass = isHighest ? 'text-2xl font-black text-transparent bg-gradient-to-r from-secondary-500 to-secondary-600 bg-clip-text' : 'text-xl font-bold text-secondary-600';
+        const tempClass = isHighest ? 'text-2xl font-black text-primary-700' : 'text-xl font-bold text-primary-700';
         
         tableHTML += `
-            <tr class="${rowClass} hover:bg-gradient-to-r hover:from-secondary-100 hover:to-secondary-200 transition-all duration-300 border-b border-secondary-100/50">
+            <tr class="${rowClass} hover:bg-primary-100 transition-all duration-300 border-b border-primary-100">
                 <td class="px-6 py-4 font-semibold text-gray-800">${day.date.toLocaleDateString()}</td>
                 <td class="px-6 py-4 text-gray-600 font-medium">${day.timeRange}</td>
                 <td class="px-6 py-4 ${tempClass}">${day.temperature.toFixed(3)}</td>
