@@ -349,16 +349,67 @@ async function loadCollection(username = null) {
         showLoading();
         updateLoadingProgress('Connecting to BoardGameGeek...');
         
-        // Use CORS proxy to access BGG JSON API
-        const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(`https://bgg-json.azurewebsites.net/collection/${username}?grouped=false`)}`);
+        // Try multiple CORS proxies for better reliability
+        const corsProxies = [
+            {
+                name: 'corsproxy.io',
+                url: (targetUrl) => `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
+                parseResponse: (data) => data // Direct response
+            },
+            {
+                name: 'cors-anywhere',
+                url: (targetUrl) => `https://cors-anywhere.herokuapp.com/${targetUrl}`,
+                parseResponse: (data) => data // Direct response
+            },
+            {
+                name: 'allorigins',
+                url: (targetUrl) => `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`,
+                parseResponse: (data) => JSON.parse(data.contents) // Wrapped response
+            },
+            {
+                name: 'thingproxy',
+                url: (targetUrl) => `https://thingproxy.freeboard.io/fetch/${targetUrl}`,
+                parseResponse: (data) => data // Direct response
+            }
+        ];
         
-        if (!response.ok) {
-            throw new Error(`Failed to fetch collection: ${response.status}`);
+        const targetUrl = `https://bgg-json.azurewebsites.net/collection/${username}?grouped=false`;
+        let data = null;
+        let lastError = null;
+        
+        for (const proxy of corsProxies) {
+            try {
+                updateLoadingProgress(`Trying ${proxy.name} proxy...`);
+                console.log(`Attempting to fetch via ${proxy.name}: ${proxy.url(targetUrl)}`);
+                
+                const response = await fetch(proxy.url(targetUrl), {
+                    headers: {
+                        'Accept': 'application/json',
+                    },
+                    timeout: 15000 // 15 second timeout
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                updateLoadingProgress('Processing collection data...');
+                const responseData = await response.json();
+                data = proxy.parseResponse(responseData);
+                
+                console.log(`Successfully fetched data via ${proxy.name}`);
+                break;
+                
+            } catch (error) {
+                console.warn(`${proxy.name} proxy failed:`, error);
+                lastError = error;
+                continue;
+            }
         }
         
-        updateLoadingProgress('Processing collection data...');
-        const proxyResponse = await response.json();
-        const data = JSON.parse(proxyResponse.contents);
+        if (!data) {
+            throw new Error(`All CORS proxies failed. Last error: ${lastError?.message || 'Unknown error'}`);
+        }
         
         // Debug: log the first game to see the structure
         console.log('BGG API Response sample:', data[0]);
@@ -396,7 +447,22 @@ async function loadCollection(username = null) {
     } catch (error) {
         console.error('Error loading collection:', error);
         hideLoading();
-        showError(error.message || 'Failed to load collection. Please try again.');
+        
+        // Provide more helpful error messages
+        let errorMessage = 'Failed to load collection. Please try again.';
+        if (error.message.includes('CORS') || error.message.includes('Cross-Origin') || error.message.includes('NetworkError')) {
+            errorMessage = 'Network access blocked by browser security. Please try refreshing the page or try again in a few minutes.';
+        } else if (error.message.includes('proxies failed')) {
+            errorMessage = 'All proxy servers are currently unavailable. Please try again in a few minutes.';
+        } else if (error.message.includes('No games found')) {
+            errorMessage = 'No games found in collection. Make sure your BoardGameGeek collection is public.';
+        } else if (error.message.includes('timeout') || error.message.includes('fetch')) {
+            errorMessage = 'Request timed out or network error. Please check your connection and try again.';
+        } else if (error.message) {
+            errorMessage = error.message;
+        }
+        
+        showError(errorMessage);
     }
 }
 
@@ -497,8 +563,53 @@ async function enrichWithComplexityData(games) {
             try {
                 updateLoadingProgress(`Fetching complexity data (${batchIndex + 1}/${batches.length})...`);
                 
-                const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(`https://boardgamegeek.com/xmlapi/boardgame/${gameIds}?stats=1`)}`);
-                const data = await response.json();
+                // Try multiple CORS proxies for complexity data too
+                const complexityProxies = [
+                    {
+                        name: 'corsproxy.io',
+                        url: (targetUrl) => `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
+                        parseResponse: (data) => data
+                    },
+                    {
+                        name: 'allorigins',
+                        url: (targetUrl) => `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`,
+                        parseResponse: (data) => data.contents
+                    },
+                    {
+                        name: 'thingproxy',
+                        url: (targetUrl) => `https://thingproxy.freeboard.io/fetch/${targetUrl}`,
+                        parseResponse: (data) => data
+                    }
+                ];
+                
+                const targetUrl = `https://boardgamegeek.com/xmlapi/boardgame/${gameIds}?stats=1`;
+                let xmlData = null;
+                
+                for (const proxy of complexityProxies) {
+                    try {
+                        const response = await fetch(proxy.url(targetUrl), {
+                            headers: { 'Accept': 'application/json, text/xml, */*' },
+                            timeout: 10000
+                        });
+                        
+                        if (!response.ok) continue;
+                        
+                        const responseData = await response.json();
+                        xmlData = proxy.parseResponse(responseData);
+                        break;
+                        
+                    } catch (error) {
+                        console.warn(`Complexity ${proxy.name} proxy failed:`, error);
+                        continue;
+                    }
+                }
+                
+                if (!xmlData) {
+                    console.warn(`All complexity proxies failed for batch ${batchIndex + 1}`);
+                    continue;
+                }
+                
+                const data = { contents: xmlData };
                 
                 if (data.contents) {
                     const parser = new DOMParser();
