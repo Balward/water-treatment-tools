@@ -835,6 +835,13 @@ async function loadTestData() {
         
         addLogMessage(`Test data loaded successfully! Combined ${temperatureData.length} temperature readings from ${allData.length} files.`, 'success');
         
+        // Auto-set date range to March 30, 2025 - April 30, 2025 for test data
+        selectedStartDate = new Date(2025, 2, 30); // March is month 2 (0-indexed)
+        selectedEndDate = new Date(2025, 3, 30);   // April is month 3 (0-indexed)
+        updateDateRangeInfo();
+        renderCalendar();
+        addLogMessage('Date range automatically set to March 30, 2025 - April 30, 2025 for test data', 'info');
+        
     } catch (error) {
         addLogMessage(`Error loading test data: ${error.message}`, 'error');
     }
