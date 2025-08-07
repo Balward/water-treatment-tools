@@ -603,7 +603,7 @@ async function enrichWithComplexityData(games) {
                 
                 if (!xmlData) {
                     console.warn(`All complexity proxies failed for batch ${batchIndex + 1}`);
-                    continue;
+                    return; // Return from this map function instead of continue
                 }
                 
                 const data = { contents: xmlData };
