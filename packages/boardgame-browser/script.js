@@ -258,21 +258,18 @@ function setupEventListeners() {
             const filterValue = this.getAttribute('data-value');
             
             // Toggle active state
-            if (this.classList.contains('bg-blue-500')) {
+            if (this.classList.contains('active')) {
                 // Remove filter
-                this.classList.remove('bg-blue-500', 'text-white');
-                this.classList.add('bg-gray-100', 'text-gray-700');
+                this.classList.remove('active');
                 activeFilters[filterType] = null;
             } else {
                 // Clear other filters of same type
                 document.querySelectorAll(`[data-filter="${filterType}"]`).forEach(otherChip => {
-                    otherChip.classList.remove('bg-blue-500', 'text-white');
-                    otherChip.classList.add('bg-gray-100', 'text-gray-700');
+                    otherChip.classList.remove('active');
                 });
                 
                 // Add filter
-                this.classList.remove('bg-gray-100', 'text-gray-700');
-                this.classList.add('bg-blue-500', 'text-white');
+                this.classList.add('active');
                 activeFilters[filterType] = filterValue;
             }
             
@@ -657,18 +654,7 @@ function createGameCard(game) {
             </div>
             
             <div class="p-6">
-                <h3 class="font-bold text-lg text-gray-800 mb-3 leading-tight" style="height: 3.5rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${game.name}</h3>
-                
-                <div class="flex items-center justify-between mb-4">
-                    <div class="bg-black/70 text-white px-4 py-2.5 rounded-lg text-sm font-medium">
-                        ${game.yearPublished || 'N/A'}
-                    </div>
-                    ${game.numPlays > 0 ? `
-                        <div class="bg-blue-600 text-white px-4 py-2.5 rounded-lg text-sm font-medium">
-                            ${game.numPlays} plays
-                        </div>
-                    ` : ''}
-                </div>
+                <h3 class="font-bold text-lg text-gray-800 mb-4 leading-tight" style="height: 3.5rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${game.name}${game.yearPublished ? ` (${game.yearPublished})` : ''}</h3>
                 
                 <div class="grid grid-cols-2 gap-4 mb-4">
                     <div class="text-center">
@@ -743,8 +729,7 @@ function clearAllFilters() {
     
     // Reset filter chips
     document.querySelectorAll('.filter-chip').forEach(chip => {
-        chip.classList.remove('bg-blue-500', 'text-white');
-        chip.classList.add('bg-gray-100', 'text-gray-700');
+        chip.classList.remove('active');
     });
     
     // Reset sort

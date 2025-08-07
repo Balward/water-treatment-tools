@@ -517,6 +517,15 @@ svg { stroke: currentColor; }
   border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
+/* Filter chip selected states */
+.filter-chip.active {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8) !important;
+  color: white !important;
+  border-color: #2563eb !important;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+  transform: translateY(-1px);
+}
+
 /* View Details button styling - Dark Purple Theme */
 .game-card button.text-blue-600 {
   color: #c084fc !important;
