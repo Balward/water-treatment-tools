@@ -1011,9 +1011,9 @@ function displayMWATResults(rawData, dailyMax, mwat) {
         const rowClass = index % 2 === 0 ? 'bg-primary-50' : 'bg-white';
         const statusClass = isHighest 
             ? 'bg-secondary-500 text-white px-4 py-2 rounded-full text-xs font-bold animate-pulse' 
-            : 'bg-secondary-400 text-white px-4 py-2 rounded-full text-xs font-bold';
+            : 'bg-primary-500 text-white px-4 py-2 rounded-full text-xs font-bold';
         const statusText = isHighest ? 'MWAT VALUE' : 'Weekly Avg';
-        const tempClass = isHighest ? 'text-2xl font-black text-secondary-600' : 'text-xl font-bold text-secondary-600';
+        const tempClass = isHighest ? 'text-2xl font-black text-secondary-600' : 'text-xl font-bold text-primary-700';
         
         tableHTML += `
             <tr class="${rowClass} hover:bg-primary-100 transition-all duration-300 border-b border-primary-100">
@@ -1058,9 +1058,9 @@ function displayMWATResults(rawData, dailyMax, mwat) {
         const isHighest = index === 0;
         const statusClass = isHighest 
             ? 'bg-secondary-500 text-white px-4 py-2 rounded-full text-xs font-bold animate-pulse' 
-            : 'bg-secondary-400 text-white px-4 py-2 rounded-full text-xs font-bold';
+            : 'bg-primary-500 text-white px-4 py-2 rounded-full text-xs font-bold';
         const statusText = isHighest ? 'MAX VALUE' : 'Daily Max';
-        const tempClass = isHighest ? 'text-2xl font-black text-secondary-600' : 'text-xl font-bold text-secondary-600';
+        const tempClass = isHighest ? 'text-2xl font-black text-secondary-600' : 'text-xl font-bold text-primary-700';
         
         tableHTML += `
             <tr class="${rowClass} hover:bg-primary-100 transition-all duration-300 border-b border-primary-100">
