@@ -257,7 +257,31 @@ function generateInteractiveCalendar() {
     // Empty cells for days before month starts
     for (let i = 0; i < startingDayOfWeek; i++) {
         const prevMonthDay = new Date(currentYear, currentMonth, -(startingDayOfWeek - 1 - i));
-        html += `<div class="calendar-day other-month">${prevMonthDay.getDate()}</div>`;
+        const dateString = prevMonthDay.toISOString().split('T')[0];
+        
+        let classes = 'calendar-day other-month interactive';
+        
+        // Determine if this previous month day is in the selected range
+        if (selectedStartDate && selectedEndDate) {
+            const start = selectedStartDate.toISOString().split('T')[0];
+            const end = selectedEndDate.toISOString().split('T')[0];
+            
+            if (dateString === start && dateString === end) {
+                classes += ' single-day';
+            } else if (dateString === start) {
+                classes += ' start-date';
+            } else if (dateString === end) {
+                classes += ' end-date';
+            } else if (dateString > start && dateString < end) {
+                classes += ' in-range';
+            }
+        } else if (selectedStartDate && dateString === selectedStartDate.toISOString().split('T')[0]) {
+            classes += ' start-date';
+        } else if (selectedEndDate && dateString === selectedEndDate.toISOString().split('T')[0]) {
+            classes += ' end-date';
+        }
+        
+        html += `<div class="${classes}" data-date="${dateString}">${prevMonthDay.getDate()}</div>`;
     }
     
     // Days of the month
@@ -295,7 +319,32 @@ function generateInteractiveCalendar() {
     const remainingCells = totalCells - (daysInMonth + startingDayOfWeek);
     
     for (let i = 1; i <= remainingCells; i++) {
-        html += `<div class="calendar-day other-month">${i}</div>`;
+        const nextMonthDay = new Date(currentYear, currentMonth + 1, i);
+        const dateString = nextMonthDay.toISOString().split('T')[0];
+        
+        let classes = 'calendar-day other-month interactive';
+        
+        // Determine if this next month day is in the selected range
+        if (selectedStartDate && selectedEndDate) {
+            const start = selectedStartDate.toISOString().split('T')[0];
+            const end = selectedEndDate.toISOString().split('T')[0];
+            
+            if (dateString === start && dateString === end) {
+                classes += ' single-day';
+            } else if (dateString === start) {
+                classes += ' start-date';
+            } else if (dateString === end) {
+                classes += ' end-date';
+            } else if (dateString > start && dateString < end) {
+                classes += ' in-range';
+            }
+        } else if (selectedStartDate && dateString === selectedStartDate.toISOString().split('T')[0]) {
+            classes += ' start-date';
+        } else if (selectedEndDate && dateString === selectedEndDate.toISOString().split('T')[0]) {
+            classes += ' end-date';
+        }
+        
+        html += `<div class="${classes}" data-date="${dateString}">${i}</div>`;
     }
     
     html += '</div>';
