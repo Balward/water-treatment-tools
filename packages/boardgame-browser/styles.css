@@ -475,27 +475,46 @@ svg { stroke: currentColor; }
 /* Fill utilities for SVG */
 .fill-none { fill: none; }
 
-/* Saved Collections styling - Dark Purple Theme */
+/* Saved Collections styling - Modern Clean Theme */
 #savedCollectionsList .bg-gray-50 {
-  background: rgba(40, 40, 56, 0.9) !important;
-  border: 1px solid rgba(139, 92, 246, 0.3) !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(59, 130, 246, 0.15) !important;
   backdrop-filter: blur(10px);
 }
 
 #savedCollectionsList .text-gray-600 {
-  color: #cbd5e1 !important;
+  color: #4b5563 !important;
 }
 
 #savedCollectionsList .bg-blue-500 {
-  background: linear-gradient(135deg, #7c3aed, #a855f7) !important;
-  border: 1px solid rgba(168, 85, 247, 0.3);
-  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.3);
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8) !important;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
 }
 
 #savedCollectionsList .bg-blue-500:hover {
-  background: linear-gradient(135deg, #6d28d9, #9333ea) !important;
-  box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4);
+  background: linear-gradient(135deg, #2563eb, #1e40af) !important;
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.35);
   transform: translateY(-2px);
+}
+
+/* Action buttons styling */
+.collection-action-btn {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.collection-action-btn:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Improved saved collections container */
+#savedCollections {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(8px);
+  border-radius: 24px;
+  padding: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 /* View Details button styling - Dark Purple Theme */

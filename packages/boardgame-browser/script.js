@@ -181,29 +181,31 @@ async function updateSavedCollectionsList() {
                        `${Math.floor(ageHours / 24)}d ago`;
         
         return `
-            <div class="flex items-center gap-2 bg-gray-50 rounded-lg p-3 border">
+            <div class="flex items-center gap-3 bg-gray-50 rounded-2xl p-4 border shadow-sm hover:shadow-md transition-all duration-200">
                 <button onclick="loadCollection('${collection.username}')" 
-                        class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium text-sm transition-colors">
+                        class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold text-sm transition-all duration-200 hover:scale-105 hover:shadow-lg flex items-center gap-2">
                     🎲 ${collection.username}
                 </button>
-                <div class="text-xs text-gray-600">
-                    <div>${collection.gameCount} games</div>
-                    <div>${ageText}</div>
+                <div class="flex-1 text-sm text-gray-600">
+                    <div class="font-medium">${collection.gameCount || 0} games</div>
+                    <div class="text-xs">${ageText}</div>
                 </div>
-                <button onclick="refreshCollection('${collection.username}')" 
-                        class="text-gray-400 hover:text-blue-600 p-1 rounded transition-colors" 
-                        title="Refresh collection">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                    </svg>
-                </button>
-                <button onclick="deleteSavedCollection('${collection.username}')" 
-                        class="text-gray-400 hover:text-red-600 p-1 rounded transition-colors"
-                        title="Delete saved collection">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                    </svg>
-                </button>
+                <div class="flex gap-2">
+                    <button onclick="refreshCollection('${collection.username}')" 
+                            class="collection-action-btn bg-blue-50 hover:bg-blue-100 text-blue-600 hover:text-blue-700 p-2.5 rounded-xl transition-all duration-200 hover:scale-110" 
+                            title="Refresh collection">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                        </svg>
+                    </button>
+                    <button onclick="deleteSavedCollection('${collection.username}')" 
+                            class="collection-action-btn bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 p-2.5 rounded-xl transition-all duration-200 hover:scale-110"
+                            title="Delete saved collection">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                        </svg>
+                    </button>
+                </div>
             </div>
         `;
     }).join('');
