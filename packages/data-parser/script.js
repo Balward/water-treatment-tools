@@ -112,11 +112,11 @@ function handleFileUpload(fileInputId) {
         const file = fileInput.files[0];
         statusDiv.innerHTML = `
             <div class="flex items-center gap-2 text-primary-700 bg-primary-50 px-3 py-2 rounded-lg border border-primary-200">
-                <svg class="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-4 h-4 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                 </svg>
                 <span class="font-medium">${file.name}</span>
-                <span class="text-primary-600 text-xs">(${formatFileSize(file.size)})</span>
+                <span class="text-primary-500 text-xs">(${formatFileSize(file.size)})</span>
             </div>
         `;
         
@@ -946,12 +946,12 @@ function displayMWATResults(rawData, dailyMax, mwat) {
     
     statsDiv.innerHTML = `
         <!-- Main Results Summary -->
-        <div class="bg-white/70 rounded-2xl p-8 border-l-4 border-primary-400 mb-8">
+        <div class="bg-white/70 rounded-2xl p-8 border-l-4 border-primary-500 mb-8">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <!-- MWAT Result -->
                 <div class="text-center">
                     <div class="text-5xl font-bold text-primary-700 mb-3">${overallMWAT.toFixed(3)}°C</div>
-                    <div class="text-lg font-semibold text-primary-600 mb-2">Maximum Weekly Average Temperature</div>
+                    <div class="text-lg font-semibold text-primary-500 mb-2">Maximum Weekly Average Temperature</div>
                     <div class="text-sm text-gray-600">${mwat.length} MWAT periods analyzed</div>
                 </div>
                 
@@ -972,7 +972,7 @@ function displayMWATResults(rawData, dailyMax, mwat) {
             <!-- Download Actions -->
             <div class="mt-6 flex justify-center">
                 <button onclick="downloadResults()" 
-                        class="bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 flex items-center gap-2 text-lg">
+                        class="bg-gradient-to-r from-primary-500 to-primary-500 hover:from-primary-700 hover:to-primary-700 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 flex items-center gap-2 text-lg">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                     </svg>
@@ -985,13 +985,13 @@ function displayMWATResults(rawData, dailyMax, mwat) {
     // Create results table showing top MWAT periods and daily maximums
     let tableHTML = `
         <div class="bg-gradient-to-br from-primary-50 via-primary-100 to-primary-200 rounded-3xl p-8 mb-8 border border-primary-200 shadow-2xl">
-            <h3 class="text-2xl font-bold text-transparent bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text mb-6 flex items-center gap-3">
+            <h3 class="text-2xl font-bold text-transparent bg-gradient-to-r from-primary-500 to-primary-500 bg-clip-text mb-6 flex items-center gap-3">
                 📈 Top MWAT Periods (7-Day Rolling Averages)
             </h3>
             <div class="overflow-hidden rounded-2xl shadow-lg bg-white border border-primary-100">
                 <table class="w-full">
                     <thead>
-                        <tr class="bg-gradient-to-r from-primary-500 via-primary-600 to-primary-700 text-white">
+                        <tr class="bg-gradient-to-r from-primary-500 via-primary-500 to-primary-500 text-white">
                             <th class="px-6 py-5 text-left font-bold text-sm uppercase tracking-wider">Period End Date</th>
                             <th class="px-6 py-5 text-left font-bold text-sm uppercase tracking-wider">7-Day Period</th>
                             <th class="px-6 py-5 text-left font-bold text-sm uppercase tracking-wider">Weekly Average (°C)</th>
@@ -1008,7 +1008,7 @@ function displayMWATResults(rawData, dailyMax, mwat) {
         const rowClass = index % 2 === 0 ? 'bg-gradient-to-r from-primary-50/50 to-primary-100/50' : 'bg-white';
         const statusClass = isHighest 
             ? 'bg-gradient-to-r from-secondary-400 to-secondary-500 text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg animate-pulse' 
-            : 'bg-gradient-to-r from-primary-400 to-primary-500 text-white px-4 py-2 rounded-full text-xs font-bold shadow-md';
+            : 'bg-gradient-to-r from-primary-500 to-primary-500 text-white px-4 py-2 rounded-full text-xs font-bold shadow-md';
         const statusText = isHighest ? '🏆 MWAT VALUE' : '📊 Weekly Avg';
         const tempClass = isHighest ? 'text-2xl font-black text-transparent bg-gradient-to-r from-secondary-500 to-secondary-600 bg-clip-text' : 'text-xl font-bold text-primary-700';
         
