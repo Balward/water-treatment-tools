@@ -357,7 +357,9 @@ function addCalendarClickHandlers() {
     interactiveDays.forEach(day => {
         day.addEventListener('click', (e) => {
             const dateString = e.target.getAttribute('data-date');
-            const clickedDate = new Date(dateString);
+            // Fix timezone issue by parsing date components locally
+            const [year, month, day] = dateString.split('-').map(Number);
+            const clickedDate = new Date(year, month - 1, day); // month is 0-based
             
             handleDateClick(clickedDate);
         });
