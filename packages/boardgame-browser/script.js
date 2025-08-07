@@ -21,8 +21,7 @@ let apiServerAvailable = false;
 async function checkApiAvailability() {
     try {
         const response = await fetch(`${API_BASE_URL}/api/health`, { 
-            method: 'GET',
-            timeout: 5000 // 5 second timeout
+            method: 'GET'
         });
         apiServerAvailable = response.ok;
         console.log('API server available:', apiServerAvailable);
@@ -385,8 +384,7 @@ async function loadCollection(username = null) {
                 const response = await fetch(proxy.url(targetUrl), {
                     headers: {
                         'Accept': 'application/json',
-                    },
-                    timeout: 15000 // 15 second timeout
+                    }
                 });
                 
                 if (!response.ok) {
@@ -588,8 +586,7 @@ async function enrichWithComplexityData(games) {
                 for (const proxy of complexityProxies) {
                     try {
                         const response = await fetch(proxy.url(targetUrl), {
-                            headers: { 'Accept': 'application/json, text/xml, */*' },
-                            timeout: 10000
+                            headers: { 'Accept': 'application/json, text/xml, */*' }
                         });
                         
                         if (!response.ok) continue;
