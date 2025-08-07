@@ -110,9 +110,15 @@ function handleFileUpload(fileInputId) {
     
     if (fileInput.files.length > 0) {
         const file = fileInput.files[0];
-        statusDiv.textContent = `${file.name} (${formatFileSize(file.size)})`;
-        statusDiv.classList.add('text-green-600', 'font-semibold');
-        statusDiv.classList.remove('text-gray-500');
+        statusDiv.innerHTML = `
+            <div class="flex items-center gap-2 text-primary-700 bg-primary-50 px-3 py-2 rounded-lg border border-primary-200">
+                <svg class="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                <span class="font-medium">${file.name}</span>
+                <span class="text-primary-600 text-xs">(${formatFileSize(file.size)})</span>
+            </div>
+        `;
         
         // Clear test data if files are uploaded
         if (dataSource === 'test') {
@@ -121,9 +127,7 @@ function handleFileUpload(fileInputId) {
         }
         dataSource = 'files';
     } else {
-        statusDiv.textContent = '';
-        statusDiv.classList.remove('text-green-600', 'font-semibold');
-        statusDiv.classList.add('text-gray-500');
+        statusDiv.innerHTML = '';
     }
 }
 
@@ -144,12 +148,8 @@ function clearTestDataState() {
 function clearFileInputs() {
     document.getElementById('file1').value = '';
     document.getElementById('file2').value = '';
-    document.getElementById('file1-status').textContent = '';
-    document.getElementById('file2-status').textContent = '';
-    document.getElementById('file1-status').classList.remove('text-green-600', 'font-semibold');
-    document.getElementById('file2-status').classList.remove('text-green-600', 'font-semibold');
-    document.getElementById('file1-status').classList.add('text-gray-500');
-    document.getElementById('file2-status').classList.add('text-gray-500');
+    document.getElementById('file1-status').innerHTML = '';
+    document.getElementById('file2-status').innerHTML = '';
     addLogMessage('File inputs cleared', 'info');
 }
 
@@ -946,7 +946,7 @@ function displayMWATResults(rawData, dailyMax, mwat) {
     
     statsDiv.innerHTML = `
         <!-- Main Results Summary -->
-        <div class="bg-white/70 rounded-2xl p-8 border-l-4 border-success-300 mb-8">
+        <div class="bg-white/70 rounded-2xl p-8 border-l-4 border-primary-400 mb-8">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <!-- MWAT Result -->
                 <div class="text-center">
@@ -970,20 +970,13 @@ function displayMWATResults(rawData, dailyMax, mwat) {
             </div>
             
             <!-- Download Actions -->
-            <div class="mt-6 flex flex-wrap gap-4 justify-center">
+            <div class="mt-6 flex justify-center">
                 <button onclick="downloadResults()" 
-                        class="bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        class="bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 flex items-center gap-2 text-lg">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                     </svg>
-                    Download Results
-                </button>
-                <button onclick="downloadRawData()" 
-                        class="bg-gradient-to-r from-secondary-400 to-secondary-500 hover:from-secondary-500 hover:to-secondary-600 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
-                    </svg>
-                    Download Processed Data
+                    Download Complete Results
                 </button>
             </div>
         </div>
@@ -1090,6 +1083,7 @@ function downloadResults() {
     const overallMWAT = mwatResults.length > 0 ? Math.max(...mwatResults.map(w => w.weeklyAverage)) : 0;
     const overallDailyMax = dailyMaxResults.length > 0 ? Math.max(...dailyMaxResults.map(d => d.temperature)) : 0;
     
+    // Sheet 1: DMR Results Summary
     let csvContent = 'DMR Temperature Calculation Results\n';
     csvContent += `Maximum Weekly Average Temperature (MWAT),${overallMWAT.toFixed(3)}C\n`;
     csvContent += `Highest Daily Maximum Temperature,${overallDailyMax.toFixed(3)}C\n\n`;
@@ -1108,6 +1102,19 @@ function downloadResults() {
         csvContent += `${day.date.toLocaleDateString()},${day.temperature.toFixed(3)},"${day.timeRange}",${day.readingCount}\n`;
     });
     
+    // Sheet 2: Processed Temperature Data
+    if (temperatureData.length > 0) {
+        csvContent += '\n\n--- PROCESSED TEMPERATURE DATA ---\n';
+        csvContent += 'Date Time,Temperature (C),Source\n';
+        
+        temperatureData.forEach(row => {
+            const dateStr = row.dateTime.toLocaleString();
+            const temp = row.temperature.toFixed(3);
+            const source = row.wasAveraged ? 'Combined/Averaged' : 'Original';
+            csvContent += `"${dateStr}",${temp},"${source}"\n`;
+        });
+    }
+    
     // Create timestamp for filename
     const now = new Date();
     const timestamp = now.toISOString().slice(0, 19).replace(/[:-]/g, '').replace('T', '_');
@@ -1116,36 +1123,10 @@ function downloadResults() {
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `MWAT_DailyMax_Results_${timestamp}.csv`;
+    a.download = `MWAT_DailyMax_Complete_Results_${timestamp}.csv`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     window.URL.revokeObjectURL(url);
 }
 
-function downloadRawData() {
-    if (temperatureData.length === 0) return;
-    
-    let csvContent = 'Date Time,Temperature (C),Source\n';
-    
-    temperatureData.forEach(row => {
-        const dateStr = row.dateTime.toLocaleString();
-        const temp = row.temperature.toFixed(3);
-        const source = row.wasAveraged ? 'Combined/Averaged' : 'Original';
-        csvContent += `"${dateStr}",${temp},"${source}"\n`;
-    });
-    
-    // Create timestamp for filename
-    const now = new Date();
-    const timestamp = now.toISOString().slice(0, 19).replace(/[:-]/g, '').replace('T', '_');
-    
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `processed_temperature_data_${timestamp}.csv`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
-}
