@@ -950,8 +950,8 @@ function displayMWATResults(rawData, dailyMax, mwat) {
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <!-- MWAT Result -->
                 <div class="text-center">
-                    <div class="text-5xl font-bold text-primary-700 mb-3">${overallMWAT.toFixed(3)}°C</div>
-                    <div class="text-lg font-semibold text-primary-500 mb-2">Maximum Weekly Average Temperature</div>
+                    <div class="text-5xl font-bold text-secondary-600 mb-3">${overallMWAT.toFixed(3)}°C</div>
+                    <div class="text-lg font-semibold text-secondary-500 mb-2">Maximum Weekly Average Temperature</div>
                     <div class="text-sm text-gray-600">${mwat.length} MWAT periods analyzed</div>
                 </div>
                 
@@ -986,16 +986,19 @@ function displayMWATResults(rawData, dailyMax, mwat) {
     let tableHTML = `
         <div class="bg-white/70 rounded-2xl p-8 mb-8 border-l-4 border-primary-500">
             <h3 class="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
-                📈 Top MWAT Periods (7-Day Rolling Averages)
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path>
+                </svg>
+                Top MWAT Periods (7-Day Rolling Averages)
             </h3>
             <div class="overflow-hidden rounded-2xl shadow-lg bg-white border border-primary-100">
                 <table class="w-full">
                     <thead>
                         <tr class="bg-primary-500 text-white">
-                            <th class="px-6 py-5 text-left font-bold text-sm uppercase tracking-wider">Period End Date</th>
-                            <th class="px-6 py-5 text-left font-bold text-sm uppercase tracking-wider">7-Day Period</th>
-                            <th class="px-6 py-5 text-left font-bold text-sm uppercase tracking-wider">Weekly Average (°C)</th>
-                            <th class="px-6 py-5 text-left font-bold text-sm uppercase tracking-wider">Status</th>
+                            <th class="px-6 py-5 text-left font-bold text-sm uppercase tracking-wider w-1/5">Period End Date</th>
+                            <th class="px-6 py-5 text-left font-bold text-sm uppercase tracking-wider w-2/5">7-Day Period</th>
+                            <th class="px-6 py-5 text-left font-bold text-sm uppercase tracking-wider w-1/5">Weekly Average (°C)</th>
+                            <th class="px-6 py-5 text-left font-bold text-sm uppercase tracking-wider w-1/5">Status</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -1007,10 +1010,10 @@ function displayMWATResults(rawData, dailyMax, mwat) {
         const isHighest = index === 0;
         const rowClass = index % 2 === 0 ? 'bg-primary-50' : 'bg-white';
         const statusClass = isHighest 
-            ? 'bg-primary-600 text-white px-4 py-2 rounded-full text-xs font-bold animate-pulse' 
-            : 'bg-primary-500 text-white px-4 py-2 rounded-full text-xs font-bold';
-        const statusText = isHighest ? '🏆 MWAT VALUE' : '📊 Weekly Avg';
-        const tempClass = isHighest ? 'text-2xl font-black text-primary-700' : 'text-xl font-bold text-primary-700';
+            ? 'bg-secondary-500 text-white px-4 py-2 rounded-full text-xs font-bold animate-pulse' 
+            : 'bg-secondary-400 text-white px-4 py-2 rounded-full text-xs font-bold';
+        const statusText = isHighest ? 'MWAT VALUE' : 'Weekly Avg';
+        const tempClass = isHighest ? 'text-2xl font-black text-secondary-600' : 'text-xl font-bold text-secondary-600';
         
         tableHTML += `
             <tr class="${rowClass} hover:bg-primary-100 transition-all duration-300 border-b border-primary-100">
@@ -1030,16 +1033,19 @@ function displayMWATResults(rawData, dailyMax, mwat) {
 
         <div class="bg-white/70 rounded-2xl p-8 border-l-4 border-primary-500">
             <h3 class="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
-                🌡️ Top Daily Maximum Temperatures (2-Hour Rolling Averages)
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                </svg>
+                Top Daily Maximum Temperatures (2-Hour Rolling Averages)
             </h3>
             <div class="overflow-hidden rounded-2xl shadow-lg bg-white border border-primary-100">
                 <table class="w-full">
                     <thead>
                         <tr class="bg-primary-500 text-white">
-                            <th class="px-6 py-5 text-left font-bold text-sm uppercase tracking-wider">Date</th>
-                            <th class="px-6 py-5 text-left font-bold text-sm uppercase tracking-wider">Time Range</th>
-                            <th class="px-6 py-5 text-left font-bold text-sm uppercase tracking-wider">Daily Maximum (°C)</th>
-                            <th class="px-6 py-5 text-left font-bold text-sm uppercase tracking-wider">Status</th>
+                            <th class="px-6 py-5 text-left font-bold text-sm uppercase tracking-wider w-1/5">Date</th>
+                            <th class="px-6 py-5 text-left font-bold text-sm uppercase tracking-wider w-2/5">Time Range</th>
+                            <th class="px-6 py-5 text-left font-bold text-sm uppercase tracking-wider w-1/5">Daily Maximum (°C)</th>
+                            <th class="px-6 py-5 text-left font-bold text-sm uppercase tracking-wider w-1/5">Status</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -1051,10 +1057,10 @@ function displayMWATResults(rawData, dailyMax, mwat) {
         const rowClass = index % 2 === 0 ? 'bg-primary-50' : 'bg-white';
         const isHighest = index === 0;
         const statusClass = isHighest 
-            ? 'bg-primary-600 text-white px-4 py-2 rounded-full text-xs font-bold animate-pulse' 
-            : 'bg-primary-500 text-white px-4 py-2 rounded-full text-xs font-bold';
-        const statusText = isHighest ? '🏆 MAX VALUE' : '🌡️ Daily Max';
-        const tempClass = isHighest ? 'text-2xl font-black text-primary-700' : 'text-xl font-bold text-primary-700';
+            ? 'bg-secondary-500 text-white px-4 py-2 rounded-full text-xs font-bold animate-pulse' 
+            : 'bg-secondary-400 text-white px-4 py-2 rounded-full text-xs font-bold';
+        const statusText = isHighest ? 'MAX VALUE' : 'Daily Max';
+        const tempClass = isHighest ? 'text-2xl font-black text-secondary-600' : 'text-xl font-bold text-secondary-600';
         
         tableHTML += `
             <tr class="${rowClass} hover:bg-primary-100 transition-all duration-300 border-b border-primary-100">

@@ -321,9 +321,9 @@
                 <!-- OR Divider -->
                 <div class="mt-8 mb-8 text-center">
                     <div class="flex items-center">
-                        <div class="flex-grow border-t border-gray-300"></div>
-                        <span class="mx-4 text-gray-500 font-semibold bg-white px-3 py-1 rounded-full text-sm">OR</span>
-                        <div class="flex-grow border-t border-gray-300"></div>
+                        <div class="flex-grow border-t-2 border-gray-400"></div>
+                        <span class="mx-6 text-gray-700 font-bold bg-white px-4 py-2 rounded-full text-lg shadow-md border-2 border-gray-300">OR</span>
+                        <div class="flex-grow border-t-2 border-gray-400"></div>
                     </div>
                 </div>
 
@@ -340,8 +340,11 @@
                         <h4 class="text-xl font-bold text-primary-600 mb-4">Use Sample Data Instead</h4>
                         <p class="text-gray-600 font-medium mb-6">Skip file uploads and try the calculator with pre-loaded UST1A temperature data</p>
                         <button onclick="loadTestData()" id="testDataBtn" 
-                                class="bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white px-8 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
-                            🧪 Load Test Data (UST1A Files)
+                                class="bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white px-8 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
+                            </svg>
+                            Load Test Data (UST1A Files)
                         </button>
                     </div>
                 </div>
@@ -434,8 +437,11 @@
                     </div>
                     
                     <button onclick="addDischargePeriod()" 
-                            class="bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105">
-                        ➕ Add Discharge Period
+                            class="bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        Add Discharge Period
                     </button>
                 </div>
                 
@@ -452,8 +458,11 @@
             <!-- Process Button -->
             <div class="text-center animate-slide-up">
                 <button onclick="calculateMWATAndDailyMax()" id="processBtn" disabled
-                        class="bg-gradient-to-r from-primary-500 to-primary-500 hover:from-primary-700 hover:to-primary-700 disabled:from-gray-400 disabled:to-gray-500 text-white px-12 py-4 rounded-full text-xl font-bold transition-all duration-300 transform hover:scale-105 hover:shadow-xl disabled:cursor-not-allowed disabled:transform-none">
-                    🚀 Calculate MWAT & Daily Max
+                        class="bg-gradient-to-r from-primary-500 to-primary-500 hover:from-primary-700 hover:to-primary-700 disabled:from-gray-400 disabled:to-gray-500 text-white px-12 py-4 rounded-full text-xl font-bold transition-all duration-300 transform hover:scale-105 hover:shadow-xl disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-3">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                    Calculate MWAT & Daily Max
                 </button>
             </div>
         </main>
