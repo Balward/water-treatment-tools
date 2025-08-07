@@ -43,9 +43,9 @@ function addLogMessage(message, type = 'info') {
         case 'warning':
             iconAndClass = {
                 icon: '⚠️',
-                bgClass: 'bg-secondary-50 border-l-4 border-secondary-200',
+                bgClass: 'bg-secondary-50 border-l-4 border-secondary-100',
                 textClass: 'text-secondary-700',
-                iconClass: 'text-secondary-300'
+                iconClass: 'text-secondary-400'
             };
             break;
         case 'info':
@@ -431,7 +431,7 @@ function addDischargePeriod() {
     const listDiv = document.getElementById('dischargeList');
     
     const periodDiv = document.createElement('div');
-    periodDiv.className = 'bg-white/80 rounded-xl p-4 border border-secondary-200 flex items-center justify-between transition-all duration-300 hover:shadow-md';
+    periodDiv.className = 'bg-white/80 rounded-xl p-4 border border-secondary-100 flex items-center justify-between transition-all duration-300 hover:shadow-md';
     periodDiv.id = `dischargePeriod${periodIndex}`;
     
     periodDiv.innerHTML = `
@@ -1008,10 +1008,10 @@ function displayMWATResults(rawData, dailyMax, mwat) {
         const isHighest = index === 0;
         const rowClass = index % 2 === 0 ? 'bg-gradient-to-r from-primary-50/50 to-primary-100/50' : 'bg-white';
         const statusClass = isHighest 
-            ? 'bg-gradient-to-r from-secondary-200 to-secondary-300 text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg animate-pulse' 
+            ? 'bg-gradient-to-r from-secondary-400 to-secondary-500 text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg animate-pulse' 
             : 'bg-gradient-to-r from-primary-400 to-primary-500 text-white px-4 py-2 rounded-full text-xs font-bold shadow-md';
         const statusText = isHighest ? '🏆 MWAT VALUE' : '📊 Weekly Avg';
-        const tempClass = isHighest ? 'text-2xl font-black text-transparent bg-gradient-to-r from-secondary-300 to-secondary-400 bg-clip-text' : 'text-xl font-bold text-primary-700';
+        const tempClass = isHighest ? 'text-2xl font-black text-transparent bg-gradient-to-r from-secondary-500 to-secondary-600 bg-clip-text' : 'text-xl font-bold text-primary-700';
         
         tableHTML += `
             <tr class="${rowClass} hover:bg-gradient-to-r hover:from-primary-100 hover:to-primary-200 transition-all duration-300 border-b border-primary-100/50">
@@ -1052,10 +1052,10 @@ function displayMWATResults(rawData, dailyMax, mwat) {
         const rowClass = index % 2 === 0 ? 'bg-gradient-to-r from-secondary-50/50 to-warning-50/50' : 'bg-white';
         const isHighest = index === 0;
         const statusClass = isHighest 
-            ? 'bg-gradient-to-r from-secondary-200 to-secondary-300 text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg animate-pulse' 
+            ? 'bg-gradient-to-r from-secondary-400 to-secondary-500 text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg animate-pulse' 
             : 'bg-gradient-to-r from-secondary-300 to-secondary-400 text-white px-4 py-2 rounded-full text-xs font-bold shadow-md';
         const statusText = isHighest ? '🏆 MAX VALUE' : '🌡️ Daily Max';
-        const tempClass = isHighest ? 'text-2xl font-black text-transparent bg-gradient-to-r from-secondary-300 to-secondary-400 bg-clip-text' : 'text-xl font-bold text-secondary-600';
+        const tempClass = isHighest ? 'text-2xl font-black text-transparent bg-gradient-to-r from-secondary-500 to-secondary-600 bg-clip-text' : 'text-xl font-bold text-secondary-600';
         
         tableHTML += `
             <tr class="${rowClass} hover:bg-gradient-to-r hover:from-secondary-100 hover:to-warning-100 transition-all duration-300 border-b border-secondary-100/50">
