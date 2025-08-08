@@ -62,7 +62,6 @@ function closeNotification(closeButton) {
   }, 300);
 }
 
-document.getElementById("fileInput").addEventListener("change", handleFile);
 
 // Chart regeneration notification system
 let chartsGenerated = false;
@@ -95,6 +94,10 @@ function clearRegenerationNotification() {
 
 // Add event listeners for chart configuration changes
 document.addEventListener("DOMContentLoaded", function() {
+  // File input handler
+  document.getElementById("fileInput").addEventListener("change", handleFile);
+  
+  // Chart configuration controls
   const chartConfigControls = [
     "chartType",
     "includeRPM", 
@@ -110,6 +113,51 @@ document.addEventListener("DOMContentLoaded", function() {
       control.addEventListener("change", showRegenerationNotification);
     }
   });
+  
+  // Statistics and time window controls
+  const timeWindow = document.getElementById("timeWindow");
+  if (timeWindow) {
+    timeWindow.addEventListener("change", function () {
+      const customGroup = document.getElementById("customRangeGroup");
+      if (this.value === "custom") {
+        customGroup.style.display = "flex";
+      } else {
+        customGroup.style.display = "none";
+      }
+    });
+  }
+  
+  const noiseFilter = document.getElementById("noiseFilter");
+  if (noiseFilter) {
+    noiseFilter.addEventListener("change", function () {
+      // Statistics updated automatically in tabbed interface
+    });
+  }
+  
+  const startTime = document.getElementById("startTime");
+  if (startTime) {
+    startTime.addEventListener("change", function () {
+      // Statistics updated automatically in tabbed interface
+    });
+  }
+  
+  const endTime = document.getElementById("endTime");
+  if (endTime) {
+    endTime.addEventListener("change", function () {
+      // Statistics updated automatically in tabbed interface
+    });
+  }
+  
+  // Forecast info handlers
+  const forecastWindow = document.getElementById("forecastWindow");
+  if (forecastWindow) {
+    forecastWindow.addEventListener("change", updateForecastInfo);
+  }
+  
+  const forecastStart = document.getElementById("forecastStart");
+  if (forecastStart) {
+    forecastStart.addEventListener("change", updateForecastInfo);
+  }
 });
 
 // Global functions for modal control
@@ -641,36 +689,7 @@ document
     }
   });
 
-document.getElementById("timeWindow").addEventListener("change", function () {
-  const customGroup = document.getElementById("customRangeGroup");
-  if (this.value === "custom") {
-    customGroup.style.display = "flex";
-  } else {
-    customGroup.style.display = "none";
-  }
-
-  // Statistics updated automatically in tabbed interface
-});
-
-document.getElementById("noiseFilter").addEventListener("change", function () {
-  // Statistics updated automatically in tabbed interface
-});
-
-document.getElementById("startTime").addEventListener("change", function () {
-  // Statistics updated automatically in tabbed interface
-});
-
-document.getElementById("endTime").addEventListener("change", function () {
-  // Statistics updated automatically in tabbed interface
-});
-
-document
-  .getElementById("forecastWindow")
-  .addEventListener("change", updateForecastInfo);
-
-document
-  .getElementById("forecastStart")
-  .addEventListener("change", updateForecastInfo);
+// Event listeners moved to DOMContentLoaded block above
 
 // Column select removed - now handled by generateAllCharts()
 
@@ -2177,41 +2196,41 @@ async function generateChartForParameter(
 
   const datasets = [];
   
-  // Enhanced color system with groups based on Alum dose (15-25 range)
-  const colorGroups = {
-    'alum15': ['#0d4f8c', '#1560bd', '#2471cd', '#3482dd', '#4493ed'], // Deep blues
-    'alum16': ['#1565c0', '#1976d2', '#1e88e5', '#2196f3', '#42a5f5'], // Blue variants
-    'alum17': ['#00695c', '#00796b', '#00897b', '#009688', '#26a69a'], // Teals
-    'alum18': ['#2e7d32', '#388e3c', '#43a047', '#4caf50', '#66bb6a'], // Greens
-    'alum19': ['#558b2f', '#689f38', '#7cb342', '#8bc34a', '#9ccc65'], // Light greens
-    'alum20': ['#827717', '#9e9d24', '#afb42b', '#cddc39', '#d4e157'], // Yellow-greens
-    'alum21': ['#b7950b', '#d4ac0d', '#f1c40f', '#f4d03f', '#f7dc6f'], // Yellows
-    'alum22': ['#e65100', '#f57c00', '#ff9800', '#ffb74d', '#ffcc02'], // Oranges
-    'alum23': ['#d84315', '#e64a19', '#ff5722', '#ff7043', '#ff8a65'], // Red-oranges
-    'alum24': ['#c62828', '#d32f2f', '#f44336', '#e57373', '#ef5350'], // Reds
-    'alum25': ['#ad1457', '#c2185b', '#e91e63', '#f06292', '#f48fb1'], // Pinks
-    'default': ['#5a7a95', '#7fb3b3', '#c9a96e', '#8b7fb3', '#95b3a9'] // Original colors
-  };
+  // Bright, distinct colors for each run
+  const distinctColors = [
+    '#e53935', // Red
+    '#1e88e5', // Blue  
+    '#43a047', // Green
+    '#fb8c00', // Orange
+    '#8e24aa', // Purple
+    '#00acc1', // Cyan
+    '#fdd835', // Yellow
+    '#d81b60', // Pink
+    '#00897b', // Teal
+    '#3949ab', // Indigo
+    '#7cb342', // Light Green
+    '#ff7043', // Deep Orange
+    '#5e35b1', // Deep Purple
+    '#26a69a', // Medium Teal
+    '#ffb300', // Amber
+    '#ec407a', // Pink
+    '#42a5f5', // Light Blue
+    '#66bb6a', // Green
+    '#ab47bc', // Purple
+    '#26c6da', // Light Cyan
+    '#ffca28', // Yellow
+    '#ef5350', // Red
+    '#5c6bc0', // Indigo
+    '#78909c', // Blue Grey
+    '#ff8a65', // Deep Orange
+    '#ba68c8', // Purple
+    '#4db6ac', // Teal
+    '#ffee58', // Yellow
+    '#f06292', // Pink
+    '#29b6f6'  // Light Blue
+  ];
   
-  // Function to get color group based on chemistry
-  function getColorGroup(chemistry) {
-    if (!chemistry) return 'default';
-    
-    const chemString = chemistry.toLowerCase();
-    // Match patterns like "alum 15", "alum 16.5", etc.
-    const alumMatch = chemString.match(/alum\s*(\d+(?:\.\d+)?)/);
-    if (alumMatch) {
-      const dose = Math.round(parseFloat(alumMatch[1])); // Round to nearest whole number
-      const groupKey = `alum${dose}`;
-      if (colorGroups[groupKey]) {
-        return groupKey;
-      }
-    }
-    
-    return 'default';
-  }
-  
-  const colors = ["#5a7a95", "#7fb3b3", "#c9a96e", "#8b7fb3"]; // Fallback colors
+  const colors = distinctColors; // Use our distinct color palette
 
   // Create separate series for each sheet
   const sheetSeries = [];
@@ -2296,20 +2315,15 @@ async function generateChartForParameter(
         ? `${timestamp} - ${baseLegendLabel}`
         : baseLegendLabel;
 
-      // Determine color group and index within that group
-      const colorGroup = getColorGroup(metadata.chemistry);
-      const groupColors = colorGroups[colorGroup];
+      // Simple color assignment - each run gets a distinct color
+      const colorIndex = sheetIndex % colors.length;
       
-      // Count how many runs we've seen for this color group to assign variations
-      const groupCount = sheetSeries.filter(s => getColorGroup(s.metadata.chemistry) === colorGroup).length;
-      const colorIndex = groupCount % groupColors.length;
+      console.log(`Sheet: ${sheet}, Color: ${colors[colorIndex]}, Index: ${colorIndex}`);
 
       sheetSeries.push({
         sheetName: sheet,
         data: sheetColumnData,
-        colorIndex: sheetIndex % colors.length, // Keep fallback
-        colorGroup: colorGroup,
-        groupColorIndex: colorIndex,
+        colorIndex: colorIndex,
         legendLabel: legendLabel,
         metadata: metadata,
       });
@@ -2340,9 +2354,10 @@ async function generateChartForParameter(
     const timeData = displayData.map((row) => row[0]);
     const valueData = displayData.map((row) => row[1]);
 
-    // Get the appropriate color from the group
-    const groupColors = colorGroups[series.colorGroup];
-    const seriesColor = groupColors[series.groupColorIndex];
+    // Get the distinct color for this series
+    const seriesColor = colors[series.colorIndex];
+    
+    console.log(`Applying color: ${seriesColor} for ${series.legendLabel}`);
 
     datasets.push({
       label: series.legendLabel,
@@ -2446,8 +2461,7 @@ async function generateChartForParameter(
         forecastResult.data.length > 0
       ) {
         // Use a lighter version of the series color for forecast
-        const groupColors = colorGroups[series.colorGroup];
-        const baseColor = groupColors[series.groupColorIndex];
+        const baseColor = colors[series.colorIndex];
         const forecastColor = baseColor + "CC"; // Add transparency (80%)
 
         // Convert forecast data to proper format
