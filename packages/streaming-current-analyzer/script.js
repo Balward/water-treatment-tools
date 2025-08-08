@@ -261,7 +261,7 @@ function displayDataInfo() {
     const dateVariable = variables.find(v => v.toLowerCase().includes('date'));
     const timeVariable = variables.find(v => v.toLowerCase().includes('time') || v.toLowerCase().includes('sec'));
     
-    let duration = '';
+    let duration = null;
     if (dateVariable && streamingData.length > 0) {
         // Handle Date variables
         const rawDateValues = streamingData.map(d => d[dateVariable])
@@ -325,7 +325,12 @@ function displayDataInfo() {
                 duration = `${diffDays.toFixed(1)} days`;
             } else {
                 const diffHours = diffMs / (1000 * 60 * 60);
-                duration = `${diffHours.toFixed(1)} hours`;
+                if (diffHours >= 1) {
+                    duration = `${diffHours.toFixed(1)} hours`;
+                } else {
+                    const diffMinutes = diffMs / (1000 * 60);
+                    duration = `${diffMinutes.toFixed(1)} minutes`;
+                }
             }
         }
     } else if (timeVariable && streamingData.length > 0) {
@@ -334,7 +339,10 @@ function displayDataInfo() {
         if (timeValues.length > 0) {
             const maxTime = Math.max(...timeValues);
             const minTime = Math.min(...timeValues);
-            duration = `${(maxTime - minTime).toFixed(1)} ${units[timeVariable] || 'units'}`;
+            const timeDiff = maxTime - minTime;
+            if (timeDiff > 0) {
+                duration = `${timeDiff.toFixed(1)} ${units[timeVariable] || 'units'}`;
+            }
         }
     }
     
@@ -347,6 +355,9 @@ function displayDataInfo() {
     }, 0);
     
     const rowCount = streamingData.length;
+    
+    // Sort variables alphabetically
+    const sortedVariables = [...variables].sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
     
     dataInfo.innerHTML = `
         <h3>📊 Dataset Information</h3>
@@ -364,8 +375,8 @@ function displayDataInfo() {
         </div>
         <div style="margin-top: 1rem;">
             <strong>Available Variables:</strong>
-            <div style="margin-top: 0.5rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 0.5rem; max-height: 200px; overflow-y: auto;">
-                ${variables.map(v => `<span style="background: #e0f2fe; padding: 0.5rem; border-radius: 6px; font-size: 0.85rem; text-align: center; border: 1px solid #0891b2;">${v}</span>`).join('')}
+            <div style="margin-top: 0.5rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.25rem; font-size: 0.9rem; line-height: 1.4;">
+                ${sortedVariables.map(v => `<div>${v}</div>`).join('')}
             </div>
         </div>
     `;
