@@ -37,7 +37,9 @@
       "Bash(xcopy:*)",
       "Bash(robocopy:*)",
       "Bash(cp:*)",
-      "Bash(git config:*)"
+      "Bash(git config:*)",
+      "Bash(find:*)",
+      "Bash(git ls-tree:*)"
     ],
     "deny": []
   }
