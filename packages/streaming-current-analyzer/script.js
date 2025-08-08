@@ -108,37 +108,68 @@ async function loadStreamingCurrentData() {
         
         variableNames.forEach((variable, index) => {
             if (variable && variable.toString().trim()) {
-                const cleanVar = variable.toString().trim();
-                variables.push(cleanVar);
+                let cleanVar = variable.toString().trim();
                 
-                // Handle units - some variables like "Date" may not have units
-                const unitValue = unitRow && unitRow[index] ? unitRow[index].toString().trim() : '';
-                units[cleanVar] = unitValue;
+                // Remove common location artifacts and prefixes
+                cleanVar = cleanVar.replace(/^Streaming Current Demo\s*/i, '');
+                cleanVar = cleanVar.replace(/^Demo\s*/i, '');
+                cleanVar = cleanVar.replace(/\s*Demo$/i, '');
+                cleanVar = cleanVar.replace(/^Streaming Current\s*/i, '');
+                cleanVar = cleanVar.replace(/\s*Streaming Current$/i, '');
+                
+                // Clean up any extra whitespace or special characters
+                cleanVar = cleanVar.replace(/^[.\-_\s]+/, '').replace(/[.\-_\s]+$/, '');
+                cleanVar = cleanVar.trim();
+                
+                if (cleanVar) {
+                    variables.push(cleanVar);
+                    
+                    // Handle units - some variables like "Date" may not have units
+                    const unitValue = unitRow && unitRow[index] ? unitRow[index].toString().trim() : '';
+                    units[cleanVar] = unitValue;
+                }
             }
         });
         
-        // Process data rows
+        // Process data rows - need to create a mapping from original to cleaned variable names
+        const variableMapping = {};
+        variableNames.forEach((variable, index) => {
+            if (variable && variable.toString().trim()) {
+                let cleanVar = variable.toString().trim();
+                
+                // Apply same cleaning logic as above
+                cleanVar = cleanVar.replace(/^Streaming Current Demo\s*/i, '');
+                cleanVar = cleanVar.replace(/^Demo\s*/i, '');
+                cleanVar = cleanVar.replace(/\s*Demo$/i, '');
+                cleanVar = cleanVar.replace(/^Streaming Current\s*/i, '');
+                cleanVar = cleanVar.replace(/\s*Streaming Current$/i, '');
+                cleanVar = cleanVar.replace(/^[.\-_\s]+/, '').replace(/[.\-_\s]+$/, '');
+                cleanVar = cleanVar.trim();
+                
+                if (cleanVar) {
+                    variableMapping[index] = cleanVar;
+                }
+            }
+        });
+        
         streamingData = dataRows.filter(row => row && row.some(cell => cell !== null && cell !== undefined && cell !== '')).map(row => {
             const dataPoint = {};
-            variableNames.forEach((variable, index) => {
-                if (variable && variable.toString().trim()) {
-                    const cleanVar = variable.toString().trim();
-                    const value = row[index];
-                    
-                    // Handle different data types appropriately
-                    if (value !== null && value !== undefined && value !== '') {
-                        if (typeof value === 'number') {
-                            dataPoint[cleanVar] = value;
-                        } else if (typeof value === 'string') {
-                            // Try to parse as number, but keep as string if it fails (for dates, text, etc.)
-                            const numValue = parseFloat(value);
-                            dataPoint[cleanVar] = !isNaN(numValue) ? numValue : value.toString();
-                        } else {
-                            dataPoint[cleanVar] = value;
-                        }
+            Object.entries(variableMapping).forEach(([index, cleanVar]) => {
+                const value = row[parseInt(index)];
+                
+                // Handle different data types appropriately
+                if (value !== null && value !== undefined && value !== '') {
+                    if (typeof value === 'number') {
+                        dataPoint[cleanVar] = value;
+                    } else if (typeof value === 'string') {
+                        // Try to parse as number, but keep as string if it fails (for dates, text, etc.)
+                        const numValue = parseFloat(value);
+                        dataPoint[cleanVar] = !isNaN(numValue) ? numValue : value.toString();
                     } else {
-                        dataPoint[cleanVar] = 0; // Default for missing numeric values
+                        dataPoint[cleanVar] = value;
                     }
+                } else {
+                    dataPoint[cleanVar] = 0; // Default for missing numeric values
                 }
             });
             return dataPoint;
