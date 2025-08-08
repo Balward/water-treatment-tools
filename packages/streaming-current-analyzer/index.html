@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Streaming Current Analyzer - Data Playground</title>
+    <link rel="icon" type="image/png" href="../../city-logos/favicon.png" />
+
+    <!-- External Library Dependencies -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <!-- Local Stylesheets -->
+    <link rel="stylesheet" href="styles.css?v=1" />
+  </head>
+
+  <body>
+    <div class="header">
+      <div class="header-content">
+        <div class="header-main">
+          <h1>⚡ Streaming Current Analyzer</h1>
+          <p>
+            Interactive data playground for streaming current detector trial data
+          </p>
+        </div>
+        <div class="header-actions">
+          <button
+            class="action-btn"
+            onclick="window.location.href='../../'"
+            title="Return to Dashboard"
+          >
+            <span>🏠</span>
+            <span>Dashboard</span>
+          </button>
+          <button
+            class="action-btn"
+            id="loadDataHeader"
+            onclick="loadStreamingCurrentData()"
+          >
+            <span>📊</span>
+            <span>Load Data</span>
+          </button>
+          <button
+            class="action-btn"
+            id="exportPdfHeader"
+            onclick="generatePdfReport()"
+            disabled
+          >
+            <span>📄</span>
+            <span>Export PDF</span>
+          </button>
+          <button
+            class="action-btn btn-help"
+            onclick="openHelp()"
+            title="View Help Documentation"
+          >
+            <span>ℹ️</span>
+            <span>Help</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="instructions-section">
+        <div class="instructions-card">
+          <h3>📝 Quick Instructions</h3>
+          <ol class="instructions-list">
+            <li>
+              <strong>Load Data:</strong> Click "Load Data" to import the streaming current trial data
+            </li>
+            <li>
+              <strong>Explore:</strong> Use the variable selector to choose X and Y axes for custom plots
+            </li>
+            <li>
+              <strong>Analyze:</strong> Switch between scatter plots, line charts, and statistical views
+            </li>
+            <li>
+              <strong>Filter:</strong> Use time-based filtering to focus on specific periods
+            </li>
+            <li>
+              <strong>Export:</strong> Generate PDF reports with your analysis
+            </li>
+          </ol>
+          <p class="instructions-tip">
+            💡 <strong>Tip:</strong> Try plotting different variables against time to identify trends and correlations.
+          </p>
+        </div>
+      </div>
+
+      <!-- Data Summary Section -->
+      <div class="info-panel" id="infoPanel" style="display: none">
+        <div class="sheet-info-card" id="dataInfo"></div>
+      </div>
+
+      <!-- Chart Configuration -->
+      <div class="chart-config" id="chartConfig" style="display: none">
+        <div class="control-card">
+          <h3>📊 Chart Configuration</h3>
+          <div class="control-grid">
+            <div class="control-group">
+              <label for="xAxisSelect">X-Axis Variable:</label>
+              <select id="xAxisSelect">
+                <option value="">Select X-Axis...</option>
+              </select>
+            </div>
+
+            <div class="control-group">
+              <label for="yAxisSelect">Y-Axis Variable:</label>
+              <select id="yAxisSelect">
+                <option value="">Select Y-Axis...</option>
+              </select>
+            </div>
+
+            <div class="control-group">
+              <label for="chartType">Chart Type:</label>
+              <select id="chartType">
+                <option value="scatter">Scatter Plot</option>
+                <option value="line">Line Chart</option>
+                <option value="bar">Bar Chart</option>
+              </select>
+            </div>
+
+            <div class="control-group">
+              <label for="colorBy">Color By (Optional):</label>
+              <select id="colorBy">
+                <option value="">No Grouping</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="filter-section">
+            <h4>🔍 Data Filters</h4>
+            <div class="filter-grid">
+              <div class="control-group">
+                <label for="timeFilter">Time Range:</label>
+                <select id="timeFilter">
+                  <option value="all">All Data</option>
+                  <option value="first30">First 30 Minutes</option>
+                  <option value="last30">Last 30 Minutes</option>
+                  <option value="custom">Custom Range</option>
+                </select>
+              </div>
+              
+              <div class="control-group" id="customTimeRange" style="display: none;">
+                <label for="startPercent">Start (% of data):</label>
+                <input type="range" id="startPercent" min="0" max="100" value="0" />
+                <span id="startPercentValue">0%</span>
+                <label for="endPercent">End (% of data):</label>
+                <input type="range" id="endPercent" min="0" max="100" value="100" />
+                <span id="endPercentValue">100%</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="chart-actions">
+            <button class="btn btn-primary" onclick="updateChart()" id="updateChartBtn" disabled>
+              📈 Update Chart
+            </button>
+            <button class="btn btn-secondary" onclick="resetChart()">
+              🔄 Reset
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Chart Container -->
+      <div class="chart-container" id="mainChartContainer" style="display: none">
+        <div id="chartTitle" class="chart-title"></div>
+        <div class="chart-canvas-container">
+          <canvas id="mainChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Statistics Section -->
+      <div class="statistics-section" id="statisticsSection" style="display: none">
+        <div class="statistics-card">
+          <h3>📊 Variable Statistics</h3>
+          <div id="variableStats"></div>
+        </div>
+        
+        <div class="correlation-card">
+          <h3>🔗 Correlation Analysis</h3>
+          <div id="correlationMatrix"></div>
+        </div>
+      </div>
+
+      <!-- Multi-Variable Comparison -->
+      <div class="multi-chart-section" id="multiChartSection" style="display: none">
+        <div class="multi-chart-controls">
+          <h3>📈 Multi-Variable Comparison</h3>
+          <div class="variable-selection">
+            <label>Select Variables to Compare:</label>
+            <div id="variableCheckboxes" class="checkbox-grid"></div>
+          </div>
+          <button class="btn btn-primary" onclick="generateMultiChart()">
+            Generate Comparison Chart
+          </button>
+        </div>
+        
+        <div class="chart-container">
+          <canvas id="multiChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div id="helpModal" class="help-modal" style="display: none">
+      <div class="help-modal-content">
+        <button class="modal-close-x" onclick="closeHelp()" title="Close">
+          &times;
+        </button>
+        <h3>📖 Streaming Current Analyzer - User Guide</h3>
+
+        <div class="help-metric">
+          <h4>🚀 Getting Started</h4>
+          <p>
+            The Streaming Current Analyzer is designed to help you explore streaming current detector trial data interactively.
+            Load your data using the "Load Data" button, then use the various controls to create custom visualizations.
+          </p>
+        </div>
+
+        <div class="help-metric">
+          <h4>📊 Chart Types</h4>
+          <p>
+            <strong>Scatter Plot:</strong> Shows relationships between two variables with individual data points.
+          </p>
+          <p>
+            <strong>Line Chart:</strong> Displays trends over time with connected data points.
+          </p>
+          <p>
+            <strong>Bar Chart:</strong> Useful for comparing discrete values or categories.
+          </p>
+        </div>
+
+        <div class="help-metric">
+          <h4>🎨 Color Grouping</h4>
+          <p>
+            Use the "Color By" option to group data points by a specific variable. This helps identify patterns
+            and relationships within different data segments.
+          </p>
+        </div>
+
+        <div class="help-metric">
+          <h4>🔍 Data Filtering</h4>
+          <p>
+            Filter your data by time ranges to focus on specific periods of interest. Use the custom range
+            sliders for precise control over the data subset.
+          </p>
+        </div>
+
+        <div class="help-metric">
+          <h4>📈 Multi-Variable Analysis</h4>
+          <p>
+            Compare multiple variables simultaneously using the multi-variable comparison section.
+            This helps identify correlations and trends across different measurements.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notification System -->
+    <div id="notificationContainer" class="notification-container"></div>
+
+    <!-- Local JavaScript -->
+    <script src="script.js?v=1"></script>
+  </body>
+</html>
