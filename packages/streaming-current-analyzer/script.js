@@ -97,7 +97,7 @@ async function loadStreamingCurrentData() {
             throw new Error('Data file must have at least 3 rows (variable names, units, values)');
         }
         
-        // Process the data structure
+        // Process the data structure: Row 1 = variable names, Row 2 = units, Row 3+ = data
         const variableNames = jsonData[0];
         const unitRow = jsonData[1];
         const dataRows = jsonData.slice(2);
@@ -107,21 +107,38 @@ async function loadStreamingCurrentData() {
         units = {};
         
         variableNames.forEach((variable, index) => {
-            if (variable && variable.trim()) {
-                const cleanVar = variable.trim();
+            if (variable && variable.toString().trim()) {
+                const cleanVar = variable.toString().trim();
                 variables.push(cleanVar);
-                units[cleanVar] = unitRow[index] ? unitRow[index].toString().trim() : '';
+                
+                // Handle units - some variables like "Date" may not have units
+                const unitValue = unitRow && unitRow[index] ? unitRow[index].toString().trim() : '';
+                units[cleanVar] = unitValue;
             }
         });
         
         // Process data rows
-        streamingData = dataRows.map(row => {
+        streamingData = dataRows.filter(row => row && row.some(cell => cell !== null && cell !== undefined && cell !== '')).map(row => {
             const dataPoint = {};
             variableNames.forEach((variable, index) => {
-                if (variable && variable.trim()) {
+                if (variable && variable.toString().trim()) {
+                    const cleanVar = variable.toString().trim();
                     const value = row[index];
-                    dataPoint[variable.trim()] = (value !== null && value !== undefined && value !== '') ? 
-                        (typeof value === 'number' ? value : parseFloat(value) || 0) : 0;
+                    
+                    // Handle different data types appropriately
+                    if (value !== null && value !== undefined && value !== '') {
+                        if (typeof value === 'number') {
+                            dataPoint[cleanVar] = value;
+                        } else if (typeof value === 'string') {
+                            // Try to parse as number, but keep as string if it fails (for dates, text, etc.)
+                            const numValue = parseFloat(value);
+                            dataPoint[cleanVar] = !isNaN(numValue) ? numValue : value.toString();
+                        } else {
+                            dataPoint[cleanVar] = value;
+                        }
+                    } else {
+                        dataPoint[cleanVar] = 0; // Default for missing numeric values
+                    }
                 }
             });
             return dataPoint;
@@ -152,7 +169,7 @@ function populateVariableSelectors() {
     
     // Add variable options
     variables.forEach(variable => {
-        const unitText = units[variable] ? ` (${units[variable]})` : '';
+        const unitText = units[variable] && units[variable].trim() ? ` (${units[variable]})` : '';
         const optionText = `${variable}${unitText}`;
         
         [xAxisSelect, yAxisSelect, colorBySelect].forEach(select => {
@@ -190,9 +207,10 @@ function populateMultiVariableCheckboxes() {
     
     variables.forEach(variable => {
         const label = document.createElement('label');
+        const unitText = units[variable] && units[variable].trim() ? ` (${units[variable]})` : '';
         label.innerHTML = `
             <input type="checkbox" value="${variable}">
-            ${variable} ${units[variable] ? `(${units[variable]})` : ''}
+            ${variable}${unitText}
         `;
         checkboxContainer.appendChild(label);
     });
@@ -313,8 +331,8 @@ function updateChart() {
     });
     
     // Update title
-    const xUnit = units[xAxis] ? ` (${units[xAxis]})` : '';
-    const yUnit = units[yAxis] ? ` (${units[yAxis]})` : '';
+    const xUnit = units[xAxis] && units[xAxis].trim() ? ` (${units[xAxis]})` : '';
+    const yUnit = units[yAxis] && units[yAxis].trim() ? ` (${units[yAxis]})` : '';
     document.getElementById('chartTitle').textContent = `${yAxis}${yUnit} vs ${xAxis}${xUnit}`;
     
     // Show chart container
@@ -375,8 +393,8 @@ function generateColors(count) {
 }
 
 function getChartOptions(xAxis, yAxis, chartType) {
-    const xUnit = units[xAxis] ? ` (${units[xAxis]})` : '';
-    const yUnit = units[yAxis] ? ` (${units[yAxis]})` : '';
+    const xUnit = units[xAxis] && units[xAxis].trim() ? ` (${units[xAxis]})` : '';
+    const yUnit = units[yAxis] && units[yAxis].trim() ? ` (${units[yAxis]})` : '';
     
     return {
         responsive: true,
@@ -447,7 +465,7 @@ function displayStatistics(stats) {
     let html = '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem;">';
     
     Object.entries(stats).forEach(([variable, stat]) => {
-        const unit = units[variable] ? ` ${units[variable]}` : '';
+        const unit = units[variable] && units[variable].trim() ? ` ${units[variable]}` : '';
         html += `
             <div style="padding: 1rem; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
                 <h4 style="color: #2563eb; margin-bottom: 0.5rem;">${variable}</h4>
@@ -548,7 +566,7 @@ function generateMultiChart() {
     const timeVariable = variables.find(v => v.toLowerCase().includes('time') || v.toLowerCase().includes('sec'));
     
     const datasets = selectedVars.map((variable, index) => ({
-        label: `${variable} ${units[variable] ? `(${units[variable]})` : ''}`,
+        label: `${variable}${units[variable] && units[variable].trim() ? ` (${units[variable]})` : ''}`,
         data: filteredData.map(point => ({
             x: timeVariable ? point[timeVariable] : filteredData.indexOf(point),
             y: point[variable]
@@ -586,7 +604,7 @@ function generateMultiChart() {
                     display: true,
                     title: {
                         display: true,
-                        text: timeVariable ? `${timeVariable} ${units[timeVariable] ? `(${units[timeVariable]})` : ''}` : 'Data Point Index'
+                        text: timeVariable ? `${timeVariable}${units[timeVariable] && units[timeVariable].trim() ? ` (${units[timeVariable]})` : ''}` : 'Data Point Index'
                     }
                 },
                 y: {
