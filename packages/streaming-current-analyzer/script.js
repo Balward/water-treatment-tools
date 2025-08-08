@@ -629,17 +629,104 @@ function createOptimizationChart(targetVar, strongestVar) {
 
 // Utility functions
 function groupDataByVariable(data, variable) {
-    const groups = {};
-    data.forEach(dataPoint => {
-        const value = dataPoint[variable];
-        const key = typeof value === 'number' ? Math.round(value * 100) / 100 : value.toString();
+    const values = data.map(d => d[variable]).filter(v => v !== undefined && v !== null);
+    
+    // Check if all values are numeric
+    const numericValues = values.filter(v => typeof v === 'number');
+    
+    if (numericValues.length === 0) {
+        // Non-numeric data - group by exact value
+        const groups = {};
+        data.forEach(dataPoint => {
+            const value = dataPoint[variable];
+            const key = value ? value.toString() : 'Unknown';
+            if (!groups[key]) {
+                groups[key] = [];
+            }
+            groups[key].push(dataPoint);
+        });
+        return groups;
+    }
+    
+    // For numeric data, determine grouping strategy
+    const uniqueValues = [...new Set(numericValues)].sort((a, b) => a - b);
+    
+    if (uniqueValues.length <= 5) {
+        // Few unique values - group by exact value
+        const groups = {};
+        data.forEach(dataPoint => {
+            const value = dataPoint[variable];
+            if (typeof value === 'number') {
+                const key = formatValue(value, units[variable]);
+                if (!groups[key]) {
+                    groups[key] = [];
+                }
+                groups[key].push(dataPoint);
+            }
+        });
+        return groups;
+    } else {
+        // Many unique values - create ranges
+        const min = Math.min(...uniqueValues);
+        const max = Math.max(...uniqueValues);
+        const range = max - min;
         
-        if (!groups[key]) {
-            groups[key] = [];
+        // Determine number of groups (3-6 based on data distribution)
+        let numGroups;
+        if (uniqueValues.length > 50) {
+            numGroups = 6;
+        } else if (uniqueValues.length > 20) {
+            numGroups = 5;
+        } else {
+            numGroups = 4;
         }
-        groups[key].push(dataPoint);
-    });
-    return groups;
+        
+        const groupSize = range / numGroups;
+        const groups = {};
+        
+        // Create group labels
+        for (let i = 0; i < numGroups; i++) {
+            const rangeStart = min + (i * groupSize);
+            const rangeEnd = min + ((i + 1) * groupSize);
+            const unit = units[variable] && units[variable].trim() ? ` ${units[variable]}` : '';
+            
+            let label;
+            if (i === numGroups - 1) {
+                // Last group includes max value
+                label = `${formatValue(rangeStart, units[variable])} - ${formatValue(max, units[variable])}${unit}`;
+            } else {
+                label = `${formatValue(rangeStart, units[variable])} - ${formatValue(rangeEnd, units[variable])}${unit}`;
+            }
+            groups[label] = [];
+        }
+        
+        // Assign data points to groups
+        data.forEach(dataPoint => {
+            const value = dataPoint[variable];
+            if (typeof value === 'number') {
+                let groupIndex = Math.floor((value - min) / groupSize);
+                // Handle edge case where value equals max
+                if (groupIndex >= numGroups) {
+                    groupIndex = numGroups - 1;
+                }
+                
+                const rangeStart = min + (groupIndex * groupSize);
+                const rangeEnd = groupIndex === numGroups - 1 ? max : min + ((groupIndex + 1) * groupSize);
+                const unit = units[variable] && units[variable].trim() ? ` ${units[variable]}` : '';
+                
+                let label;
+                if (groupIndex === numGroups - 1) {
+                    label = `${formatValue(rangeStart, units[variable])} - ${formatValue(max, units[variable])}${unit}`;
+                } else {
+                    label = `${formatValue(rangeStart, units[variable])} - ${formatValue(rangeEnd, units[variable])}${unit}`;
+                }
+                
+                groups[label].push(dataPoint);
+            }
+        });
+        
+        return groups;
+    }
 }
 
 function createScatterDataset(label, data, xAxis, yAxis, color) {
@@ -674,6 +761,41 @@ function getScatterChartOptions(xAxis, yAxis) {
     const xUnit = units[xAxis] && units[xAxis].trim() ? ` (${units[xAxis]})` : '';
     const yUnit = units[yAxis] && units[yAxis].trim() ? ` (${units[yAxis]})` : '';
     
+    // Calculate buffer zones based on data range
+    const xValues = streamingData.map(d => d[xAxis]).filter(v => typeof v === 'number' && !isNaN(v));
+    const yValues = streamingData.map(d => d[yAxis]).filter(v => typeof v === 'number' && !isNaN(v));
+    
+    let xAxisConfig = {
+        display: true,
+        title: { display: true, text: `${xAxis}${xUnit}` }
+    };
+    
+    let yAxisConfig = {
+        display: true,
+        title: { display: true, text: `${yAxis}${yUnit}` }
+    };
+    
+    // Add buffer zones (10% of range on each side)
+    if (xValues.length > 0) {
+        const xMin = Math.min(...xValues);
+        const xMax = Math.max(...xValues);
+        const xRange = xMax - xMin;
+        const xBuffer = xRange * 0.1;
+        
+        xAxisConfig.min = xMin - xBuffer;
+        xAxisConfig.max = xMax + xBuffer;
+    }
+    
+    if (yValues.length > 0) {
+        const yMin = Math.min(...yValues);
+        const yMax = Math.max(...yValues);
+        const yRange = yMax - yMin;
+        const yBuffer = yRange * 0.1;
+        
+        yAxisConfig.min = yMin - yBuffer;
+        yAxisConfig.max = yMax + yBuffer;
+    }
+    
     return {
         responsive: true,
         maintainAspectRatio: false,
@@ -690,14 +812,8 @@ function getScatterChartOptions(xAxis, yAxis) {
             }
         },
         scales: {
-            x: {
-                display: true,
-                title: { display: true, text: `${xAxis}${xUnit}` }
-            },
-            y: {
-                display: true,
-                title: { display: true, text: `${yAxis}${yUnit}` }
-            }
+            x: xAxisConfig,
+            y: yAxisConfig
         }
     };
 }
