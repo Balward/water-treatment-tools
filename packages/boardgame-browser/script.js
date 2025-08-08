@@ -353,22 +353,33 @@ async function loadCollection(username = null) {
             {
                 name: 'corsproxy.io',
                 url: (targetUrl) => `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
-                parseResponse: (data) => data // Direct response
-            },
-            {
-                name: 'cors-anywhere',
-                url: (targetUrl) => `https://cors-anywhere.herokuapp.com/${targetUrl}`,
-                parseResponse: (data) => data // Direct response
+                parseResponse: async (response) => {
+                    try {
+                        return await response.json();
+                    } catch (e) {
+                        // If JSON parsing fails, try as text
+                        const text = await response.text();
+                        return JSON.parse(text);
+                    }
+                }
             },
             {
                 name: 'allorigins',
                 url: (targetUrl) => `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`,
-                parseResponse: (data) => JSON.parse(data.contents) // Wrapped response
+                parseResponse: async (response) => {
+                    const data = await response.json();
+                    return JSON.parse(data.contents);
+                }
             },
             {
                 name: 'thingproxy',
                 url: (targetUrl) => `https://thingproxy.freeboard.io/fetch/${targetUrl}`,
-                parseResponse: (data) => data // Direct response
+                parseResponse: async (response) => await response.json()
+            },
+            {
+                name: 'cors-anywhere',
+                url: (targetUrl) => `https://cors-anywhere.herokuapp.com/${targetUrl}`,
+                parseResponse: async (response) => await response.json()
             }
         ];
         
@@ -384,7 +395,8 @@ async function loadCollection(username = null) {
                 const response = await fetch(proxy.url(targetUrl), {
                     headers: {
                         'Accept': 'application/json',
-                    }
+                    },
+                    timeout: 15000 // 15 second timeout
                 });
                 
                 if (!response.ok) {
@@ -392,8 +404,7 @@ async function loadCollection(username = null) {
                 }
                 
                 updateLoadingProgress('Processing collection data...');
-                const responseData = await response.json();
-                data = proxy.parseResponse(responseData);
+                data = await proxy.parseResponse(response);
                 
                 console.log(`Successfully fetched data via ${proxy.name}`);
                 break;
@@ -566,17 +577,27 @@ async function enrichWithComplexityData(games) {
                     {
                         name: 'corsproxy.io',
                         url: (targetUrl) => `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
-                        parseResponse: (data) => data
+                        parseResponse: async (response) => {
+                            const contentType = response.headers.get('content-type');
+                            if (contentType && contentType.includes('application/json')) {
+                                return await response.json();
+                            } else {
+                                return await response.text();
+                            }
+                        }
                     },
                     {
                         name: 'allorigins',
                         url: (targetUrl) => `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`,
-                        parseResponse: (data) => data.contents
+                        parseResponse: async (response) => {
+                            const data = await response.json();
+                            return data.contents;
+                        }
                     },
                     {
                         name: 'thingproxy',
                         url: (targetUrl) => `https://thingproxy.freeboard.io/fetch/${targetUrl}`,
-                        parseResponse: (data) => data
+                        parseResponse: async (response) => await response.text()
                     }
                 ];
                 
@@ -586,14 +607,16 @@ async function enrichWithComplexityData(games) {
                 for (const proxy of complexityProxies) {
                     try {
                         const response = await fetch(proxy.url(targetUrl), {
-                            headers: { 'Accept': 'application/json, text/xml, */*' }
+                            headers: { 'Accept': 'text/xml, application/xml, text/plain, */*' },
+                            signal: AbortSignal.timeout(10000) // 10 second timeout
                         });
                         
                         if (!response.ok) continue;
                         
-                        const responseData = await response.json();
-                        xmlData = proxy.parseResponse(responseData);
-                        break;
+                        xmlData = await proxy.parseResponse(response);
+                        if (xmlData && (typeof xmlData === 'string' || xmlData.length > 0)) {
+                            break;
+                        }
                         
                     } catch (error) {
                         console.warn(`Complexity ${proxy.name} proxy failed:`, error);
@@ -606,27 +629,38 @@ async function enrichWithComplexityData(games) {
                     return; // Return from this map function instead of continue
                 }
                 
-                const data = { contents: xmlData };
-                
-                if (data.contents) {
-                    const parser = new DOMParser();
-                    const xmlDoc = parser.parseFromString(data.contents, 'text/xml');
-                    const boardgames = xmlDoc.querySelectorAll('boardgame');
-                    
-                    boardgames.forEach(boardgame => {
-                        const gameId = parseInt(boardgame.getAttribute('objectid'));
-                        const game = batch.find(g => g.id === gameId);
+                // Parse XML data directly
+                if (xmlData) {
+                    try {
+                        const parser = new DOMParser();
+                        const xmlDoc = parser.parseFromString(xmlData, 'text/xml');
                         
-                        if (game) {
-                            const averageWeight = boardgame.querySelector('averageweight');
-                            const complexity = parseFloat(averageWeight?.textContent) || 0;
-                            game.complexity = complexity;
-                            
-                            // Cache the result
-                            if (!complexityCache.data) complexityCache.data = {};
-                            complexityCache.data[gameId] = complexity;
+                        // Check for parsing errors
+                        const parserError = xmlDoc.querySelector('parsererror');
+                        if (parserError) {
+                            console.warn(`XML parsing error for batch ${batchIndex + 1}:`, parserError.textContent);
+                            return;
                         }
-                    });
+                        
+                        const boardgames = xmlDoc.querySelectorAll('boardgame');
+                        
+                        boardgames.forEach(boardgame => {
+                            const gameId = parseInt(boardgame.getAttribute('objectid'));
+                            const game = batch.find(g => g.id === gameId);
+                            
+                            if (game) {
+                                const averageWeight = boardgame.querySelector('averageweight');
+                                const complexity = parseFloat(averageWeight?.textContent) || 0;
+                                game.complexity = complexity;
+                                
+                                // Cache the result
+                                if (!complexityCache.data) complexityCache.data = {};
+                                complexityCache.data[gameId] = complexity;
+                            }
+                        });
+                    } catch (parseError) {
+                        console.warn(`Failed to parse XML for batch ${batchIndex + 1}:`, parseError);
+                    }
                 }
             } catch (error) {
                 console.warn(`Failed to fetch complexity for batch ${batchIndex + 1}:`, error);
@@ -636,9 +670,9 @@ async function enrichWithComplexityData(games) {
         // Wait for this chunk to complete
         await Promise.all(batchPromises);
         
-        // Shorter delay between chunks
+        // Short delay between chunks to avoid overwhelming servers
         if (i + maxConcurrentBatches < batches.length) {
-            await new Promise(resolve => setTimeout(resolve, 800)); // Reduced from 1500ms
+            await new Promise(resolve => setTimeout(resolve, 1200)); // Increased for stability
         }
     }
     
