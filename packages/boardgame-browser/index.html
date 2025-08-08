@@ -39,23 +39,6 @@
                 <h2 class="text-3xl font-bold text-gray-800">Connect to BoardGameGeek</h2>
             </div>
             
-            <!-- Saved Collections -->
-            <div id="savedCollections" class="mb-8">
-                <div class="text-center mb-6">
-                    <h3 class="text-2xl font-bold text-gray-800 mb-2 flex items-center justify-center gap-3">
-                        <div class="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-                            💾
-                        </div>
-                        Saved Collections
-                    </h3>
-                    <p class="text-sm text-gray-600">Previously loaded BoardGameGeek collections</p>
-                </div>
-                <div class="max-w-4xl mx-auto">
-                    <div id="savedCollectionsList" class="flex flex-col gap-4">
-                        <!-- Saved collection buttons will appear here -->
-                    </div>
-                </div>
-            </div>
             
             <div class="max-w-2xl mx-auto">
                 <div class="flex flex-col gap-4">
@@ -148,49 +131,59 @@
                 </div>
             </div>
             
-            <!-- Filter Chips with Better Spacing -->
-            <div class="flex flex-wrap gap-6">
+            <!-- Filter Chips - Mobile Responsive -->
+            <div class="space-y-4">
                 <!-- Collection Status -->
-                <div class="flex items-center gap-3">
-                    <span class="text-sm font-bold text-gray-900 uppercase tracking-wide">Status:</span>
-                    <button class="filter-chip px-4 py-2 bg-white hover:bg-blue-50 border-2 border-gray-200 hover:border-blue-400 text-gray-700 hover:text-blue-700 rounded-lg text-sm font-medium transition-all duration-200" data-filter="status" data-value="owned">Owned</button>
-                    <button class="filter-chip px-4 py-2 bg-white hover:bg-purple-50 border-2 border-gray-200 hover:border-purple-400 text-gray-700 hover:text-purple-700 rounded-lg text-sm font-medium transition-all duration-200" data-filter="status" data-value="wishlist">Wishlist</button>
-                    <button class="filter-chip px-4 py-2 bg-white hover:bg-yellow-50 border-2 border-gray-200 hover:border-yellow-400 text-gray-700 hover:text-yellow-700 rounded-lg text-sm font-medium transition-all duration-200" data-filter="status" data-value="wantToPlay">Want to Play</button>
+                <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+                    <span class="text-sm font-bold text-gray-900 uppercase tracking-wide whitespace-nowrap">Status:</span>
+                    <div class="flex flex-wrap gap-2">
+                        <button class="filter-chip px-3 py-2 bg-white hover:bg-blue-50 border-2 border-gray-200 hover:border-blue-400 text-gray-700 hover:text-blue-700 rounded-lg text-sm font-medium transition-all duration-200" data-filter="status" data-value="owned">Owned</button>
+                        <button class="filter-chip px-3 py-2 bg-white hover:bg-purple-50 border-2 border-gray-200 hover:border-purple-400 text-gray-700 hover:text-purple-700 rounded-lg text-sm font-medium transition-all duration-200" data-filter="status" data-value="wishlist">Wishlist</button>
+                        <button class="filter-chip px-3 py-2 bg-white hover:bg-yellow-50 border-2 border-gray-200 hover:border-yellow-400 text-gray-700 hover:text-yellow-700 rounded-lg text-sm font-medium transition-all duration-200" data-filter="status" data-value="wantToPlay">Want to Play</button>
+                    </div>
                 </div>
                 
                 <!-- Player Count -->
-                <div class="flex items-center gap-3">
-                    <span class="text-sm font-bold text-gray-900 uppercase tracking-wide">Players:</span>
-                    <button class="filter-chip px-4 py-2 bg-white hover:bg-blue-50 border-2 border-gray-200 hover:border-blue-400 text-gray-700 hover:text-blue-700 rounded-lg text-sm font-medium transition-all duration-200" data-filter="players" data-value="1">1</button>
-                    <button class="filter-chip px-4 py-2 bg-white hover:bg-blue-50 border-2 border-gray-200 hover:border-blue-400 text-gray-700 hover:text-blue-700 rounded-lg text-sm font-medium transition-all duration-200" data-filter="players" data-value="2">2</button>
-                    <button class="filter-chip px-4 py-2 bg-white hover:bg-blue-50 border-2 border-gray-200 hover:border-blue-400 text-gray-700 hover:text-blue-700 rounded-lg text-sm font-medium transition-all duration-200" data-filter="players" data-value="3">3</button>
-                    <button class="filter-chip px-4 py-2 bg-white hover:bg-blue-50 border-2 border-gray-200 hover:border-blue-400 text-gray-700 hover:text-blue-700 rounded-lg text-sm font-medium transition-all duration-200" data-filter="players" data-value="4">4</button>
-                    <button class="filter-chip px-4 py-2 bg-white hover:bg-blue-50 border-2 border-gray-200 hover:border-blue-400 text-gray-700 hover:text-blue-700 rounded-lg text-sm font-medium transition-all duration-200" data-filter="players" data-value="5+">5+</button>
+                <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+                    <span class="text-sm font-bold text-gray-900 uppercase tracking-wide whitespace-nowrap">Players:</span>
+                    <div class="flex flex-wrap gap-2">
+                        <button class="filter-chip px-3 py-2 bg-white hover:bg-blue-50 border-2 border-gray-200 hover:border-blue-400 text-gray-700 hover:text-blue-700 rounded-lg text-sm font-medium transition-all duration-200" data-filter="players" data-value="1">1</button>
+                        <button class="filter-chip px-3 py-2 bg-white hover:bg-blue-50 border-2 border-gray-200 hover:border-blue-400 text-gray-700 hover:text-blue-700 rounded-lg text-sm font-medium transition-all duration-200" data-filter="players" data-value="2">2</button>
+                        <button class="filter-chip px-3 py-2 bg-white hover:bg-blue-50 border-2 border-gray-200 hover:border-blue-400 text-gray-700 hover:text-blue-700 rounded-lg text-sm font-medium transition-all duration-200" data-filter="players" data-value="3">3</button>
+                        <button class="filter-chip px-3 py-2 bg-white hover:bg-blue-50 border-2 border-gray-200 hover:border-blue-400 text-gray-700 hover:text-blue-700 rounded-lg text-sm font-medium transition-all duration-200" data-filter="players" data-value="4">4</button>
+                        <button class="filter-chip px-3 py-2 bg-white hover:bg-blue-50 border-2 border-gray-200 hover:border-blue-400 text-gray-700 hover:text-blue-700 rounded-lg text-sm font-medium transition-all duration-200" data-filter="players" data-value="5+">5+</button>
+                    </div>
                 </div>
                 
                 <!-- Playtime -->
-                <div class="flex items-center gap-3">
-                    <span class="text-sm font-bold text-gray-900 uppercase tracking-wide">Playtime:</span>
-                    <button class="filter-chip px-4 py-2 bg-white hover:bg-green-50 border-2 border-gray-200 hover:border-green-400 text-gray-700 hover:text-green-700 rounded-lg text-sm font-medium transition-all duration-200" data-filter="playtime" data-value="30">≤30 min</button>
-                    <button class="filter-chip px-4 py-2 bg-white hover:bg-green-50 border-2 border-gray-200 hover:border-green-400 text-gray-700 hover:text-green-700 rounded-lg text-sm font-medium transition-all duration-200" data-filter="playtime" data-value="60">≤60 min</button>
-                    <button class="filter-chip px-4 py-2 bg-white hover:bg-green-50 border-2 border-gray-200 hover:border-green-400 text-gray-700 hover:text-green-700 rounded-lg text-sm font-medium transition-all duration-200" data-filter="playtime" data-value="90">≤90 min</button>
-                    <button class="filter-chip px-4 py-2 bg-white hover:bg-green-50 border-2 border-gray-200 hover:border-green-400 text-gray-700 hover:text-green-700 rounded-lg text-sm font-medium transition-all duration-200" data-filter="playtime" data-value="120">≤2 hours</button>
+                <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+                    <span class="text-sm font-bold text-gray-900 uppercase tracking-wide whitespace-nowrap">Playtime:</span>
+                    <div class="flex flex-wrap gap-2">
+                        <button class="filter-chip px-3 py-2 bg-white hover:bg-green-50 border-2 border-gray-200 hover:border-green-400 text-gray-700 hover:text-green-700 rounded-lg text-sm font-medium transition-all duration-200" data-filter="playtime" data-value="30">≤30 min</button>
+                        <button class="filter-chip px-3 py-2 bg-white hover:bg-green-50 border-2 border-gray-200 hover:border-green-400 text-gray-700 hover:text-green-700 rounded-lg text-sm font-medium transition-all duration-200" data-filter="playtime" data-value="60">≤60 min</button>
+                        <button class="filter-chip px-3 py-2 bg-white hover:bg-green-50 border-2 border-gray-200 hover:border-green-400 text-gray-700 hover:text-green-700 rounded-lg text-sm font-medium transition-all duration-200" data-filter="playtime" data-value="90">≤90 min</button>
+                        <button class="filter-chip px-3 py-2 bg-white hover:bg-green-50 border-2 border-gray-200 hover:border-green-400 text-gray-700 hover:text-green-700 rounded-lg text-sm font-medium transition-all duration-200" data-filter="playtime" data-value="120">≤2 hours</button>
+                    </div>
                 </div>
                 
                 <!-- Complexity -->
-                <div class="flex items-center gap-3">
-                    <span class="text-sm font-bold text-gray-900 uppercase tracking-wide">Weight:</span>
-                    <button class="filter-chip px-4 py-2 bg-white hover:bg-green-50 border-2 border-gray-200 hover:border-green-400 text-gray-700 hover:text-green-700 rounded-lg text-sm font-medium transition-all duration-200" data-filter="complexity" data-value="light">Light</button>
-                    <button class="filter-chip px-4 py-2 bg-white hover:bg-yellow-50 border-2 border-gray-200 hover:border-yellow-400 text-gray-700 hover:text-yellow-700 rounded-lg text-sm font-medium transition-all duration-200" data-filter="complexity" data-value="medium">Medium</button>
-                    <button class="filter-chip px-4 py-2 bg-white hover:bg-red-50 border-2 border-gray-200 hover:border-red-400 text-gray-700 hover:text-red-700 rounded-lg text-sm font-medium transition-all duration-200" data-filter="complexity" data-value="heavy">Heavy</button>
+                <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+                    <span class="text-sm font-bold text-gray-900 uppercase tracking-wide whitespace-nowrap">Weight:</span>
+                    <div class="flex flex-wrap gap-2">
+                        <button class="filter-chip px-3 py-2 bg-white hover:bg-green-50 border-2 border-gray-200 hover:border-green-400 text-gray-700 hover:text-green-700 rounded-lg text-sm font-medium transition-all duration-200" data-filter="complexity" data-value="light">Light</button>
+                        <button class="filter-chip px-3 py-2 bg-white hover:bg-yellow-50 border-2 border-gray-200 hover:border-yellow-400 text-gray-700 hover:text-yellow-700 rounded-lg text-sm font-medium transition-all duration-200" data-filter="complexity" data-value="medium">Medium</button>
+                        <button class="filter-chip px-3 py-2 bg-white hover:bg-red-50 border-2 border-gray-200 hover:border-red-400 text-gray-700 hover:text-red-700 rounded-lg text-sm font-medium transition-all duration-200" data-filter="complexity" data-value="heavy">Heavy</button>
+                    </div>
                 </div>
                 
                 <!-- Rating -->
-                <div class="flex items-center gap-3">
-                    <span class="text-sm font-bold text-gray-900 uppercase tracking-wide">Rating:</span>
-                    <button class="filter-chip px-4 py-2 bg-white hover:bg-purple-50 border-2 border-gray-200 hover:border-purple-400 text-gray-700 hover:text-purple-700 rounded-lg text-sm font-medium transition-all duration-200" data-filter="rating" data-value="7">7.0+</button>
-                    <button class="filter-chip px-4 py-2 bg-white hover:bg-purple-50 border-2 border-gray-200 hover:border-purple-400 text-gray-700 hover:text-purple-700 rounded-lg text-sm font-medium transition-all duration-200" data-filter="rating" data-value="8">8.0+</button>
-                    <button class="filter-chip px-4 py-2 bg-white hover:bg-purple-50 border-2 border-gray-200 hover:border-purple-400 text-gray-700 hover:text-purple-700 rounded-lg text-sm font-medium transition-all duration-200" data-filter="rating" data-value="9">9.0+</button>
+                <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+                    <span class="text-sm font-bold text-gray-900 uppercase tracking-wide whitespace-nowrap">Rating:</span>
+                    <div class="flex flex-wrap gap-2">
+                        <button class="filter-chip px-3 py-2 bg-white hover:bg-purple-50 border-2 border-gray-200 hover:border-purple-400 text-gray-700 hover:text-purple-700 rounded-lg text-sm font-medium transition-all duration-200" data-filter="rating" data-value="7">7.0+</button>
+                        <button class="filter-chip px-3 py-2 bg-white hover:bg-purple-50 border-2 border-gray-200 hover:border-purple-400 text-gray-700 hover:text-purple-700 rounded-lg text-sm font-medium transition-all duration-200" data-filter="rating" data-value="8">8.0+</button>
+                        <button class="filter-chip px-3 py-2 bg-white hover:bg-purple-50 border-2 border-gray-200 hover:border-purple-400 text-gray-700 hover:text-purple-700 rounded-lg text-sm font-medium transition-all duration-200" data-filter="rating" data-value="9">9.0+</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -214,6 +207,30 @@
             <button onclick="resetApp()" class="mt-4 px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-semibold transition-all duration-200">
                 Try Again
             </button>
+        </div>
+    </div>
+
+    <!-- Cache Confirmation Modal -->
+    <div id="cacheModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/20 p-8 max-w-md w-full animate-scale-in">
+            <div class="text-center">
+                <div class="w-16 h-16 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2H7a2 2 0 01-2-2V8z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 11l3 3 7-7"></path>
+                    </svg>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-800 mb-2">Collection Found!</h3>
+                <p id="cacheModalText" class="text-gray-600 mb-6"></p>
+                <div class="flex gap-3 justify-center">
+                    <button id="useCacheBtn" class="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white px-6 py-3 rounded-xl font-bold transition-all duration-200 hover:scale-105">
+                        Use Cached
+                    </button>
+                    <button id="fetchFreshBtn" class="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-6 py-3 rounded-xl font-bold transition-all duration-200 hover:scale-105">
+                        Fetch Fresh
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 

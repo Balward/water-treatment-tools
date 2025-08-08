@@ -57,7 +57,6 @@ async function saveCollectionToCache(username, games) {
             
             const result = await response.json();
             console.log('Collection saved to server:', result);
-            updateSavedCollectionsList();
             return;
         } catch (error) {
             console.warn('Failed to save to server, falling back to localStorage:', error);
@@ -76,7 +75,6 @@ async function saveCollectionToCache(username, games) {
             const parsed = JSON.parse(saved);
             console.log(`Verification: saved collection has ${parsed.games?.length || 0} games`);
         }
-        updateSavedCollectionsList();
     } catch (saveError) {
         console.error('Failed to save to localStorage:', saveError);
     }
@@ -170,76 +168,48 @@ async function deleteCachedCollection(username) {
         // Fallback to localStorage
         localStorage.removeItem(`bgg_collection_${username.toLowerCase()}`);
     }
-    
-    updateSavedCollectionsList();
 }
 
-async function updateSavedCollectionsList() {
-    const savedCollectionsList = document.getElementById('savedCollectionsList');
-    const savedCollectionsSection = document.getElementById('savedCollections');
+function setupCacheModal() {
+    const modal = document.getElementById('cacheModal');
+    const useCacheBtn = document.getElementById('useCacheBtn');
+    const fetchFreshBtn = document.getElementById('fetchFreshBtn');
     
-    try {
-        const collections = await getSavedCollections();
-        
-        if (collections.length === 0) {
-            savedCollectionsSection.style.display = 'none';
-            return;
+    let resolveModal = null;
+    
+    useCacheBtn.addEventListener('click', () => {
+        modal.classList.add('hidden');
+        if (resolveModal) resolveModal(true);
+    });
+    
+    fetchFreshBtn.addEventListener('click', () => {
+        modal.classList.add('hidden');
+        if (resolveModal) resolveModal(false);
+    });
+    
+    // Close on backdrop click
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.classList.add('hidden');
+            if (resolveModal) resolveModal(false);
         }
-        
-        savedCollectionsSection.style.display = 'block';
-        
-        savedCollectionsList.innerHTML = collections.map(collection => {
-        const ageHours = Math.floor((Date.now() - collection.timestamp) / (1000 * 60 * 60));
-        const ageText = ageHours < 1 ? 'Just now' : 
-                       ageHours < 24 ? `${ageHours}h ago` : 
-                       `${Math.floor(ageHours / 24)}d ago`;
-        
-        return `
-            <div class="relative flex items-center gap-4 bg-gray-800 rounded-2xl p-5 border border-purple-500/30 shadow-lg hover:shadow-purple-500/20 hover:border-purple-400/50 transition-all duration-300 group">
-                <button onclick="loadCollection('${collection.username}')" 
-                        class="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white px-8 py-4 rounded-xl font-bold text-base transition-all duration-200 hover:scale-105 hover:shadow-lg flex items-center gap-3">
-                    🎲 ${collection.username}
-                </button>
-                <div class="flex-1 text-sm">
-                    <div class="font-semibold text-white">${collection.gameCount || 0} games</div>
-                    <div class="text-xs text-gray-400">Last refreshed: ${ageText}</div>
-                </div>
-                <div class="absolute top-3 right-3 flex gap-2 opacity-60 group-hover:opacity-100 transition-opacity duration-200">
-                    <button onclick="refreshCollection('${collection.username}')" 
-                            class="floating-action-btn text-blue-400 hover:text-blue-300 hover:scale-125 transition-all duration-200" 
-                            title="Refresh collection">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                        </svg>
-                    </button>
-                    <button onclick="deleteSavedCollection('${collection.username}')" 
-                            class="floating-action-btn text-red-400 hover:text-red-300 hover:scale-125 transition-all duration-200"
-                            title="Delete saved collection">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        `;
-    }).join('');
-    } catch (error) {
-        console.error('Error updating saved collections list:', error);
-        savedCollectionsList.innerHTML = '<p class="text-red-500 text-sm">Error loading saved collections</p>';
-    }
-}
-
-function refreshCollection(username) {
-    // Delete cache and reload fresh
-    deleteCachedCollection(username);
-    document.getElementById('bggUsername').value = username;
-    loadCollection(username);
-}
-
-function deleteSavedCollection(username) {
-    if (confirm(`Delete saved collection for ${username}?`)) {
-        deleteCachedCollection(username);
-    }
+    });
+    
+    // Export function to show modal
+    window.showCacheModal = function(username, cacheAge, gameCount) {
+        return new Promise((resolve) => {
+            resolveModal = resolve;
+            const hours = Math.floor(cacheAge / (1000 * 60 * 60));
+            const ageText = hours < 1 ? 'just now' : 
+                           hours < 24 ? `${hours} hours ago` : 
+                           `${Math.floor(hours / 24)} days ago`;
+            
+            document.getElementById('cacheModalText').textContent = 
+                `Found cached collection for ${username} with ${gameCount} games (updated ${ageText}). Load from cache or fetch fresh data with latest weights?`;
+            
+            modal.classList.remove('hidden');
+        });
+    };
 }
 
 // Initialize the application
@@ -248,7 +218,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     await checkApiAvailability();
     
     setupEventListeners();
-    updateSavedCollectionsList();
+    setupCacheModal();
     
     // Handle Enter key on username input
     document.getElementById('bggUsername').addEventListener('keypress', function(e) {
@@ -333,9 +303,9 @@ async function loadCollection(username = null) {
     const cached = await loadCollectionFromCache(username);
     if (cached && cached.games) {
         const cacheAge = Date.now() - cached.timestamp;
-        const hours = Math.floor(cacheAge / (1000 * 60 * 60));
         
-        if (confirm(`Found cached collection for ${username} (${hours} hours old, ${cached.games.length} games). Load from cache or fetch fresh data?\n\nClick OK for cache, Cancel for fresh data.`)) {
+        const useCache = await showCacheModal(username, cacheAge, cached.games.length);
+        if (useCache) {
             allGames = cached.games;
             showCollection();
             displayStats();
@@ -430,19 +400,9 @@ async function loadCollection(username = null) {
         updateLoadingProgress('Processing game information...');
         allGames = await processGameData(data);
         
-        // Ask user if they want complexity data (speeds up loading significantly)
-        const skipComplexity = !confirm('Load complexity/weight data? This will make loading slower but provides better filtering.\n\nClick OK to load complexity data (slower)\nClick Cancel to skip (faster)');
-        
-        if (!skipComplexity) {
-            updateLoadingProgress('Fetching complexity ratings...');
-            await enrichWithComplexityData(allGames);
-        } else {
-            updateLoadingProgress('Skipping complexity data for faster loading...');
-            // Set default complexity to 0 for all games
-            allGames.forEach(game => game.complexity = 0);
-            // Show button to load complexity data later
-            document.getElementById('loadComplexityBtn').classList.remove('hidden');
-        }
+        // Always load complexity/weight data when fetching fresh
+        updateLoadingProgress('Fetching complexity ratings...');
+        await enrichWithComplexityData(allGames);
         
         // Save to cache
         console.log(`Saving collection for ${username} with ${allGames.length} games`);
