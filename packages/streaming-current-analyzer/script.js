@@ -14,6 +14,29 @@ document.addEventListener('DOMContentLoaded', function() {
     showNotification('Welcome! Click "Load Data" to import your streaming current data and access the analysis tools.', 'success');
 });
 
+// Utility function for proper decimal formatting based on units
+function formatValue(value, unit) {
+    if (typeof value !== 'number' || isNaN(value)) return value;
+    
+    const unitLower = (unit || '').toLowerCase();
+    
+    // 3 decimals for turbidity (NTU) and flow (MGD)
+    if (unitLower.includes('ntu') || unitLower.includes('mgd')) {
+        return value.toFixed(3);
+    }
+    
+    // Default to appropriate decimal places for other units
+    if (Math.abs(value) < 0.01) {
+        return value.toFixed(4);
+    } else if (Math.abs(value) < 1) {
+        return value.toFixed(3);
+    } else if (Math.abs(value) < 100) {
+        return value.toFixed(2);
+    } else {
+        return value.toFixed(1);
+    }
+}
+
 // Tab switching functionality
 function switchAnalysisTab(tabName) {
     // Remove active class from all tabs and content
@@ -481,17 +504,18 @@ function displayDistributionStats(values, variable) {
     };
     
     const unit = units[variable] && units[variable].trim() ? ` ${units[variable]}` : '';
+    const unitStr = units[variable] && units[variable].trim() ? units[variable] : '';
     
     document.getElementById('distributionStats').innerHTML = `
         <div style="font-size: 0.9rem; line-height: 1.6;">
             <div><strong>Count:</strong> ${stats.count}</div>
-            <div><strong>Mean:</strong> ${stats.mean.toFixed(3)}${unit}</div>
-            <div><strong>Median:</strong> ${stats.median.toFixed(3)}${unit}</div>
-            <div><strong>Std Dev:</strong> ${stats.stdDev.toFixed(3)}${unit}</div>
-            <div><strong>Min:</strong> ${stats.min.toFixed(3)}${unit}</div>
-            <div><strong>Max:</strong> ${stats.max.toFixed(3)}${unit}</div>
-            <div><strong>Q1:</strong> ${stats.q1.toFixed(3)}${unit}</div>
-            <div><strong>Q3:</strong> ${stats.q3.toFixed(3)}${unit}</div>
+            <div><strong>Mean:</strong> ${formatValue(stats.mean, unitStr)}${unit}</div>
+            <div><strong>Median:</strong> ${formatValue(stats.median, unitStr)}${unit}</div>
+            <div><strong>Std Dev:</strong> ${formatValue(stats.stdDev, unitStr)}${unit}</div>
+            <div><strong>Min:</strong> ${formatValue(stats.min, unitStr)}${unit}</div>
+            <div><strong>Max:</strong> ${formatValue(stats.max, unitStr)}${unit}</div>
+            <div><strong>Q1:</strong> ${formatValue(stats.q1, unitStr)}${unit}</div>
+            <div><strong>Q3:</strong> ${formatValue(stats.q3, unitStr)}${unit}</div>
             <div><strong>CV:</strong> ${stats.cv.toFixed(1)}%</div>
         </div>
     `;
@@ -654,7 +678,16 @@ function getScatterChartOptions(xAxis, yAxis) {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-            legend: { position: 'top' }
+            legend: { position: 'top' },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        const xValue = formatValue(context.parsed.x, units[xAxis]);
+                        const yValue = formatValue(context.parsed.y, units[yAxis]);
+                        return `${context.dataset.label}: (${xValue}, ${yValue})`;
+                    }
+                }
+            }
         },
         scales: {
             x: {
@@ -677,7 +710,20 @@ function getTimeSeriesChartOptions(timeVar) {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-            legend: { position: 'top' }
+            legend: { position: 'top' },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        // Get the variable name from the dataset label
+                        const datasetLabel = context.dataset.label;
+                        const variableName = datasetLabel.split(' (')[0]; // Extract variable name before unit
+                        const unit = Object.keys(units).find(key => datasetLabel.includes(key)) ? units[Object.keys(units).find(key => datasetLabel.includes(key))] : '';
+                        
+                        const value = formatValue(context.parsed.y, unit);
+                        return `${datasetLabel}: ${value}`;
+                    }
+                }
+            }
         },
         scales: {
             x: {
