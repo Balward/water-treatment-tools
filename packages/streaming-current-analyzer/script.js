@@ -454,8 +454,8 @@ function updateOptimizationInsights() {
     displayCorrelationMatrix(correlations, targetVar);
     
     // Create optimization chart with strongest correlation
-    const strongestCorr = Object.entries(correlations).reduce((max, [var, corr]) => 
-        Math.abs(corr) > Math.abs(max.corr) ? { var, corr } : max, 
+    const strongestCorr = Object.entries(correlations).reduce((max, [variable, corr]) => 
+        Math.abs(corr) > Math.abs(max.corr) ? { var: variable, corr } : max, 
         { var: null, corr: 0 }
     );
     
@@ -687,3 +687,14 @@ function showNotification(message, type = 'success') {
         }
     }, 5000);
 }
+
+// Make functions globally available for HTML onclick handlers
+window.loadStreamingCurrentData = loadStreamingCurrentData;
+window.switchAnalysisTab = switchAnalysisTab;
+window.updateCorrelationChart = updateCorrelationChart;
+window.updateTimeSeriesChart = updateTimeSeriesChart;
+window.updateDistributionChart = updateDistributionChart;
+window.updateOptimizationInsights = updateOptimizationInsights;
+window.generatePdfReport = generatePdfReport;
+window.openHelp = openHelp;
+window.closeHelp = closeHelp;
