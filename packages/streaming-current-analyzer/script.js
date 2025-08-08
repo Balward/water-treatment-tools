@@ -143,14 +143,37 @@ function populateTimeSeriesVariables() {
     container.innerHTML = '';
     
     variables.forEach(variable => {
-        const label = document.createElement('label');
+        const button = document.createElement('div');
+        button.className = 'variable-button';
+        button.setAttribute('data-variable', variable);
+        
         const unitText = units[variable] && units[variable].trim() ? ` (${units[variable]})` : '';
-        label.innerHTML = `
-            <input type="checkbox" value="${variable}">
-            ${variable}${unitText}
-        `;
-        container.appendChild(label);
+        button.textContent = `${variable}${unitText}`;
+        
+        button.addEventListener('click', function() {
+            toggleTimeSeriesVariable(variable);
+        });
+        
+        container.appendChild(button);
     });
+}
+
+function toggleTimeSeriesVariable(variable) {
+    const button = document.querySelector(`[data-variable="${variable}"]`);
+    if (button) {
+        button.classList.toggle('selected');
+        
+        // Auto-update chart if there are selected variables
+        const selectedCount = getSelectedTimeSeriesVariables().length;
+        if (selectedCount > 0) {
+            updateTimeSeriesChart();
+        }
+    }
+}
+
+function getSelectedTimeSeriesVariables() {
+    const selectedButtons = document.querySelectorAll('#timeSeriesVariables .variable-button.selected');
+    return Array.from(selectedButtons).map(button => button.getAttribute('data-variable'));
 }
 
 function displayDataInfo() {
@@ -198,7 +221,9 @@ function setDefaultSelections() {
     // Find Streaming Current and Alum Dose variables
     const streamingCurrentVar = variables.find(v => v.toLowerCase().includes('streaming current') || v.toLowerCase().includes('streaming_current'));
     const alumDoseVar = variables.find(v => v.toLowerCase().includes('alum') && v.toLowerCase().includes('dose'));
-    const timeVar = variables.find(v => v.toLowerCase().includes('time') || v.toLowerCase().includes('sec'));
+    // Prioritize "Date" first, then time/sec variables
+    const timeVar = variables.find(v => v.toLowerCase().includes('date')) || 
+                   variables.find(v => v.toLowerCase().includes('time') || v.toLowerCase().includes('sec'));
     
     // Set defaults for correlation analysis
     if (streamingCurrentVar && alumDoseVar) {
@@ -211,13 +236,17 @@ function setDefaultSelections() {
     if (timeVar) {
         document.getElementById('timeVar').value = timeVar;
         // Auto-select Streaming Current and Alum Dose for time series
-        const checkboxes = document.querySelectorAll('#timeSeriesVariables input[type="checkbox"]');
-        checkboxes.forEach(cb => {
-            if (cb.value === streamingCurrentVar || cb.value === alumDoseVar) {
-                cb.checked = true;
-            }
-        });
-        updateTimeSeriesChart();
+        setTimeout(() => {
+            [streamingCurrentVar, alumDoseVar].forEach(variable => {
+                if (variable) {
+                    const button = document.querySelector(`[data-variable="${variable}"]`);
+                    if (button) {
+                        button.classList.add('selected');
+                    }
+                }
+            });
+            updateTimeSeriesChart();
+        }, 100); // Small delay to ensure buttons are created
     }
     
     // Set defaults for distribution
@@ -282,7 +311,7 @@ function updateCorrelationChart() {
 // Time Series Analysis
 function updateTimeSeriesChart() {
     const timeVar = document.getElementById('timeVar').value;
-    const checkedVars = Array.from(document.querySelectorAll('#timeSeriesVariables input:checked')).map(cb => cb.value);
+    const checkedVars = getSelectedTimeSeriesVariables();
     
     if (!timeVar || checkedVars.length === 0) {
         showNotification('Please select a time variable and at least one variable to plot.', 'warning');
@@ -290,20 +319,63 @@ function updateTimeSeriesChart() {
     }
     
     const colors = generateColors(checkedVars.length);
-    const datasets = checkedVars.map((variable, index) => ({
-        label: `${variable}${units[variable] && units[variable].trim() ? ` (${units[variable]})` : ''}`,
-        data: streamingData.map(point => ({
-            x: point[timeVar],
-            y: point[variable]
-        })).filter(point => typeof point.x === 'number' && typeof point.y === 'number'),
-        borderColor: colors[index],
-        backgroundColor: colors[index] + '20',
-        borderWidth: 2,
-        fill: false,
-        tension: 0.1,
-        pointRadius: 1,
-        pointHoverRadius: 4
-    }));
+    const datasets = checkedVars.map((variable, index) => {
+        const dataPoints = streamingData.map(point => {
+            let xValue = point[timeVar];
+            let yValue = point[variable];
+            
+            // Handle Date data - convert to Date object if it's a date string
+            if (timeVar.toLowerCase().includes('date') && typeof xValue === 'string') {
+                const parsedDate = new Date(xValue);
+                if (!isNaN(parsedDate.getTime())) {
+                    xValue = parsedDate;
+                } else {
+                    // Try parsing as MM/DD/YYYY or similar formats
+                    const dateFormats = [
+                        // Try MM/DD/YYYY format
+                        () => {
+                            const parts = xValue.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+                            if (parts) return new Date(parts[3], parts[1] - 1, parts[2]);
+                            return null;
+                        },
+                        // Try YYYY-MM-DD format
+                        () => {
+                            const parts = xValue.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+                            if (parts) return new Date(parts[1], parts[2] - 1, parts[3]);
+                            return null;
+                        }
+                    ];
+                    
+                    for (const formatParser of dateFormats) {
+                        const parsed = formatParser();
+                        if (parsed && !isNaN(parsed.getTime())) {
+                            xValue = parsed;
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            return { x: xValue, y: yValue };
+        }).filter(point => {
+            const validX = (point.x instanceof Date && !isNaN(point.x.getTime())) || 
+                          (typeof point.x === 'number' && !isNaN(point.x));
+            const validY = typeof point.y === 'number' && !isNaN(point.y);
+            return validX && validY;
+        });
+        
+        return {
+            label: `${variable}${units[variable] && units[variable].trim() ? ` (${units[variable]})` : ''}`,
+            data: dataPoints,
+            borderColor: colors[index],
+            backgroundColor: colors[index] + '20',
+            borderWidth: 2,
+            fill: false,
+            tension: 0.1,
+            pointRadius: 1,
+            pointHoverRadius: 4
+        };
+    });
     
     const ctx = document.getElementById('timeSeriesChart').getContext('2d');
     
@@ -598,8 +670,9 @@ function getScatterChartOptions(xAxis, yAxis) {
 
 function getTimeSeriesChartOptions(timeVar) {
     const timeUnit = units[timeVar] && units[timeVar].trim() ? ` (${units[timeVar]})` : '';
+    const isDateVariable = timeVar.toLowerCase().includes('date');
     
-    return {
+    const options = {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
@@ -620,6 +693,21 @@ function getTimeSeriesChartOptions(timeVar) {
             intersect: false
         }
     };
+    
+    // Configure time scale for date variables
+    if (isDateVariable) {
+        options.scales.x.type = 'time';
+        options.scales.x.time = {
+            displayFormats: {
+                hour: 'MMM DD, HH:mm',
+                day: 'MMM DD',
+                week: 'MMM DD',
+                month: 'MMM YYYY'
+            }
+        };
+    }
+    
+    return options;
 }
 
 function getHistogramChartOptions(variable) {
@@ -698,3 +786,4 @@ window.updateOptimizationInsights = updateOptimizationInsights;
 window.generatePdfReport = generatePdfReport;
 window.openHelp = openHelp;
 window.closeHelp = closeHelp;
+window.toggleTimeSeriesVariable = toggleTimeSeriesVariable;
