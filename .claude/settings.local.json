@@ -32,7 +32,11 @@
       "Bash(npm install:*)",
       "Bash(npx tailwindcss:*)",
       "Bash(npm run build-css-prod:*)",
-      "WebFetch(domain:water.gibbhub.io)"
+      "WebFetch(domain:water.gibbhub.io)",
+      "Bash(git init:*)",
+      "Bash(xcopy:*)",
+      "Bash(robocopy:*)",
+      "Bash(cp:*)"
     ],
     "deny": []
   }
