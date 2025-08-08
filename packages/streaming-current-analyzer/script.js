@@ -663,7 +663,7 @@ function updateDistributionChart() {
     for (let i = 0; i < bins; i++) {
         const binStart = min + i * binWidth;
         const binEnd = min + (i + 1) * binWidth;
-        binLabels.push(`${binStart.toFixed(2)} - ${binEnd.toFixed(2)}`);
+        binLabels.push(`${formatValue(binStart, units[variable])} - ${formatValue(binEnd, units[variable])}`);
     }
     
     values.forEach(value => {
