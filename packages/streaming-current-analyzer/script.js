@@ -77,15 +77,16 @@ async function loadStreamingCurrentData() {
                     if (value !== null && value !== undefined && value !== '') {
                         if (typeof value === 'number') {
                             dataPoint[cleanVar] = value;
-                        } else if (typeof value === 'string') {
+                        } else if (typeof value === 'string' && value.trim() !== '') {
                             // Try to parse as number, but keep as string if it fails (for dates, text, etc.)
-                            const numValue = parseFloat(value);
+                            const numValue = parseFloat(value.trim());
                             dataPoint[cleanVar] = !isNaN(numValue) ? numValue : value.toString();
                         } else {
                             dataPoint[cleanVar] = value;
                         }
                     } else {
-                        dataPoint[cleanVar] = 0; // Default for missing numeric values
+                        // Leave blank/missing values as undefined (don't default to 0)
+                        dataPoint[cleanVar] = undefined;
                     }
                 }
             });
@@ -110,7 +111,8 @@ function populateAllSelectors() {
     // Get all select elements
     const selectors = [
         'corrXAxis', 'corrYAxis', 'corrColorBy',
-        'timeVar', 'distVariable', 'targetVariable'
+        'timeVar', 'timeVar1', 'timeVar2', 'timeVar3', 'timeVar4',
+        'distVariable', 'targetVariable'
     ];
     
     selectors.forEach(selectorId => {
@@ -133,47 +135,17 @@ function populateAllSelectors() {
             select.appendChild(option);
         });
     });
-    
-    // Populate time series checkboxes
-    populateTimeSeriesVariables();
-}
-
-function populateTimeSeriesVariables() {
-    const container = document.getElementById('timeSeriesVariables');
-    container.innerHTML = '';
-    
-    variables.forEach(variable => {
-        const button = document.createElement('div');
-        button.className = 'variable-button';
-        button.setAttribute('data-variable', variable);
-        
-        const unitText = units[variable] && units[variable].trim() ? ` (${units[variable]})` : '';
-        button.textContent = `${variable}${unitText}`;
-        
-        button.addEventListener('click', function() {
-            toggleTimeSeriesVariable(variable);
-        });
-        
-        container.appendChild(button);
-    });
-}
-
-function toggleTimeSeriesVariable(variable) {
-    const button = document.querySelector(`[data-variable="${variable}"]`);
-    if (button) {
-        button.classList.toggle('selected');
-        
-        // Auto-update chart if there are selected variables
-        const selectedCount = getSelectedTimeSeriesVariables().length;
-        if (selectedCount > 0) {
-            updateTimeSeriesChart();
-        }
-    }
 }
 
 function getSelectedTimeSeriesVariables() {
-    const selectedButtons = document.querySelectorAll('#timeSeriesVariables .variable-button.selected');
-    return Array.from(selectedButtons).map(button => button.getAttribute('data-variable'));
+    const variables = [];
+    for (let i = 1; i <= 4; i++) {
+        const select = document.getElementById(`timeVar${i}`);
+        if (select && select.value && select.value.trim() !== '') {
+            variables.push(select.value);
+        }
+    }
+    return variables;
 }
 
 function displayDataInfo() {
@@ -236,17 +208,13 @@ function setDefaultSelections() {
     if (timeVar) {
         document.getElementById('timeVar').value = timeVar;
         // Auto-select Streaming Current and Alum Dose for time series
-        setTimeout(() => {
-            [streamingCurrentVar, alumDoseVar].forEach(variable => {
-                if (variable) {
-                    const button = document.querySelector(`[data-variable="${variable}"]`);
-                    if (button) {
-                        button.classList.add('selected');
-                    }
-                }
-            });
-            updateTimeSeriesChart();
-        }, 100); // Small delay to ensure buttons are created
+        if (streamingCurrentVar) {
+            document.getElementById('timeVar1').value = streamingCurrentVar;
+        }
+        if (alumDoseVar) {
+            document.getElementById('timeVar2').value = alumDoseVar;
+        }
+        updateTimeSeriesChart();
     }
     
     // Set defaults for distribution
@@ -310,89 +278,122 @@ function updateCorrelationChart() {
 
 // Time Series Analysis
 function updateTimeSeriesChart() {
-    const timeVar = document.getElementById('timeVar').value;
-    const checkedVars = getSelectedTimeSeriesVariables();
-    
-    if (!timeVar || checkedVars.length === 0) {
-        showNotification('Please select a time variable and at least one variable to plot.', 'warning');
-        return;
-    }
-    
-    const colors = generateColors(checkedVars.length);
-    const datasets = checkedVars.map((variable, index) => {
-        const dataPoints = streamingData.map(point => {
-            let xValue = point[timeVar];
-            let yValue = point[variable];
-            
-            // Handle Date data - convert to Date object if it's a date string
-            if (timeVar.toLowerCase().includes('date') && typeof xValue === 'string') {
-                const parsedDate = new Date(xValue);
-                if (!isNaN(parsedDate.getTime())) {
-                    xValue = parsedDate;
-                } else {
-                    // Try parsing as MM/DD/YYYY or similar formats
-                    const dateFormats = [
-                        // Try MM/DD/YYYY format
-                        () => {
-                            const parts = xValue.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
-                            if (parts) return new Date(parts[3], parts[1] - 1, parts[2]);
-                            return null;
-                        },
-                        // Try YYYY-MM-DD format
-                        () => {
-                            const parts = xValue.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
-                            if (parts) return new Date(parts[1], parts[2] - 1, parts[3]);
-                            return null;
-                        }
-                    ];
-                    
-                    for (const formatParser of dateFormats) {
-                        const parsed = formatParser();
-                        if (parsed && !isNaN(parsed.getTime())) {
-                            xValue = parsed;
-                            break;
+    try {
+        const timeVar = document.getElementById('timeVar').value;
+        const selectedVars = getSelectedTimeSeriesVariables();
+        
+        if (!timeVar) {
+            showNotification('Please select a time variable.', 'warning');
+            return;
+        }
+        
+        if (selectedVars.length === 0) {
+            showNotification('Please select at least one variable to plot.', 'warning');
+            return;
+        }
+        
+        console.log('Time variable:', timeVar);
+        console.log('Selected variables:', selectedVars);
+        
+        const colors = generateColors(selectedVars.length);
+        const datasets = [];
+        
+        selectedVars.forEach((variable, index) => {
+            const dataPoints = streamingData.map(point => {
+                let xValue = point[timeVar];
+                let yValue = point[variable];
+                
+                // Skip if either value is undefined/null
+                if (xValue === undefined || xValue === null || yValue === undefined || yValue === null) {
+                    return null;
+                }
+                
+                // Handle Date data - convert to Date object if it's a date string
+                if (timeVar.toLowerCase().includes('date') && typeof xValue === 'string' && xValue.trim() !== '') {
+                    const parsedDate = new Date(xValue);
+                    if (!isNaN(parsedDate.getTime())) {
+                        xValue = parsedDate;
+                    } else {
+                        // Try parsing as MM/DD/YYYY or similar formats
+                        const dateFormats = [
+                            // Try MM/DD/YYYY format
+                            () => {
+                                const parts = xValue.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+                                if (parts) return new Date(parts[3], parts[1] - 1, parts[2]);
+                                return null;
+                            },
+                            // Try YYYY-MM-DD format
+                            () => {
+                                const parts = xValue.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+                                if (parts) return new Date(parts[1], parts[2] - 1, parts[3]);
+                                return null;
+                            }
+                        ];
+                        
+                        for (const formatParser of dateFormats) {
+                            const parsed = formatParser();
+                            if (parsed && !isNaN(parsed.getTime())) {
+                                xValue = parsed;
+                                break;
+                            }
                         }
                     }
                 }
-            }
+                
+                return { x: xValue, y: yValue };
+            }).filter(point => {
+                if (!point) return false;
+                
+                const validX = (point.x instanceof Date && !isNaN(point.x.getTime())) || 
+                              (typeof point.x === 'number' && !isNaN(point.x) && isFinite(point.x));
+                const validY = typeof point.y === 'number' && !isNaN(point.y) && isFinite(point.y);
+                
+                return validX && validY;
+            });
             
-            return { x: xValue, y: yValue };
-        }).filter(point => {
-            const validX = (point.x instanceof Date && !isNaN(point.x.getTime())) || 
-                          (typeof point.x === 'number' && !isNaN(point.x));
-            const validY = typeof point.y === 'number' && !isNaN(point.y);
-            return validX && validY;
+            console.log(`Variable ${variable} has ${dataPoints.length} valid data points`);
+            
+            if (dataPoints.length > 0) {
+                datasets.push({
+                    label: `${variable}${units[variable] && units[variable].trim() ? ` (${units[variable]})` : ''}`,
+                    data: dataPoints,
+                    borderColor: colors[index],
+                    backgroundColor: colors[index] + '20',
+                    borderWidth: 2,
+                    fill: false,
+                    tension: 0.1,
+                    pointRadius: 1,
+                    pointHoverRadius: 4
+                });
+            }
         });
         
-        return {
-            label: `${variable}${units[variable] && units[variable].trim() ? ` (${units[variable]})` : ''}`,
-            data: dataPoints,
-            borderColor: colors[index],
-            backgroundColor: colors[index] + '20',
-            borderWidth: 2,
-            fill: false,
-            tension: 0.1,
-            pointRadius: 1,
-            pointHoverRadius: 4
-        };
-    });
-    
-    const ctx = document.getElementById('timeSeriesChart').getContext('2d');
-    
-    if (timeSeriesChart) {
-        timeSeriesChart.destroy();
+        if (datasets.length === 0) {
+            showNotification('No valid data found for the selected variables.', 'error');
+            return;
+        }
+        
+        const ctx = document.getElementById('timeSeriesChart').getContext('2d');
+        
+        if (timeSeriesChart) {
+            timeSeriesChart.destroy();
+        }
+        
+        timeSeriesChart = new Chart(ctx, {
+            type: 'line',
+            data: { datasets: datasets },
+            options: getTimeSeriesChartOptions(timeVar)
+        });
+        
+        const timeUnit = units[timeVar] && units[timeVar].trim() ? ` (${units[timeVar]})` : '';
+        document.getElementById('timeSeriesTitle').textContent = `Variables over ${timeVar}${timeUnit}`;
+        
+        showNotification(`Time series chart updated with ${selectedVars.length} variables!`, 'success');
+        
+    } catch (error) {
+        console.error('Error updating time series chart:', error);
+        showNotification('Error updating time series chart: ' + error.message, 'error');
     }
-    
-    timeSeriesChart = new Chart(ctx, {
-        type: 'line',
-        data: { datasets: datasets },
-        options: getTimeSeriesChartOptions(timeVar)
-    });
-    
-    const timeUnit = units[timeVar] && units[timeVar].trim() ? ` (${units[timeVar]})` : '';
-    document.getElementById('timeSeriesTitle').textContent = `Variables over ${timeVar}${timeUnit}`;
-    
-    showNotification(`Time series chart updated with ${checkedVars.length} variables!`, 'success');
 }
 
 // Distribution Analysis
@@ -786,4 +787,3 @@ window.updateOptimizationInsights = updateOptimizationInsights;
 window.generatePdfReport = generatePdfReport;
 window.openHelp = openHelp;
 window.closeHelp = closeHelp;
-window.toggleTimeSeriesVariable = toggleTimeSeriesVariable;

@@ -162,8 +162,33 @@
               </div>
               
               <div class="variable-selection">
-                <label>Variables to Plot:</label>
-                <div id="timeSeriesVariables" class="variable-buttons-grid"></div>
+                <label>Variables to Plot (select up to 4):</label>
+                <div class="control-grid">
+                  <div class="control-group">
+                    <label for="timeVar1">Variable 1:</label>
+                    <select id="timeVar1">
+                      <option value="">Select Variable...</option>
+                    </select>
+                  </div>
+                  <div class="control-group">
+                    <label for="timeVar2">Variable 2:</label>
+                    <select id="timeVar2">
+                      <option value="">Select Variable...</option>
+                    </select>
+                  </div>
+                  <div class="control-group">
+                    <label for="timeVar3">Variable 3:</label>
+                    <select id="timeVar3">
+                      <option value="">Select Variable...</option>
+                    </select>
+                  </div>
+                  <div class="control-group">
+                    <label for="timeVar4">Variable 4:</label>
+                    <select id="timeVar4">
+                      <option value="">Select Variable...</option>
+                    </select>
+                  </div>
+                </div>
               </div>
               
               <button class="btn btn-primary" onclick="updateTimeSeriesChart()">
