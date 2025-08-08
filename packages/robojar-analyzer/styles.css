@@ -602,9 +602,9 @@ button {
 }
 
 .chart-container {
-  padding: 40px 40px 60px 40px;
+  padding: 40px 40px 40px 40px;
   position: relative;
-  height: 650px;
+  height: 750px;
   margin: 20px 0;
   background: white;
 }
@@ -619,12 +619,14 @@ button {
 
 .custom-legend {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 8px;
   margin-bottom: 20px;
   padding: 15px;
   background: #f5f7fa;
   border-radius: 6px;
+  max-height: 150px;
+  overflow-y: auto;
 }
 
 .legend-item {
@@ -666,7 +668,7 @@ button {
 }
 
 .chart-canvas-container {
-  height: 450px;
+  height: 500px;
   position: relative;
 }
 

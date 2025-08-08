@@ -2176,7 +2176,42 @@ async function generateChartForParameter(
     : 1200;
 
   const datasets = [];
-  const colors = ["#5a7a95", "#7fb3b3", "#c9a96e", "#8b7fb3"];
+  
+  // Enhanced color system with groups based on Alum dose (15-25 range)
+  const colorGroups = {
+    'alum15': ['#0d4f8c', '#1560bd', '#2471cd', '#3482dd', '#4493ed'], // Deep blues
+    'alum16': ['#1565c0', '#1976d2', '#1e88e5', '#2196f3', '#42a5f5'], // Blue variants
+    'alum17': ['#00695c', '#00796b', '#00897b', '#009688', '#26a69a'], // Teals
+    'alum18': ['#2e7d32', '#388e3c', '#43a047', '#4caf50', '#66bb6a'], // Greens
+    'alum19': ['#558b2f', '#689f38', '#7cb342', '#8bc34a', '#9ccc65'], // Light greens
+    'alum20': ['#827717', '#9e9d24', '#afb42b', '#cddc39', '#d4e157'], // Yellow-greens
+    'alum21': ['#b7950b', '#d4ac0d', '#f1c40f', '#f4d03f', '#f7dc6f'], // Yellows
+    'alum22': ['#e65100', '#f57c00', '#ff9800', '#ffb74d', '#ffcc02'], // Oranges
+    'alum23': ['#d84315', '#e64a19', '#ff5722', '#ff7043', '#ff8a65'], // Red-oranges
+    'alum24': ['#c62828', '#d32f2f', '#f44336', '#e57373', '#ef5350'], // Reds
+    'alum25': ['#ad1457', '#c2185b', '#e91e63', '#f06292', '#f48fb1'], // Pinks
+    'default': ['#5a7a95', '#7fb3b3', '#c9a96e', '#8b7fb3', '#95b3a9'] // Original colors
+  };
+  
+  // Function to get color group based on chemistry
+  function getColorGroup(chemistry) {
+    if (!chemistry) return 'default';
+    
+    const chemString = chemistry.toLowerCase();
+    // Match patterns like "alum 15", "alum 16.5", etc.
+    const alumMatch = chemString.match(/alum\s*(\d+(?:\.\d+)?)/);
+    if (alumMatch) {
+      const dose = Math.round(parseFloat(alumMatch[1])); // Round to nearest whole number
+      const groupKey = `alum${dose}`;
+      if (colorGroups[groupKey]) {
+        return groupKey;
+      }
+    }
+    
+    return 'default';
+  }
+  
+  const colors = ["#5a7a95", "#7fb3b3", "#c9a96e", "#8b7fb3"]; // Fallback colors
 
   // Create separate series for each sheet
   const sheetSeries = [];
@@ -2261,10 +2296,20 @@ async function generateChartForParameter(
         ? `${timestamp} - ${baseLegendLabel}`
         : baseLegendLabel;
 
+      // Determine color group and index within that group
+      const colorGroup = getColorGroup(metadata.chemistry);
+      const groupColors = colorGroups[colorGroup];
+      
+      // Count how many runs we've seen for this color group to assign variations
+      const groupCount = sheetSeries.filter(s => getColorGroup(s.metadata.chemistry) === colorGroup).length;
+      const colorIndex = groupCount % groupColors.length;
+
       sheetSeries.push({
         sheetName: sheet,
         data: sheetColumnData,
-        colorIndex: sheetIndex % colors.length,
+        colorIndex: sheetIndex % colors.length, // Keep fallback
+        colorGroup: colorGroup,
+        groupColorIndex: colorIndex,
         legendLabel: legendLabel,
         metadata: metadata,
       });
@@ -2295,11 +2340,15 @@ async function generateChartForParameter(
     const timeData = displayData.map((row) => row[0]);
     const valueData = displayData.map((row) => row[1]);
 
+    // Get the appropriate color from the group
+    const groupColors = colorGroups[series.colorGroup];
+    const seriesColor = groupColors[series.groupColorIndex];
+
     datasets.push({
       label: series.legendLabel,
       data: timeData.map((time, index) => ({ x: time, y: valueData[index] })),
-      borderColor: colors[series.colorIndex],
-      backgroundColor: colors[series.colorIndex] + "20",
+      borderColor: seriesColor,
+      backgroundColor: seriesColor + "20",
       borderWidth: 2,
       pointRadius:
         chartType === "scatter" ? (displayData.length > 300 ? 1 : 2) : 0,
@@ -2397,7 +2446,8 @@ async function generateChartForParameter(
         forecastResult.data.length > 0
       ) {
         // Use a lighter version of the series color for forecast
-        const baseColor = colors[series.colorIndex];
+        const groupColors = colorGroups[series.colorGroup];
+        const baseColor = groupColors[series.groupColorIndex];
         const forecastColor = baseColor + "CC"; // Add transparency (80%)
 
         // Convert forecast data to proper format
