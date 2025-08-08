@@ -17,6 +17,25 @@
   </head>
 
   <body>
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="loading-screen">
+      <div class="loading-content">
+        <div class="loading-animation">
+          <div class="water-drop">💧</div>
+          <div class="waves">
+            <div class="wave wave1"></div>
+            <div class="wave wave2"></div>
+            <div class="wave wave3"></div>
+          </div>
+        </div>
+        <h2>Analyzing Streaming Current Data</h2>
+        <p id="loadingText">Parsing streaming current detector data...</p>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+      </div>
+    </div>
+
     <div class="header">
       <div class="header-content">
         <div class="header-main">
@@ -33,14 +52,6 @@
           >
             <span>🏠</span>
             <span>Dashboard</span>
-          </button>
-          <button
-            class="action-btn"
-            id="loadDataHeader"
-            onclick="loadStreamingCurrentData()"
-          >
-            <span>📊</span>
-            <span>Load Data</span>
           </button>
           <button
             class="action-btn"

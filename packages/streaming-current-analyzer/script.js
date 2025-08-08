@@ -9,9 +9,15 @@ let timeSeriesChart = null;
 let histogramChart = null;
 let optimizationChart = null;
 
-// Initialize the application
-document.addEventListener('DOMContentLoaded', function() {
-    showNotification('Welcome! Click "Load Data" to import your streaming current data and access the analysis tools.', 'success');
+// Initialize the application - wait for all resources to load
+window.addEventListener('load', function() {
+    // Hide quick start section immediately
+    document.getElementById('quickStartSection').style.display = 'none';
+    
+    // Additional delay to ensure smooth loading animation display
+    setTimeout(() => {
+        loadStreamingCurrentData();
+    }, 1200); // Give enough time for animations to be visible
 });
 
 // Utility function for proper decimal formatting based on units
@@ -50,16 +56,21 @@ function switchAnalysisTab(tabName) {
 
 async function loadStreamingCurrentData() {
     try {
-        showNotification('Loading streaming current data...', 'success');
+        updateLoadingProgress(10, 'Fetching data file...');
         
         // Load the Excel file from the data folder
         const response = await fetch('../../data/Streaming_Current_Data.xlsx');
+        updateLoadingProgress(30, 'Reading Excel file...');
+        
         const arrayBuffer = await response.arrayBuffer();
+        updateLoadingProgress(50, 'Parsing spreadsheet data...');
         
         // Parse the Excel file
         const workbook = XLSX.read(arrayBuffer, { type: 'array' });
         const firstSheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[firstSheetName];
+        
+        updateLoadingProgress(70, 'Processing variables and units...');
         
         // Convert to JSON with header processing
         const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: null });
@@ -88,9 +99,17 @@ async function loadStreamingCurrentData() {
             }
         });
         
-        // Process data rows
-        streamingData = dataRows.filter(row => row && row.some(cell => cell !== null && cell !== undefined && cell !== '')).map(row => {
+        // Process data rows - filter out completely empty rows
+        streamingData = dataRows.map(row => {
+            if (!row || row.length === 0) return null;
+            
+            // Check if row has any meaningful data
+            const hasData = row.some(cell => cell !== null && cell !== undefined && cell !== '');
+            if (!hasData) return null;
+            
             const dataPoint = {};
+            let hasActualValues = false;
+            
             variableNames.forEach((variable, index) => {
                 if (variable && variable.toString().trim()) {
                     const cleanVar = variable.toString().trim();
@@ -98,6 +117,7 @@ async function loadStreamingCurrentData() {
                     
                     // Handle different data types appropriately
                     if (value !== null && value !== undefined && value !== '') {
+                        hasActualValues = true;
                         if (typeof value === 'number') {
                             dataPoint[cleanVar] = value;
                         } else if (typeof value === 'string' && value.trim() !== '') {
@@ -113,20 +133,83 @@ async function loadStreamingCurrentData() {
                     }
                 }
             });
-            return dataPoint;
-        });
+            
+            // Only return dataPoint if it has at least one actual value
+            return hasActualValues ? dataPoint : null;
+        }).filter(dataPoint => dataPoint !== null);
+        
+        updateLoadingProgress(85, 'Initializing analysis interface...');
         
         // Update UI
         populateAllSelectors();
         displayDataInfo();
         showAnalysisInterface();
+        
+        updateLoadingProgress(95, 'Setting up default charts...');
         setDefaultSelections();
         
-        showNotification(`Data loaded successfully! ${streamingData.length} data points with ${variables.length} variables.`, 'success');
+        updateLoadingProgress(100, 'Complete! Ready for analysis.');
+        
+        // Count total individual cell values
+        const totalCellValues = streamingData.reduce((total, row) => {
+            return total + variables.reduce((rowTotal, variable) => {
+                const value = row[variable];
+                return rowTotal + (value !== undefined && value !== null && value !== '' ? 1 : 0);
+            }, 0);
+        }, 0);
+        
+        // Store the cell count for display (no longer needed as we calculate it in displayDataInfo)
+        // window.totalCellValues = totalCellValues;
+        
+        // Hide loading screen after a brief delay
+        setTimeout(() => {
+            hideLoadingScreen();
+            // No notification on first load - user can see the data info panel
+        }, 800);
         
     } catch (error) {
         console.error('Error loading data:', error);
+        hideLoadingScreen();
         showNotification('Error loading data: ' + error.message, 'error');
+    }
+}
+
+function updateLoadingProgress(targetPercentage, text) {
+    const progressFill = document.getElementById('progressFill');
+    const loadingText = document.getElementById('loadingText');
+    
+    if (loadingText) {
+        loadingText.textContent = text;
+    }
+    
+    if (progressFill) {
+        const currentWidth = parseInt(progressFill.style.width) || 0;
+        const increment = (targetPercentage - currentWidth) / 20; // Smooth animation over 20 steps
+        
+        let currentStep = 0;
+        const animate = () => {
+            if (currentStep < 20) {
+                const newWidth = Math.min(currentWidth + (increment * currentStep), targetPercentage);
+                progressFill.style.width = newWidth + '%';
+                currentStep++;
+                setTimeout(animate, 30); // 30ms between steps
+            }
+        };
+        
+        animate();
+    }
+}
+
+function hideLoadingScreen() {
+    const loadingScreen = document.getElementById('loadingScreen');
+    if (loadingScreen) {
+        loadingScreen.classList.add('hidden');
+        // Remove from DOM after transition
+        setTimeout(() => {
+            if (loadingScreen.parentNode) {
+                loadingScreen.parentNode.removeChild(loadingScreen);
+            }
+        }, 500);
     }
 }
 
@@ -174,32 +257,115 @@ function getSelectedTimeSeriesVariables() {
 function displayDataInfo() {
     const dataInfo = document.getElementById('dataInfo');
     
+    // Try to find Date variable first, then fall back to time/sec variables
+    const dateVariable = variables.find(v => v.toLowerCase().includes('date'));
     const timeVariable = variables.find(v => v.toLowerCase().includes('time') || v.toLowerCase().includes('sec'));
+    
     let duration = '';
-    if (timeVariable && streamingData.length > 0) {
+    if (dateVariable && streamingData.length > 0) {
+        // Handle Date variables
+        const rawDateValues = streamingData.map(d => d[dateVariable])
+            .filter(v => v !== undefined && v !== null && v !== '');
+            
+        console.log('Sample date values:', rawDateValues.slice(0, 5));
+        
+        const dateValues = rawDateValues.map(v => {
+            if (typeof v === 'string') {
+                // Try multiple date parsing approaches
+                let parsedDate;
+                
+                // Try direct parsing first
+                parsedDate = new Date(v);
+                if (!isNaN(parsedDate.getTime())) {
+                    return parsedDate;
+                }
+                
+                // Try MM/DD/YYYY format
+                const mmddyyyy = v.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+                if (mmddyyyy) {
+                    parsedDate = new Date(mmddyyyy[3], mmddyyyy[1] - 1, mmddyyyy[2]);
+                    if (!isNaN(parsedDate.getTime())) {
+                        return parsedDate;
+                    }
+                }
+                
+                // Try YYYY-MM-DD format
+                const yyyymmdd = v.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+                if (yyyymmdd) {
+                    parsedDate = new Date(yyyymmdd[1], yyyymmdd[2] - 1, yyyymmdd[3]);
+                    if (!isNaN(parsedDate.getTime())) {
+                        return parsedDate;
+                    }
+                }
+                
+                return null;
+            } else if (typeof v === 'number') {
+                // Could be Excel serial date number
+                // Excel serial date: days since January 1, 1900
+                const excelEpoch = new Date(1900, 0, 1);
+                const parsedDate = new Date(excelEpoch.getTime() + (v - 1) * 24 * 60 * 60 * 1000);
+                if (!isNaN(parsedDate.getTime()) && parsedDate.getFullYear() > 1900) {
+                    return parsedDate;
+                }
+                return null;
+            }
+            return null;
+        }).filter(d => d !== null);
+        
+        console.log('Parsed date values count:', dateValues.length);
+        if (dateValues.length > 0) {
+            console.log('Date range:', new Date(Math.min(...dateValues)), 'to', new Date(Math.max(...dateValues)));
+            
+            const maxDate = new Date(Math.max(...dateValues));
+            const minDate = new Date(Math.min(...dateValues));
+            const diffMs = maxDate - minDate;
+            const diffDays = diffMs / (1000 * 60 * 60 * 24);
+            
+            if (diffDays >= 1) {
+                duration = `${diffDays.toFixed(1)} days`;
+            } else {
+                const diffHours = diffMs / (1000 * 60 * 60);
+                duration = `${diffHours.toFixed(1)} hours`;
+            }
+        }
+    } else if (timeVariable && streamingData.length > 0) {
+        // Fallback to numeric time variables
         const timeValues = streamingData.map(d => d[timeVariable]).filter(v => typeof v === 'number');
         if (timeValues.length > 0) {
             const maxTime = Math.max(...timeValues);
             const minTime = Math.min(...timeValues);
-            duration = `Duration: ${(maxTime - minTime).toFixed(1)} ${units[timeVariable] || 'units'}`;
+            duration = `${(maxTime - minTime).toFixed(1)} ${units[timeVariable] || 'units'}`;
         }
     }
+    
+    // Calculate actual data values count
+    const cellCount = streamingData.reduce((total, row) => {
+        return total + variables.reduce((rowTotal, variable) => {
+            const value = row[variable];
+            return rowTotal + (value !== undefined && value !== null && value !== '' ? 1 : 0);
+        }, 0);
+    }, 0);
+    
+    const rowCount = streamingData.length;
     
     dataInfo.innerHTML = `
         <h3>📊 Dataset Information</h3>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
             <div>
-                <strong>Data Points:</strong> ${streamingData.length.toLocaleString()}
+                <strong>Data Values:</strong> ${cellCount.toLocaleString()}
+            </div>
+            <div>
+                <strong>Data Rows:</strong> ${rowCount.toLocaleString()}
             </div>
             <div>
                 <strong>Variables:</strong> ${variables.length}
             </div>
-            ${duration ? `<div><strong>${duration}</strong></div>` : ''}
+            ${duration ? `<div><strong>Duration:</strong> ${duration}</div>` : ''}
         </div>
         <div style="margin-top: 1rem;">
             <strong>Available Variables:</strong>
-            <div style="margin-top: 0.5rem; display: flex; flex-wrap: wrap; gap: 0.5rem;">
-                ${variables.map(v => `<span style="background: #e0f2fe; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">${v}</span>`).join('')}
+            <div style="margin-top: 0.5rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 0.5rem; max-height: 200px; overflow-y: auto;">
+                ${variables.map(v => `<span style="background: #e0f2fe; padding: 0.5rem; border-radius: 6px; font-size: 0.85rem; text-align: center; border: 1px solid #0891b2;">${v}</span>`).join('')}
             </div>
         </div>
     `;
@@ -272,7 +438,13 @@ function updateCorrelationChart() {
         const colors = generateColors(Object.keys(groups).length);
         
         Object.entries(groups).forEach(([groupKey, groupData], index) => {
-            datasets.push(createScatterDataset(`${colorBy}: ${groupKey}`, groupData, xAxis, yAxis, colors[index]));
+            // Clean up the label - remove units from individual range labels since they'll be in legend title
+            let cleanLabel = groupKey;
+            if (units[colorBy] && units[colorBy].trim()) {
+                const unitPattern = new RegExp(`\\s*${units[colorBy].replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`, 'g');
+                cleanLabel = groupKey.replace(unitPattern, '');
+            }
+            datasets.push(createScatterDataset(cleanLabel, groupData, xAxis, yAxis, colors[index]));
         });
     } else {
         // Single dataset
@@ -285,18 +457,34 @@ function updateCorrelationChart() {
         correlationChart.destroy();
     }
     
+    const chartOptions = getScatterChartOptions(xAxis, yAxis);
+    
+    // Add custom legend title if using color grouping
+    if (colorBy && colorBy !== '') {
+        const colorUnit = units[colorBy] && units[colorBy].trim() ? ` (${units[colorBy]})` : '';
+        chartOptions.plugins.legend.title = {
+            display: true,
+            text: `Grouped by ${colorBy}${colorUnit}`,
+            font: {
+                size: 14,
+                weight: 'bold'
+            },
+            padding: {
+                bottom: 10
+            }
+        };
+    }
+    
     correlationChart = new Chart(ctx, {
         type: 'scatter',
         data: { datasets: datasets },
-        options: getScatterChartOptions(xAxis, yAxis)
+        options: chartOptions
     });
     
     // Update title
     const xUnit = units[xAxis] && units[xAxis].trim() ? ` (${units[xAxis]})` : '';
     const yUnit = units[yAxis] && units[yAxis].trim() ? ` (${units[yAxis]})` : '';
     document.getElementById('correlationTitle').textContent = `${yAxis}${yUnit} vs ${xAxis}${xUnit}`;
-    
-    showNotification('Correlation chart updated successfully!', 'success');
 }
 
 // Time Series Analysis
@@ -333,32 +521,52 @@ function updateTimeSeriesChart() {
                 
                 // Handle Date data - convert to Date object if it's a date string
                 if (timeVar.toLowerCase().includes('date') && typeof xValue === 'string' && xValue.trim() !== '') {
-                    const parsedDate = new Date(xValue);
-                    if (!isNaN(parsedDate.getTime())) {
-                        xValue = parsedDate;
-                    } else {
-                        // Try parsing as MM/DD/YYYY or similar formats
-                        const dateFormats = [
-                            // Try MM/DD/YYYY format
-                            () => {
-                                const parts = xValue.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
-                                if (parts) return new Date(parts[3], parts[1] - 1, parts[2]);
-                                return null;
-                            },
-                            // Try YYYY-MM-DD format
-                            () => {
-                                const parts = xValue.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
-                                if (parts) return new Date(parts[1], parts[2] - 1, parts[3]);
-                                return null;
+                    // Try parsing as MM/DD/YYYY or similar formats first
+                    let dateSuccess = false;
+                    const dateFormats = [
+                        // Try MM/DD/YYYY format
+                        () => {
+                            const parts = xValue.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+                            if (parts) {
+                                const date = new Date(parts[3], parts[1] - 1, parts[2], 12, 0, 0); // Set to noon to avoid timezone issues
+                                return !isNaN(date.getTime()) ? date : null;
                             }
-                        ];
-                        
-                        for (const formatParser of dateFormats) {
-                            const parsed = formatParser();
-                            if (parsed && !isNaN(parsed.getTime())) {
-                                xValue = parsed;
-                                break;
+                            return null;
+                        },
+                        // Try YYYY-MM-DD format
+                        () => {
+                            const parts = xValue.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+                            if (parts) {
+                                const date = new Date(parts[1], parts[2] - 1, parts[3], 12, 0, 0); // Set to noon
+                                return !isNaN(date.getTime()) ? date : null;
                             }
+                            return null;
+                        },
+                        // Try MM-DD-YYYY format
+                        () => {
+                            const parts = xValue.match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/);
+                            if (parts) {
+                                const date = new Date(parts[3], parts[1] - 1, parts[2], 12, 0, 0); // Set to noon
+                                return !isNaN(date.getTime()) ? date : null;
+                            }
+                            return null;
+                        }
+                    ];
+                    
+                    for (const formatParser of dateFormats) {
+                        const parsed = formatParser();
+                        if (parsed) {
+                            xValue = parsed;
+                            dateSuccess = true;
+                            break;
+                        }
+                    }
+                    
+                    // Fallback to native Date parsing if custom formats don't work
+                    if (!dateSuccess) {
+                        const parsedDate = new Date(xValue + ' 12:00:00'); // Add noon time to avoid timezone issues
+                        if (!isNaN(parsedDate.getTime())) {
+                            xValue = parsedDate;
                         }
                     }
                 }
@@ -410,8 +618,6 @@ function updateTimeSeriesChart() {
         
         const timeUnit = units[timeVar] && units[timeVar].trim() ? ` (${units[timeVar]})` : '';
         document.getElementById('timeSeriesTitle').textContent = `Variables over ${timeVar}${timeUnit}`;
-        
-        showNotification(`Time series chart updated with ${selectedVars.length} variables!`, 'success');
         
     } catch (error) {
         console.error('Error updating time series chart:', error);
@@ -480,8 +686,6 @@ function updateDistributionChart() {
     
     const unit = units[variable] && units[variable].trim() ? ` (${units[variable]})` : '';
     document.getElementById('histogramTitle').textContent = `Distribution of ${variable}${unit}`;
-    
-    showNotification('Distribution chart updated successfully!', 'success');
 }
 
 function displayDistributionStats(values, variable) {
@@ -558,7 +762,6 @@ function updateOptimizationInsights() {
     
     if (strongestCorr.var) {
         createOptimizationChart(targetVar, strongestCorr.var);
-        showNotification(`Found ${Object.keys(correlations).length} variables with correlation ≥ ${minCorr}`, 'success');
     } else {
         showNotification(`No variables found with correlation ≥ ${minCorr}. Try lowering the threshold.`, 'warning');
     }
@@ -806,9 +1009,17 @@ function getScatterChartOptions(xAxis, yAxis) {
                     label: function(context) {
                         const xValue = formatValue(context.parsed.x, units[xAxis]);
                         const yValue = formatValue(context.parsed.y, units[yAxis]);
-                        return `${context.dataset.label}: (${xValue}, ${yValue})`;
+                        return `(${xValue}, ${yValue})`;
+                    },
+                    title: function(context) {
+                        if (context.length > 0) {
+                            return context[0].dataset.label;
+                        }
+                        return '';
                     }
-                }
+                },
+                displayColors: true,
+                titleAlign: 'center'
             }
         },
         scales: {
@@ -936,7 +1147,7 @@ function showNotification(message, type = 'success') {
         if (notification.parentNode) {
             notification.parentNode.removeChild(notification);
         }
-    }, 5000);
+    }, 2000);
 }
 
 // Make functions globally available for HTML onclick handlers
