@@ -235,7 +235,7 @@ function populateAllSelectors() {
     // Get all select elements
     const selectors = [
         'corrXAxis', 'corrYAxis', 'corrColorBy',
-        'timeVar', 'timeVar1', 'timeVar2', 'timeVar3', 'timeVar4',
+        'timeVar1', 'timeVar2', 'timeVar3', 'timeVar4',
         'distVariable', 'targetVariable'
     ];
     
@@ -294,18 +294,15 @@ function setDefaultSelections() {
         updateCorrelationChart();
     }
     
-    // Set defaults for time series
-    if (timeVar) {
-        document.getElementById('timeVar').value = timeVar;
-        // Auto-select Streaming Current and Alum Dose for time series
-        if (streamingCurrentVar) {
-            document.getElementById('timeVar1').value = streamingCurrentVar;
-        }
-        if (alumDoseVar) {
-            document.getElementById('timeVar2').value = alumDoseVar;
-        }
-        updateTimeSeriesChart();
+    // Set defaults for time series (no time variable selector needed - uses Date column automatically)
+    // Auto-select Streaming Current and Alum Dose for time series
+    if (streamingCurrentVar) {
+        document.getElementById('timeVar1').value = streamingCurrentVar;
     }
+    if (alumDoseVar) {
+        document.getElementById('timeVar2').value = alumDoseVar;
+    }
+    updateTimeSeriesChart();
     
     // Set defaults for distribution
     if (streamingCurrentVar) {
@@ -391,11 +388,12 @@ function updateCorrelationChart() {
 // Time Series Analysis
 function updateTimeSeriesChart() {
     try {
-        const timeVar = document.getElementById('timeVar').value;
+        // Always use the Date column for time series
+        const timeVar = variables.find(v => v.toLowerCase().includes('date')) || variables[0]; // fallback to first column
         const selectedVars = getSelectedTimeSeriesVariables();
         
         if (!timeVar) {
-            showNotification('Please select a time variable.', 'warning');
+            showNotification('No date column found for time series.', 'error');
             return;
         }
         
@@ -404,7 +402,7 @@ function updateTimeSeriesChart() {
             return;
         }
         
-        console.log('Time variable:', timeVar);
+        console.log('Time variable (Date):', timeVar);
         console.log('Selected variables:', selectedVars);
         
         const colors = generateColors(selectedVars.length);
