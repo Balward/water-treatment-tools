@@ -276,105 +276,6 @@ function getSelectedTimeSeriesVariables() {
 function displayDataInfo() {
     const dataInfo = document.getElementById('dataInfo');
     
-    // Try to find Date variable first, then fall back to time/sec variables
-    const dateVariable = variables.find(v => v.toLowerCase().includes('date'));
-    const timeVariable = variables.find(v => v.toLowerCase().includes('time') || v.toLowerCase().includes('sec'));
-    
-    let duration = null;
-    if (dateVariable && streamingData.length > 0) {
-        // Handle Date variables
-        const rawDateValues = streamingData.map(d => d[dateVariable])
-            .filter(v => v !== undefined && v !== null && v !== '');
-            
-        console.log('Sample date values:', rawDateValues.slice(0, 5));
-        
-        const dateValues = rawDateValues.map(v => {
-            if (typeof v === 'string') {
-                // Try multiple date parsing approaches
-                let parsedDate;
-                
-                // Try direct parsing first
-                parsedDate = new Date(v);
-                if (!isNaN(parsedDate.getTime())) {
-                    return parsedDate;
-                }
-                
-                // Try MM/DD/YYYY format
-                const mmddyyyy = v.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
-                if (mmddyyyy) {
-                    parsedDate = new Date(mmddyyyy[3], mmddyyyy[1] - 1, mmddyyyy[2]);
-                    if (!isNaN(parsedDate.getTime())) {
-                        return parsedDate;
-                    }
-                }
-                
-                // Try YYYY-MM-DD format
-                const yyyymmdd = v.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
-                if (yyyymmdd) {
-                    parsedDate = new Date(yyyymmdd[1], yyyymmdd[2] - 1, yyyymmdd[3]);
-                    if (!isNaN(parsedDate.getTime())) {
-                        return parsedDate;
-                    }
-                }
-                
-                return null;
-            } else if (typeof v === 'number') {
-                // Could be Excel serial date number
-                // Excel serial date: days since January 1, 1900
-                const excelEpoch = new Date(1900, 0, 1);
-                const parsedDate = new Date(excelEpoch.getTime() + (v - 1) * 24 * 60 * 60 * 1000);
-                if (!isNaN(parsedDate.getTime()) && parsedDate.getFullYear() > 1900) {
-                    return parsedDate;
-                }
-                return null;
-            }
-            return null;
-        }).filter(d => d !== null);
-        
-        console.log('Parsed date values count:', dateValues.length);
-        if (dateValues.length > 0) {
-            console.log('Date range:', new Date(Math.min(...dateValues)), 'to', new Date(Math.max(...dateValues)));
-            
-            const maxDate = new Date(Math.max(...dateValues));
-            const minDate = new Date(Math.min(...dateValues));
-            const diffMs = maxDate - minDate;
-            const diffDays = diffMs / (1000 * 60 * 60 * 24);
-            
-            if (diffDays >= 1) {
-                duration = `${diffDays.toFixed(1)} days`;
-            } else {
-                const diffHours = diffMs / (1000 * 60 * 60);
-                if (diffHours >= 1) {
-                    duration = `${diffHours.toFixed(1)} hours`;
-                } else {
-                    const diffMinutes = diffMs / (1000 * 60);
-                    duration = `${diffMinutes.toFixed(1)} minutes`;
-                }
-            }
-        }
-    } else if (timeVariable && streamingData.length > 0) {
-        // Fallback to numeric time variables
-        const timeValues = streamingData.map(d => d[timeVariable]).filter(v => typeof v === 'number');
-        if (timeValues.length > 0) {
-            const maxTime = Math.max(...timeValues);
-            const minTime = Math.min(...timeValues);
-            const timeDiff = maxTime - minTime;
-            if (timeDiff > 0) {
-                duration = `${timeDiff.toFixed(1)} ${units[timeVariable] || 'units'}`;
-            }
-        }
-    }
-    
-    // Calculate actual data values count
-    const cellCount = streamingData.reduce((total, row) => {
-        return total + variables.reduce((rowTotal, variable) => {
-            const value = row[variable];
-            return rowTotal + (value !== undefined && value !== null && value !== '' ? 1 : 0);
-        }, 0);
-    }, 0);
-    
-    const rowCount = streamingData.length;
-    
     // Group variables by location and calculate ranges
     function getVariableRange(variable) {
         const values = streamingData.map(row => row[variable])
@@ -514,24 +415,9 @@ function displayDataInfo() {
     }
     
     dataInfo.innerHTML = `
-        <h3>📊 Dataset Information</h3>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
-            <div>
-                <strong>Data Values:</strong> ${cellCount.toLocaleString()}
-            </div>
-            <div>
-                <strong>Data Rows:</strong> ${rowCount.toLocaleString()}
-            </div>
-            <div>
-                <strong>Variables:</strong> ${variables.length}
-            </div>
-            ${duration ? `<div><strong>Duration:</strong> ${duration}</div>` : ''}
-        </div>
-        <div style="margin-top: 1.5rem;">
-            <strong>Available Variables by Location:</strong>
-            <div style="margin-top: 1rem;">
-                ${variablesHTML}
-            </div>
+        <h3>📊 Available Variables by Location</h3>
+        <div style="margin-top: 1rem;">
+            ${variablesHTML}
         </div>
     `;
 }
