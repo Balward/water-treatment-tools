@@ -502,7 +502,7 @@ function updateCorrelationChart() {
     }
     
     correlationChart = new Chart(ctx, {
-        type: 'scatter',
+        type: 'bubble',
         data: { datasets: datasets },
         options: chartOptions
     });
@@ -959,17 +959,43 @@ function groupDataByVariable(data, variable) {
 }
 
 function createScatterDataset(label, data, xAxis, yAxis, color) {
+    // First, filter and map the valid points
+    const validPoints = data.map(point => ({
+        x: point[xAxis],
+        y: point[yAxis]
+    })).filter(point => typeof point.x === 'number' && typeof point.y === 'number');
+    
+    // Group points by their x,y coordinates to count duplicates
+    const pointCounts = {};
+    validPoints.forEach(point => {
+        // Round to avoid floating point precision issues
+        const key = `${point.x.toFixed(6)},${point.y.toFixed(6)}`;
+        if (!pointCounts[key]) {
+            pointCounts[key] = { x: point.x, y: point.y, count: 0 };
+        }
+        pointCounts[key].count++;
+    });
+    
+    // Convert to bubble chart data format with variable radius
+    const bubbleData = Object.values(pointCounts).map(point => ({
+        x: point.x,
+        y: point.y,
+        r: Math.max(3, Math.min(15, 3 + point.count * 2)), // Radius between 3-15 based on count
+        count: point.count // Store the actual count for tooltip
+    }));
+    
     return {
         label: label,
-        data: data.map(point => ({
-            x: point[xAxis],
-            y: point[yAxis]
-        })).filter(point => typeof point.x === 'number' && typeof point.y === 'number'),
+        data: bubbleData,
         backgroundColor: color + '80',
         borderColor: color,
         borderWidth: 2,
-        pointRadius: 4,
-        pointHoverRadius: 6
+        pointRadius: function(context) {
+            return context.parsed.r || 4;
+        },
+        pointHoverRadius: function(context) {
+            return (context.parsed.r || 4) + 2;
+        }
     };
 }
 
@@ -1043,7 +1069,9 @@ function getScatterChartOptions(xAxis, yAxis) {
                     label: function(context) {
                         const xValue = formatValue(context.parsed.x, units[xAxis]);
                         const yValue = formatValue(context.parsed.y, units[yAxis]);
-                        return `(${xValue}, ${yValue})`;
+                        const count = context.raw.count || 1; // Get count from the raw data
+                        const countText = count > 1 ? ` (${count} data points)` : '';
+                        return `(${xValue}, ${yValue})${countText}`;
                     },
                     title: function(context) {
                         if (context.length > 0) {
