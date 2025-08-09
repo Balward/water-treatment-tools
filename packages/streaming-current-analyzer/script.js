@@ -373,10 +373,25 @@ function displayDataInfo() {
             </div>
             ${duration ? `<div><strong>Duration:</strong> ${duration}</div>` : ''}
         </div>
-        <div style="margin-top: 1rem;">
+        <div style="margin-top: 1.5rem;">
             <strong>Available Variables:</strong>
-            <div style="margin-top: 0.5rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.25rem; font-size: 0.9rem; line-height: 1.4;">
-                ${sortedVariables.map(v => `<div>${v}</div>`).join('')}
+            <div style="margin-top: 0.75rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.5rem;">
+                ${sortedVariables.map(v => `
+                    <div style="
+                        background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+                        border: 1px solid #cbd5e0;
+                        border-radius: 8px;
+                        padding: 8px 12px;
+                        font-size: 0.875rem;
+                        font-weight: 500;
+                        color: #2d3748;
+                        transition: all 0.2s ease;
+                        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+                    " onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 12px rgba(0, 0, 0, 0.15)'; this.style.borderColor='#a0aec0';" 
+                       onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0, 0, 0, 0.1)'; this.style.borderColor='#cbd5e0';">
+                        ${v}
+                    </div>
+                `).join('')}
             </div>
         </div>
     `;
