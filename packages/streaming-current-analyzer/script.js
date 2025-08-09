@@ -991,10 +991,11 @@ function createScatterDataset(label, data, xAxis, yAxis, color) {
         borderColor: color,
         borderWidth: 2,
         pointRadius: function(context) {
-            return context.parsed.r || 4;
+            return context.parsed ? (context.parsed.r || 4) : 4;
         },
         pointHoverRadius: function(context) {
-            return (context.parsed.r || 4) + 2;
+            const baseRadius = context.parsed ? (context.parsed.r || 4) : 4;
+            return baseRadius + 2;
         }
     };
 }
