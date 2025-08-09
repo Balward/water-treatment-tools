@@ -2,6 +2,7 @@
 let streamingData = null;
 let variables = [];
 let units = {};
+let variableLocations = {};
 
 // Chart instances
 let correlationChart = null;
@@ -16,9 +17,27 @@ window.addEventListener('load', function() {
     
     // Additional delay to ensure smooth loading animation display
     setTimeout(() => {
-        loadStreamingCurrentData();
+        loadVariableLocations().then(() => {
+            loadStreamingCurrentData();
+        }).catch(error => {
+            console.warn('Could not load variable locations:', error);
+            loadStreamingCurrentData(); // Continue without locations
+        });
     }, 1200); // Give enough time for animations to be visible
 });
+
+// Load variable locations mapping
+async function loadVariableLocations() {
+    try {
+        const response = await fetch('variable-locations.json');
+        const data = await response.json();
+        variableLocations = data.locations || {};
+        console.log('Variable locations loaded:', variableLocations);
+    } catch (error) {
+        console.warn('Failed to load variable locations:', error);
+        variableLocations = {};
+    }
+}
 
 // Utility function for proper decimal formatting based on units
 function formatValue(value, unit) {
@@ -356,8 +375,124 @@ function displayDataInfo() {
     
     const rowCount = streamingData.length;
     
-    // Sort variables alphabetically
-    const sortedVariables = [...variables].sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+    // Group variables by location and calculate ranges
+    function getVariableRange(variable) {
+        const values = streamingData.map(row => row[variable])
+            .filter(val => typeof val === 'number' && !isNaN(val));
+        
+        if (values.length === 0) return '';
+        
+        const min = Math.min(...values);
+        const max = Math.max(...values);
+        
+        if (min === max) {
+            return ` [${formatValue(min, units[variable])}]`;
+        }
+        
+        return ` [${formatValue(min, units[variable])} - ${formatValue(max, units[variable])}]`;
+    }
+    
+    function groupVariablesByLocation() {
+        const grouped = {};
+        const unassigned = [];
+        
+        variables.forEach(variable => {
+            let assigned = false;
+            
+            // Check each location for this variable
+            for (const [location, locationVars] of Object.entries(variableLocations)) {
+                if (locationVars.includes(variable)) {
+                    if (!grouped[location]) grouped[location] = [];
+                    grouped[location].push(variable);
+                    assigned = true;
+                    break;
+                }
+            }
+            
+            if (!assigned) {
+                unassigned.push(variable);
+            }
+        });
+        
+        // Add unassigned variables to "Other" category
+        if (unassigned.length > 0) {
+            grouped['Other'] = unassigned.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+        }
+        
+        return grouped;
+    }
+    
+    const groupedVariables = groupVariablesByLocation();
+    
+    // Generate HTML for grouped variables
+    let variablesHTML = '';
+    
+    if (Object.keys(variableLocations).length > 0) {
+        // Show grouped by location
+        const locationOrder = ['Plant Influent', 'Raw Water', 'Chemical Feed', 'Streaming Current', 'Finished Water', 'Filter Operations', 'Settled Water', 'Reclaim System', 'Other'];
+        
+        locationOrder.forEach(location => {
+            if (groupedVariables[location] && groupedVariables[location].length > 0) {
+                const sortedVars = groupedVariables[location].sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+                
+                variablesHTML += `
+                    <div style="margin-bottom: 1.5rem;">
+                        <h4 style="
+                            color: #2d3748;
+                            font-size: 1rem;
+                            font-weight: 700;
+                            margin-bottom: 0.5rem;
+                            padding-bottom: 0.25rem;
+                            border-bottom: 2px solid #e2e8f0;
+                        ">${location} (${sortedVars.length})</h4>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 0.5rem;">
+                            ${sortedVars.map(v => `
+                                <div style="
+                                    background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+                                    border: 1px solid #cbd5e0;
+                                    border-radius: 8px;
+                                    padding: 8px 12px;
+                                    font-size: 0.875rem;
+                                    font-weight: 500;
+                                    color: #2d3748;
+                                    transition: all 0.2s ease;
+                                    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+                                " onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 12px rgba(0, 0, 0, 0.15)'; this.style.borderColor='#a0aec0';" 
+                                   onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0, 0, 0, 0.1)'; this.style.borderColor='#cbd5e0';">
+                                    <div style="font-weight: 600;">${v}</div>
+                                    <div style="font-size: 0.75rem; color: #718096; margin-top: 2px;">${getVariableRange(v)}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+        });
+    } else {
+        // Fallback to alphabetical list if no locations loaded
+        const sortedVariables = [...variables].sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+        variablesHTML = `
+            <div style="margin-top: 0.75rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 0.5rem;">
+                ${sortedVariables.map(v => `
+                    <div style="
+                        background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+                        border: 1px solid #cbd5e0;
+                        border-radius: 8px;
+                        padding: 8px 12px;
+                        font-size: 0.875rem;
+                        font-weight: 500;
+                        color: #2d3748;
+                        transition: all 0.2s ease;
+                        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+                    " onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 12px rgba(0, 0, 0, 0.15)'; this.style.borderColor='#a0aec0';" 
+                       onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0, 0, 0, 0.1)'; this.style.borderColor='#cbd5e0';">
+                        <div style="font-weight: 600;">${v}</div>
+                        <div style="font-size: 0.75rem; color: #718096; margin-top: 2px;">${getVariableRange(v)}</div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    }
     
     dataInfo.innerHTML = `
         <h3>📊 Dataset Information</h3>
@@ -374,24 +509,9 @@ function displayDataInfo() {
             ${duration ? `<div><strong>Duration:</strong> ${duration}</div>` : ''}
         </div>
         <div style="margin-top: 1.5rem;">
-            <strong>Available Variables:</strong>
-            <div style="margin-top: 0.75rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.5rem;">
-                ${sortedVariables.map(v => `
-                    <div style="
-                        background: linear-gradient(135deg, #f8fafc, #e2e8f0);
-                        border: 1px solid #cbd5e0;
-                        border-radius: 8px;
-                        padding: 8px 12px;
-                        font-size: 0.875rem;
-                        font-weight: 500;
-                        color: #2d3748;
-                        transition: all 0.2s ease;
-                        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-                    " onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 12px rgba(0, 0, 0, 0.15)'; this.style.borderColor='#a0aec0';" 
-                       onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0, 0, 0, 0.1)'; this.style.borderColor='#cbd5e0';">
-                        ${v}
-                    </div>
-                `).join('')}
+            <strong>Available Variables by Location:</strong>
+            <div style="margin-top: 1rem;">
+                ${variablesHTML}
             </div>
         </div>
     `;
