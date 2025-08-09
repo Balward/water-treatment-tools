@@ -1011,8 +1011,7 @@ function getScatterChartOptions(xAxis, yAxis) {
         const xRange = xMax - xMin;
         const xBuffer = xRange * 0.1;
         
-        // Only add left padding if data has negative values, otherwise start from 0
-        xAxisConfig.min = xMin >= 0 ? 0 : xMin - xBuffer;
+        xAxisConfig.min = xMin - xBuffer;
         xAxisConfig.max = xMax + xBuffer;
     }
     
@@ -1022,8 +1021,7 @@ function getScatterChartOptions(xAxis, yAxis) {
         const yRange = yMax - yMin;
         const yBuffer = yRange * 0.1;
         
-        // Only add bottom padding if data has negative values, otherwise start from 0
-        yAxisConfig.min = yMin >= 0 ? 0 : yMin - yBuffer;
+        yAxisConfig.min = yMin - yBuffer;
         yAxisConfig.max = yMax + yBuffer;
     }
     
