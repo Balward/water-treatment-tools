@@ -428,15 +428,28 @@ function displayDataInfo() {
     let variablesHTML = '';
     
     if (Object.keys(variableLocations).length > 0) {
-        // Show grouped by location
+        // Show grouped by location in 3 columns
         const locationOrder = ['Plant Influent', 'Raw Water', 'Chemical Feed', 'Streaming Current', 'Finished Water', 'Filter Operations', 'Settled Water', 'Reclaim System', 'Other'];
         
-        locationOrder.forEach(location => {
-            if (groupedVariables[location] && groupedVariables[location].length > 0) {
+        // Filter out empty locations and group into chunks of 3 for columns
+        const activeLocations = locationOrder.filter(location => 
+            groupedVariables[location] && groupedVariables[location].length > 0
+        );
+        
+        variablesHTML = `
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; align-items: start;">
+        `;
+        
+        // Distribute locations across 3 columns
+        for (let col = 0; col < 3; col++) {
+            variablesHTML += `<div style="display: flex; flex-direction: column; gap: 1rem;">`;
+            
+            for (let i = col; i < activeLocations.length; i += 3) {
+                const location = activeLocations[i];
                 const sortedVars = groupedVariables[location].sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
                 
                 variablesHTML += `
-                    <div style="margin-bottom: 1.5rem;">
+                    <div>
                         <h4 style="
                             color: #2d3748;
                             font-size: 1rem;
@@ -445,7 +458,7 @@ function displayDataInfo() {
                             padding-bottom: 0.25rem;
                             border-bottom: 2px solid #e2e8f0;
                         ">${location} (${sortedVars.length})</h4>
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 0.5rem;">
+                        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
                             ${sortedVars.map(v => `
                                 <div style="
                                     background: linear-gradient(135deg, #f8fafc, #e2e8f0);
@@ -453,26 +466,31 @@ function displayDataInfo() {
                                     border-radius: 8px;
                                     padding: 8px 12px;
                                     font-size: 0.875rem;
-                                    font-weight: 500;
+                                    font-weight: 600;
                                     color: #2d3748;
                                     transition: all 0.2s ease;
                                     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+                                    width: 100%;
+                                    box-sizing: border-box;
                                 " onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 12px rgba(0, 0, 0, 0.15)'; this.style.borderColor='#a0aec0';" 
                                    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0, 0, 0, 0.1)'; this.style.borderColor='#cbd5e0';">
-                                    <div style="font-weight: 600;">${v}</div>
-                                    <div style="font-size: 0.75rem; color: #718096; margin-top: 2px;">${getVariableRange(v)}</div>
+                                    ${v} <span style="font-weight: 500; color: #718096;">${getVariableRange(v)}</span>
                                 </div>
                             `).join('')}
                         </div>
                     </div>
                 `;
             }
-        });
+            
+            variablesHTML += `</div>`;
+        }
+        
+        variablesHTML += `</div>`;
     } else {
-        // Fallback to alphabetical list if no locations loaded
+        // Fallback to 3-column grid for alphabetical list if no locations loaded
         const sortedVariables = [...variables].sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
         variablesHTML = `
-            <div style="margin-top: 0.75rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 0.5rem;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
                 ${sortedVariables.map(v => `
                     <div style="
                         background: linear-gradient(135deg, #f8fafc, #e2e8f0);
@@ -480,14 +498,15 @@ function displayDataInfo() {
                         border-radius: 8px;
                         padding: 8px 12px;
                         font-size: 0.875rem;
-                        font-weight: 500;
+                        font-weight: 600;
                         color: #2d3748;
                         transition: all 0.2s ease;
                         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+                        width: 100%;
+                        box-sizing: border-box;
                     " onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 12px rgba(0, 0, 0, 0.15)'; this.style.borderColor='#a0aec0';" 
                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0, 0, 0, 0.1)'; this.style.borderColor='#cbd5e0';">
-                        <div style="font-weight: 600;">${v}</div>
-                        <div style="font-size: 0.75rem; color: #718096; margin-top: 2px;">${getVariableRange(v)}</div>
+                        ${v} <span style="font-weight: 500; color: #718096;">${getVariableRange(v)}</span>
                     </div>
                 `).join('')}
             </div>
