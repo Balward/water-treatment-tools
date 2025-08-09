@@ -1011,7 +1011,11 @@ function getScatterChartOptions(xAxis, yAxis) {
         const xRange = xMax - xMin;
         const xBuffer = xRange * 0.1;
         
-        xAxisConfig.min = xMin - xBuffer;
+        // Check if this is a Streaming Current variable (can have negative values)
+        const isStreamingCurrentX = xAxis.toLowerCase().includes('streaming current') || xAxis.toLowerCase().includes('streaming_current');
+        
+        // For Streaming Current, always use full buffer. For others, don't go below zero.
+        xAxisConfig.min = isStreamingCurrentX ? xMin - xBuffer : Math.max(0, xMin - xBuffer);
         xAxisConfig.max = xMax + xBuffer;
     }
     
@@ -1021,7 +1025,11 @@ function getScatterChartOptions(xAxis, yAxis) {
         const yRange = yMax - yMin;
         const yBuffer = yRange * 0.1;
         
-        yAxisConfig.min = yMin - yBuffer;
+        // Check if this is a Streaming Current variable (can have negative values)
+        const isStreamingCurrentY = yAxis.toLowerCase().includes('streaming current') || yAxis.toLowerCase().includes('streaming_current');
+        
+        // For Streaming Current, always use full buffer. For others, don't go below zero.
+        yAxisConfig.min = isStreamingCurrentY ? yMin - yBuffer : Math.max(0, yMin - yBuffer);
         yAxisConfig.max = yMax + yBuffer;
     }
     
