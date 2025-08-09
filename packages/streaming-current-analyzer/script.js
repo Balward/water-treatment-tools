@@ -275,7 +275,6 @@ function getSelectedTimeSeriesVariables() {
 
 function showAnalysisInterface() {
     document.getElementById('quickStartSection').style.display = 'none';
-    document.getElementById('infoPanel').style.display = 'block';
     document.getElementById('analysisContainer').style.display = 'block';
     document.getElementById('exportPdfHeader').disabled = false;
 }
