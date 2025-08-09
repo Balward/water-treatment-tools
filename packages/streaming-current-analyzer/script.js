@@ -526,10 +526,43 @@ function updateTimeSeriesChart() {
     }
 }
 
+// Calculate optimal number of bins based on data characteristics
+function calculateOptimalBins(values) {
+    const n = values.length;
+    const min = Math.min(...values);
+    const max = Math.max(...values);
+    const range = max - min;
+    
+    // If range is very small (tight data), use fewer bins
+    if (range < 0.1) {
+        return Math.max(3, Math.min(8, Math.ceil(n / 20)));
+    }
+    
+    // Standard methods for bin calculation
+    // Sturges' rule: bins = 1 + log2(n)
+    const sturges = Math.ceil(1 + Math.log2(n));
+    
+    // Square root choice: bins = sqrt(n)
+    const sqrt = Math.ceil(Math.sqrt(n));
+    
+    // Freedman-Diaconis rule: binWidth = 2 * IQR / n^(1/3)
+    const sortedValues = [...values].sort((a, b) => a - b);
+    const q1 = sortedValues[Math.floor(n * 0.25)];
+    const q3 = sortedValues[Math.floor(n * 0.75)];
+    const iqr = q3 - q1;
+    const fd = iqr > 0 ? Math.ceil(range / (2 * iqr / Math.pow(n, 1/3))) : sqrt;
+    
+    // Use the median of the three methods, constrained to reasonable bounds
+    const bins = [sturges, sqrt, fd].sort((a, b) => a - b)[1]; // median
+    
+    // Constrain between 3 and 20 bins
+    return Math.max(3, Math.min(20, bins));
+}
+
 // Distribution Analysis
 function updateDistributionChart() {
     const variable = document.getElementById('distVariable').value;
-    const bins = parseInt(document.getElementById('distBins').value);
+    const binSetting = document.getElementById('distBins').value;
     
     if (!variable) {
         showNotification('Please select a variable to analyze.', 'warning');
@@ -543,17 +576,33 @@ function updateDistributionChart() {
         return;
     }
     
+    // Calculate dynamic number of bins based on data characteristics
+    let bins;
+    if (binSetting === 'auto') {
+        bins = calculateOptimalBins(values);
+        console.log(`Auto-calculated ${bins} bins for ${variable} (range: ${(Math.max(...values) - Math.min(...values)).toFixed(4)})`);
+    } else {
+        bins = parseInt(binSetting);
+    }
+    
     // Calculate histogram
     const min = Math.min(...values);
     const max = Math.max(...values);
-    const binWidth = (max - min) / bins;
+    const range = max - min;
+    const binWidth = range / bins;
     const histogram = new Array(bins).fill(0);
     const binLabels = [];
+    
+    // For very small ranges, use more precise formatting
+    const precision = range < 1 ? 4 : range < 10 ? 3 : 2;
     
     for (let i = 0; i < bins; i++) {
         const binStart = min + i * binWidth;
         const binEnd = min + (i + 1) * binWidth;
-        binLabels.push(`${formatValue(binStart, units[variable])} - ${formatValue(binEnd, units[variable])}`);
+        // Use precise formatting for tight ranges
+        const startStr = binStart.toFixed(precision);
+        const endStr = binEnd.toFixed(precision);
+        binLabels.push(`${startStr} - ${endStr}`);
     }
     
     values.forEach(value => {
