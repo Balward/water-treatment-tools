@@ -429,7 +429,7 @@ function displayDataInfo() {
     
     if (Object.keys(variableLocations).length > 0) {
         // Show grouped by location in 3 columns
-        const locationOrder = ['Plant Influent', 'Raw Water', 'Chemical Feed', 'Streaming Current', 'Finished Water', 'Filter Operations', 'Settled Water', 'Reclaim System', 'Other'];
+        const locationOrder = ['Raw Water', 'Rapid Mix', 'Clarifiers', 'Finished Water', 'Filter Operations', 'Reclaim System', 'Other'];
         
         // Filter out empty locations and group into chunks of 3 for columns
         const activeLocations = locationOrder.filter(location => 

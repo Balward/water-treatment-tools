@@ -1,18 +1,20 @@
 {
   "locations": {
-    "Plant Influent": [
-      "Plant Influent Flow"
-    ],
     "Raw Water": [
+      "Plant Influent Flow",
       "Raw Water Alkalinity",
       "Raw Water pH",
       "Raw Water Temperature", 
       "Raw Water TOC",
       "Raw Water Turbidity"
     ],
-    "Chemical Feed": [
+    "Rapid Mix": [
+      "Streaming Current",
       "Aluminum Sulfate Dose",
       "Catifloc 8103+ Dose"
+    ],
+    "Clarifiers": [
+      "Settled Water Turbidity"
     ],
     "Finished Water": [
       "Finished Water Alkalinity",
@@ -23,15 +25,9 @@
       "Filter Average Run Time",
       "Filter Average UFRV"
     ],
-    "Settled Water": [
-      "Settled Water Turbidity"
-    ],
     "Reclaim System": [
       "Reclaim Water Flow",
       "Reclaim Water Flow % of Plant Influent"
-    ],
-    "Streaming Current": [
-      "Streaming Current"
     ],
     "Other": [
       "Combined Filter Effluent Turbidity",
