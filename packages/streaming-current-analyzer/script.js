@@ -593,8 +593,22 @@ function updateDistributionChart() {
     const histogram = new Array(bins).fill(0);
     const binLabels = [];
     
-    // For very small ranges, use more precise formatting
-    const precision = range < 1 ? 4 : range < 10 ? 3 : 2;
+    // Determine actual decimal precision from the data
+    function getDataPrecision(values) {
+        let maxDecimals = 0;
+        values.forEach(value => {
+            const str = value.toString();
+            const decimalIndex = str.indexOf('.');
+            if (decimalIndex !== -1) {
+                const decimals = str.length - decimalIndex - 1;
+                maxDecimals = Math.max(maxDecimals, decimals);
+            }
+        });
+        return Math.min(maxDecimals, 4); // Cap at 4 decimals max
+    }
+    
+    const precision = getDataPrecision(values);
+    console.log(`Detected ${precision} decimal places for ${variable}`);
     
     for (let i = 0; i < bins; i++) {
         const binStart = min + i * binWidth;
