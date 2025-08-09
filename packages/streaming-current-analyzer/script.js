@@ -423,11 +423,29 @@ function updateTimeSeriesChart() {
                     // Try parsing as MM/DD/YYYY or similar formats first
                     let dateSuccess = false;
                     const dateFormats = [
-                        // Try MM/DD/YYYY format
+                        // Try MM/DD/YYYY HH:MM format (like "7/29/2025 16:15")
+                        () => {
+                            const parts = xValue.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})\s+(\d{1,2}):(\d{1,2})$/);
+                            if (parts) {
+                                const date = new Date(parts[3], parts[1] - 1, parts[2], parts[4], parts[5], 0);
+                                return !isNaN(date.getTime()) ? date : null;
+                            }
+                            return null;
+                        },
+                        // Try MM/DD/YYYY HH:MM:SS format
+                        () => {
+                            const parts = xValue.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})\s+(\d{1,2}):(\d{1,2}):(\d{1,2})$/);
+                            if (parts) {
+                                const date = new Date(parts[3], parts[1] - 1, parts[2], parts[4], parts[5], parts[6]);
+                                return !isNaN(date.getTime()) ? date : null;
+                            }
+                            return null;
+                        },
+                        // Try MM/DD/YYYY format (date only)
                         () => {
                             const parts = xValue.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
                             if (parts) {
-                                const date = new Date(parts[3], parts[1] - 1, parts[2], 12, 0, 0); // Set to noon to avoid timezone issues
+                                const date = new Date(parts[3], parts[1] - 1, parts[2], 12, 0, 0);
                                 return !isNaN(date.getTime()) ? date : null;
                             }
                             return null;
@@ -436,7 +454,7 @@ function updateTimeSeriesChart() {
                         () => {
                             const parts = xValue.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
                             if (parts) {
-                                const date = new Date(parts[1], parts[2] - 1, parts[3], 12, 0, 0); // Set to noon
+                                const date = new Date(parts[1], parts[2] - 1, parts[3], 12, 0, 0);
                                 return !isNaN(date.getTime()) ? date : null;
                             }
                             return null;
@@ -445,7 +463,7 @@ function updateTimeSeriesChart() {
                         () => {
                             const parts = xValue.match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/);
                             if (parts) {
-                                const date = new Date(parts[3], parts[1] - 1, parts[2], 12, 0, 0); // Set to noon
+                                const date = new Date(parts[3], parts[1] - 1, parts[2], 12, 0, 0);
                                 return !isNaN(date.getTime()) ? date : null;
                             }
                             return null;
