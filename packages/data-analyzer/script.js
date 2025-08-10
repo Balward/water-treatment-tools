@@ -146,7 +146,7 @@ function showMainContent() {
 // Populate all selector dropdowns
 function populateSelectors() {
     const selectorIds = [
-        'corrXAxis', 'corrYAxis', 
+        'corrXAxis', 'corrYAxis', 'corrColorBy',
         'timeVar1', 'timeVar2', 'timeVar3', 'timeVar4',
         'distVariable', 'targetVariable'
     ];
@@ -298,24 +298,60 @@ function formatValue(value, variable) {
 function updateCorrelationChart() {
     const xVar = document.getElementById('corrXAxis').value;
     const yVar = document.getElementById('corrYAxis').value;
+    const colorVar = document.getElementById('corrColorBy').value;
     
     if (!xVar || !yVar) {
         document.getElementById('correlationTitle').textContent = 'Select variables to view correlation';
         return;
     }
     
-    // Get valid data points
-    const chartData = data.map(d => ({
+    // Get valid data points with color variable if specified
+    let validData = data.map(d => ({
         x: d[xVar],
-        y: d[yVar]
+        y: d[yVar],
+        color: colorVar ? d[colorVar] : null
     })).filter(point => 
         typeof point.x === 'number' && typeof point.y === 'number' && 
-        !isNaN(point.x) && !isNaN(point.y)
+        !isNaN(point.x) && !isNaN(point.y) &&
+        (!colorVar || (typeof point.color === 'number' && !isNaN(point.color)))
     );
     
-    if (chartData.length === 0) {
+    if (validData.length === 0) {
         showNotification('No valid data points found for selected variables', 'warning');
         return;
+    }
+    
+    let datasets = [];
+    
+    if (colorVar) {
+        // Group data by color variable ranges
+        const colorValues = validData.map(d => d.color);
+        const colorRanges = createColorRanges(colorValues, colorVar);
+        const colors = ['#667eea', '#764ba2', '#f093fb', '#f5576c', '#4facfe'];
+        
+        colorRanges.forEach((range, index) => {
+            const rangeData = validData.filter(d => d.color >= range.min && d.color <= range.max);
+            if (rangeData.length > 0) {
+                const bubbleData = createBubbleData(rangeData);
+                datasets.push({
+                    label: range.label,
+                    data: bubbleData,
+                    backgroundColor: colors[index] + '80',
+                    borderColor: colors[index],
+                    borderWidth: 2
+                });
+            }
+        });
+    } else {
+        // Single dataset with bubble sizing
+        const bubbleData = createBubbleData(validData);
+        datasets.push({
+            label: `${yVar} vs ${xVar}`,
+            data: bubbleData,
+            backgroundColor: 'rgba(102, 126, 234, 0.6)',
+            borderColor: 'rgba(102, 126, 234, 1)',
+            borderWidth: 2
+        });
     }
     
     // Destroy existing chart
@@ -323,20 +359,16 @@ function updateCorrelationChart() {
         correlationChart.destroy();
     }
     
+    // Calculate axis ranges with 10% buffer
+    const xValues = validData.map(d => d.x);
+    const yValues = validData.map(d => d.y);
+    const xRange = calculateAxisRange(xValues, xVar);
+    const yRange = calculateAxisRange(yValues, yVar);
+    
     const ctx = document.getElementById('correlationChart').getContext('2d');
     correlationChart = new Chart(ctx, {
-        type: 'scatter',
-        data: {
-            datasets: [{
-                label: `${yVar} vs ${xVar}`,
-                data: chartData,
-                backgroundColor: 'rgba(102, 126, 234, 0.6)',
-                borderColor: 'rgba(102, 126, 234, 1)',
-                borderWidth: 2,
-                pointRadius: 4,
-                pointHoverRadius: 6
-            }]
-        },
+        type: 'bubble',
+        data: { datasets: datasets },
         options: {
             responsive: true,
             maintainAspectRatio: false,
@@ -347,7 +379,9 @@ function updateCorrelationChart() {
                         label: function(context) {
                             const x = formatValue(context.parsed.x, xVar);
                             const y = formatValue(context.parsed.y, yVar);
-                            return `(${x}, ${y})`;
+                            const count = context.raw.count || 1;
+                            const countText = count > 1 ? ` (${count} points)` : '';
+                            return `(${x}, ${y})${countText}`;
                         }
                     }
                 }
@@ -359,6 +393,8 @@ function updateCorrelationChart() {
                         display: true, 
                         text: `${xVar}${units[xVar] ? ` (${units[xVar]})` : ''}` 
                     },
+                    min: xRange.min,
+                    max: xRange.max,
                     ticks: {
                         callback: function(value) {
                             return formatValue(value, xVar);
@@ -371,6 +407,8 @@ function updateCorrelationChart() {
                         display: true, 
                         text: `${yVar}${units[yVar] ? ` (${units[yVar]})` : ''}` 
                     },
+                    min: yRange.min,
+                    max: yRange.max,
                     ticks: {
                         callback: function(value) {
                             return formatValue(value, yVar);
@@ -382,11 +420,80 @@ function updateCorrelationChart() {
     });
     
     // Calculate correlation coefficient
-    const correlation = calculateCorrelation(chartData.map(d => d.x), chartData.map(d => d.y));
+    const correlation = calculateCorrelation(xValues, yValues);
     const xUnit = units[xVar] ? ` (${units[xVar]})` : '';
     const yUnit = units[yVar] ? ` (${units[yVar]})` : '';
+    const colorText = colorVar ? ` • Colored by ${colorVar}` : '';
     document.getElementById('correlationTitle').textContent = 
-        `${yVar}${yUnit} vs ${xVar}${xUnit} • R = ${correlation.toFixed(3)}`;
+        `${yVar}${yUnit} vs ${xVar}${xUnit} • R = ${correlation.toFixed(3)}${colorText}`;
+}
+
+// Create color ranges (maximum 5)
+function createColorRanges(values, variable) {
+    const min = Math.min(...values);
+    const max = Math.max(...values);
+    const range = max - min;
+    
+    if (range === 0) {
+        return [{ min: min, max: max, label: formatValue(min, variable) }];
+    }
+    
+    const numRanges = Math.min(5, Math.max(2, Math.ceil(Math.sqrt(values.length / 10))));
+    const rangeSize = range / numRanges;
+    const ranges = [];
+    
+    for (let i = 0; i < numRanges; i++) {
+        const rangeMin = min + (i * rangeSize);
+        const rangeMax = i === numRanges - 1 ? max : min + ((i + 1) * rangeSize);
+        const unit = units[variable] ? ` ${units[variable]}` : '';
+        
+        ranges.push({
+            min: rangeMin,
+            max: rangeMax,
+            label: `${formatValue(rangeMin, variable)} - ${formatValue(rangeMax, variable)}${unit}`
+        });
+    }
+    
+    return ranges;
+}
+
+// Create bubble data with frequency-based sizing
+function createBubbleData(validData) {
+    // Group points by coordinates to count frequency
+    const pointMap = {};
+    const tolerance = 1e-6; // Small tolerance for floating point comparison
+    
+    validData.forEach(point => {
+        const key = `${Math.round(point.x / tolerance) * tolerance},${Math.round(point.y / tolerance) * tolerance}`;
+        if (!pointMap[key]) {
+            pointMap[key] = { x: point.x, y: point.y, count: 0 };
+        }
+        pointMap[key].count++;
+    });
+    
+    // Convert to bubble format with size based on frequency
+    return Object.values(pointMap).map(point => ({
+        x: point.x,
+        y: point.y,
+        r: Math.max(3, Math.min(20, 3 + Math.log(point.count) * 3)), // Logarithmic scaling
+        count: point.count
+    }));
+}
+
+// Calculate axis range with 10% buffer and minimum 0 (except streaming current)
+function calculateAxisRange(values, variable) {
+    const min = Math.min(...values);
+    const max = Math.max(...values);
+    const range = max - min;
+    const buffer = range * 0.1;
+    
+    const isStreamingCurrent = variable.toLowerCase().includes('streaming current') || 
+                              variable.toLowerCase().includes('streaming_current');
+    
+    return {
+        min: isStreamingCurrent ? min - buffer : Math.max(0, min - buffer),
+        max: max + buffer
+    };
 }
 
 // Update time series chart
