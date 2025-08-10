@@ -17,20 +17,29 @@ window.addEventListener('load', function() {
 // Load and parse Excel data
 async function loadData() {
     try {
-        updateLoadingProgress(20, 'Fetching Excel file...');
+        // Enhanced loading sequence with realistic timing
+        await updateLoadingProgress(5, 'Initializing data analyzer...');
+        await new Promise(resolve => setTimeout(resolve, 300));
         
+        await updateLoadingProgress(15, 'Connecting to data source...');
+        await new Promise(resolve => setTimeout(resolve, 400));
+        
+        await updateLoadingProgress(25, 'Fetching Excel file...');
         const response = await fetch('../../data/Streaming_Current_Data.xlsx');
         if (!response.ok) throw new Error('Failed to fetch data file');
         
-        updateLoadingProgress(40, 'Reading Excel data...');
+        await updateLoadingProgress(40, 'Downloading spreadsheet data...');
+        await new Promise(resolve => setTimeout(resolve, 300));
         const arrayBuffer = await response.arrayBuffer();
         
-        updateLoadingProgress(60, 'Parsing spreadsheet...');
+        await updateLoadingProgress(55, 'Parsing Excel workbook...');
+        await new Promise(resolve => setTimeout(resolve, 400));
         const workbook = XLSX.read(arrayBuffer, { type: 'array' });
         const firstSheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[firstSheetName];
         
-        updateLoadingProgress(80, 'Processing variables and data...');
+        await updateLoadingProgress(70, 'Extracting variables and units...');
+        await new Promise(resolve => setTimeout(resolve, 300));
         const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: null });
         
         if (jsonData.length < 2) {
@@ -95,7 +104,11 @@ async function loadData() {
             return dataPoint;
         });
         
-        updateLoadingProgress(95, 'Setting up interface...');
+        await updateLoadingProgress(85, 'Processing data rows...');
+        await new Promise(resolve => setTimeout(resolve, 400));
+        
+        await updateLoadingProgress(95, 'Setting up interface...');
+        await new Promise(resolve => setTimeout(resolve, 300));
         
         // Initialize UI
         populateSelectors();
@@ -103,9 +116,10 @@ async function loadData() {
         setDefaultSelections();
         showMainContent();
         
-        updateLoadingProgress(100, 'Ready!');
+        await updateLoadingProgress(100, 'Analysis ready!');
+        await new Promise(resolve => setTimeout(resolve, 600));
         
-        setTimeout(hideLoadingScreen, 500);
+        hideLoadingScreen();
         
     } catch (error) {
         console.error('Error loading data:', error);
@@ -114,16 +128,26 @@ async function loadData() {
     }
 }
 
-// Update loading progress
-function updateLoadingProgress(percentage, text) {
+// Update loading progress with smooth animation
+async function updateLoadingProgress(targetPercentage, text) {
     const progressFill = document.getElementById('progressFill');
     const loadingText = document.getElementById('loadingText');
     
-    if (progressFill) {
-        progressFill.style.width = percentage + '%';
-    }
     if (loadingText) {
         loadingText.textContent = text;
+    }
+    
+    if (progressFill) {
+        const currentWidth = parseInt(progressFill.style.width) || 0;
+        const difference = targetPercentage - currentWidth;
+        const steps = 20;
+        const increment = difference / steps;
+        
+        for (let i = 0; i <= steps; i++) {
+            const newWidth = currentWidth + (increment * i);
+            progressFill.style.width = Math.min(newWidth, targetPercentage) + '%';
+            await new Promise(resolve => setTimeout(resolve, 15));
+        }
     }
 }
 
