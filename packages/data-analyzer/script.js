@@ -779,24 +779,33 @@ function updateOptimizationChart() {
         }
     });
     
-    // Display correlation matrix
+    // Display correlation matrix (will auto-create chart for strongest correlation)
     displayCorrelationMatrix(correlations, targetVar);
     
-    // Create chart with strongest correlation
-    const strongestCorr = Object.entries(correlations).reduce((max, [variable, corr]) => 
-        Math.abs(corr) > Math.abs(max.corr) ? { var: variable, corr } : max, 
-        { var: null, corr: 0 }
-    );
-    
-    if (strongestCorr.var) {
-        createOptimizationScatter(targetVar, strongestCorr.var);
-    } else {
+    // If no correlations found, clear the chart
+    if (Object.keys(correlations).length === 0) {
+        if (optimizationChart) {
+            optimizationChart.destroy();
+            optimizationChart = null;
+        }
         document.getElementById('optimizationTitle').textContent = 
             `No correlations ≥ ${minCorr} found for ${targetVar}`;
     }
 }
 
-// Display correlation matrix
+// Handle correlation variable button selection
+function selectCorrelationVariable(variable, targetVar, buttonElement) {
+    // Remove active class from all buttons
+    document.querySelectorAll('.correlation-button').forEach(btn => btn.classList.remove('active'));
+    
+    // Add active class to clicked button
+    buttonElement.classList.add('active');
+    
+    // Update the chart with selected variable
+    createOptimizationScatter(targetVar, variable);
+}
+
+// Display correlation matrix as interactive buttons
 function displayCorrelationMatrix(correlations, targetVar) {
     const container = document.getElementById('correlationMatrix');
     
@@ -807,22 +816,31 @@ function displayCorrelationMatrix(correlations, targetVar) {
     
     const sortedCorr = Object.entries(correlations).sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]));
     
-    let html = '<div style="font-size: 0.9rem;">';
-    sortedCorr.forEach(([variable, corr]) => {
-        const strength = Math.abs(corr) > 0.7 ? 'Strong' : Math.abs(corr) > 0.5 ? 'Moderate' : 'Weak';
-        const color = Math.abs(corr) > 0.7 ? '#059669' : Math.abs(corr) > 0.5 ? '#d97706' : '#6b7280';
+    let html = '<div>';
+    sortedCorr.forEach(([variable, corr], index) => {
         const direction = corr > 0 ? '↗️' : '↘️';
+        const isFirst = index === 0; // First (strongest) correlation is active by default
+        const activeClass = isFirst ? 'active' : '';
         
         html += `
-            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; margin-bottom: 0.5rem; background: #f8fafc; border-radius: 4px; border-left: 4px solid ${color};">
-                <span style="font-weight: 500;">${variable}</span>
-                <span style="color: ${color}; font-weight: bold;">${direction} ${corr.toFixed(3)}</span>
-            </div>
+            <button class="correlation-button ${activeClass}" onclick="selectCorrelationVariable('${variable}', '${targetVar}', this)">
+                <span class="variable-name">${variable}</span>
+                <span class="correlation-value">
+                    <span class="correlation-direction">${direction}</span>
+                    ${Math.abs(corr).toFixed(3)}
+                </span>
+            </button>
         `;
     });
     html += '</div>';
     
     container.innerHTML = html;
+    
+    // Auto-select the first (strongest) correlation for the graph
+    if (sortedCorr.length > 0) {
+        const strongestVar = sortedCorr[0][0];
+        createOptimizationScatter(targetVar, strongestVar);
+    }
 }
 
 // Create optimization scatter plot
@@ -944,3 +962,4 @@ window.updateCorrelationChart = updateCorrelationChart;
 window.updateTimeSeriesChart = updateTimeSeriesChart;
 window.updateDistributionChart = updateDistributionChart;
 window.updateOptimizationChart = updateOptimizationChart;
+window.selectCorrelationVariable = selectCorrelationVariable;

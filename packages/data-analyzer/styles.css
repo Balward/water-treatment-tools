@@ -251,8 +251,13 @@ main {
     gap: 1.5rem;
 }
 
+/* Optimization specific layout - bigger graph, smaller matrix */
+#optimization-tab .analysis-container {
+    grid-template-columns: 1fr 3fr;
+}
+
 @media (max-width: 1024px) {
-    .analysis-container {
+    .analysis-container, #optimization-tab .analysis-container {
         grid-template-columns: 1fr;
     }
 }
@@ -285,6 +290,52 @@ main {
     margin-bottom: 1rem;
     color: #333;
     font-size: 1.2rem;
+}
+
+/* Correlation matrix button styles */
+.correlation-button {
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    background: #f8fafc;
+    border: 2px solid #e1e5e9;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: left;
+    font-size: 0.9rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.correlation-button:hover {
+    background: #e2e8f0;
+    border-color: #667eea;
+    transform: translateY(-1px);
+}
+
+.correlation-button.active {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border-color: #667eea;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.correlation-button .variable-name {
+    font-weight: 500;
+    flex: 1;
+}
+
+.correlation-button .correlation-value {
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.correlation-button .correlation-direction {
+    font-size: 1.1rem;
 }
 
 /* Notifications */
