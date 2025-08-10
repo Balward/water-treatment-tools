@@ -760,6 +760,7 @@ function updateOptimizationChart() {
     
     if (!targetVar) {
         document.getElementById('optimizationTitle').textContent = 'Select target variable for optimization analysis';
+        document.getElementById('optimizationSubtitle').textContent = '';
         return;
     }
     
@@ -790,6 +791,7 @@ function updateOptimizationChart() {
         }
         document.getElementById('optimizationTitle').textContent = 
             `No correlations ≥ ${minCorr} found for ${targetVar}`;
+        document.getElementById('optimizationSubtitle').textContent = '';
     }
 }
 
@@ -853,6 +855,24 @@ function createOptimizationScatter(targetVar, strongestVar) {
         !isNaN(point.x) && !isNaN(point.y)
     );
     
+    if (chartData.length === 0) {
+        showNotification('No valid data points found for optimization chart', 'warning');
+        return;
+    }
+    
+    // Calculate linear regression for trend line
+    const xValues = chartData.map(d => d.x);
+    const yValues = chartData.map(d => d.y);
+    const regression = calculateLinearRegression(xValues, yValues);
+    
+    // Create trend line points across data range
+    const minX = Math.min(...xValues);
+    const maxX = Math.max(...xValues);
+    const trendLineData = [
+        { x: minX, y: regression.slope * minX + regression.intercept },
+        { x: maxX, y: regression.slope * maxX + regression.intercept }
+    ];
+    
     // Destroy existing chart
     if (optimizationChart) {
         optimizationChart.destroy();
@@ -869,7 +889,20 @@ function createOptimizationScatter(targetVar, strongestVar) {
                 borderColor: 'rgba(220, 38, 38, 1)',
                 borderWidth: 2,
                 pointRadius: 4,
-                pointHoverRadius: 6
+                pointHoverRadius: 6,
+                showLine: false
+            }, {
+                label: 'Trend Line',
+                data: trendLineData,
+                backgroundColor: 'transparent',
+                borderColor: 'rgba(59, 130, 246, 1)',
+                borderWidth: 3,
+                borderDash: [8, 4],
+                pointRadius: 0,
+                pointHoverRadius: 0,
+                showLine: true,
+                fill: false,
+                tension: 0
             }]
         },
         options: {
@@ -878,6 +911,10 @@ function createOptimizationScatter(targetVar, strongestVar) {
             plugins: {
                 legend: { position: 'top' },
                 tooltip: {
+                    filter: function(tooltipItem) {
+                        // Hide tooltip for trend line
+                        return tooltipItem.datasetIndex === 0;
+                    },
                     callbacks: {
                         label: function(context) {
                             const x = formatValue(context.parsed.x, strongestVar);
@@ -916,11 +953,18 @@ function createOptimizationScatter(targetVar, strongestVar) {
         }
     });
     
-    const correlation = calculateCorrelation(chartData.map(d => d.x), chartData.map(d => d.y));
+    // Update title with correlation and R² values
+    const correlation = calculateCorrelation(xValues, yValues);
     const xUnit = units[strongestVar] ? ` (${units[strongestVar]})` : '';
     const yUnit = units[targetVar] ? ` (${units[targetVar]})` : '';
     document.getElementById('optimizationTitle').textContent = 
-        `${targetVar}${yUnit} vs ${strongestVar}${xUnit} • R = ${correlation.toFixed(3)}`;
+        `${targetVar}${yUnit} vs ${strongestVar}${xUnit}`;
+    
+    // Create subtitle with correlation info
+    const subtitleElement = document.getElementById('optimizationSubtitle');
+    if (subtitleElement) {
+        subtitleElement.textContent = `R = ${correlation.toFixed(3)} • R² = ${regression.r2.toFixed(3)}`;
+    }
 }
 
 // Calculate Pearson correlation coefficient
@@ -938,6 +982,27 @@ function calculateCorrelation(x, y) {
     const denominator = Math.sqrt((n * sumX2 - sumX * sumX) * (n * sumY2 - sumY * sumY));
     
     return denominator === 0 ? 0 : numerator / denominator;
+}
+
+// Calculate linear regression (best fit line)
+function calculateLinearRegression(x, y) {
+    const n = Math.min(x.length, y.length);
+    if (n < 2) return { slope: 0, intercept: 0, r2: 0 };
+    
+    const sumX = x.slice(0, n).reduce((sum, val) => sum + val, 0);
+    const sumY = y.slice(0, n).reduce((sum, val) => sum + val, 0);
+    const sumXY = x.slice(0, n).reduce((sum, val, i) => sum + val * y[i], 0);
+    const sumX2 = x.slice(0, n).reduce((sum, val) => sum + val * val, 0);
+    const sumY2 = y.slice(0, n).reduce((sum, val) => sum + val * val, 0);
+    
+    const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+    const intercept = (sumY - slope * sumX) / n;
+    
+    // Calculate R-squared
+    const correlation = calculateCorrelation(x, y);
+    const r2 = correlation * correlation;
+    
+    return { slope, intercept, r2 };
 }
 
 // Show notification
