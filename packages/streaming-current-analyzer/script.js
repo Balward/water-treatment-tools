@@ -388,12 +388,11 @@ function updateCorrelationChart() {
 // Time Series Analysis
 function updateTimeSeriesChart() {
     try {
-        // Always use the Date column for time series
-        const timeVar = variables.find(v => v.toLowerCase().includes('date')) || variables[0]; // fallback to first column
+        const timeVar = variables[0]; // Always use first column as x-axis
         const selectedVars = getSelectedTimeSeriesVariables();
         
         if (!timeVar) {
-            showNotification('No date column found for time series.', 'error');
+            showNotification('No time variable found (first column).', 'error');
             return;
         }
         
@@ -402,104 +401,71 @@ function updateTimeSeriesChart() {
             return;
         }
         
-        console.log('Time variable (Date):', timeVar);
+        console.log('Time variable:', timeVar);
         console.log('Selected variables:', selectedVars);
+        
+        // First, get sample data to determine x-axis type
+        const sampleData = streamingData.slice(0, 10).map(point => point[timeVar]).filter(val => val !== undefined && val !== null);
+        const isDateColumn = timeVar.toLowerCase().includes('date') || sampleData.some(val => typeof val === 'string' && /\d{1,2}\/\d{1,2}\/\d{4}/.test(val));
+        
+        console.log('Is date column:', isDateColumn, 'Sample data:', sampleData);
         
         const colors = generateColors(selectedVars.length);
         const datasets = [];
         
         selectedVars.forEach((variable, index) => {
-            const dataPoints = streamingData.map(point => {
+            const dataPoints = [];
+            
+            streamingData.forEach((point, rowIndex) => {
                 let xValue = point[timeVar];
                 let yValue = point[variable];
                 
-                // Skip if either value is undefined/null
+                // Skip if either value is missing
                 if (xValue === undefined || xValue === null || yValue === undefined || yValue === null) {
-                    return null;
+                    return;
                 }
                 
-                // Handle Date data - convert to Date object if it's a date string
-                if (timeVar.toLowerCase().includes('date') && typeof xValue === 'string' && xValue.trim() !== '') {
-                    // Try parsing as MM/DD/YYYY or similar formats first
-                    let dateSuccess = false;
-                    const dateFormats = [
-                        // Try MM/DD/YYYY HH:MM format (like "7/29/2025 16:15")
-                        () => {
-                            const parts = xValue.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})\s+(\d{1,2}):(\d{1,2})$/);
-                            if (parts) {
-                                const date = new Date(parts[3], parts[1] - 1, parts[2], parts[4], parts[5], 0);
-                                return !isNaN(date.getTime()) ? date : null;
-                            }
-                            return null;
-                        },
-                        // Try MM/DD/YYYY HH:MM:SS format
-                        () => {
-                            const parts = xValue.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})\s+(\d{1,2}):(\d{1,2}):(\d{1,2})$/);
-                            if (parts) {
-                                const date = new Date(parts[3], parts[1] - 1, parts[2], parts[4], parts[5], parts[6]);
-                                return !isNaN(date.getTime()) ? date : null;
-                            }
-                            return null;
-                        },
-                        // Try MM/DD/YYYY format (date only)
-                        () => {
-                            const parts = xValue.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
-                            if (parts) {
-                                const date = new Date(parts[3], parts[1] - 1, parts[2], 12, 0, 0);
-                                return !isNaN(date.getTime()) ? date : null;
-                            }
-                            return null;
-                        },
-                        // Try YYYY-MM-DD format
-                        () => {
-                            const parts = xValue.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
-                            if (parts) {
-                                const date = new Date(parts[1], parts[2] - 1, parts[3], 12, 0, 0);
-                                return !isNaN(date.getTime()) ? date : null;
-                            }
-                            return null;
-                        },
-                        // Try MM-DD-YYYY format
-                        () => {
-                            const parts = xValue.match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/);
-                            if (parts) {
-                                const date = new Date(parts[3], parts[1] - 1, parts[2], 12, 0, 0);
-                                return !isNaN(date.getTime()) ? date : null;
-                            }
-                            return null;
+                // Convert y value to number
+                if (typeof yValue === 'string') {
+                    yValue = parseFloat(yValue);
+                }
+                if (typeof yValue !== 'number' || isNaN(yValue)) {
+                    return;
+                }
+                
+                // Handle x value based on column type
+                if (isDateColumn && typeof xValue === 'string') {
+                    // Simple date parsing for MM/DD/YYYY HH:MM format
+                    const match = xValue.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+(\d{1,2}):(\d{1,2}))?/);
+                    if (match) {
+                        const [, month, day, year, hour = 12, minute = 0] = match;
+                        xValue = new Date(parseInt(year), parseInt(month) - 1, parseInt(day), parseInt(hour), parseInt(minute));
+                        
+                        if (isNaN(xValue.getTime())) {
+                            console.log(`Invalid date at row ${rowIndex}:`, point[timeVar]);
+                            return;
                         }
-                    ];
-                    
-                    for (const formatParser of dateFormats) {
-                        const parsed = formatParser();
-                        if (parsed) {
-                            xValue = parsed;
-                            dateSuccess = true;
-                            break;
+                    } else {
+                        console.log(`Date format not recognized at row ${rowIndex}:`, xValue);
+                        return;
+                    }
+                } else if (!isDateColumn) {
+                    // Non-date column - treat as numeric or sequential
+                    if (typeof xValue === 'string') {
+                        xValue = parseFloat(xValue);
+                        if (isNaN(xValue)) {
+                            xValue = rowIndex; // Use row index as fallback
                         }
                     }
-                    
-                    // Fallback to native Date parsing if custom formats don't work
-                    if (!dateSuccess) {
-                        const parsedDate = new Date(xValue + ' 12:00:00'); // Add noon time to avoid timezone issues
-                        if (!isNaN(parsedDate.getTime())) {
-                            xValue = parsedDate;
-                        }
+                    if (typeof xValue !== 'number') {
+                        xValue = rowIndex;
                     }
                 }
                 
-                return { x: xValue, y: yValue };
-            }).filter(point => {
-                if (!point) return false;
-                
-                const validX = (point.x instanceof Date && !isNaN(point.x.getTime())) || 
-                              (typeof point.x === 'number' && !isNaN(point.x) && isFinite(point.x));
-                const validY = typeof point.y === 'number' && !isNaN(point.y) && isFinite(point.y);
-                
-                return validX && validY;
+                dataPoints.push({ x: xValue, y: yValue });
             });
             
-            console.log(`Variable ${variable} has ${dataPoints.length} valid data points`);
+            console.log(`Variable ${variable}: ${dataPoints.length} data points`);
             
             if (dataPoints.length > 0) {
                 datasets.push({
@@ -510,27 +476,76 @@ function updateTimeSeriesChart() {
                     borderWidth: 2,
                     fill: false,
                     tension: 0.1,
-                    pointRadius: 1,
-                    pointHoverRadius: 4
+                    pointRadius: 2,
+                    pointHoverRadius: 5
                 });
             }
         });
         
         if (datasets.length === 0) {
-            showNotification('No valid data found for the selected variables.', 'error');
+            showNotification('No valid data points found for time series.', 'error');
             return;
         }
         
+        // Create chart
         const ctx = document.getElementById('timeSeriesChart').getContext('2d');
         
         if (timeSeriesChart) {
             timeSeriesChart.destroy();
         }
         
+        // Build chart options
+        const options = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'top' },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const datasetLabel = context.dataset.label;
+                            const value = formatValue(context.parsed.y, '');
+                            return `${datasetLabel}: ${value}`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    display: true,
+                    title: { 
+                        display: true, 
+                        text: `${timeVar}${units[timeVar] && units[timeVar].trim() ? ` (${units[timeVar]})` : ''}` 
+                    }
+                },
+                y: {
+                    display: true,
+                    title: { display: true, text: 'Values (Various Units)' }
+                }
+            },
+            interaction: {
+                mode: 'index',
+                intersect: false
+            }
+        };
+        
+        // Configure time scale for date columns
+        if (isDateColumn) {
+            options.scales.x.type = 'time';
+            options.scales.x.time = {
+                displayFormats: {
+                    hour: 'MM/DD HH:mm',
+                    day: 'MM/DD',
+                    week: 'MM/DD',
+                    month: 'MM/YYYY'
+                }
+            };
+        }
+        
         timeSeriesChart = new Chart(ctx, {
             type: 'line',
             data: { datasets: datasets },
-            options: getTimeSeriesChartOptions(timeVar)
+            options: options
         });
         
         const timeUnit = units[timeVar] && units[timeVar].trim() ? ` (${units[timeVar]})` : '';
@@ -1046,60 +1061,6 @@ function getScatterChartOptions(xAxis, yAxis) {
     };
 }
 
-function getTimeSeriesChartOptions(timeVar) {
-    const timeUnit = units[timeVar] && units[timeVar].trim() ? ` (${units[timeVar]})` : '';
-    const isDateVariable = timeVar.toLowerCase().includes('date');
-    
-    const options = {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: { position: 'top' },
-            tooltip: {
-                callbacks: {
-                    label: function(context) {
-                        // Get the variable name from the dataset label
-                        const datasetLabel = context.dataset.label;
-                        const variableName = datasetLabel.split(' (')[0]; // Extract variable name before unit
-                        const unit = Object.keys(units).find(key => datasetLabel.includes(key)) ? units[Object.keys(units).find(key => datasetLabel.includes(key))] : '';
-                        
-                        const value = formatValue(context.parsed.y, unit);
-                        return `${datasetLabel}: ${value}`;
-                    }
-                }
-            }
-        },
-        scales: {
-            x: {
-                display: true,
-                title: { display: true, text: `${timeVar}${timeUnit}` }
-            },
-            y: {
-                display: true,
-                title: { display: true, text: 'Values (Various Units)' }
-            }
-        },
-        interaction: {
-            mode: 'index',
-            intersect: false
-        }
-    };
-    
-    // Configure time scale for date variables
-    if (isDateVariable) {
-        options.scales.x.type = 'time';
-        options.scales.x.time = {
-            displayFormats: {
-                hour: 'MMM DD, HH:mm',
-                day: 'MMM DD',
-                week: 'MMM DD',
-                month: 'MMM YYYY'
-            }
-        };
-    }
-    
-    return options;
-}
 
 function getHistogramChartOptions(variable) {
     const unit = units[variable] && units[variable].trim() ? ` (${units[variable]})` : '';
