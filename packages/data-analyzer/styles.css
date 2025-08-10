@@ -224,10 +224,19 @@ main {
 }
 
 .chart-container h4 {
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
     color: #333;
     font-size: 1.2rem;
     text-align: center;
+}
+
+.chart-subtitle {
+    margin: 0 0 1rem 0;
+    color: #666;
+    font-size: 0.95rem;
+    text-align: center;
+    font-style: italic;
+    min-height: 1.2rem;
 }
 
 .chart-container canvas {

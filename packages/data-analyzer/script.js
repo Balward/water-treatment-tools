@@ -302,6 +302,7 @@ function updateCorrelationChart() {
     
     if (!xVar || !yVar) {
         document.getElementById('correlationTitle').textContent = 'Select variables to view correlation';
+        document.getElementById('correlationSubtitle').textContent = '';
         return;
     }
     
@@ -419,13 +420,17 @@ function updateCorrelationChart() {
         }
     });
     
-    // Calculate correlation coefficient
+    // Calculate correlation coefficient and update title/subtitle
     const correlation = calculateCorrelation(xValues, yValues);
     const xUnit = units[xVar] ? ` (${units[xVar]})` : '';
     const yUnit = units[yVar] ? ` (${units[yVar]})` : '';
-    const colorText = colorVar ? ` • Colored by ${colorVar}` : '';
-    document.getElementById('correlationTitle').textContent = 
-        `${yVar}${yUnit} vs ${xVar}${xUnit} • R = ${correlation.toFixed(3)}${colorText}`;
+    
+    // Main title: Variable comparison
+    document.getElementById('correlationTitle').textContent = `${yVar}${yUnit} vs ${xVar}${xUnit}`;
+    
+    // Subtitle: R-value and color info
+    const colorText = colorVar ? ` • Colored by ${colorVar}${units[colorVar] ? ` (${units[colorVar]})` : ''}` : '';
+    document.getElementById('correlationSubtitle').textContent = `R = ${correlation.toFixed(3)}${colorText}`;
 }
 
 // Create color ranges (maximum 5)
