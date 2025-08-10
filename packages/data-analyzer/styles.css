@@ -35,7 +35,8 @@ body {
 .loading-content {
     text-align: center;
     color: white;
-    max-width: 400px;
+    width: 450px;
+    max-width: 90vw;
     padding: 2rem;
     animation: fadeInUp 0.8s ease-out;
 }
@@ -46,7 +47,7 @@ body {
 }
 
 .logo-loading {
-    max-width: 180px;
+    max-width: 240px;
     height: auto;
     filter: brightness(0) invert(1);
     drop-shadow: 0 4px 20px rgba(255, 255, 255, 0.3);
@@ -81,6 +82,10 @@ body {
     opacity: 0.9;
     margin-bottom: 1.5rem;
     animation: fadeInOut 1.5s ease-in-out infinite;
+    height: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .loading-dots {
