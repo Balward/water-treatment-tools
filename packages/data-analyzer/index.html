@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Water Treatment Data Analyzer</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>🔬 Water Treatment Data Analyzer</h1>
+        <p>Interactive analysis of streaming current and water treatment parameters</p>
+    </header>
+
+    <div id="loadingScreen" class="loading-screen">
+        <div class="loading-content">
+            <h2>🔄 Loading Data...</h2>
+            <div class="progress-bar">
+                <div id="progressFill" class="progress-fill"></div>
+            </div>
+            <p id="loadingText">Initializing...</p>
+        </div>
+    </div>
+
+    <main id="mainContent" class="hidden">
+        <!-- Data Info Panel -->
+        <section class="info-panel">
+            <h3>📊 Dataset Information</h3>
+            <div id="dataInfo"></div>
+        </section>
+
+        <!-- Navigation Tabs -->
+        <nav class="tab-navigation">
+            <button class="tab active" data-tab="correlation" onclick="switchTab('correlation')">📈 Correlation</button>
+            <button class="tab" data-tab="timeseries" onclick="switchTab('timeseries')">📉 Time Series</button>
+            <button class="tab" data-tab="distribution" onclick="switchTab('distribution')">📊 Distribution</button>
+            <button class="tab" data-tab="optimization" onclick="switchTab('optimization')">🎯 Optimization</button>
+        </nav>
+
+        <!-- Correlation Analysis -->
+        <section id="correlation-tab" class="tab-content active">
+            <div class="controls-panel">
+                <h3>🔗 Parameter Correlation Analysis</h3>
+                <div class="control-group">
+                    <div class="control">
+                        <label for="corrXAxis">X-Axis Variable:</label>
+                        <select id="corrXAxis" onchange="updateCorrelationChart()">
+                            <option value="">Select Variable...</option>
+                        </select>
+                    </div>
+                    <div class="control">
+                        <label for="corrYAxis">Y-Axis Variable:</label>
+                        <select id="corrYAxis" onchange="updateCorrelationChart()">
+                            <option value="">Select Variable...</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="chart-container">
+                <h4 id="correlationTitle">Select variables to view correlation</h4>
+                <canvas id="correlationChart"></canvas>
+            </div>
+        </section>
+
+        <!-- Time Series Analysis -->
+        <section id="timeseries-tab" class="tab-content">
+            <div class="controls-panel">
+                <h3>📈 Time Series Analysis</h3>
+                <div class="control-group">
+                    <div class="control">
+                        <label for="timeVar1">Variable 1:</label>
+                        <select id="timeVar1" onchange="updateTimeSeriesChart()">
+                            <option value="">Select Variable...</option>
+                        </select>
+                    </div>
+                    <div class="control">
+                        <label for="timeVar2">Variable 2:</label>
+                        <select id="timeVar2" onchange="updateTimeSeriesChart()">
+                            <option value="">Select Variable...</option>
+                        </select>
+                    </div>
+                    <div class="control">
+                        <label for="timeVar3">Variable 3:</label>
+                        <select id="timeVar3" onchange="updateTimeSeriesChart()">
+                            <option value="">Select Variable...</option>
+                        </select>
+                    </div>
+                    <div class="control">
+                        <label for="timeVar4">Variable 4:</label>
+                        <select id="timeVar4" onchange="updateTimeSeriesChart()">
+                            <option value="">Select Variable...</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="chart-container">
+                <h4 id="timeSeriesTitle">Variables over Time</h4>
+                <canvas id="timeSeriesChart"></canvas>
+            </div>
+        </section>
+
+        <!-- Distribution Analysis -->
+        <section id="distribution-tab" class="tab-content">
+            <div class="controls-panel">
+                <h3>📊 Distribution Analysis</h3>
+                <div class="control-group">
+                    <div class="control">
+                        <label for="distVariable">Variable:</label>
+                        <select id="distVariable" onchange="updateDistributionChart()">
+                            <option value="">Select Variable...</option>
+                        </select>
+                    </div>
+                    <div class="control">
+                        <label for="distBins">Number of Bins:</label>
+                        <select id="distBins" onchange="updateDistributionChart()">
+                            <option value="auto">Auto</option>
+                            <option value="5">5</option>
+                            <option value="10">10</option>
+                            <option value="15">15</option>
+                            <option value="20">20</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="analysis-container">
+                <div class="chart-container">
+                    <h4 id="distributionTitle">Select variable to view distribution</h4>
+                    <canvas id="distributionChart"></canvas>
+                </div>
+                <div class="stats-panel">
+                    <h4>📈 Statistics</h4>
+                    <div id="distributionStats"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Optimization Analysis -->
+        <section id="optimization-tab" class="tab-content">
+            <div class="controls-panel">
+                <h3>🎯 Optimization Analysis</h3>
+                <div class="control-group">
+                    <div class="control">
+                        <label for="targetVariable">Target Variable:</label>
+                        <select id="targetVariable" onchange="updateOptimizationChart()">
+                            <option value="">Select Variable...</option>
+                        </select>
+                    </div>
+                    <div class="control">
+                        <label for="minCorrelation">Minimum Correlation:</label>
+                        <select id="minCorrelation" onchange="updateOptimizationChart()">
+                            <option value="0.1">0.1</option>
+                            <option value="0.3" selected>0.3</option>
+                            <option value="0.5">0.5</option>
+                            <option value="0.7">0.7</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="analysis-container">
+                <div class="correlation-matrix">
+                    <h4>🔗 Correlation Matrix</h4>
+                    <div id="correlationMatrix"></div>
+                </div>
+                <div class="chart-container">
+                    <h4 id="optimizationTitle">Select target variable for optimization analysis</h4>
+                    <canvas id="optimizationChart"></canvas>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="notificationContainer" class="notification-container"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
