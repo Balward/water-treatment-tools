@@ -322,9 +322,9 @@ function setDefaultSelections() {
         updateDistributionChart();
     }
     
-    // Set optimization default to alum dose
-    if (alumVar) {
-        document.getElementById('targetVariable').value = alumVar;
+    // Set optimization default to streaming current
+    if (streamingVar) {
+        document.getElementById('targetVariable').value = streamingVar;
         updateOptimizationChart();
     }
 }
@@ -992,6 +992,10 @@ function createOptimizationScatter(targetVar, strongestVar) {
     const yValues = chartData.map(d => d.y);
     const regression = calculateLinearRegression(xValues, yValues);
     
+    // Calculate axis ranges with buffer
+    const xRange = calculateAxisRange(xValues, strongestVar);
+    const yRange = calculateAxisRange(yValues, targetVar);
+    
     // Create trend line points across data range
     const minX = Math.min(...xValues);
     const maxX = Math.max(...xValues);
@@ -1059,6 +1063,8 @@ function createOptimizationScatter(targetVar, strongestVar) {
                         display: true, 
                         text: `${strongestVar}${units[strongestVar] ? ` (${units[strongestVar]})` : ''}` 
                     },
+                    min: xRange.min,
+                    max: xRange.max,
                     ticks: {
                         callback: function(value) {
                             return formatValue(value, strongestVar);
@@ -1071,6 +1077,8 @@ function createOptimizationScatter(targetVar, strongestVar) {
                         display: true, 
                         text: `${targetVar}${units[targetVar] ? ` (${units[targetVar]})` : ''}` 
                     },
+                    min: yRange.min,
+                    max: yRange.max,
                     ticks: {
                         callback: function(value) {
                             return formatValue(value, targetVar);
