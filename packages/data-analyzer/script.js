@@ -1087,11 +1087,10 @@ function getZoomConfig() {
                     enabled: true,
                 },
                 pinch: {
-                    enabled: true
+                    enabled: false
                 },
                 drag: {
-                    enabled: true,
-                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    enabled: false,
                 },
                 mode: 'x',
             },
