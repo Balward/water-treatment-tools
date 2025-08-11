@@ -47,6 +47,9 @@
         <section class="info-panel">
             <h3>📊 Dataset Information</h3>
             <div id="dataInfo"></div>
+            <div class="general-help">
+                <p class="help-text"><strong>💡 Quick Tips:</strong> Navigate between analysis types using the tabs above. Each chart supports different interactions - look for hints below charts. Data is automatically filtered to remove invalid values.</p>
+            </div>
         </section>
 
         <!-- Navigation Tabs -->
@@ -61,6 +64,7 @@
         <section id="correlation-tab" class="tab-content active">
             <div class="controls-panel">
                 <h3>🔗 Parameter Correlation Analysis</h3>
+                <p class="instruction-text">💡 <strong>How to use:</strong> Select X and Y variables to explore relationships. Add color grouping to see how a third variable affects the correlation. Larger bubbles indicate multiple data points at the same location.</p>
                 <div class="control-group">
                     <div class="control">
                         <label for="corrXAxis">X-Axis Variable:</label>
@@ -86,6 +90,9 @@
                 <h4 id="correlationTitle">Select variables to view correlation</h4>
                 <p id="correlationSubtitle" class="chart-subtitle"></p>
                 <canvas id="correlationChart"></canvas>
+                <div class="empty-state" id="correlationEmpty">
+                    <p>🔍 Choose X and Y axis variables above to explore correlations between water treatment parameters.</p>
+                </div>
             </div>
         </section>
 
@@ -93,6 +100,7 @@
         <section id="timeseries-tab" class="tab-content">
             <div class="controls-panel">
                 <h3>📈 Time Series Analysis</h3>
+                <p class="instruction-text">⏱️ <strong>How to use:</strong> Select up to 4 variables to view trends over time. Variables with different scales will automatically use separate y-axes. Use scroll to zoom into time periods, drag to pan left/right.</p>
                 <div class="control-group">
                     <div class="control">
                         <label for="timeVar1">Variable 1:</label>
@@ -131,6 +139,7 @@
         <section id="distribution-tab" class="tab-content">
             <div class="controls-panel">
                 <h3>📊 Distribution Analysis</h3>
+                <p class="instruction-text">📊 <strong>How to use:</strong> Select a variable to see its frequency distribution. Adjust bin count to change histogram detail. Statistics panel shows key metrics like mean, median, and standard deviation.</p>
                 <div class="control-group">
                     <div class="control">
                         <label for="distVariable">Variable:</label>
@@ -166,6 +175,7 @@
         <section id="optimization-tab" class="tab-content">
             <div class="controls-panel">
                 <h3>🎯 Optimization Analysis</h3>
+                <p class="instruction-text">🎯 <strong>How to use:</strong> Select a target variable to optimize. The correlation matrix shows which variables most strongly influence your target. Click correlation buttons to view scatter plots with trend lines.</p>
                 <div class="control-group">
                     <div class="control">
                         <label for="targetVariable">Target Variable:</label>

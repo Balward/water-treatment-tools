@@ -189,6 +189,51 @@ main {
     font-size: 1.3rem;
 }
 
+/* Instruction and Help Text */
+.instruction-text {
+    background: rgba(242, 169, 0, 0.1);
+    border-left: 4px solid #F2A900;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    border-radius: 0 8px 8px 0;
+    color: #333;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.help-text {
+    background: rgba(0, 103, 127, 0.1);
+    border-left: 4px solid #00677F;
+    padding: 1rem;
+    margin-top: 1rem;
+    border-radius: 0 8px 8px 0;
+    color: #333;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.general-help {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(0, 103, 127, 0.1);
+}
+
+/* Empty State Messages */
+.empty-state {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: #666;
+    font-style: italic;
+    background: rgba(0, 103, 127, 0.05);
+    border-radius: 8px;
+    margin: 2rem 0;
+}
+
+.empty-state p {
+    font-size: 1.1rem;
+    margin: 0;
+}
+
 /* Tab Navigation */
 .tab-navigation {
     display: flex;
