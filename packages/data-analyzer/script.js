@@ -455,7 +455,7 @@ function updateCorrelationChart() {
                         }
                     }
                 },
-                ...getZoomConfig()
+                ...getNoZoomConfig()
             },
             scales: {
                 x: {
@@ -604,6 +604,9 @@ function updateTimeSeriesChart() {
     const colors = ['#667eea', '#764ba2', '#f093fb', '#f5576c', '#4facfe'];
     const datasets = [];
     
+    // Determine y-axis assignments
+    const { assignments, axes } = determineYAxisAssignments(selectedVars, datasets);
+    
     selectedVars.forEach((variable, index) => {
         const dataPoints = [];
         
@@ -631,7 +634,8 @@ function updateTimeSeriesChart() {
                 fill: false,
                 tension: 0.1,
                 pointRadius: 2,
-                pointHoverRadius: 5
+                pointHoverRadius: 5,
+                yAxisID: assignments[variable] || 'y'
             });
         }
     });
@@ -664,7 +668,7 @@ function updateTimeSeriesChart() {
                         }
                     }
                 },
-                ...getZoomConfig()
+                ...getTimeSeriesZoomConfig()
             },
             scales: {
                 x: {
@@ -680,15 +684,27 @@ function updateTimeSeriesChart() {
                         }
                     }
                 },
-                y: {
-                    display: true,
-                    title: { display: true, text: 'Values (Various Units)' },
-                    ticks: {
-                        callback: function(value) {
-                            return value.toFixed(2);
+                ...Object.fromEntries(
+                    Object.entries(axes).map(([axisId, axisInfo]) => [
+                        axisId,
+                        {
+                            type: 'linear',
+                            display: true,
+                            position: axisId === 'y' ? 'left' : axisId === 'y1' ? 'right' : 'right',
+                            title: { display: true, text: axisInfo.title },
+                            ticks: {
+                                callback: function(value) {
+                                    // Use the first variable's format for this axis
+                                    const variable = axisInfo.variables[0];
+                                    return formatValue(value, variable);
+                                }
+                            },
+                            grid: {
+                                drawOnChartArea: axisId === 'y', // Only show grid for primary axis
+                            }
                         }
-                    }
-                }
+                    ])
+                )
             },
             interaction: {
                 mode: 'index',
@@ -764,7 +780,7 @@ function updateDistributionChart() {
             maintainAspectRatio: false,
             plugins: {
                 legend: { display: false },
-                ...getZoomConfig()
+                ...getNoZoomConfig()
             },
             scales: {
                 x: {
@@ -995,7 +1011,7 @@ function createOptimizationScatter(targetVar, strongestVar) {
                         }
                     }
                 },
-                ...getZoomConfig()
+                ...getNoZoomConfig()
             },
             scales: {
                 x: {
@@ -1078,8 +1094,8 @@ function calculateLinearRegression(x, y) {
     return { slope, intercept, r2 };
 }
 
-// Get zoom configuration for charts
-function getZoomConfig() {
+// Get zoom configuration for time series charts only
+function getTimeSeriesZoomConfig() {
     return {
         zoom: {
             zoom: {
@@ -1100,6 +1116,118 @@ function getZoomConfig() {
             }
         }
     };
+}
+
+// Get empty configuration for other charts (no zoom/pan)
+function getNoZoomConfig() {
+    return {};
+}
+
+// Determine y-axis assignments for time series variables
+function determineYAxisAssignments(selectedVars, datasets) {
+    if (selectedVars.length <= 1) {
+        return { assignments: { [selectedVars[0]]: 'y' }, axes: { y: { variables: selectedVars, title: 'Values' } } };
+    }
+    
+    // Calculate ranges for each variable
+    const varRanges = {};
+    selectedVars.forEach(variable => {
+        const values = data.map(d => d[variable]).filter(v => typeof v === 'number' && !isNaN(v));
+        if (values.length > 0) {
+            const min = Math.min(...values);
+            const max = Math.max(...values);
+            const range = max - min;
+            const magnitude = Math.log10(Math.abs(max) || 1);
+            varRanges[variable] = { min, max, range, magnitude, values };
+        }
+    });
+    
+    // Group variables by similar magnitude and range
+    const axes = { y: { variables: [], title: 'Primary Axis' } };
+    const assignments = {};
+    
+    // Sort variables by magnitude
+    const sortedVars = selectedVars.filter(v => varRanges[v]).sort((a, b) => 
+        varRanges[a].magnitude - varRanges[b].magnitude
+    );
+    
+    if (sortedVars.length === 0) return { assignments, axes };
+    
+    // First variable goes to primary axis
+    axes.y.variables.push(sortedVars[0]);
+    assignments[sortedVars[0]] = 'y';
+    
+    // Check if other variables need separate axes
+    for (let i = 1; i < sortedVars.length; i++) {
+        const currentVar = sortedVars[i];
+        const currentRange = varRanges[currentVar];
+        
+        let assignedAxis = null;
+        
+        // Check if this variable can share an existing axis
+        for (const [axisId, axisInfo] of Object.entries(axes)) {
+            if (axisInfo.variables.length === 0) continue;
+            
+            // Get representative variable from this axis
+            const refVar = axisInfo.variables[0];
+            const refRange = varRanges[refVar];
+            
+            // Check if magnitudes are similar (within 2 orders of magnitude)
+            const magnitudeDiff = Math.abs(currentRange.magnitude - refRange.magnitude);
+            
+            // Check if ranges overlap significantly or are similar scale
+            const overlapCheck = (currentRange.min <= refRange.max && currentRange.max >= refRange.min);
+            const scaleCheck = magnitudeDiff < 2;
+            
+            if (scaleCheck || overlapCheck) {
+                assignedAxis = axisId;
+                break;
+            }
+        }
+        
+        if (assignedAxis) {
+            // Add to existing axis
+            axes[assignedAxis].variables.push(currentVar);
+            assignments[currentVar] = assignedAxis;
+        } else {
+            // Create new axis (y1, y2, etc.)
+            const newAxisId = `y${Object.keys(axes).length}`;
+            axes[newAxisId] = { variables: [currentVar], title: 'Secondary Axis' };
+            assignments[currentVar] = newAxisId;
+            
+            // Stop at 3 axes maximum
+            if (Object.keys(axes).length >= 3) {
+                // Assign remaining variables to existing axes
+                for (let j = i + 1; j < sortedVars.length; j++) {
+                    const remainingVar = sortedVars[j];
+                    const bestAxis = Object.keys(axes)[Object.keys(axes).length - 1];
+                    axes[bestAxis].variables.push(remainingVar);
+                    assignments[remainingVar] = bestAxis;
+                }
+                break;
+            }
+        }
+    }
+    
+    // Update axis titles based on variables
+    for (const [axisId, axisInfo] of Object.entries(axes)) {
+        if (axisInfo.variables.length === 1) {
+            const variable = axisInfo.variables[0];
+            axisInfo.title = `${variable}${units[variable] ? ` (${units[variable]})` : ''}`;
+        } else if (axisInfo.variables.length > 1) {
+            // Check if all variables have the same unit
+            const variableUnits = axisInfo.variables.map(v => units[v]).filter(u => u);
+            const uniqueUnits = [...new Set(variableUnits)];
+            
+            if (uniqueUnits.length === 1) {
+                axisInfo.title = `Values (${uniqueUnits[0]})`;
+            } else {
+                axisInfo.title = 'Values (Mixed Units)';
+            }
+        }
+    }
+    
+    return { assignments, axes };
 }
 
 // Show notification
