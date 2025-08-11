@@ -94,13 +94,16 @@ body {
 .loading-logo {
     margin-bottom: 2rem;
     animation: pulse 2s ease-in-out infinite;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .logo-loading {
-    width: auto;
+    max-width: 200px;
     height: auto;
-    max-height: none;
-    max-width: none;
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.6));
 }
 
 .loading-title {
