@@ -247,19 +247,35 @@ function displayDataInfo() {
     const totalVariables = variables.length;
     const dateRange = getDateRange();
     
+    // Calculate total individual datapoints (sum of all non-null numeric values)
+    let totalDatapoints = 0;
+    data.forEach(row => {
+        variables.forEach(variable => {
+            if (variable !== 'Date' && typeof row[variable] === 'number' && !isNaN(row[variable])) {
+                totalDatapoints++;
+            }
+        });
+    });
+    
     dataInfo.innerHTML = `
-        <div class="data-grid">
-            <div class="data-item">
-                <strong>Total Records:</strong> ${totalRows.toLocaleString()}
+        <div class="dataset-summary">
+            <div class="date-range-prominent">
+                <div class="date-range-label">Data Collection Period</div>
+                <div class="date-range-value">${dateRange}</div>
             </div>
-            <div class="data-item">
-                <strong>Variables:</strong> ${totalVariables}
-            </div>
-            <div class="data-item">
-                <strong>Date Range:</strong> ${dateRange}
-            </div>
-            <div class="data-item">
-                <strong>Status:</strong> ✅ Ready for Analysis
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number">${totalRows.toLocaleString()}</div>
+                    <div class="stat-label">Total Records</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">${totalDatapoints.toLocaleString()}</div>
+                    <div class="stat-label">Data Points</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">${totalVariables}</div>
+                    <div class="stat-label">Variables</div>
+                </div>
             </div>
         </div>
     `;
