@@ -505,8 +505,14 @@ main {
     gap: 1rem;
 }
 
-.stats-grid-four {
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+.stats-grid-three {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+@media (max-width: 768px) {
+    .stats-grid-three {
+        grid-template-columns: 1fr;
+    }
 }
 
 .stat-item {
@@ -562,8 +568,9 @@ main {
     letter-spacing: 0.5px;
 }
 
-.date-range-item {
-    grid-column: span 2;
+.date-range-full-width {
+    width: 100%;
+    margin-bottom: 1rem;
 }
 
 .date-range-dates {
@@ -578,9 +585,6 @@ main {
         grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
     }
     
-    .stats-grid-four {
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    }
     
     .stat-number {
         font-size: 1.8rem;
@@ -590,9 +594,6 @@ main {
         font-size: 1.3rem !important;
     }
     
-    .date-range-item {
-        grid-column: span 1;
-    }
     
     .stats-panel, .correlation-matrix {
         max-height: 365px; /* Adjust for mobile chart height (300px + padding + title) */

@@ -259,7 +259,11 @@ function displayDataInfo() {
     
     dataInfo.innerHTML = `
         <div class="dataset-summary">
-            <div class="stats-grid stats-grid-four">
+            <div class="stat-item date-range-full-width">
+                <div class="stat-number date-range-dates">${dateRange}</div>
+                <div class="stat-label">Collection Period</div>
+            </div>
+            <div class="stats-grid stats-grid-three">
                 <div class="stat-item">
                     <div class="stat-number">${totalRows.toLocaleString()}</div>
                     <div class="stat-label">Total Records</div>
@@ -271,10 +275,6 @@ function displayDataInfo() {
                 <div class="stat-item">
                     <div class="stat-number">${totalVariables}</div>
                     <div class="stat-label">Variables</div>
-                </div>
-                <div class="stat-item date-range-item">
-                    <div class="stat-number date-range-dates">${dateRange}</div>
-                    <div class="stat-label">Collection Period</div>
                 </div>
             </div>
         </div>
