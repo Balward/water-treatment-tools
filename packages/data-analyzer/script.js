@@ -759,13 +759,22 @@ function updateTimeSeriesChart() {
                     }
                 },
                 ...Object.fromEntries(
-                    Object.entries(axes).map(([axisId, axisInfo]) => [
-                        axisId,
-                        {
+                    Object.entries(axes).map(([axisId, axisInfo]) => {
+                        // Calculate buffered range for this axis
+                        const allValues = [];
+                        axisInfo.variables.forEach(variable => {
+                            const values = data.map(d => d[variable]).filter(v => typeof v === 'number' && !isNaN(v));
+                            allValues.push(...values);
+                        });
+                        
+                        const axisRange = allValues.length > 0 ? calculateAxisRange(allValues, axisInfo.variables[0]) : null;
+                        
+                        return [axisId, {
                             type: 'linear',
                             display: true,
                             position: axisId === 'y' ? 'left' : axisId === 'y1' ? 'right' : 'right',
                             title: { display: true, text: axisInfo.title },
+                            ...(axisRange ? { min: axisRange.min, max: axisRange.max } : {}),
                             ticks: {
                                 callback: function(value) {
                                     // Use the first variable's format for this axis
