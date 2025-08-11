@@ -403,6 +403,36 @@ main {
     box-shadow: 0 0 0 3px rgba(0, 103, 127, 0.1);
 }
 
+/* Time series variable controls */
+.time-var-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.time-var-controls select {
+    flex: 1;
+}
+
+.axis-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: #666;
+    cursor: pointer;
+    font-weight: 400;
+}
+
+.axis-checkbox input[type="checkbox"] {
+    accent-color: #00677F;
+    transform: scale(1.1);
+}
+
+.axis-checkbox:hover {
+    color: #00677F;
+}
+
 /* Chart Container */
 .chart-container {
     background: rgba(255, 255, 255, 0.95);

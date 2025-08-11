@@ -104,31 +104,55 @@
         <section id="timeseries-tab" class="tab-content">
             <div class="controls-panel">
                 <h3>📉 Time Series Analysis</h3>
-                <p class="instruction-text">ℹ️ <strong>How to use:</strong> Select up to 4 variables to view trends over time. Variables with different scales will automatically use separate y-axes. Use scroll to zoom into time periods, drag to pan left/right.</p>
+                <p class="instruction-text">ℹ️ <strong>How to use:</strong> Select up to 4 variables to view trends over time. Check "Own Y-axis" to force a variable onto its own axis, or let the system automatically group by similar scales. Use scroll to zoom into time periods, drag to pan left/right.</p>
                 <div class="control-group">
                     <div class="control">
                         <label for="timeVar1">Variable 1:</label>
-                        <select id="timeVar1" onchange="updateTimeSeriesChart()">
-                            <option value="">Select Variable...</option>
-                        </select>
+                        <div class="time-var-controls">
+                            <select id="timeVar1" onchange="updateTimeSeriesChart()">
+                                <option value="">Select Variable...</option>
+                            </select>
+                            <label class="axis-checkbox">
+                                <input type="checkbox" id="timeVar1Axis" onchange="updateTimeSeriesChart()">
+                                Own Y-axis
+                            </label>
+                        </div>
                     </div>
                     <div class="control">
                         <label for="timeVar2">Variable 2:</label>
-                        <select id="timeVar2" onchange="updateTimeSeriesChart()">
-                            <option value="">Select Variable...</option>
-                        </select>
+                        <div class="time-var-controls">
+                            <select id="timeVar2" onchange="updateTimeSeriesChart()">
+                                <option value="">Select Variable...</option>
+                            </select>
+                            <label class="axis-checkbox">
+                                <input type="checkbox" id="timeVar2Axis" onchange="updateTimeSeriesChart()">
+                                Own Y-axis
+                            </label>
+                        </div>
                     </div>
                     <div class="control">
                         <label for="timeVar3">Variable 3:</label>
-                        <select id="timeVar3" onchange="updateTimeSeriesChart()">
-                            <option value="">Select Variable...</option>
-                        </select>
+                        <div class="time-var-controls">
+                            <select id="timeVar3" onchange="updateTimeSeriesChart()">
+                                <option value="">Select Variable...</option>
+                            </select>
+                            <label class="axis-checkbox">
+                                <input type="checkbox" id="timeVar3Axis" onchange="updateTimeSeriesChart()">
+                                Own Y-axis
+                            </label>
+                        </div>
                     </div>
                     <div class="control">
                         <label for="timeVar4">Variable 4:</label>
-                        <select id="timeVar4" onchange="updateTimeSeriesChart()">
-                            <option value="">Select Variable...</option>
-                        </select>
+                        <div class="time-var-controls">
+                            <select id="timeVar4" onchange="updateTimeSeriesChart()">
+                                <option value="">Select Variable...</option>
+                            </select>
+                            <label class="axis-checkbox">
+                                <input type="checkbox" id="timeVar4Axis" onchange="updateTimeSeriesChart()">
+                                Own Y-axis
+                            </label>
+                        </div>
                     </div>
                 </div>
             </div>

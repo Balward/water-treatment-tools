@@ -1221,6 +1221,15 @@ function determineYAxisAssignments(selectedVars, datasets) {
         return { assignments: { [selectedVars[0]]: 'y' }, axes: { y: { variables: selectedVars, title: 'Values' } } };
     }
     
+    // Check for manual axis assignments first
+    const manualAssignments = {};
+    selectedVars.forEach((variable, index) => {
+        const checkbox = document.getElementById(`timeVar${index + 1}Axis`);
+        if (checkbox && checkbox.checked) {
+            manualAssignments[variable] = true;
+        }
+    });
+    
     // Calculate ranges for each variable
     const varRanges = {};
     selectedVars.forEach(variable => {
@@ -1234,7 +1243,7 @@ function determineYAxisAssignments(selectedVars, datasets) {
         }
     });
     
-    // Group variables by similar magnitude and range
+    // Group variables by similar magnitude and range, respecting manual assignments
     const axes = { y: { variables: [], title: 'Primary Axis' } };
     const assignments = {};
     
@@ -1245,35 +1254,52 @@ function determineYAxisAssignments(selectedVars, datasets) {
     
     if (sortedVars.length === 0) return { assignments, axes };
     
-    // First variable goes to primary axis
-    axes.y.variables.push(sortedVars[0]);
-    assignments[sortedVars[0]] = 'y';
+    // Handle manual assignments first
+    let nextAxisNumber = 1;
+    sortedVars.forEach(currentVar => {
+        if (manualAssignments[currentVar]) {
+            // Force this variable to its own axis
+            const newAxisId = nextAxisNumber === 1 ? 'y1' : `y${nextAxisNumber}`;
+            axes[newAxisId] = { variables: [currentVar], title: `${currentVar} Axis` };
+            assignments[currentVar] = newAxisId;
+            nextAxisNumber++;
+        }
+    });
     
-    // Check if other variables need separate axes
-    for (let i = 1; i < sortedVars.length; i++) {
-        const currentVar = sortedVars[i];
-        const currentRange = varRanges[currentVar];
+    // Now handle automatic assignments for non-manual variables
+    sortedVars.forEach((currentVar, index) => {
+        if (manualAssignments[currentVar]) return; // Skip manually assigned variables
         
+        const currentRange = varRanges[currentVar];
         let assignedAxis = null;
         
-        // Check if this variable can share an existing axis
-        for (const [axisId, axisInfo] of Object.entries(axes)) {
-            if (axisInfo.variables.length === 0) continue;
-            
-            // Get representative variable from this axis
-            const refVar = axisInfo.variables[0];
-            const refRange = varRanges[refVar];
-            
-            // Check if magnitudes are similar (within 2 orders of magnitude)
-            const magnitudeDiff = Math.abs(currentRange.magnitude - refRange.magnitude);
-            
-            // Check if ranges overlap significantly or are similar scale
-            const overlapCheck = (currentRange.min <= refRange.max && currentRange.max >= refRange.min);
-            const scaleCheck = magnitudeDiff < 2;
-            
-            if (scaleCheck || overlapCheck) {
-                assignedAxis = axisId;
-                break;
+        // If this is the first auto-assigned variable and primary axis is empty, use it
+        if (axes.y.variables.length === 0) {
+            assignedAxis = 'y';
+        } else {
+            // Check if this variable can share an existing axis (excluding manual axes)
+            for (const [axisId, axisInfo] of Object.entries(axes)) {
+                if (axisInfo.variables.length === 0) continue;
+                
+                // Skip axes that contain manually assigned variables
+                const hasManualVar = axisInfo.variables.some(v => manualAssignments[v]);
+                if (hasManualVar) continue;
+                
+                // Get representative variable from this axis
+                const refVar = axisInfo.variables[0];
+                const refRange = varRanges[refVar];
+                
+                // Check if magnitudes are similar (within 2 orders of magnitude)
+                const magnitudeDiff = Math.abs(currentRange.magnitude - refRange.magnitude);
+                
+                // Check if ranges overlap significantly or are similar scale
+                const overlapCheck = (currentRange.min <= refRange.max && currentRange.max >= refRange.min);
+                const scaleCheck = magnitudeDiff < 2;
+                
+                if (scaleCheck || overlapCheck) {
+                    assignedAxis = axisId;
+                    break;
+                }
             }
         }
         
@@ -1282,24 +1308,19 @@ function determineYAxisAssignments(selectedVars, datasets) {
             axes[assignedAxis].variables.push(currentVar);
             assignments[currentVar] = assignedAxis;
         } else {
-            // Create new axis (y1, y2, etc.)
-            const newAxisId = `y${Object.keys(axes).length}`;
-            axes[newAxisId] = { variables: [currentVar], title: 'Secondary Axis' };
-            assignments[currentVar] = newAxisId;
-            
-            // Stop at 3 axes maximum
-            if (Object.keys(axes).length >= 3) {
-                // Assign remaining variables to existing axes
-                for (let j = i + 1; j < sortedVars.length; j++) {
-                    const remainingVar = sortedVars[j];
-                    const bestAxis = Object.keys(axes)[Object.keys(axes).length - 1];
-                    axes[bestAxis].variables.push(remainingVar);
-                    assignments[remainingVar] = bestAxis;
-                }
-                break;
+            // Create new axis if we haven't hit the limit
+            if (Object.keys(axes).length < 4) {
+                const newAxisId = `y${nextAxisNumber}`;
+                axes[newAxisId] = { variables: [currentVar], title: 'Auto Axis' };
+                assignments[currentVar] = newAxisId;
+                nextAxisNumber++;
+            } else {
+                // Fallback to primary axis if we've hit the limit
+                axes.y.variables.push(currentVar);
+                assignments[currentVar] = 'y';
             }
         }
-    }
+    });
     
     // Update axis titles based on variables
     for (const [axisId, axisInfo] of Object.entries(axes)) {
