@@ -221,6 +221,18 @@ header p {
     color: #666;
 }
 
+.dev-banner {
+    font-size: 0.85rem;
+    color: #F2A900;
+    background: rgba(242, 169, 0, 0.1);
+    padding: 0.3rem 0.8rem;
+    border-radius: 15px;
+    border: 1px solid rgba(242, 169, 0, 0.2);
+    margin-top: 0.5rem;
+    font-weight: 500;
+    display: inline-block;
+}
+
 /* Main Content */
 main {
     max-width: 1400px;
