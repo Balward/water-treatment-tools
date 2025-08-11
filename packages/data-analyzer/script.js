@@ -70,7 +70,7 @@ async function loadData() {
         await new Promise(resolve => setTimeout(resolve, 400));
         
         await updateLoadingProgress(25, 'Fetching Excel file...');
-        const response = await fetch('../../data/Streaming_Current_Data.xlsx');
+        const response = await fetch('../../data/Week1SC.xlsx');
         if (!response.ok) throw new Error('Failed to fetch data file');
         
         await updateLoadingProgress(40, 'Downloading spreadsheet data...');
@@ -87,34 +87,39 @@ async function loadData() {
         await new Promise(resolve => setTimeout(resolve, 300));
         const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: null });
         
-        if (jsonData.length < 2) {
-            throw new Error('Data file must have at least 2 rows (headers and data)');
+        if (jsonData.length < 4) {
+            throw new Error('Data file must have at least 4 rows (WIMS numbers, variable names, units, and data)');
         }
         
-        // Process headers (Row 1: Variable names with units in brackets)
-        const headerRow = jsonData[0];
-        const dataRows = jsonData.slice(1);
+        // New format:
+        // Row 1 (index 0): WIMS system numbers - ignore
+        // Row 2 (index 1): Variable names (except column A which is empty, Date is in row 3)
+        // Row 3 (index 2): Units (Date label is here for column A)
+        // Row 4+ (index 3+): Data starts here
+        
+        const wimsRow = jsonData[0];        // Row 1 - ignore
+        const variableRow = jsonData[1];    // Row 2 - variable names
+        const unitsRow = jsonData[2];       // Row 3 - units and "Date" label
+        const dataRows = jsonData.slice(3); // Row 4+ - actual data
         
         // Extract variables and units
         variables = [];
         units = {};
         
-        headerRow.forEach((header, index) => {
-            if (header && header.toString().trim()) {
-                const headerStr = header.toString().trim();
-                
-                // Extract variable name and unit (format: "Variable Name (unit)")
-                const match = headerStr.match(/^(.+?)\s*\(([^)]+)\)$/);
-                if (match) {
-                    const varName = match[1].trim();
-                    const unit = match[2].trim();
-                    variables.push(varName);
-                    units[varName] = unit;
-                } else {
-                    // No unit in brackets (like "Date")
-                    variables.push(headerStr);
-                    units[headerStr] = '';
+        variableRow.forEach((variableName, index) => {
+            if (index === 0) {
+                // Column A: Date column - get name from units row (row 3)
+                const dateName = unitsRow[0] && unitsRow[0].toString().trim();
+                if (dateName) {
+                    variables.push(dateName);
+                    units[dateName] = '';
                 }
+            } else if (variableName && variableName.toString().trim()) {
+                // Other columns: Variable name from row 2, unit from row 3
+                const varName = variableName.toString().trim();
+                const unit = unitsRow[index] && unitsRow[index].toString().trim() || '';
+                variables.push(varName);
+                units[varName] = unit;
             }
         });
         
@@ -128,8 +133,8 @@ async function loadData() {
                 let value = row[index];
                 
                 if (value !== null && value !== undefined && value !== '') {
-                    // Handle Date column specially
-                    if (variable === 'Date') {
+                    // Handle Date column specially (first column is always date/time)
+                    if (index === 0 || variable.toLowerCase().includes('date') || variable.toLowerCase().includes('time')) {
                         if (typeof value === 'string') {
                             dataPoint[variable] = value;
                         } else {
@@ -231,9 +236,10 @@ function populateSelectors() {
             selector.appendChild(firstOption);
         }
         
-        // Add variable options (skip Date for non-time series selectors)
+        // Add variable options (skip date column for non-time series selectors)
         variables.forEach(variable => {
-            if (variable === 'Date' && !selectorId.startsWith('time')) return;
+            const isDateColumn = variables.indexOf(variable) === 0; // First column is always date
+            if (isDateColumn && !selectorId.startsWith('time')) return;
             
             const option = document.createElement('option');
             option.value = variable;
@@ -287,7 +293,8 @@ function displayDataInfo() {
 
 // Get date range from data
 function getDateRange() {
-    const dates = data.map(d => d.Date).filter(d => d !== null);
+    const dateColumn = variables[0]; // First column is always date/time
+    const dates = data.map(d => d[dateColumn]).filter(d => d !== null);
     if (dates.length === 0) return 'No dates';
     
     const sortedDates = dates.sort();
@@ -613,8 +620,9 @@ function updateTimeSeriesChart() {
     }
     
     // Process date column for time axis
+    const dateColumn = variables[0]; // First column is always date/time
     const timeData = data.map((d, index) => {
-        const dateStr = d.Date;
+        const dateStr = d[dateColumn];
         if (!dateStr) return null;
         
         // Parse M/D/YYYY H:MM format
@@ -886,7 +894,8 @@ function updateOptimizationChart() {
     const correlations = {};
     
     variables.forEach(variable => {
-        if (variable === targetVar || variable === 'Date') return;
+        const isDateColumn = variables.indexOf(variable) === 0; // First column is always date
+        if (variable === targetVar || isDateColumn) return;
         
         // Get paired data points where both variables have valid values
         const pairedData = data.map(d => ({
