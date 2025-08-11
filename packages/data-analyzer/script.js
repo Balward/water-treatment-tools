@@ -1,3 +1,19 @@
+// Register Chart.js zoom plugin  
+console.log('Available plugins:', Object.keys(window));
+console.log('Chart.js version:', Chart.version);
+
+// Try multiple ways to register the zoom plugin
+if (typeof zoomPlugin !== 'undefined') {
+    Chart.register(zoomPlugin);
+    console.log('Zoom plugin registered via zoomPlugin');
+} else if (window.ChartZoom) {
+    Chart.register(window.ChartZoom);
+    console.log('Zoom plugin registered via window.ChartZoom');
+} else {
+    // Fallback - plugin should auto-register in newer versions
+    console.log('Zoom plugin should auto-register');
+}
+
 // Global variables
 let data = [];
 let variables = [];
@@ -1042,32 +1058,19 @@ function getZoomConfig() {
     return {
         zoom: {
             wheel: {
-                enabled: true,
+                enabled: true
             },
             pinch: {
                 enabled: true
             },
-            mode: 'xy',
             drag: {
-                enabled: true,
-                backgroundColor: 'rgba(102, 126, 234, 0.1)',
-                borderColor: 'rgba(102, 126, 234, 0.5)',
-                borderWidth: 1
+                enabled: true
             },
-            onZoom: function({chart}) {
-                // Optional: Add custom behavior on zoom
-            }
+            mode: 'xy'
         },
         pan: {
             enabled: true,
-            mode: 'xy',
-            onPan: function({chart}) {
-                // Optional: Add custom behavior on pan
-            }
-        },
-        limits: {
-            y: {min: 'original', max: 'original'},
-            x: {min: 'original', max: 'original'}
+            mode: 'xy'
         }
     };
 }
