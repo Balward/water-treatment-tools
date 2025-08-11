@@ -562,7 +562,8 @@ function updateCorrelationChart() {
     
     // Subtitle: R-value and color info
     const colorText = colorVar ? ` • Colored by ${colorVar}${units[colorVar] ? ` (${units[colorVar]})` : ''}` : '';
-    document.getElementById('correlationSubtitle').textContent = `R = ${correlation.toFixed(3)}${colorText}`;
+    const correlationText = isNaN(correlation) ? 'undefined (constant values)' : correlation.toFixed(3);
+    document.getElementById('correlationSubtitle').textContent = `R = ${correlationText}${colorText}`;
 }
 
 // Create color ranges (maximum 5)
@@ -622,7 +623,15 @@ function calculateAxisRange(values, variable) {
     const min = Math.min(...values);
     const max = Math.max(...values);
     const range = max - min;
-    const buffer = range * 0.1;
+    
+    // Handle constant values (when all values are the same)
+    let buffer;
+    if (range === 0) {
+        // If all values are the same, create a reasonable buffer around that value
+        buffer = Math.abs(min) * 0.1 || 0.1; // 10% of the value, or 0.1 if value is 0
+    } else {
+        buffer = range * 0.1;
+    }
     
     const allowsNegativeValues = variable.toLowerCase().includes('streaming current') || 
                                 variable.toLowerCase().includes('streaming_current') ||
