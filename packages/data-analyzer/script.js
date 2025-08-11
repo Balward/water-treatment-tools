@@ -816,7 +816,12 @@ function updateTimeSeriesChart() {
         }
     });
     
-    document.getElementById('timeSeriesTitle').textContent = `Variables over Time (${datasets.length} series)`;
+    // Update chart title with variable names
+    const titleVars = selectedVars.map(v => {
+        // Truncate long variable names for title display
+        return v.length > 20 ? v.substring(0, 17) + '...' : v;
+    }).join(', ');
+    document.getElementById('timeSeriesTitle').textContent = `${titleVars} over Time`;
 }
 
 // Update distribution chart
@@ -1362,25 +1367,24 @@ function determineYAxisAssignments(selectedVars, datasets) {
             const uniqueUnits = [...new Set(variableUnits)];
             
             if (uniqueUnits.length === 1 && uniqueUnits[0]) {
-                // All variables have the same unit - show truncated names with shared unit
-                const shortNames = axisInfo.variables.map(v => {
-                    // Truncate long variable names for better display
-                    return v.length > 15 ? v.substring(0, 12) + '...' : v;
+                // All variables have the same unit - show names on separate lines with shared unit at bottom
+                const variableLines = axisInfo.variables.map(v => {
+                    return v.length > 20 ? v.substring(0, 17) + '...' : v;
                 });
-                axisInfo.title = `${shortNames.join(', ')} (${uniqueUnits[0]})`;
+                axisInfo.title = `${variableLines.join('\n')} (${uniqueUnits[0]})`;
             } else if (uniqueUnits.length === 0) {
-                // No units available - show variable names only
-                const shortNames = axisInfo.variables.map(v => {
-                    return v.length > 12 ? v.substring(0, 9) + '...' : v;
+                // No units available - show variable names on separate lines
+                const variableLines = axisInfo.variables.map(v => {
+                    return v.length > 20 ? v.substring(0, 17) + '...' : v;
                 });
-                axisInfo.title = shortNames.join(', ');
+                axisInfo.title = variableLines.join('\n');
             } else {
-                // Mixed units - show variable names with individual units where available
+                // Mixed units - show each variable with unit on separate lines
                 const variableWithUnits = axisInfo.variables.map(v => {
-                    const shortName = v.length > 10 ? v.substring(0, 7) + '...' : v;
-                    return units[v] ? `${shortName} (${units[v]})` : shortName;
+                    const varName = v.length > 20 ? v.substring(0, 17) + '...' : v;
+                    return units[v] ? `${varName} (${units[v]})` : varName;
                 });
-                axisInfo.title = variableWithUnits.join(', ');
+                axisInfo.title = variableWithUnits.join('\n');
             }
         }
     }
