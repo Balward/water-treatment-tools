@@ -1,18 +1,43 @@
-// Register Chart.js zoom plugin  
-console.log('Available plugins:', Object.keys(window));
-console.log('Chart.js version:', Chart.version);
-
-// Try multiple ways to register the zoom plugin
-if (typeof zoomPlugin !== 'undefined') {
-    Chart.register(zoomPlugin);
-    console.log('Zoom plugin registered via zoomPlugin');
-} else if (window.ChartZoom) {
-    Chart.register(window.ChartZoom);
-    console.log('Zoom plugin registered via window.ChartZoom');
-} else {
-    // Fallback - plugin should auto-register in newer versions
-    console.log('Zoom plugin should auto-register');
-}
+// Wait for all scripts to load, then register zoom plugin
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Chart.js version:', Chart.version);
+    console.log('Available on window:', Object.keys(window).filter(key => key.includes('Chart') || key.includes('zoom')));
+    
+    // Wait a bit more for plugins to load
+    setTimeout(() => {
+        console.log('Attempting zoom plugin registration...');
+        
+        // Check various possible plugin locations
+        const possiblePlugins = [
+            window.ChartZoom,
+            window['chartjs-plugin-zoom'],
+            window.chartjsPluginZoom
+        ];
+        
+        let pluginRegistered = false;
+        
+        for (let plugin of possiblePlugins) {
+            if (plugin) {
+                try {
+                    Chart.register(plugin);
+                    console.log('✅ Zoom plugin registered successfully:', plugin);
+                    pluginRegistered = true;
+                    break;
+                } catch (error) {
+                    console.log('❌ Failed to register plugin:', error);
+                }
+            }
+        }
+        
+        if (!pluginRegistered) {
+            console.log('⚠️ No zoom plugin found. Available keys:', Object.keys(window));
+        }
+        
+        // Test if zoom is working by checking registered plugins
+        console.log('Registered Chart.js plugins:', Chart.registry.plugins.items);
+        
+    }, 100);
+});
 
 // Global variables
 let data = [];
