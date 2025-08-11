@@ -243,6 +243,7 @@ function setDefaultSelections() {
     if (streamingVar && alumVar) {
         document.getElementById('corrXAxis').value = alumVar;
         document.getElementById('corrYAxis').value = streamingVar;
+        updateCorrelationChart();
     }
     
     // Set time series defaults
@@ -252,15 +253,18 @@ function setDefaultSelections() {
     if (alumVar) {
         document.getElementById('timeVar2').value = alumVar;
     }
+    updateTimeSeriesChart();
     
     // Set distribution default
     if (streamingVar) {
         document.getElementById('distVariable').value = streamingVar;
+        updateDistributionChart();
     }
     
     // Set optimization default
     if (streamingVar) {
         document.getElementById('targetVariable').value = streamingVar;
+        updateOptimizationChart();
     }
 }
 
