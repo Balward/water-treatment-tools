@@ -1361,10 +1361,26 @@ function determineYAxisAssignments(selectedVars, datasets) {
             const variableUnits = axisInfo.variables.map(v => units[v]).filter(u => u);
             const uniqueUnits = [...new Set(variableUnits)];
             
-            if (uniqueUnits.length === 1) {
-                axisInfo.title = `Values (${uniqueUnits[0]})`;
+            if (uniqueUnits.length === 1 && uniqueUnits[0]) {
+                // All variables have the same unit - show truncated names with shared unit
+                const shortNames = axisInfo.variables.map(v => {
+                    // Truncate long variable names for better display
+                    return v.length > 15 ? v.substring(0, 12) + '...' : v;
+                });
+                axisInfo.title = `${shortNames.join(', ')} (${uniqueUnits[0]})`;
+            } else if (uniqueUnits.length === 0) {
+                // No units available - show variable names only
+                const shortNames = axisInfo.variables.map(v => {
+                    return v.length > 12 ? v.substring(0, 9) + '...' : v;
+                });
+                axisInfo.title = shortNames.join(', ');
             } else {
-                axisInfo.title = 'Values (Mixed Units)';
+                // Mixed units - show variable names with individual units where available
+                const variableWithUnits = axisInfo.variables.map(v => {
+                    const shortName = v.length > 10 ? v.substring(0, 7) + '...' : v;
+                    return units[v] ? `${shortName} (${units[v]})` : shortName;
+                });
+                axisInfo.title = variableWithUnits.join(', ');
             }
         }
     }
