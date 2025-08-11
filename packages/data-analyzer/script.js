@@ -767,7 +767,27 @@ function updateTimeSeriesChart() {
                             allValues.push(...values);
                         });
                         
-                        const axisRange = allValues.length > 0 ? calculateAxisRange(allValues, axisInfo.variables[0]) : null;
+                        // Check if any variable on this axis allows negative values
+                        const allowsNegative = axisInfo.variables.some(variable => 
+                            variable.toLowerCase().includes('streaming current') || 
+                            variable.toLowerCase().includes('streaming_current') ||
+                            variable.toLowerCase().includes('zeta potential') ||
+                            variable.toLowerCase().includes('zeta_potential')
+                        );
+                        
+                        // Calculate range manually to handle mixed variable types on same axis
+                        let axisRange = null;
+                        if (allValues.length > 0) {
+                            const min = Math.min(...allValues);
+                            const max = Math.max(...allValues);
+                            const range = max - min;
+                            const buffer = range === 0 ? (Math.abs(min) * 0.1 || 0.1) : range * 0.1;
+                            
+                            axisRange = {
+                                min: allowsNegative ? min - buffer : Math.max(0, min - buffer),
+                                max: max + buffer
+                            };
+                        }
                         
                         return [axisId, {
                             type: 'linear',
