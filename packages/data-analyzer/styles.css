@@ -56,7 +56,7 @@
 }
 
 body {
-    font-family: 'SourceSansPro', 'HelveticaNeue', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'SourceSansPro', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: linear-gradient(135deg, #00677F 0%, #004d5c 100%);
     min-height: 100vh;
     color: #333;
@@ -104,9 +104,10 @@ body {
 }
 
 .loading-title {
+    font-family: 'HelveticaNeue', 'SourceSansPro', sans-serif;
     font-size: 2rem;
     margin-bottom: 1.5rem;
-    font-weight: 300;
+    font-weight: 500;
     animation: textGlow 2s ease-in-out infinite alternate;
 }
 
@@ -198,8 +199,9 @@ header {
 }
 
 header h1 {
+    font-family: 'HelveticaNeue', 'SourceSansPro', sans-serif;
     font-size: 2.5rem;
-    font-weight: 300;
+    font-weight: 500;
     margin-bottom: 0.5rem;
     background: linear-gradient(135deg, #00677F, #004d5c);
     -webkit-background-clip: text;
@@ -234,6 +236,8 @@ main {
 }
 
 .info-panel h3 {
+    font-family: 'HelveticaNeue', 'SourceSansPro', sans-serif;
+    font-weight: 500;
     margin-bottom: 1rem;
     color: #333;
     font-size: 1.3rem;
@@ -341,6 +345,8 @@ main {
 }
 
 .controls-panel h3 {
+    font-family: 'HelveticaNeue', 'SourceSansPro', sans-serif;
+    font-weight: 500;
     margin-bottom: 1.5rem;
     color: #333;
     font-size: 1.3rem;
@@ -389,6 +395,8 @@ main {
 }
 
 .chart-container h4 {
+    font-family: 'HelveticaNeue', 'SourceSansPro', sans-serif;
+    font-weight: 500;
     margin-bottom: 0.5rem;
     color: #333;
     font-size: 1.2rem;
@@ -453,6 +461,8 @@ main {
 }
 
 .stats-panel h4 {
+    font-family: 'HelveticaNeue', 'SourceSansPro', sans-serif;
+    font-weight: 500;
     margin-bottom: 1rem;
     color: #333;
     font-size: 1.2rem;
@@ -471,6 +481,8 @@ main {
 }
 
 .correlation-matrix h4 {
+    font-family: 'HelveticaNeue', 'SourceSansPro', sans-serif;
+    font-weight: 500;
     margin-bottom: 1rem;
     color: #333;
     font-size: 1.2rem;
@@ -678,6 +690,7 @@ main {
 }
 
 .stat-number {
+    font-family: 'HelveticaNeue', 'SourceSansPro', sans-serif;
     font-size: 2.2rem;
     font-weight: 700;
     color: #333;
