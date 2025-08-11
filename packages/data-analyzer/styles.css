@@ -97,10 +97,10 @@ body {
 }
 
 .logo-loading {
-    max-width: 240px;
+    width: auto;
     height: auto;
-    filter: brightness(0) invert(1);
-    drop-shadow: 0 4px 20px rgba(255, 255, 255, 0.3);
+    max-height: none;
+    max-width: none;
 }
 
 .loading-title {
@@ -191,7 +191,6 @@ header {
 .logo-main {
     height: 80px;
     width: auto;
-    filter: drop-shadow(0 2px 8px rgba(0, 103, 127, 0.3));
 }
 
 .header-text {
