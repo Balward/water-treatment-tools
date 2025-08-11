@@ -31,6 +31,7 @@ RUN rm -rf /usr/share/nginx/html/*
 # Copy the entire project structure
 COPY packages/ ./packages/
 COPY city-logos/ ./city-logos/
+COPY city-fonts/ ./city-fonts/
 COPY README.md ./
 COPY data/ ./data/
 
