@@ -39,7 +39,8 @@
       "Bash(cp:*)",
       "Bash(git config:*)",
       "Bash(find:*)",
-      "Bash(git ls-tree:*)"
+      "Bash(git ls-tree:*)",
+      "Bash(cmd /c:*)"
     ],
     "deny": []
   }

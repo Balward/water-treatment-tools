@@ -884,13 +884,22 @@ function updateOptimizationChart() {
     
     // Calculate correlations with target variable
     const correlations = {};
-    const targetValues = data.map(d => d[targetVar]).filter(v => typeof v === 'number' && !isNaN(v));
     
     variables.forEach(variable => {
         if (variable === targetVar || variable === 'Date') return;
         
-        const varValues = data.map(d => d[variable]).filter(v => typeof v === 'number' && !isNaN(v));
-        if (varValues.length === targetValues.length && varValues.length > 1) {
+        // Get paired data points where both variables have valid values
+        const pairedData = data.map(d => ({
+            target: d[targetVar],
+            var: d[variable]
+        })).filter(pair => 
+            typeof pair.target === 'number' && !isNaN(pair.target) &&
+            typeof pair.var === 'number' && !isNaN(pair.var)
+        );
+        
+        if (pairedData.length > 1) {
+            const targetValues = pairedData.map(d => d.target);
+            const varValues = pairedData.map(d => d.var);
             const correlation = calculateCorrelation(targetValues, varValues);
             if (Math.abs(correlation) >= minCorr) {
                 correlations[variable] = correlation;
