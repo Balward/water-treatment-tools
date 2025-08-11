@@ -330,6 +330,9 @@ main {
     border-radius: 12px;
     padding: 1.5rem;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    height: fit-content;
+    max-height: 465px; /* Match chart container height (400px + padding + title) */
+    overflow-y: auto;
 }
 
 .stats-panel h4 {
@@ -345,6 +348,9 @@ main {
     border-radius: 12px;
     padding: 1.5rem;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    height: fit-content;
+    max-height: 465px; /* Match chart container height (400px + padding + title) */
+    overflow-y: auto;
 }
 
 .correlation-matrix h4 {
@@ -492,34 +498,15 @@ main {
     gap: 1.5rem;
 }
 
-.date-range-prominent {
-    text-align: center;
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    color: white;
-    padding: 1.5rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-}
-
-.date-range-label {
-    font-size: 0.9rem;
-    font-weight: 500;
-    opacity: 0.9;
-    margin-bottom: 0.5rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.date-range-value {
-    font-size: 1.4rem;
-    font-weight: 600;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-}
 
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 1rem;
+}
+
+.stats-grid-four {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
 }
 
 .stat-item {
@@ -575,17 +562,40 @@ main {
     letter-spacing: 0.5px;
 }
 
+.date-range-item {
+    grid-column: span 2;
+}
+
+.date-range-dates {
+    font-size: 1.6rem !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 @media (max-width: 768px) {
     .stats-grid {
         grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    }
+    
+    .stats-grid-four {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     }
     
     .stat-number {
         font-size: 1.8rem;
     }
     
-    .date-range-value {
-        font-size: 1.2rem;
+    .date-range-dates {
+        font-size: 1.3rem !important;
+    }
+    
+    .date-range-item {
+        grid-column: span 1;
+    }
+    
+    .stats-panel, .correlation-matrix {
+        max-height: 365px; /* Adjust for mobile chart height (300px + padding + title) */
     }
 }
 
