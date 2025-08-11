@@ -322,9 +322,9 @@ function setDefaultSelections() {
         updateDistributionChart();
     }
     
-    // Set optimization default
-    if (streamingVar) {
-        document.getElementById('targetVariable').value = streamingVar;
+    // Set optimization default to alum dose
+    if (alumVar) {
+        document.getElementById('targetVariable').value = alumVar;
         updateOptimizationChart();
     }
 }
@@ -389,11 +389,21 @@ function updateCorrelationChart() {
     const yVar = document.getElementById('corrYAxis').value;
     const colorVar = document.getElementById('corrColorBy').value;
     
+    const emptyState = document.getElementById('correlationEmpty');
+    const chart = document.getElementById('correlationChart');
+    
     if (!xVar || !yVar) {
         document.getElementById('correlationTitle').textContent = 'Select variables to view correlation';
         document.getElementById('correlationSubtitle').textContent = '';
+        // Show empty state, hide chart
+        emptyState.style.display = 'block';
+        chart.style.display = 'none';
         return;
     }
+    
+    // Hide empty state, show chart
+    emptyState.style.display = 'none';
+    chart.style.display = 'block';
     
     // Get valid data points with color variable if specified
     let validData = data.map(d => ({
