@@ -413,7 +413,7 @@ function updateCorrelationChart() {
         // Group data by color variable ranges
         const colorValues = validData.map(d => d.color);
         const colorRanges = createColorRanges(colorValues, colorVar);
-        const colors = ['#00677F', '#004d5c', '#008fa3', '#006d7f', '#005866'];
+        const colors = ['#00677F', '#FF5722', '#008fa3', '#FF8A65', '#006d7f', '#FFB74D', '#004d5c', '#FF7043'];
         
         colorRanges.forEach((range, index) => {
             const rangeData = validData.filter(d => d.color >= range.min && d.color <= range.max);
@@ -617,7 +617,7 @@ function updateTimeSeriesChart() {
         return;
     }
     
-    const colors = ['#00677F', '#004d5c', '#008fa3', '#006d7f', '#005866'];
+    const colors = ['#00677F', '#FF5722', '#008fa3', '#FF8A65', '#006d7f', '#FFB74D', '#004d5c', '#FF7043'];
     const datasets = [];
     
     // Determine y-axis assignments

@@ -405,10 +405,10 @@ main {
 }
 
 .correlation-button.active {
-    background: linear-gradient(135deg, #00677F, #004d5c);
+    background: linear-gradient(135deg, #00677F, #FF5722);
     color: white;
-    border-color: #00677F;
-    box-shadow: 0 2px 8px rgba(0, 103, 127, 0.3);
+    border-color: #FF5722;
+    box-shadow: 0 2px 8px rgba(255, 87, 34, 0.3);
 }
 
 .correlation-button .variable-name {
@@ -452,8 +452,14 @@ main {
 }
 
 .notification.error {
-    border-left-color: #f44336;
-    background: #FFEBEE;
+    border-left-color: #FF5722;
+    background: #FFF3E0;
+}
+
+.notification.accent {
+    border-left-color: #FF5722;
+    background: #FFF3E0;
+    color: #BF360C;
 }
 
 @keyframes slideIn {
@@ -568,6 +574,16 @@ main {
 
 .stat-item:hover::before {
     opacity: 1;
+}
+
+/* Accent highlights for important elements */
+.chart-container:hover {
+    border-left: 3px solid #FF5722;
+    transition: border-left 0.3s ease;
+}
+
+.tab.active:hover {
+    background: linear-gradient(135deg, #00677F, #FF5722);
 }
 
 .stat-number {
