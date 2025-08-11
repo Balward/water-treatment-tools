@@ -44,6 +44,10 @@ let data = [];
 let variables = [];
 let units = {};
 
+// Set Chart.js default font to Source Sans Pro
+Chart.defaults.font.family = "'SourceSansPro', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
+Chart.defaults.font.size = 12;
+
 // Chart instances
 let correlationChart = null;
 let timeSeriesChart = null;
