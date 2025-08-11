@@ -422,10 +422,15 @@ main {
 .chart-container canvas {
     max-width: 100%;
     height: 400px !important;
+    cursor: default;
+}
+
+/* Time series specific cursor styles */
+#timeseries-tab .chart-container canvas {
     cursor: crosshair;
 }
 
-.chart-container canvas:active {
+#timeseries-tab .chart-container canvas:active {
     cursor: move;
 }
 
