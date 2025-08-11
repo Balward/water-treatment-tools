@@ -7,7 +7,7 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #0067FF 0%, #004bb5 100%);
+    background: linear-gradient(135deg, #00677F 0%, #004d5c 100%);
     min-height: 100vh;
     color: #333;
 }
@@ -19,7 +19,7 @@ body {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: linear-gradient(135deg, #0067FF 0%, #004bb5 100%);
+    background: linear-gradient(135deg, #00677F 0%, #004d5c 100%);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -140,7 +140,7 @@ header {
 .logo-main {
     height: 80px;
     width: auto;
-    filter: drop-shadow(0 2px 8px rgba(0, 103, 255, 0.3));
+    filter: drop-shadow(0 2px 8px rgba(0, 103, 127, 0.3));
 }
 
 .header-text {
@@ -151,7 +151,7 @@ header h1 {
     font-size: 2.5rem;
     font-weight: 300;
     margin-bottom: 0.5rem;
-    background: linear-gradient(135deg, #0067FF, #004bb5);
+    background: linear-gradient(135deg, #00677F, #004d5c);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -216,14 +216,14 @@ main {
 }
 
 .tab:hover {
-    background: rgba(0, 103, 255, 0.1);
-    color: #0067FF;
+    background: rgba(0, 103, 127, 0.1);
+    color: #00677F;
 }
 
 .tab.active {
     background: linear-gradient(135deg, #00677F, #004d5c);
     color: white;
-    box-shadow: 0 2px 10px rgba(0, 103, 255, 0.3);
+    box-shadow: 0 2px 10px rgba(0, 103, 127, 0.3);
 }
 
 /* Tab Content */
@@ -279,8 +279,8 @@ main {
 
 .control select:focus {
     outline: none;
-    border-color: #0067FF;
-    box-shadow: 0 0 0 3px rgba(0, 103, 255, 0.1);
+    border-color: #00677F;
+    box-shadow: 0 0 0 3px rgba(0, 103, 127, 0.1);
 }
 
 /* Chart Container */
@@ -400,15 +400,15 @@ main {
 
 .correlation-button:hover {
     background: #e2e8f0;
-    border-color: #0067FF;
+    border-color: #F2A900;
     transform: translateY(-1px);
 }
 
 .correlation-button.active {
-    background: linear-gradient(135deg, #0067FF, #004bb5);
+    background: linear-gradient(135deg, #00677F, #004d5c);
     color: white;
-    border-color: #0067FF;
-    box-shadow: 0 2px 8px rgba(0, 103, 255, 0.3);
+    border-color: #00677F;
+    box-shadow: 0 2px 8px rgba(0, 103, 127, 0.3);
 }
 
 .correlation-button .variable-name {
@@ -447,8 +447,14 @@ main {
 }
 
 .notification.warning {
-    border-left-color: #FF9800;
-    background: #FFF3E0;
+    border-left-color: #F2A900;
+    background: #FFF8E1;
+}
+
+.notification.accent {
+    border-left-color: #F2A900;
+    background: #FFF8E1;
+    color: #E65100;
 }
 
 .notification.error {
@@ -504,13 +510,13 @@ main {
 
 .data-item {
     padding: 1rem;
-    background: rgba(0, 103, 255, 0.05);
+    background: rgba(0, 103, 127, 0.05);
     border-radius: 8px;
-    border: 1px solid rgba(0, 103, 255, 0.1);
+    border: 1px solid rgba(0, 103, 127, 0.1);
 }
 
 .data-item strong {
-    color: #0067FF;
+    color: #00677F;
 }
 
 /* Enhanced Dataset Summary Styles */
@@ -542,7 +548,7 @@ main {
     padding: 1.5rem 1rem;
     background: rgba(255, 255, 255, 0.8);
     border-radius: 12px;
-    border: 2px solid rgba(0, 103, 255, 0.1);
+    border: 2px solid rgba(0, 103, 127, 0.1);
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
@@ -555,15 +561,15 @@ main {
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(135deg, #00677F, #004d5c);
+    background: linear-gradient(135deg, #F2A900, #E6960A);
     opacity: 0;
     transition: opacity 0.3s ease;
 }
 
 .stat-item:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0, 103, 255, 0.2);
-    border-color: rgba(0, 103, 255, 0.3);
+    box-shadow: 0 8px 25px rgba(0, 103, 127, 0.2);
+    border-color: rgba(0, 103, 127, 0.3);
 }
 
 .stat-item:hover::before {
@@ -572,7 +578,7 @@ main {
 
 /* Accent highlights for important elements */
 .chart-container:hover {
-    border-left: 3px solid #0067FF;
+    border-left: 3px solid #F2A900;
     transition: border-left 0.3s ease;
 }
 
