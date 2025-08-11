@@ -413,7 +413,8 @@ function updateCorrelationChart() {
                             return `(${x}, ${y})${countText}`;
                         }
                     }
-                }
+                },
+                ...getZoomConfig()
             },
             scales: {
                 x: {
@@ -621,7 +622,8 @@ function updateTimeSeriesChart() {
                             return `${context.dataset.label}: ${value}`;
                         }
                     }
-                }
+                },
+                ...getZoomConfig()
             },
             scales: {
                 x: {
@@ -720,7 +722,8 @@ function updateDistributionChart() {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                legend: { display: false }
+                legend: { display: false },
+                ...getZoomConfig()
             },
             scales: {
                 x: {
@@ -950,7 +953,8 @@ function createOptimizationScatter(targetVar, strongestVar) {
                             return `(${x}, ${y})`;
                         }
                     }
-                }
+                },
+                ...getZoomConfig()
             },
             scales: {
                 x: {
@@ -1031,6 +1035,41 @@ function calculateLinearRegression(x, y) {
     const r2 = correlation * correlation;
     
     return { slope, intercept, r2 };
+}
+
+// Get zoom configuration for charts
+function getZoomConfig() {
+    return {
+        zoom: {
+            wheel: {
+                enabled: true,
+            },
+            pinch: {
+                enabled: true
+            },
+            mode: 'xy',
+            drag: {
+                enabled: true,
+                backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                borderColor: 'rgba(102, 126, 234, 0.5)',
+                borderWidth: 1
+            },
+            onZoom: function({chart}) {
+                // Optional: Add custom behavior on zoom
+            }
+        },
+        pan: {
+            enabled: true,
+            mode: 'xy',
+            onPan: function({chart}) {
+                // Optional: Add custom behavior on pan
+            }
+        },
+        limits: {
+            y: {min: 'original', max: 'original'},
+            x: {min: 'original', max: 'original'}
+        }
+    };
 }
 
 // Show notification

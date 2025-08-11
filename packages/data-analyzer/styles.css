@@ -290,6 +290,19 @@ main {
 .chart-container canvas {
     max-width: 100%;
     height: 400px !important;
+    cursor: crosshair;
+}
+
+.chart-container canvas:active {
+    cursor: move;
+}
+
+.chart-zoom-hint {
+    font-size: 0.8rem;
+    color: #666;
+    text-align: center;
+    margin-top: 0.5rem;
+    font-style: italic;
 }
 
 /* Analysis Container (for side-by-side layouts) */
