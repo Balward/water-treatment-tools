@@ -1,24 +1,49 @@
-/* City Fonts */
+/* City Fonts - Source Sans Pro */
 @font-face {
-    font-family: 'CityFont';
-    src: url('../../city-fonts/city-font-regular.otf') format('opentype');
+    font-family: 'SourceSansPro';
+    src: url('../../city-fonts/source-sans-pro/SourceSansPro-Regular.otf') format('opentype');
     font-weight: 400;
     font-style: normal;
     font-display: swap;
 }
 
 @font-face {
-    font-family: 'CityFont';
-    src: url('../../city-fonts/city-font-bold.otf') format('opentype');
+    font-family: 'SourceSansPro';
+    src: url('../../city-fonts/source-sans-pro/SourceSansPro-Bold.otf') format('opentype');
     font-weight: 700;
     font-style: normal;
     font-display: swap;
 }
 
 @font-face {
-    font-family: 'CityFont';
-    src: url('../../city-fonts/city-font-light.otf') format('opentype');
+    font-family: 'SourceSansPro';
+    src: url('../../city-fonts/source-sans-pro/SourceSansPro-Light.otf') format('opentype');
     font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'SourceSansPro';
+    src: url('../../city-fonts/source-sans-pro/SourceSansPro-Semibold.otf') format('opentype');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* City Fonts - Helvetica Neue (TTF) */
+@font-face {
+    font-family: 'HelveticaNeue';
+    src: url('../../city-fonts/neue helvetica/OpenType TTF Pro/HelveticaNeueLTPro-MdEx.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'HelveticaNeue';
+    src: url('../../city-fonts/neue helvetica/OpenType TTF Pro/HelveticaNeueLTPro-Ex.ttf') format('truetype');
+    font-weight: 700;
     font-style: normal;
     font-display: swap;
 }
@@ -31,7 +56,7 @@
 }
 
 body {
-    font-family: 'CityFont', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'SourceSansPro', 'HelveticaNeue', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: linear-gradient(135deg, #00677F 0%, #004d5c 100%);
     min-height: 100vh;
     color: #333;
