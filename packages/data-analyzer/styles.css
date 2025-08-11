@@ -468,7 +468,7 @@ main {
     padding: 1.5rem;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     height: fit-content;
-    max-height: 465px; /* Match chart container height (400px + padding + title) */
+    max-height: 565px; /* Match chart container height (500px + padding + title) */
     overflow-y: auto;
 }
 
@@ -488,7 +488,7 @@ main {
     padding: 1.5rem;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     height: fit-content;
-    max-height: 465px; /* Match chart container height (400px + padding + title) */
+    max-height: 565px; /* Match chart container height (500px + padding + title) */
     overflow-y: auto;
 }
 
