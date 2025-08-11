@@ -1082,20 +1082,23 @@ function calculateLinearRegression(x, y) {
 function getZoomConfig() {
     return {
         zoom: {
-            wheel: {
-                enabled: true
+            zoom: {
+                wheel: {
+                    enabled: true,
+                },
+                pinch: {
+                    enabled: true
+                },
+                drag: {
+                    enabled: true,
+                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                },
+                mode: 'xy',
             },
-            pinch: {
-                enabled: true
-            },
-            drag: {
-                enabled: true
-            },
-            mode: 'xy'
-        },
-        pan: {
-            enabled: true,
-            mode: 'xy'
+            pan: {
+                enabled: true,
+                mode: 'xy',
+            }
         }
     };
 }
