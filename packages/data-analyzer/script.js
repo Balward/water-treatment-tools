@@ -1093,11 +1093,11 @@ function getZoomConfig() {
                     enabled: true,
                     backgroundColor: 'rgba(102, 126, 234, 0.1)',
                 },
-                mode: 'xy',
+                mode: 'x',
             },
             pan: {
                 enabled: true,
-                mode: 'xy',
+                mode: 'x',
             }
         }
     };
