@@ -654,7 +654,7 @@ main {
 .dataset-summary {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 1rem;
 }
 
 
@@ -676,7 +676,7 @@ main {
 
 .stat-item {
     text-align: center;
-    padding: 1.5rem 1rem;
+    padding: 1rem 0.75rem;
     background: rgba(255, 255, 255, 0.8);
     border-radius: 12px;
     border: 2px solid rgba(0, 103, 127, 0.1);
@@ -711,10 +711,10 @@ main {
 
 .stat-number {
     font-family: 'HelveticaNeue', 'SourceSansPro', sans-serif;
-    font-size: 2.2rem;
+    font-size: 1.9rem;
     font-weight: 900;
     color: #333;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.3rem;
     background: linear-gradient(135deg, #00677F, #004d5c);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
