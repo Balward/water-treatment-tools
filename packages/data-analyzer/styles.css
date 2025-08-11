@@ -1,3 +1,28 @@
+/* City Fonts */
+@font-face {
+    font-family: 'CityFont';
+    src: url('../../city-fonts/city-font-regular.otf') format('opentype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'CityFont';
+    src: url('../../city-fonts/city-font-bold.otf') format('opentype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'CityFont';
+    src: url('../../city-fonts/city-font-light.otf') format('opentype');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
 /* CSS Reset and Base Styles */
 * {
     margin: 0;
@@ -6,7 +31,7 @@
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'CityFont', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: linear-gradient(135deg, #00677F 0%, #004d5c 100%);
     min-height: 100vh;
     color: #333;
