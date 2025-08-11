@@ -236,10 +236,10 @@ function populateSelectors() {
             selector.appendChild(firstOption);
         }
         
-        // Add variable options (skip date column for non-time series selectors)
+        // Add variable options (skip date column for all selectors)
         variables.forEach(variable => {
             const isDateColumn = variables.indexOf(variable) === 0; // First column is always date
-            if (isDateColumn && !selectorId.startsWith('time')) return;
+            if (isDateColumn) return;
             
             const option = document.createElement('option');
             option.value = variable;
@@ -599,11 +599,13 @@ function calculateAxisRange(values, variable) {
     const range = max - min;
     const buffer = range * 0.1;
     
-    const isStreamingCurrent = variable.toLowerCase().includes('streaming current') || 
-                              variable.toLowerCase().includes('streaming_current');
+    const allowsNegativeValues = variable.toLowerCase().includes('streaming current') || 
+                                variable.toLowerCase().includes('streaming_current') ||
+                                variable.toLowerCase().includes('zeta potential') ||
+                                variable.toLowerCase().includes('zeta_potential');
     
     return {
-        min: isStreamingCurrent ? min - buffer : Math.max(0, min - buffer),
+        min: allowsNegativeValues ? min - buffer : Math.max(0, min - buffer),
         max: max + buffer
     };
 }
