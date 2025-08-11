@@ -413,7 +413,7 @@ function updateCorrelationChart() {
         // Group data by color variable ranges
         const colorValues = validData.map(d => d.color);
         const colorRanges = createColorRanges(colorValues, colorVar);
-        const colors = ['#667eea', '#764ba2', '#f093fb', '#f5576c', '#4facfe'];
+        const colors = ['#00677F', '#004d5c', '#008fa3', '#006d7f', '#005866'];
         
         colorRanges.forEach((range, index) => {
             const rangeData = validData.filter(d => d.color >= range.min && d.color <= range.max);
@@ -434,8 +434,8 @@ function updateCorrelationChart() {
         datasets.push({
             label: `${yVar} vs ${xVar}`,
             data: bubbleData,
-            backgroundColor: 'rgba(102, 126, 234, 0.6)',
-            borderColor: 'rgba(102, 126, 234, 1)',
+            backgroundColor: 'rgba(0, 103, 127, 0.6)',
+            borderColor: 'rgba(0, 103, 127, 1)',
             borderWidth: 2
         });
     }
@@ -617,7 +617,7 @@ function updateTimeSeriesChart() {
         return;
     }
     
-    const colors = ['#667eea', '#764ba2', '#f093fb', '#f5576c', '#4facfe'];
+    const colors = ['#00677F', '#004d5c', '#008fa3', '#006d7f', '#005866'];
     const datasets = [];
     
     // Determine y-axis assignments
@@ -786,8 +786,8 @@ function updateDistributionChart() {
             datasets: [{
                 label: 'Frequency',
                 data: histogram,
-                backgroundColor: 'rgba(102, 126, 234, 0.6)',
-                borderColor: 'rgba(102, 126, 234, 1)',
+                backgroundColor: 'rgba(0, 103, 127, 0.6)',
+                borderColor: 'rgba(0, 103, 127, 1)',
                 borderWidth: 1
             }]
         },
