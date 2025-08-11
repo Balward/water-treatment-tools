@@ -134,7 +134,7 @@ async function loadData() {
                 
                 if (value !== null && value !== undefined && value !== '') {
                     // Handle Date column specially (first column is always date/time)
-                    if (index === 0 || variable.toLowerCase().includes('date') || variable.toLowerCase().includes('time')) {
+                    if (index === 0 || variable.toLowerCase().includes('date') || variable.toLowerCase().includes('timestamp')) {
                         if (typeof value === 'string') {
                             dataPoint[variable] = value;
                         } else {
