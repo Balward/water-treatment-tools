@@ -785,8 +785,8 @@ function updateTimeSeriesChart() {
                             grid: {
                                 drawOnChartArea: axisId === 'y', // Only show grid for primary axis
                             }
-                        }
-                    ])
+                        }]
+                    })
                 )
             },
             interaction: {
