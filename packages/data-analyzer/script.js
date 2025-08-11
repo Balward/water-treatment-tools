@@ -297,8 +297,33 @@ function getDateRange() {
     const dates = data.map(d => d[dateColumn]).filter(d => d !== null);
     if (dates.length === 0) return 'No dates';
     
-    const sortedDates = dates.sort();
-    return `${sortedDates[0]} to ${sortedDates[sortedDates.length - 1]}`;
+    // Parse dates and sort chronologically
+    const parsedDates = dates.map(dateStr => {
+        // Parse M/D/YYYY H:MM format
+        const match = dateStr.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})\s+(\d{1,2}):(\d{2})/);
+        if (match) {
+            const [, month, day, year, hour, minute] = match;
+            return new Date(year, month - 1, day, hour, minute);
+        }
+        return new Date(dateStr); // Fallback for other formats
+    }).filter(date => !isNaN(date));
+    
+    if (parsedDates.length === 0) return 'No valid dates';
+    
+    // Sort chronologically
+    parsedDates.sort((a, b) => a - b);
+    
+    // Format back to strings
+    const formatDate = (date) => {
+        const month = (date.getMonth() + 1);
+        const day = date.getDate();
+        const year = date.getFullYear();
+        const hour = date.getHours();
+        const minute = date.getMinutes().toString().padStart(2, '0');
+        return `${month}/${day}/${year} ${hour}:${minute}`;
+    };
+    
+    return `${formatDate(parsedDates[0])} to ${formatDate(parsedDates[parsedDates.length - 1])}`;
 }
 
 // Set default selections
