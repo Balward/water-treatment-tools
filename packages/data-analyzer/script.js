@@ -46,7 +46,7 @@ let units = {};
 
 // Set Chart.js default font to Source Sans Pro
 Chart.defaults.font.family = "'SourceSansPro', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
-Chart.defaults.font.size = 12;
+Chart.defaults.font.size = 14;
 
 // Chart instances
 let correlationChart = null;
