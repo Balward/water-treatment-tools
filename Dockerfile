@@ -32,6 +32,7 @@ RUN rm -rf /usr/share/nginx/html/*
 COPY packages/ ./packages/
 COPY city-logos/ ./city-logos/
 COPY city-fonts/ ./city-fonts/
+COPY Videos/ ./Videos/
 COPY README.md ./
 COPY data/ ./data/
 
