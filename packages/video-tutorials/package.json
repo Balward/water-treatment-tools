@@ -1,0 +1,18 @@
+{
+  "name": "video-tutorials",
+  "version": "1.0.0",
+  "description": "Interactive video tutorials for water treatment calculations and tool usage",
+  "main": "index.html",
+  "scripts": {
+    "start": "start index.html"
+  },
+  "keywords": [
+    "water-treatment",
+    "tutorials",
+    "videos",
+    "education",
+    "calculations"
+  ],
+  "author": "Water Treatment Tools",
+  "license": "MIT"
+}
