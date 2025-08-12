@@ -1088,6 +1088,8 @@ function processWorkbook(workbook) {
   const sheetNames = workbook.SheetNames;
   processedData = {};
 
+  console.log('processWorkbook called with sheets:', sheetNames);
+
   let generatedDateTime = "Unknown";
   const fileNameMatch = fileName.match(
     /RoboJarReportExcel\s+(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/
@@ -1261,6 +1263,9 @@ function processWorkbook(workbook) {
       };
     }
   });
+
+  console.log('processWorkbook completed, processedData keys:', Object.keys(processedData));
+  console.log('processedData structure:', processedData);
 
   updateUI();
 
@@ -2019,12 +2024,20 @@ function updateHeaderActions() {
   const hasPng = currentChart !== null;
   const hasData = Object.keys(processedData).length > 0;
 
+  // Debug logging
+  console.log('updateHeaderActions called:', {
+    hasData,
+    processedDataKeys: Object.keys(processedData),
+    processedDataLength: Object.keys(processedData).length
+  });
+
   // Update header buttons
   const generateBtn = document.getElementById("generateChartsHeader");
   const pdfBtn = document.getElementById("exportPdfHeader");
 
   if (generateBtn) {
     generateBtn.disabled = !hasData;
+    console.log('Generate button disabled state:', generateBtn.disabled);
   }
   if (pdfBtn) {
     pdfBtn.disabled = !hasPng;
