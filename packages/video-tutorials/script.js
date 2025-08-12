@@ -2,14 +2,26 @@ const videos = [
     {
         filename: 'Unit Conversions.mp4',
         title: 'Unit Conversions',
-        description: 'Learn essential unit conversion techniques for water treatment calculations',
+        description: 'Master converting between metric and imperial units for flow rates, volumes, pressures, and chemical concentrations in water treatment',
         path: '../../Videos/Unit Conversions.mp4'
     },
     {
         filename: 'Working with Formulas.mp4',
         title: 'Working with Formulas',
-        description: 'Master formula applications in water treatment operations and calculations',
+        description: 'Step-by-step approach to solving water treatment formulas including detention time, flow calculations, and chemical dosing equations',
         path: '../../Videos/Working with Formulas.mp4'
+    },
+    {
+        filename: 'Calculating Area.mp4',
+        title: 'Calculating Area',
+        description: 'Calculate surface areas for tanks, basins, and treatment units - essential for loading rates, detention times, and process design',
+        path: '../../Videos/Calculating Area.mp4'
+    },
+    {
+        filename: 'Understanding Percentages.mp4',
+        title: 'Understanding Percentages',
+        description: 'Apply percentage calculations to chemical concentrations, removal efficiencies, and treatment performance metrics',
+        path: '../../Videos/Understanding Percentages.mp4'
     }
 ];
 
