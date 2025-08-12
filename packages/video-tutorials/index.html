@@ -1,45 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Video Tutorials - Water Treatment Tools</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
     <div class="container">
-        <header class="header">
-            <div class="brand">
-                <div class="brand-text">
-                    <h1>Video Tutorials</h1>
-                    <p class="tagline">
-                        Learn water treatment calculations and tool usage
-                    </p>
-                </div>
-            </div>
-            <nav class="nav">
-                <a href="../dashboard/dashboard.html" class="nav-link">← Back to Dashboard</a>
-            </nav>
-        </header>
+      <header class="header">
+        <div class="brand">
+          <div class="brand-text">
+            <h1>Water Treatment Exam Preparation Grade 4 - Video Tutorials</h1>
+            <p class="tagline">
+              Learn water treatment calculations and tool usage
+            </p>
+          </div>
+        </div>
+        <nav class="nav">
+          <a href="../dashboard/dashboard.html" class="nav-link"
+            >← Back to Dashboard</a
+          >
+        </nav>
+      </header>
 
-        <main class="main-content">
-            <div class="video-grid" id="videoGrid">
-                <!-- Videos will be loaded here -->
-            </div>
-        </main>
+      <main class="main-content">
+        <div class="video-grid" id="videoGrid">
+          <!-- Videos will be loaded here -->
+        </div>
+      </main>
     </div>
 
     <!-- Modal -->
     <div id="videoModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <video id="modalVideo" class="modal-video" controls>
-                Your browser does not support the video tag.
-            </video>
-            <h3 id="modalTitle" class="modal-title"></h3>
-        </div>
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <video id="modalVideo" class="modal-video" controls>
+          Your browser does not support the video tag.
+        </video>
+        <h3 id="modalTitle" class="modal-title"></h3>
+      </div>
     </div>
 
     <script src="script.js"></script>
-</body>
+  </body>
 </html>

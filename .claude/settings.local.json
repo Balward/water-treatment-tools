@@ -40,7 +40,8 @@
       "Bash(git config:*)",
       "Bash(find:*)",
       "Bash(git ls-tree:*)",
-      "Bash(cmd /c:*)"
+      "Bash(cmd /c:*)",
+      "Bash(nginx:*)"
     ],
     "deny": []
   }
