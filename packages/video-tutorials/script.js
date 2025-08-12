@@ -3,13 +3,13 @@ const videos = [
         filename: 'Unit Conversions.mp4',
         title: 'Unit Conversions',
         description: 'Learn essential unit conversion techniques for water treatment calculations',
-        path: '../../Videos/Unit Conversions.mp4'
+        path: '/Videos/Unit Conversions.mp4'
     },
     {
         filename: 'Working with Formulas.mp4',
         title: 'Working with Formulas',
         description: 'Master formula applications in water treatment operations and calculations',
-        path: '../../Videos/Working with Formulas.mp4'
+        path: '/Videos/Working with Formulas.mp4'
     }
 ];
 
