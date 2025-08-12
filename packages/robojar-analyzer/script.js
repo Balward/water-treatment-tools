@@ -2065,6 +2065,36 @@ async function loadTestFile() {
   }
 }
 
+// Load streaming current demo file function
+async function loadStreamingCurrentDemo() {
+  try {
+
+    // Fetch the streaming current demo Excel file from data folder
+    const response = await fetch(
+      "../../data/RoboJarReportExcel 2025-08-12-07-50-44.xls"
+    );
+    if (!response.ok) {
+      throw new Error("Streaming current demo file not found in data folder");
+    }
+
+    const arrayBuffer = await response.arrayBuffer();
+    const data = new Uint8Array(arrayBuffer);
+    const workbook = XLSX.read(data, { type: "array" });
+
+    // Store filename for reference
+    fileName = "RoboJarReportExcel 2025-08-12-07-50-44.xls (Streaming Current Demo)";
+
+    // Process the workbook
+    processWorkbook(workbook);
+  } catch (error) {
+    console.error("Error loading streaming current demo file:", error);
+    showNotification(
+      "Failed to load streaming current demo file. Make sure RoboJarReportExcel 2025-08-12-07-50-44.xls exists in the data folder.",
+      "error"
+    );
+  }
+}
+
 // New functions for tabbed interface
 
 // Generate all charts simultaneously
