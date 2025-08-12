@@ -1,6 +1,6 @@
 # Water Treatment Tools
 
-A comprehensive collection of data analysis and visualization tools for water treatment professionals. This workspace provides a centralized hub for various analytics applications designed specifically for water treatment operations and compliance reporting.
+A comprehensive collection of data analysis and visualization tools for water treatment professionals. This workspace provides a centralized hub for various analytics applications designed specifically for water treatment operations, regulatory compliance, and operator training.
 
 ## 🚀 Quick Start
 
@@ -10,6 +10,16 @@ A comprehensive collection of data analysis and visualization tools for water tr
 4. **Documentation**: Detailed guides available in the `docs/` directory
 
 ## 🛠️ Available Tools
+
+### 🏠 Dashboard (`packages/dashboard/`)
+**Centralized application hub with modern interface**
+
+**Features:**
+- Clean, professional interface with city branding
+- Easy navigation between all tools
+- Tool descriptions and quick access
+- Responsive design for all devices
+- Official water treatment analysis platform
 
 ### 📊 RoboJar Analyzer (`packages/robojar-analyzer/`)
 **Advanced Excel report analyzer for RoboJar particle analysis data**
@@ -39,6 +49,9 @@ A comprehensive collection of data analysis and visualization tools for water tr
 6. **Export Results**: Save individual PNG charts or generate comprehensive PDF reports
 
 **Recent Updates:**
+- ✅ Added "Load Streaming Current Demo Data" button for specialized datasets
+- ✅ Paddle RPM enabled by default for comprehensive analysis
+- ✅ Removed dashboard button for cleaner interface
 - ✅ Redesigned UI with tabbed interface for better workflow
 - ✅ Enhanced run date parsing with timezone removal
 - ✅ Header action buttons for streamlined operations
@@ -47,54 +60,111 @@ A comprehensive collection of data analysis and visualization tools for water tr
 - ✅ Comprehensive help modals for statistics and forecast metrics
 - ✅ Advanced time window and filtering controls
 
-### 💧 Dose Predictor (`packages/dose-predictor/`)
-**Intelligent chemical dosing calculator for water treatment**
+### 🧪 Dose Predictor (`packages/dose-predictor/`)
+**AI-powered sodium permanganate dose optimization using machine learning**
 
 **Features:**
-- Predictive dosing algorithms
-- Historical data analysis
-- Treatment optimization
-- Chemical cost calculation
+- Machine learning trained on operational data
+- Predictive dosing algorithms for sodium permanganate
+- Historical data analysis and trending
+- Treatment optimization recommendations
+- Chemical cost calculation and ROI analysis
 
-### 📈 MWAT/DDMAX Calculator (`packages/mwat-ddmax-calculator/`)
-**Maximum Daily and Monthly Average calculations for regulatory compliance**
+### 📊 MWAT & Daily Maximum Calculator (`packages/data-parser/`)
+**Calculate Maximum Weekly Average Temperature (MWAT) and Daily Maximum Temperature per Colorado DMR requirements**
 
 **Features:**
-- DMR compliance calculations
-- Continuous and batch discharge options
+- Colorado DMR compliance calculations
+- MWAT (Maximum Weekly Average Temperature) calculations
+- Daily Maximum temperature tracking
 - Data merging and validation
-- Automated report generation
+- Automated regulatory report generation
+- Temperature trend analysis
 
-### 🚀 Dashboard (`packages/dashboard/`)
-**Centralized application hub with modern interface**
+### 📚 Regulation 100 Study Guide (`packages/regulation-100-study/`)
+**Interactive slideshow for mastering water and wastewater facility operator certification requirements**
 
 **Features:**
-- Easy navigation between tools
-- Tool status monitoring
-- Quick access to documentation
-- Responsive design for all devices
+- Interactive slideshow format
+- Colorado Regulation 100 content
+- Water and wastewater operator certification prep
+- Professional exam preparation materials
+- Self-paced learning modules
+
+### 🃏 Water Treatment Flashcards (`packages/water-treatment-flashcards/`)
+**Master water treatment terminology with interactive flashcards from professional reference books**
+
+**Features:**
+- Interactive flashcard system
+- Professional water treatment terminology
+- Reference book content integration
+- Study progress tracking
+- Spaced repetition learning
+
+### 💧 Sodium Hypochlorite Calculator (`packages/sodium-hypochlorite-calculator/`)
+**Calculate chemical addition to filter basins for residual increase using 10% sodium hypochlorite solution**
+
+**Features:**
+- Filter basin dosing calculations
+- 10% sodium hypochlorite solution calculations
+- Residual increase optimization
+- Chemical addition rate calculations
+- Real-time calculation updates
+
+### 🏭 Fan Press Data Tracker (`packages/fan-press-tracker/`)
+**Enter and analyze fan press operational data to optimize cake solids performance with interactive trending**
+
+**Features:**
+- Fan press operational data entry
+- Cake solids performance optimization
+- Interactive trending and visualization
+- Historical performance tracking
+- Operational efficiency analysis
+
+### 📈 Water Treatment Data Analyzer (`packages/data-analyzer/`)
+**Interactive analysis of streaming current and water treatment parameters with correlation, time series, distribution, and optimization charts**
+
+**Features:**
+- Streaming current data analysis
+- Water treatment parameter correlation
+- Time series analysis and trending
+- Distribution analysis and statistics
+- Optimization charts and recommendations
+- Interactive data visualization
+- Multiple chart types and views
 
 ## 📁 Project Structure
 ```
 water-treatment-tools/
 ├── packages/
-│   ├── robojar-analyzer/        # RoboJar data analysis tool
-│   ├── dose-predictor/          # Chemical dosing calculator
-│   ├── mwat-ddmax-calculator/   # Regulatory compliance calculator
-│   └── dashboard/               # Main application dashboard
-├── data/                        # Sample data files and templates
-├── docs/                        # Documentation and guides
-├── scripts/                     # Build and deployment scripts
-└── README.md                    # This file
+│   ├── dashboard/                      # Main application dashboard
+│   ├── robojar-analyzer/              # RoboJar data analysis tool
+│   ├── dose-predictor/                # AI-powered chemical dosing calculator
+│   ├── data-parser/                   # MWAT & Daily Maximum calculator
+│   ├── regulation-100-study/          # Operator certification study guide
+│   ├── water-treatment-flashcards/    # Interactive flashcards
+│   ├── sodium-hypochlorite-calculator/# Chemical dosing calculator
+│   ├── fan-press-tracker/            # Fan press operational data tracker
+│   └── data-analyzer/                # Water treatment data analysis
+├── data/                              # Sample data files and templates
+├── docs/                              # Documentation and guides
+├── city-logos/                        # Branding and visual assets
+├── city-fonts/                        # Typography resources
+├── api/                               # Backend services
+└── README.md                          # This file
 ```
 
 ## 🎯 Use Cases
 
-- **Laboratory Analysis**: Process RoboJar particle analysis reports
-- **Treatment Optimization**: Predict optimal chemical dosing
-- **Regulatory Compliance**: Calculate MWAT/DDMAX for DMR reporting
-- **Data Visualization**: Create professional charts and reports
-- **Quality Control**: Statistical analysis with outlier detection
+- **Laboratory Analysis**: Process RoboJar particle analysis reports with advanced statistics
+- **Treatment Optimization**: AI-powered chemical dosing predictions and optimization
+- **Regulatory Compliance**: Calculate MWAT/DDMAX for Colorado DMR reporting
+- **Operator Training**: Interactive study guides and flashcards for certification
+- **Data Visualization**: Create professional charts and reports for all parameters
+- **Quality Control**: Statistical analysis with outlier detection and trending
+- **Operations Management**: Track fan press performance and water treatment parameters
+- **Chemical Calculations**: Precise dosing calculations for various treatment chemicals
+- **Process Monitoring**: Real-time analysis of streaming current and treatment data
 
 ## 🔧 Technical Details
 
@@ -107,18 +177,23 @@ water-treatment-tools/
 
 ## 📊 Supported File Formats
 
-- **Excel Files**: `.xls`, `.xlsx` (RoboJar reports)
-- **CSV Files**: Comma-separated values
-- **Export Formats**: PNG images, PDF reports
+- **Excel Files**: `.xls`, `.xlsx` (RoboJar reports, streaming current data, operational data)
+- **CSV Files**: Comma-separated values for various data types
+- **Export Formats**: PNG images, PDF reports, data exports
+- **Demo Data**: Built-in test files for immediate functionality testing
 
 ## 🏆 Key Benefits
 
-- **No Installation Required**: Browser-based applications
-- **Professional Results**: Publication-ready charts and reports
-- **Regulatory Compliant**: Built for water treatment industry standards
-- **User Friendly**: Intuitive interfaces with helpful tooltips
-- **Fast Processing**: Optimized for large datasets
-- **Quality Assurance**: Built-in data validation and error checking
+- **No Installation Required**: Browser-based applications work on any device
+- **Professional Results**: Publication-ready charts and reports for presentations
+- **Regulatory Compliant**: Built specifically for water treatment industry standards
+- **User Friendly**: Intuitive interfaces with comprehensive help systems
+- **Fast Processing**: Optimized for large datasets with real-time updates
+- **Quality Assurance**: Built-in data validation, error checking, and statistical analysis
+- **Comprehensive Coverage**: From lab analysis to operator training to regulatory compliance
+- **AI-Powered**: Machine learning integration for predictive analytics
+- **Customizable**: Flexible analysis options and export formats
+- **Educational**: Built-in training materials and study guides
 
 ## 📞 Support
 
