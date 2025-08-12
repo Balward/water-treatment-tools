@@ -40,10 +40,12 @@ function createVideoCard(video) {
         openModal(video);
     });
 
-    // Set thumbnail to show frame at 2 seconds
+    // Set thumbnail to show random frame
     const thumbnailVideo = card.querySelector('video');
     thumbnailVideo.addEventListener('loadedmetadata', () => {
-        thumbnailVideo.currentTime = 2;
+        // Generate random time between 10% and 80% of video duration
+        const randomTime = thumbnailVideo.duration * (0.1 + Math.random() * 0.7);
+        thumbnailVideo.currentTime = randomTime;
     });
 
     return card;
