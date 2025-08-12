@@ -1,27 +1,33 @@
+// Function to get the correct video path based on environment
+function getVideoPath(filename) {
+    // Check if we're running locally (file://) or through nginx
+    if (window.location.protocol === 'file:') {
+        return `../../Videos/${filename}`;
+    } else {
+        return `/Videos/${filename}`;
+    }
+}
+
 const videos = [
     {
         filename: 'Unit Conversions.mp4',
         title: 'Unit Conversions',
-        description: 'Master converting between metric and imperial units for flow rates, volumes, pressures, and chemical concentrations in water treatment',
-        path: '../../Videos/Unit Conversions.mp4'
+        description: 'Master converting between metric and imperial units for flow rates, volumes, pressures, and chemical concentrations in water treatment'
     },
     {
         filename: 'Working with Formulas.mp4',
         title: 'Working with Formulas',
-        description: 'Step-by-step approach to solving water treatment formulas including detention time, flow calculations, and chemical dosing equations',
-        path: '../../Videos/Working with Formulas.mp4'
+        description: 'Step-by-step approach to solving water treatment formulas including detention time, flow calculations, and chemical dosing equations'
     },
     {
         filename: 'Calculating Area.mp4',
         title: 'Calculating Area',
-        description: 'Calculate surface areas for tanks, basins, and treatment units - essential for loading rates, detention times, and process design',
-        path: '../../Videos/Calculating Area.mp4'
+        description: 'Calculate surface areas for tanks, basins, and treatment units - essential for loading rates, detention times, and process design'
     },
     {
         filename: 'Understanding Percentages.mp4',
         title: 'Understanding Percentages',
-        description: 'Apply percentage calculations to chemical concentrations, removal efficiencies, and treatment performance metrics',
-        path: '../../Videos/Understanding Percentages.mp4'
+        description: 'Apply percentage calculations to chemical concentrations, removal efficiencies, and treatment performance metrics'
     }
 ];
 
@@ -34,11 +40,12 @@ const closeBtn = document.querySelector('.close');
 function createVideoCard(video) {
     const card = document.createElement('div');
     card.className = 'video-card';
+    const videoPath = getVideoPath(video.filename);
     
     card.innerHTML = `
         <div class="video-thumbnail">
             <video muted preload="metadata">
-                <source src="${video.path}" type="video/mp4">
+                <source src="${videoPath}" type="video/mp4">
             </video>
             <div class="play-icon">▶</div>
         </div>
@@ -64,7 +71,7 @@ function createVideoCard(video) {
 }
 
 function openModal(video) {
-    modalVideo.src = video.path;
+    modalVideo.src = getVideoPath(video.filename);
     modalTitle.textContent = video.title;
     modal.style.display = 'block';
     document.body.style.overflow = 'hidden';
