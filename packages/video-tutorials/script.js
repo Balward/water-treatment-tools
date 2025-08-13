@@ -14,7 +14,9 @@ function getVideoPath(filename) {
 function getThumbnailPath(filename) {
     // Extract base name and replace with .svg extension
     const baseName = filename.replace('.mp4', '');
-    return `thumbnails/${baseName}.svg`;
+    // Add cache-busting parameter to force browser to reload thumbnails
+    const cacheBuster = '20250813010';
+    return `thumbnails/${baseName}.svg?v=${cacheBuster}`;
 }
 
 // Function to get static video list
