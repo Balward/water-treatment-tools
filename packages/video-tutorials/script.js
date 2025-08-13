@@ -24,7 +24,7 @@ function getThumbnailPath(filename) {
     const thumbnailName = thumbnailMapping[baseName] || baseName;
     
     // Add cache-busting parameter to force browser to reload thumbnails
-    const cacheBuster = '20250813011';
+    const cacheBuster = '20250813014';
     return `thumbnails/${thumbnailName}.svg?v=${cacheBuster}`;
 }
 

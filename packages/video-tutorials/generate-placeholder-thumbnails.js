@@ -28,7 +28,22 @@ const videos = [
     { number: '20', title: 'Sedimentation Problems', color: '#8fd3f4' },
     { number: '21', title: 'Filtration', color: '#b8cdf8' },
     { number: '22', title: 'Filtration Problems', color: '#f8b8d4' },
-    { number: '23', title: 'Disinfection', color: '#c7d2fe' }
+    { number: '23', title: 'Disinfection', color: '#c7d2fe' },
+    { number: '24', title: 'Disinfection Problems', color: '#a7f3d0' },
+    { number: '25', title: 'Pumps and Motors', color: '#fde68a' },
+    { number: '26', title: 'Electricity', color: '#fed7d7' },
+    { number: '27', title: 'Corrosion Control', color: '#c6f6d5' },
+    { number: '28', title: 'Fluoridation', color: '#bee3f8' },
+    { number: '29', title: 'Iron and Manganese', color: '#e9d8fd' },
+    { number: '30', title: 'Lime Softening', color: '#fed7e2' },
+    { number: '31', title: 'Regulations', color: '#feebc8' },
+    { number: '32', title: 'Membrane Technology', color: '#c5f2c7' },
+    { number: '33', title: 'Aeration', color: '#b3e5fc' },
+    { number: '34', title: 'Adsorption', color: '#f8bbd9' },
+    { number: '35', title: 'Laboratory', color: '#d1c4e9' },
+    { number: '36', title: 'Laboratory Problems', color: '#ffecb3' },
+    { number: '37', title: 'Treatment Plant Chemicals', color: '#ffcdd2' },
+    { number: '38', title: 'Management Principles', color: '#dcedc8' }
 ];
 
 function createThumbnailsDirectory() {
