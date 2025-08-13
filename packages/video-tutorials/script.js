@@ -310,13 +310,15 @@ function createVideoCard(video) {
     card.innerHTML = `
         <div class="video-thumbnail">
             <img src="${thumbnailPath}" alt="${video.title}" class="thumbnail-image">
-            <div class="video-category ${category.class}">${category.name}</div>
-            <div class="video-duration">${duration}</div>
             <div class="play-icon">▶</div>
         </div>
         <div class="video-info">
             <div class="video-title">${video.title}</div>
             <div class="video-description">${video.description}</div>
+            <div class="video-meta">
+                <span class="video-category ${category.class}">${category.name}</span>
+                <span class="video-duration">${duration}</span>
+            </div>
         </div>
         <div class="video-progress">
             <div class="video-progress-bar" style="width: ${progress}%"></div>

@@ -148,10 +148,6 @@ function generateSVGThumbnail(video) {
   <!-- Background -->
   <rect width="100%" height="100%" fill="url(#grad${number})" rx="12"/>
   
-  <!-- Video number (small, top corner) -->
-  <text x="30" y="40" font-family="Arial, sans-serif" font-size="24" font-weight="bold" 
-        fill="rgba(255,255,255,0.8)" filter="url(#shadow)">${number}</text>
-  
   <!-- Title (prominent, centered) -->
   ${titleLines.map((line, index) => {
       const yPosition = titleLines.length === 1 ? 130 : 
