@@ -5,151 +5,131 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Water Treatment Tools - Dashboard</title>
     <link rel="icon" type="image/png" href="../../city-logos/favicon.png" />
-    <link rel="stylesheet" href="dashboard-styles.css" />
+    <link rel="stylesheet" href="../../global-styles.css" />
   </head>
 
   <body>
-    <div class="container">
-      <header class="header">
-        <div class="brand">
-          <div class="logo-container">
+    <div class="wt-container">
+      <header class="wt-header">
+        <div class="wt-header-content">
+          <div class="wt-brand">
             <img
               src="../../city-logos/logo-vert.png"
               alt="City Logo"
-              class="logo-image"
+              class="wt-logo"
             />
-          </div>
-          <div class="brand-text">
-            <h1>Water Treatment Tools</h1>
-            <p class="tagline">
-              Official water treatment analysis and optimization platform
-            </p>
+            <div class="wt-brand-text">
+              <h1>Water Treatment Tools</h1>
+              <p class="wt-tagline">
+                Official water treatment analysis and optimization platform
+              </p>
+            </div>
           </div>
         </div>
       </header>
 
-      <main class="main-content">
-        <div class="apps-grid">
-          <a href="../robojar-analyzer/index.html" class="app-card">
-            <div class="app-icon">
-              <span>🤖</span>
-            </div>
-            <div class="app-info">
-              <h3>RoboJar Analyzer</h3>
-              <p>
+      <main>
+        <div class="wt-grid wt-grid-auto gap-6">
+          <a href="../robojar-analyzer/index.html" class="wt-app-card">
+            <div class="wt-app-icon">🤖</div>
+            <div class="wt-app-info">
+              <h3 class="wt-app-title">RoboJar Analyzer</h3>
+              <p class="wt-app-description">
                 Upload and analyze RoboJar Excel reports with advanced
                 statistics and forecasting
               </p>
             </div>
           </a>
 
-          <a href="../dose-predictor/index.html" class="app-card">
-            <div class="app-icon">
-              <span>🧪</span>
-            </div>
-            <div class="app-info">
-              <h3>Dose Predictor</h3>
-              <p>
+          <a href="../dose-predictor/index.html" class="wt-app-card">
+            <div class="wt-app-icon">🧪</div>
+            <div class="wt-app-info">
+              <h3 class="wt-app-title">Dose Predictor</h3>
+              <p class="wt-app-description">
                 AI-powered sodium permanganate dose optimization using machine
                 learning trained on operational data
               </p>
             </div>
           </a>
 
-          <a href="../regulation-100-study/index.html" class="app-card">
-            <div class="app-icon">
-              <span>📚</span>
-            </div>
-            <div class="app-info">
-              <h3>Regulation 100 Study Guide</h3>
-              <p>
+          <a href="../regulation-100-study/index.html" class="wt-app-card">
+            <div class="wt-app-icon">📚</div>
+            <div class="wt-app-info">
+              <h3 class="wt-app-title">Regulation 100 Study Guide</h3>
+              <p class="wt-app-description">
                 Interactive slideshow for mastering water and wastewater facility
                 operator certification requirements
               </p>
             </div>
           </a>
 
-          <a href="../water-treatment-flashcards/index.html" class="app-card">
-            <div class="app-icon">
-              <span>🃏</span>
-            </div>
-            <div class="app-info">
-              <h3>Water Treatment Flashcards</h3>
-              <p>
+          <a href="../water-treatment-flashcards/index.html" class="wt-app-card">
+            <div class="wt-app-icon">🃏</div>
+            <div class="wt-app-info">
+              <h3 class="wt-app-title">Water Treatment Flashcards</h3>
+              <p class="wt-app-description">
                 Master water treatment terminology with interactive flashcards
                 from professional reference books
               </p>
             </div>
           </a>
 
-          <a href="../sodium-hypochlorite-calculator/index.html" class="app-card">
-            <div class="app-icon">
-              <span>💧</span>
-            </div>
-            <div class="app-info">
-              <h3>Sodium Hypochlorite Filter Dosing Calculator</h3>
-              <p>
+          <a href="../sodium-hypochlorite-calculator/index.html" class="wt-app-card">
+            <div class="wt-app-icon">💧</div>
+            <div class="wt-app-info">
+              <h3 class="wt-app-title">Sodium Hypochlorite Filter Dosing Calculator</h3>
+              <p class="wt-app-description">
                 Calculate chemical addition to filter basins for residual increase using 10% sodium hypochlorite solution
               </p>
             </div>
           </a>
 
-          <a href="../data-parser/index.html" class="app-card">
-            <div class="app-icon">
-              <span>📊</span>
-            </div>
-            <div class="app-info">
-              <h3>MWAT & Daily Maximum Calculator</h3>
-              <p>
+          <a href="../data-parser/index.html" class="wt-app-card">
+            <div class="wt-app-icon">📊</div>
+            <div class="wt-app-info">
+              <h3 class="wt-app-title">MWAT & Daily Maximum Calculator</h3>
+              <p class="wt-app-description">
                 Calculate Maximum Weekly Average Temperature (MWAT) and Daily Maximum Temperature per Colorado DMR requirements
               </p>
             </div>
           </a>
 
-          <a href="../fan-press-tracker/index.html" class="app-card">
-            <div class="app-icon">
-              <span>🏭</span>
-            </div>
-            <div class="app-info">
-              <h3>Fan Press Data Tracker</h3>
-              <p>
+          <a href="../fan-press-tracker/index.html" class="wt-app-card">
+            <div class="wt-app-icon">🏭</div>
+            <div class="wt-app-info">
+              <h3 class="wt-app-title">Fan Press Data Tracker</h3>
+              <p class="wt-app-description">
                 Enter and analyze fan press operational data to optimize cake solids performance with interactive trending
               </p>
             </div>
           </a>
 
-          <a href="../data-analyzer/index.html" class="app-card">
-            <div class="app-icon">
-              <span>📈</span>
-            </div>
-            <div class="app-info">
-              <h3>Water Treatment Data Analyzer</h3>
-              <p>
+          <a href="../data-analyzer/index.html" class="wt-app-card">
+            <div class="wt-app-icon">📈</div>
+            <div class="wt-app-info">
+              <h3 class="wt-app-title">Water Treatment Data Analyzer</h3>
+              <p class="wt-app-description">
                 Interactive analysis of streaming current and water treatment parameters with correlation, time series, distribution, and optimization charts
               </p>
             </div>
           </a>
 
-          <a href="../video-tutorials/index.html" class="app-card">
-            <div class="app-icon">
-              <span>📹</span>
-            </div>
-            <div class="app-info">
-              <h3>Video Tutorials</h3>
-              <p>
+          <a href="../video-tutorials/index.html" class="wt-app-card">
+            <div class="wt-app-icon">📹</div>
+            <div class="wt-app-info">
+              <h3 class="wt-app-title">Video Tutorials</h3>
+              <p class="wt-app-description">
                 Learn water treatment calculations and tool usage through interactive video tutorials
               </p>
             </div>
           </a>
 
           <!-- Placeholder for future apps -->
-          <div class="app-card placeholder">
-            <div class="app-icon">
-              <span>➕</span>
-            </div>
-            <div class="app-info">
-              <h3>Coming Soon</h3>
-              <p>
+          <div class="wt-app-card" style="opacity: 0.7; border-style: dashed; cursor: default;">
+            <div class="wt-app-icon">➕</div>
+            <div class="wt-app-info">
+              <h3 class="wt-app-title">Coming Soon</h3>
+              <p class="wt-app-description">
                 More powerful apps are being developed to expand your toolkit
               </p>
             </div>
@@ -157,15 +137,11 @@
         </div>
       </main>
 
-      <footer class="footer">
-        <div class="footer-content">
-          <p>&copy; 2025 Your App Suite | Built for efficiency and insights</p>
-          <div class="footer-links">
-            <span class="footer-status">
-              <span class="status-dot"></span>
-              All systems operational
-            </span>
-          </div>
+      <footer class="wt-card mt-8 text-center">
+        <p class="text-gray-600 mb-2">&copy; 2025 Water Treatment Tools | Built for efficiency and insights</p>
+        <div class="flex items-center justify-center gap-2">
+          <span class="wt-status-dot"></span>
+          <span class="text-sm text-gray-500">All systems operational</span>
         </div>
       </footer>
     </div>
