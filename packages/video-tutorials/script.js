@@ -288,10 +288,23 @@ function getEstimatedDuration(videoNum) {
     return durations[videoNum] || '30m';
 }
 
-function getRandomProgress() {
-    // Simulate random progress for demonstration
-    const progressOptions = [0, 25, 50, 75, 100];
-    return progressOptions[Math.floor(Math.random() * progressOptions.length)];
+function getAccentColor(videoNum) {
+    // Muted color accents for visual variety
+    const accentColors = [
+        '#6b7280', // Cool Gray
+        '#78716c', // Warm Gray  
+        '#6b7280', // Cool Gray
+        '#78716c', // Warm Gray
+        '#6b7280', // Cool Gray
+        '#78716c', // Warm Gray
+        '#6b7280', // Cool Gray
+        '#78716c', // Warm Gray
+        '#6b7280', // Cool Gray
+        '#78716c', // Warm Gray
+    ];
+    
+    const categoryIndex = Math.floor((videoNum - 1) / 4) % accentColors.length;
+    return accentColors[categoryIndex];
 }
 
 function createVideoCard(video) {
@@ -302,7 +315,7 @@ function createVideoCard(video) {
     const videoNum = parseInt(video.filename.match(/^(\d+)/)[1]);
     const category = getVideoCategory(videoNum);
     const duration = getEstimatedDuration(videoNum);
-    const progress = getRandomProgress();
+    const accentColor = getAccentColor(videoNum);
     
     // Get thumbnail path
     const thumbnailPath = getThumbnailPath(video.filename);
@@ -320,8 +333,8 @@ function createVideoCard(video) {
                 <span class="video-duration">${duration}</span>
             </div>
         </div>
-        <div class="video-progress">
-            <div class="video-progress-bar" style="width: ${progress}%"></div>
+        <div class="video-accent">
+            <div class="video-accent-bar" style="background-color: ${accentColor}"></div>
         </div>
     `;
 

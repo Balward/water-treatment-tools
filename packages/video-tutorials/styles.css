@@ -374,16 +374,20 @@ body {
     border: 1px solid rgba(90, 108, 125, 0.2);
 }
 
-.video-progress {
-    height: 3px;
-    background: rgba(30, 58, 95, 0.2);
+.video-accent {
+    height: 4px;
+    background: rgba(0, 0, 0, 0.05);
     position: relative;
     margin-top: auto;
 }
 
-.video-progress-bar {
+.video-accent-bar {
     height: 100%;
-    background: #1e3a5f;
-    width: 0%;
-    transition: width 0.3s ease;
+    width: 100%;
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
+}
+
+.video-card:hover .video-accent-bar {
+    opacity: 0.8;
 }
