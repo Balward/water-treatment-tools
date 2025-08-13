@@ -8,11 +8,11 @@ const thumbnailsDir = path.join(__dirname, 'thumbnails');
 const videos = [
     { number: '1', title: 'Unit Conversions', color: '#667eea' },
     { number: '2', title: 'Working With Formulas', color: '#764ba2' },
-    { number: '3', title: 'Understanding Percentages', color: '#f093fb' },
+    { number: '3', title: 'Understanding\nPercentages', color: '#f093fb' },
     { number: '4', title: 'Calculating Area', color: '#f5576c' },
     { number: '5', title: 'Calculating Volume', color: '#4facfe' },
     { number: '6', title: 'Weight-Volume Relationships', color: '#43e97b' },
-    { number: '7', title: 'Force, Pressure & Head', color: '#fa709a' },
+    { number: '7', title: 'Force-Pressure-Head', color: '#fa709a' },
     { number: '8', title: 'Velocity and Flow Rate', color: '#fee140' },
     { number: '9', title: 'Pumps', color: '#a8edea' },
     { number: '10', title: 'The Metric System', color: '#d299c2' },
@@ -42,7 +42,7 @@ const videos = [
     { number: '34', title: 'Adsorption', color: '#f8bbd9' },
     { number: '35', title: 'Laboratory', color: '#d1c4e9' },
     { number: '36', title: 'Laboratory Problems', color: '#ffecb3' },
-    { number: '37', title: 'Treatment Plant Chemicals', color: '#ffcdd2' },
+    { number: '37', title: 'Treatment Plant\nChemicals', color: '#ffcdd2' },
     { number: '38', title: 'Management Principles', color: '#dcedc8' }
 ];
 
@@ -59,69 +59,76 @@ function generateSVGThumbnail(video) {
     // Create a gradient version of the color for visual appeal
     const darkerColor = shadeColor(color, -20);
     
-    // Smart text wrapping based on character count and natural breaks
-    const titleWords = title.split(' ');
-    const titleLines = [];
+    // Handle explicit newlines or smart text wrapping
+    let titleLines = [];
     
-    // Function to estimate text width (rough approximation)
-    const estimateWidth = (text) => text.length;
-    const maxLineWidth = 25; // Approximate character limit per line
-    
-    if (titleWords.length <= 1 || title.length <= maxLineWidth) {
-        // Single word or short title - one line
-        titleLines.push(title);
-    } else if (title.length <= maxLineWidth * 2) {
-        // Medium title - try to split into 2 balanced lines
-        let bestSplit = Math.ceil(titleWords.length / 2);
-        let minDifference = Infinity;
-        
-        // Find the best split point for balanced lines
-        for (let i = 1; i < titleWords.length; i++) {
-            const line1 = titleWords.slice(0, i).join(' ');
-            const line2 = titleWords.slice(i).join(' ');
-            const difference = Math.abs(line1.length - line2.length);
-            
-            if (difference < minDifference && line1.length <= maxLineWidth && line2.length <= maxLineWidth) {
-                minDifference = difference;
-                bestSplit = i;
-            }
-        }
-        
-        titleLines.push(titleWords.slice(0, bestSplit).join(' '));
-        titleLines.push(titleWords.slice(bestSplit).join(' '));
+    // Check if title has explicit newlines
+    if (title.includes('\n')) {
+        titleLines = title.split('\n');
     } else {
-        // Long title - split into 3 lines
-        const targetLength = Math.ceil(title.length / 3);
-        let currentLine = '';
-        let currentLineIndex = 0;
+        // Smart text wrapping based on character count and natural breaks
+        const titleWords = title.split(' ');
         
-        for (let i = 0; i < titleWords.length; i++) {
-            const word = titleWords[i];
-            const testLine = currentLine ? `${currentLine} ${word}` : word;
+        // Function to estimate text width (rough approximation)
+        const estimateWidth = (text) => text.length;
+        const maxLineWidth = 25; // Approximate character limit per line
+        
+        if (titleWords.length <= 1 || title.length <= maxLineWidth) {
+            // Single word or short title - one line
+            titleLines.push(title);
+        } else if (title.length <= maxLineWidth * 2) {
+            // Medium title - try to split into 2 balanced lines
+            let bestSplit = Math.ceil(titleWords.length / 2);
+            let minDifference = Infinity;
             
-            if (testLine.length <= maxLineWidth || currentLine === '') {
-                currentLine = testLine;
-            } else {
-                // Start new line
-                titleLines[currentLineIndex] = currentLine;
-                currentLine = word;
-                currentLineIndex++;
+            // Find the best split point for balanced lines
+            for (let i = 1; i < titleWords.length; i++) {
+                const line1 = titleWords.slice(0, i).join(' ');
+                const line2 = titleWords.slice(i).join(' ');
+                const difference = Math.abs(line1.length - line2.length);
                 
-                // Prevent more than 3 lines
-                if (currentLineIndex >= 2) break;
+                if (difference < minDifference && line1.length <= maxLineWidth && line2.length <= maxLineWidth) {
+                    minDifference = difference;
+                    bestSplit = i;
+                }
             }
-        }
-        
-        // Add the last line
-        if (currentLine) {
-            titleLines[currentLineIndex] = currentLine;
-        }
-        
-        // If we still have remaining words, add them to the last line
-        if (currentLineIndex < titleWords.length - 1) {
-            const remainingWords = titleWords.slice(titleWords.indexOf(currentLine.split(' ').pop()) + 1);
-            if (remainingWords.length > 0) {
-                titleLines[currentLineIndex] += ' ' + remainingWords.join(' ');
+            
+            titleLines.push(titleWords.slice(0, bestSplit).join(' '));
+            titleLines.push(titleWords.slice(bestSplit).join(' '));
+        } else {
+            // Long title - split into 3 lines
+            const targetLength = Math.ceil(title.length / 3);
+            let currentLine = '';
+            let currentLineIndex = 0;
+            
+            for (let i = 0; i < titleWords.length; i++) {
+                const word = titleWords[i];
+                const testLine = currentLine ? `${currentLine} ${word}` : word;
+                
+                if (testLine.length <= maxLineWidth || currentLine === '') {
+                    currentLine = testLine;
+                } else {
+                    // Start new line
+                    titleLines[currentLineIndex] = currentLine;
+                    currentLine = word;
+                    currentLineIndex++;
+                    
+                    // Prevent more than 3 lines
+                    if (currentLineIndex >= 2) break;
+                }
+            }
+            
+            // Add the last line
+            if (currentLine) {
+                titleLines[currentLineIndex] = currentLine;
+            }
+            
+            // If we still have remaining words, add them to the last line
+            if (currentLineIndex < titleWords.length - 1) {
+                const remainingWords = titleWords.slice(titleWords.indexOf(currentLine.split(' ').pop()) + 1);
+                if (remainingWords.length > 0) {
+                    titleLines[currentLineIndex] += ' ' + remainingWords.join(' ');
+                }
             }
         }
     }
@@ -190,7 +197,8 @@ function generateAllThumbnails() {
     createThumbnailsDirectory();
     
     videos.forEach(video => {
-        const filename = `${video.number} - ${video.title}.svg`;
+        const cleanTitle = video.title.replace(/\n/g, ' ');
+        const filename = `${video.number} - ${cleanTitle}.svg`;
         const filePath = path.join(thumbnailsDir, filename);
         
         const svgContent = generateSVGThumbnail(video);

@@ -17,14 +17,14 @@ function getThumbnailPath(filename) {
     
     // Map video filenames to thumbnail filenames (handle special characters)
     const thumbnailMapping = {
-        '7 - Force-Pressure-Head': '7 - Force, Pressure & Head'
+        // No mappings needed - using exact filenames
     };
     
     // Use mapped name if it exists, otherwise use the base name
     const thumbnailName = thumbnailMapping[baseName] || baseName;
     
     // Add cache-busting parameter to force browser to reload thumbnails
-    const cacheBuster = '20250813014';
+    const cacheBuster = '20250813015';
     return `thumbnails/${thumbnailName}.svg?v=${cacheBuster}`;
 }
 
