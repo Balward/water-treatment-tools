@@ -17,10 +17,8 @@
         fill="rgba(255,255,255,0.8)" filter="url(#shadow)">2</text>
   
   <!-- Title (prominent, centered) -->
-  <text x="180" y="110" font-family="Arial, sans-serif" font-size="24" font-weight="700" 
-              text-anchor="middle" fill="white" filter="url(#shadow)">Working With</text>
-  <text x="180" y="140" font-family="Arial, sans-serif" font-size="24" font-weight="700" 
-              text-anchor="middle" fill="white" filter="url(#shadow)">Formulas</text>
+  <text x="180" y="130" font-family="Arial, sans-serif" font-size="28" font-weight="700" 
+              text-anchor="middle" fill="white" filter="url(#shadow)">Working With Formulas</text>
   
   <!-- Water treatment icon/decoration -->
   <circle cx="40" cy="200" r="15" fill="rgba(255,255,255,0.1)"/>
