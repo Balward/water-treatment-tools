@@ -4,509 +4,126 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sodium Hypochlorite Filter Dosing Calculator</title>
+    <link rel="icon" type="image/png" href="../../city-logos/favicon.png" />
+    <link rel="stylesheet" href="../../global-styles.css" />
     <style>
-        * {
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #00677f 0%, #4a90a4 100%);
-            min-height: 100vh;
-            color: #333;
-            line-height: 1.6;
-            margin: 0;
-            padding: 0;
-        }
-        
-        .container {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        /* Header Styles */
-        .header {
-            text-align: center;
-            margin-bottom: 1.5rem;
-            padding: 1rem 0;
-        }
-
-        .brand {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 16px;
-            padding: 1.5rem;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .header-top {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 1rem;
-        }
-
-        .header-bottom {
-            display: flex;
-            justify-content: flex-start;
-            margin-top: 1.5rem;
-            margin-bottom: 0;
-        }
-
-        .logo-container {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 1rem;
-        }
-
-        .logo-image {
-            height: 80px;
-            width: auto;
-            object-fit: contain;
-        }
-
-        .brand-text {
+        /* App-specific styles that extend the global system */
+        .result-highlight {
+            font-size: 2.5rem;
+            font-weight: var(--font-weight-black);
+            color: var(--success-green);
+            margin-bottom: var(--space-3);
             text-align: center;
         }
-
-        .brand-text h1 {
-            color: #00677f;
+        
+        .result-secondary {
             font-size: 2rem;
-            font-weight: 700;
-            margin: 0 0 0.5rem 0;
-            line-height: 1.2;
-        }
-
-        .tagline {
-            color: #4a90a4;
-            font-size: 1.1rem;
-            font-weight: 400;
-            opacity: 0.8;
-            margin: 0;
+            font-weight: var(--font-weight-bold);
+            color: var(--success-green);
+            margin-bottom: var(--space-4);
+            text-align: center;
         }
         
-        .back-to-dashboard-btn {
-            background: rgba(0, 103, 127, 0.1);
-            color: #00677f;
-            border: 2px solid rgba(0, 103, 127, 0.2);
-            padding: 0.6rem 1.2rem;
-            border-radius: 25px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin: 0;
+        .calculation-step {
+            margin: var(--space-4) 0;
+            padding: var(--space-4);
+            background: var(--white);
+            border-radius: var(--radius-md);
+            border-left: 3px solid var(--info-blue);
         }
         
-        .back-to-dashboard-btn:hover {
-            background: rgba(0, 103, 127, 0.2);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0, 103, 127, 0.3);
-            text-decoration: none;
-            color: #00677f;
+        .formula-display {
+            background: var(--gray-200);
+            padding: var(--space-3);
+            border-radius: var(--radius-sm);
+            margin: var(--space-3) 0;
+            font-weight: var(--font-weight-bold);
+            color: var(--gray-700);
         }
         
-        .card {
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 25px;
-            margin-bottom: 25px;
-            border: 1px solid #e9ecef;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        }
-        
-        .main-content {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 16px;
-            padding: 2rem;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            flex: 1;
-        }
-
-        .input-section {
-            background: linear-gradient(145deg, #ffffff, #f8f9fa);
-            border-radius: 12px;
-            padding: 25px;
-            margin-bottom: 25px;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
-        }
-        
-        .input-group {
-            margin-bottom: 25px;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #2c3e50;
-            font-size: 1.1em;
-        }
-        
-        input {
-            width: 100%;
-            padding: 15px;
-            border: 2px solid #e9ecef;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            background: white;
-        }
-        
-        input:focus {
-            outline: none;
-            border-color: #00677f;
-            box-shadow: 0 0 0 3px rgba(0, 103, 127, 0.1);
-        }
-        
-        button {
-            width: 100%;
-            padding: 1rem 2rem;
-            background: linear-gradient(135deg, #00677f, #4a90a4);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        button:hover {
-            background: linear-gradient(135deg, #005c73, #3e7b8c);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 103, 127, 0.3);
-        }
-        
-        button:active {
-            transform: translateY(0);
-        }
-        
-        .result {
-            margin-top: 30px;
-            padding: 25px;
-            background: linear-gradient(145deg, #d4edda, #c3e6cb);
-            border-radius: 12px;
-            border-left: 5px solid #28a745;
-            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.2);
-        }
-        
-        .result h3 {
-            margin-top: 0;
-            color: #155724;
-            font-size: 1.4em;
-            display: flex;
-            align-items: center;
-        }
-        
-        .result h3::before {
-            content: "🧪";
-            margin-right: 10px;
-            font-size: 1.2em;
-        }
-        
-        .calculation-steps {
-            background: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 8px;
-            padding: 20px;
-            margin: 20px 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        .calculation-steps h4 {
-            color: #495057;
-            margin-top: 0;
-            font-family: 'Segoe UI', sans-serif;
-            display: flex;
-            align-items: center;
-        }
-        
-        .calculation-steps h4::before {
-            content: "📊";
-            margin-right: 8px;
-        }
-        
-        .formula {
-            background: #e9ecef;
-            padding: 10px;
-            border-radius: 5px;
-            margin: 10px 0;
-            font-weight: bold;
-            color: #495057;
-        }
-        
-        .step {
-            margin: 15px 0;
-            padding: 10px;
-            background: white;
-            border-radius: 5px;
-            border-left: 3px solid #007bff;
-        }
-        
-        .info {
-            background: linear-gradient(145deg, #e3f2fd, #bbdefb);
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 25px;
-            border-left: 5px solid #2196f3;
-            box-shadow: 0 2px 8px rgba(33, 150, 243, 0.15);
-        }
-        
-        .info h3 {
-            margin-top: 0;
-            color: #0d47a1;
-            display: flex;
-            align-items: center;
-        }
-        
-        .info h3::before {
-            content: "ℹ️";
-            margin-right: 10px;
-        }
-        
-        .error {
-            background: linear-gradient(145deg, #f8d7da, #f5c6cb);
-            color: #721c24;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 15px;
-            border-left: 5px solid #dc3545;
-            font-weight: 500;
-        }
-        
-        .error-banner {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, #dc3545, #c82333);
-            color: white;
-            padding: 15px 20px;
-            border-radius: 10px;
-            box-shadow: 0 8px 25px rgba(220, 53, 69, 0.4);
-            z-index: 1000;
-            max-width: 350px;
-            font-weight: 500;
-            display: none;
-            transform: translateX(100%);
-            transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-        }
-        
-        .error-banner.show {
-            display: block;
-            transform: translateX(0);
-        }
-        
-        .error-banner-content {
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-        }
-        
-        .error-banner-icon {
-            font-size: 1.2em;
-            margin-top: 2px;
-            flex-shrink: 0;
-        }
-        
-        .error-banner-message {
-            flex: 1;
-            line-height: 1.4;
-        }
-        
-        .error-banner-close {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.2em;
-            cursor: pointer;
-            padding: 0;
-            margin-left: 10px;
-            opacity: 0.8;
-            transition: opacity 0.2s ease;
-            flex-shrink: 0;
-            width: auto;
-            min-width: auto;
-        }
-        
-        .error-banner-close:hover {
-            opacity: 1;
-            background: none;
-            transform: none;
-            box-shadow: none;
-        }
-        
-        .warning-banner {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, #ffc107, #e0a800);
-            color: #856404;
-            padding: 15px 20px;
-            border-radius: 10px;
-            box-shadow: 0 8px 25px rgba(255, 193, 7, 0.4);
-            z-index: 1000;
-            max-width: 350px;
-            font-weight: 500;
-            display: none;
-            transform: translateX(100%);
-            transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-        }
-        
-        .warning-banner.show {
-            display: block;
-            transform: translateX(0);
-        }
-        
-        .warning-banner-content {
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-        }
-        
-        .warning-banner-icon {
-            font-size: 1.2em;
-            margin-top: 2px;
-            flex-shrink: 0;
-        }
-        
-        .warning-banner-message {
-            flex: 1;
-            line-height: 1.4;
-        }
-        
-        .warning-banner-close {
-            background: none;
-            border: none;
-            color: #856404;
-            font-size: 1.2em;
-            cursor: pointer;
-            padding: 0;
-            margin-left: 10px;
-            opacity: 0.8;
-            transition: opacity 0.2s ease;
-            flex-shrink: 0;
-            width: auto;
-            min-width: auto;
-        }
-        
-        .warning-banner-close:hover {
-            opacity: 1;
-            background: none;
-            transform: none;
-            box-shadow: none;
-        }
-        
-        .highlight {
-            background: #fff3cd;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-weight: bold;
-            color: #856404;
-        }
-        
-        @media (max-width: 768px) {
-            body {
-                margin: 10px;
-                padding: 10px;
-            }
-            
-            .container {
-                padding: 25px;
-            }
-            
-            h1 {
-                font-size: 1.8em;
-            }
+        .constants-info {
+            margin-top: var(--space-4);
+            padding: var(--space-3);
+            background: rgba(33, 150, 243, 0.1);
+            border-radius: var(--radius-sm);
         }
     </style>
 </head>
 <body>
-    <div class="container">
-      <header class="header">
-        <div class="brand">
-          <div class="header-top">
-            <div class="logo-container">
-              <img
-                src="../../city-logos/logo-vert.png"
-                alt="City Logo"
-                class="logo-image"
-              />
+    <div class="wt-container">
+      <header class="wt-header">
+        <div class="wt-header-content">
+          <div class="wt-brand">
+            <img
+              src="../../city-logos/logo-vert.png"
+              alt="City Logo"
+              class="wt-logo"
+            />
+            <div class="wt-brand-text">
+              <h1>Sodium Hypochlorite Filter Dosing Calculator</h1>
+              <p class="wt-tagline">
+                Calculate chemical addition to filter basins for residual increase
+              </p>
             </div>
           </div>
-          <div class="brand-text">
-            <h1>Sodium Hypochlorite Filter Dosing Calculator</h1>
-            <p class="tagline">
-              Calculate chemical addition to filter basins for residual increase
-            </p>
-          </div>
-          <div class="header-bottom">
-            <a href="../../" class="back-to-dashboard-btn">
-              ← Back to Dashboard
+          <nav class="wt-nav">
+            <a href="../dashboard/dashboard.html" class="wt-nav-link">
+              🏠 Dashboard
             </a>
-          </div>
+          </nav>
         </div>
       </header>
 
-      <main class="main-content">        
-        <div class="input-section">
-            <h3 style="margin-top: 0; color: #2c3e50; margin-bottom: 25px;">Filter Basin Parameters</h3>
+      <main>
+        <div class="wt-card">
+            <h3 class="text-2xl font-bold text-primary mb-6">Filter Basin Parameters</h3>
             
-            <div class="input-group">
-                <label for="basinVolume">Filter Basin Volume (gallons):</label>
-                <input type="number" id="basinVolume" step="1" min="0" value="35400" placeholder="Enter basin volume">
-                <small style="color: #6c757d; font-size: 0.9em; margin-top: 5px; display: block;">
+            <div class="wt-form-group">
+                <label for="basinVolume" class="wt-label">Filter Basin Volume (gallons):</label>
+                <input type="number" id="basinVolume" step="1" min="0" value="35400" placeholder="Enter basin volume" class="wt-input">
+                <small class="text-sm text-gray-500 mt-1 block">
                     <em>Note: Our filters are typically 35,000 gallons</em>
                 </small>
             </div>
             
-            <div class="input-group">
-                <label for="hypochloriteConcentration">Sodium Hypochlorite Concentration (%):</label>
-                <input type="number" id="hypochloriteConcentration" step="0.1" min="0" max="100" value="10" placeholder="Enter concentration">
-                <small style="color: #6c757d; font-size: 0.9em; margin-top: 5px; display: block;">
+            <div class="wt-form-group">
+                <label for="hypochloriteConcentration" class="wt-label">Sodium Hypochlorite Concentration (%):</label>
+                <input type="number" id="hypochloriteConcentration" step="0.1" min="0" max="100" value="10" placeholder="Enter concentration" class="wt-input">
+                <small class="text-sm text-gray-500 mt-1 block">
                     <em>Note: Our normal hypochlorite concentration is 10%</em>
                 </small>
             </div>
 
-            <div class="input-group">
-                <label for="residualIncrease">Desired Filter Basin Residual Increase (mg/L or ppm):</label>
-                <input type="number" id="residualIncrease" step="0.1" min="0" placeholder="Enter desired residual increase (e.g., 1.0)">
+            <div class="wt-form-group">
+                <label for="residualIncrease" class="wt-label">Desired Filter Basin Residual Increase (mg/L or ppm):</label>
+                <input type="number" id="residualIncrease" step="0.1" min="0" placeholder="Enter desired residual increase (e.g., 1.0)" class="wt-input">
             </div>
 
-            <button onclick="calculateDosage()">Calculate Filter Basin Dosage</button>
+            <button onclick="calculateDosage()" class="wt-btn wt-btn-primary wt-btn-lg">Calculate Filter Basin Dosage</button>
         </div>
 
-        <div id="result" class="result" style="display: none;">
-            <h3>Filter Basin Dosage Required</h3>
-            <p id="dosageAmount"></p>
-            <p id="dosageVolume"></p>
+        <div id="result" class="wt-card mt-6" style="display: none; background: linear-gradient(145deg, #d4edda, #c3e6cb); border-left: 5px solid var(--success-green);">
+            <h3 class="text-xl font-bold text-success flex items-center mb-4">
+                🧪 Filter Basin Dosage Required
+            </h3>
+            <div id="dosageAmount"></div>
+            <div id="dosageVolume"></div>
             
-            <div id="calculations" class="calculation-steps">
-                <h4>How This Was Calculated</h4>
-                <div class="formula">Basic Formula: Dosage (lbs) = (Desired mg/L × Volume MG × 8.34) ÷ (Chemical Strength × Available Chlorine)<br>Volume (gal) = Dosage (lbs) ÷ (Specific Gravity × 8.34)</div>
+            <div id="calculations" class="wt-card mt-6 bg-gray-50">
+                <h4 class="text-lg font-semibold text-gray-700 flex items-center mb-4">
+                    📊 How This Was Calculated
+                </h4>
+                <div class="formula-display">
+                    Basic Formula: Dosage (lbs) = (Desired mg/L × Volume MG × 8.34) ÷ (Chemical Strength × Available Chlorine)<br>
+                    Volume (gal) = Dosage (lbs) ÷ (Specific Gravity × 8.34)
+                </div>
                 
-                <div id="step1" class="step"></div>
-                <div id="step2" class="step"></div>
-                <div id="step3" class="step"></div>
-                <div id="step4" class="step"></div>
+                <div id="step1" class="calculation-step"></div>
+                <div id="step2" class="calculation-step"></div>
+                <div id="step3" class="calculation-step"></div>
+                <div id="step4" class="calculation-step"></div>
                 
-                <div style="margin-top: 15px; padding: 10px; background: #e3f2fd; border-radius: 5px;">
+                <div class="constants-info">
                     <strong>Key Constants:</strong><br>
                     • 8.34 = lbs per gallon of water<br>
                     • 1.1 = specific gravity of 10% sodium hypochlorite<br>
@@ -517,31 +134,23 @@
                 </div>
             </div>
             
-            <p style="margin-top: 20px; padding: 15px; background: #fff3cd; border-radius: 8px; border-left: 4px solid #ffc107;">
+            <div class="wt-card mt-4" style="background: #fff3cd; border-left: 4px solid var(--warning-amber);">
                 <strong>⚠️ Important Note:</strong> This calculation is for filter basin chemical addition to increase residual levels. It assumes uniform mixing and does not account for chlorine demand or decay. Always verify with residual testing and adjust based on actual filter basin conditions.
-            </p>
+            </div>
         </div>
 
-        <div id="error" class="error" style="display: none;"></div>
+        <div id="error" class="wt-card mt-4" style="display: none; background: linear-gradient(145deg, #f8d7da, #f5c6cb); border-left: 5px solid var(--error-red); color: #721c24;"></div>
       </main>
     </div>
     
     <!-- Floating Error Banner -->
-    <div id="errorBanner" class="error-banner">
-        <div class="error-banner-content">
-            <span class="error-banner-icon">⚠️</span>
-            <span id="errorBannerMessage" class="error-banner-message"></span>
-            <button class="error-banner-close" onclick="hideErrorBanner()" aria-label="Close error message">×</button>
-        </div>
+    <div id="errorBanner" class="wt-notification error">
+        <span id="errorBannerMessage"></span>
     </div>
     
     <!-- Floating Warning Banner -->
-    <div id="warningBanner" class="warning-banner">
-        <div class="warning-banner-content">
-            <span class="warning-banner-icon">⚠️</span>
-            <span id="warningBannerMessage" class="warning-banner-message"></span>
-            <button class="warning-banner-close" onclick="hideWarningBanner()" aria-label="Close warning message">×</button>
-        </div>
+    <div id="warningBanner" class="wt-notification warning">
+        <span id="warningBannerMessage"></span>
     </div>
 
     <script>
@@ -631,14 +240,14 @@
             
             // Display results
             document.getElementById('dosageAmount').innerHTML = 
-                `<div style="text-align: center; margin: 20px 0;">
-                    <div style="font-size: 2.5em; font-weight: bold; color: #155724; margin-bottom: 10px;">
+                `<div class="text-center mb-6">
+                    <div class="result-highlight">
                         ${dosageGallons.toFixed(2)} gallons
                     </div>
-                    <div style="font-size: 2em; font-weight: bold; color: #155724; margin-bottom: 15px;">
+                    <div class="result-secondary">
                         ${dosageMl.toFixed(0)} mL
                     </div>
-                    <div style="font-size: 1.1em; color: #6c757d;">
+                    <div class="text-lg text-gray-600">
                         (${dosageLbsPerDay.toFixed(4)} lbs of ${hypochloriteConcentrationPercent}% sodium hypochlorite solution)
                     </div>
                 </div>`;
