@@ -6,6 +6,38 @@
     <title>Water Treatment Tools - Dashboard</title>
     <link rel="icon" type="image/png" href="../../city-logos/favicon.png" />
     <link rel="stylesheet" href="../../global-styles.css" />
+    <style>
+      /* Dashboard-specific enhancements */
+      .wt-app-card {
+        min-height: 140px; /* Consistent height to accommodate longest descriptions */
+        display: flex;
+        align-items: stretch;
+      }
+      
+      .wt-app-info {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        flex: 1;
+      }
+      
+      .wt-app-description {
+        flex: 1;
+        display: flex;
+        align-items: center;
+      }
+
+      /* Responsive adjustments */
+      @media (max-width: 768px) {
+        .wt-grid-2 {
+          grid-template-columns: 1fr;
+        }
+        
+        .wt-app-card {
+          min-height: 120px;
+        }
+      }
+    </style>
   </head>
 
   <body>
@@ -29,7 +61,7 @@
       </header>
 
       <main>
-        <div class="wt-grid wt-grid-auto gap-6">
+        <div class="wt-grid wt-grid-2 gap-6">
           <a href="../robojar-analyzer/index.html" class="wt-app-card">
             <div class="wt-app-icon">🤖</div>
             <div class="wt-app-info">
