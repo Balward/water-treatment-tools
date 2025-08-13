@@ -44,6 +44,26 @@ function generateSVGThumbnail(video) {
     // Create a gradient version of the color for visual appeal
     const darkerColor = shadeColor(color, -20);
     
+    // Split title into multiple lines if it's long
+    const titleWords = title.split(' ');
+    const titleLines = [];
+    
+    // Simple line breaking logic - aim for 2-3 lines max
+    if (titleWords.length <= 2) {
+        titleLines.push(titleWords.join(' '));
+    } else if (titleWords.length <= 4) {
+        // Split into 2 lines
+        const mid = Math.ceil(titleWords.length / 2);
+        titleLines.push(titleWords.slice(0, mid).join(' '));
+        titleLines.push(titleWords.slice(mid).join(' '));
+    } else {
+        // Split into 3 lines
+        const third = Math.ceil(titleWords.length / 3);
+        titleLines.push(titleWords.slice(0, third).join(' '));
+        titleLines.push(titleWords.slice(third, third * 2).join(' '));
+        titleLines.push(titleWords.slice(third * 2).join(' '));
+    }
+    
     const svg = `
 <svg width="360" height="240" xmlns="http://www.w3.org/2000/svg">
   <defs>
@@ -59,17 +79,21 @@ function generateSVGThumbnail(video) {
   <!-- Background -->
   <rect width="100%" height="100%" fill="url(#grad${number})" rx="12"/>
   
-  <!-- Video number (large) -->
-  <text x="180" y="100" font-family="Arial, sans-serif" font-size="72" font-weight="bold" 
-        text-anchor="middle" fill="white" filter="url(#shadow)">${number}</text>
+  <!-- Video number (small, top corner) -->
+  <text x="30" y="40" font-family="Arial, sans-serif" font-size="24" font-weight="bold" 
+        fill="rgba(255,255,255,0.8)" filter="url(#shadow)">${number}</text>
   
-  <!-- Title -->
-  <text x="180" y="140" font-family="Arial, sans-serif" font-size="16" font-weight="600" 
-        text-anchor="middle" fill="rgba(255,255,255,0.9)">${title}</text>
-  
-  <!-- Play icon -->
-  <circle cx="320" cy="50" r="20" fill="rgba(255,255,255,0.2)" stroke="rgba(255,255,255,0.5)" stroke-width="2"/>
-  <polygon points="312,44 312,56 328,50" fill="rgba(255,255,255,0.8)"/>
+  <!-- Title (prominent, centered) -->
+  ${titleLines.map((line, index) => {
+      const yPosition = titleLines.length === 1 ? 130 : 
+                       titleLines.length === 2 ? 110 + (index * 30) : 
+                       100 + (index * 25);
+      const fontSize = titleLines.length === 1 ? 28 : 
+                      titleLines.length === 2 ? 24 : 20;
+      
+      return `<text x="180" y="${yPosition}" font-family="Arial, sans-serif" font-size="${fontSize}" font-weight="700" 
+              text-anchor="middle" fill="white" filter="url(#shadow)">${line}</text>`;
+  }).join('\n  ')}
   
   <!-- Water treatment icon/decoration -->
   <circle cx="40" cy="200" r="15" fill="rgba(255,255,255,0.1)"/>
