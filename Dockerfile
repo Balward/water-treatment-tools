@@ -36,6 +36,9 @@ COPY Videos/ ./Videos/
 COPY README.md ./
 COPY data/ ./data/
 
+# Ensure video-tutorials thumbnails are explicitly copied
+COPY packages/video-tutorials/thumbnails/ ./packages/video-tutorials/thumbnails/
+
 # Copy dashboard as the root index
 COPY packages/dashboard/dashboard.html ./index.html
 COPY packages/dashboard/dashboard-styles.css ./dashboard-styles.css
