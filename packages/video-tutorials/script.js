@@ -243,13 +243,49 @@ function getVideoCategory(videoNum) {
 }
 
 function getEstimatedDuration(videoNum) {
-    // Estimate duration based on video type and content
-    if ([1, 2, 3, 10, 11].includes(videoNum)) return '15-20 min';
-    if ([4, 5, 6, 7, 8].includes(videoNum)) return '20-25 min';
-    if ([12, 13, 16, 18, 20, 22, 24].includes(videoNum)) return '25-30 min';
-    if ([17, 19, 21, 23, 25, 26, 27, 28, 29, 30].includes(videoNum)) return '30-35 min';
-    if ([31, 32, 33, 34].includes(videoNum)) return '35-40 min';
-    return '25-30 min';
+    // Actual video durations extracted from video files
+    const durations = {
+        1: '24m 47s',
+        2: '15m 49s',
+        3: '7m 35s',
+        4: '13m 50s',
+        5: '8m 25s',
+        6: '9m 50s',
+        7: '13m 16s',
+        8: '10m 49s',
+        9: '12m 46s',
+        10: '6m 38s',
+        11: '30m 21s',
+        12: '10m 50s',
+        13: '48m 8s',
+        14: '63m 44s',
+        15: '9m 38s',
+        16: '20m 59s',
+        17: '56m 59s',
+        18: '19m 26s',
+        19: '56m 55s',
+        20: '25m 11s',
+        21: '55m 45s',
+        22: '26m 57s',
+        23: '95m 51s',
+        24: '24m 46s',
+        25: '54m 10s',
+        26: '8m 36s',
+        27: '43m 49s',
+        28: '20m 59s',
+        29: '23m 33s',
+        30: '54m 25s',
+        31: '88m 49s',
+        32: '25m 41s',
+        33: '18m 36s',
+        34: '23m 38s',
+        35: '15m 34s',
+        36: '12m',
+        37: '13m 5s',
+        38: '8m 45s'
+    };
+    
+    return durations[videoNum] || '30m';
 }
 
 function getRandomProgress() {

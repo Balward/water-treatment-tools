@@ -130,19 +130,18 @@ body {
 
 .play-icon {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 64px;
-    height: 64px;
+    bottom: 16px;
+    right: 16px;
+    width: 48px;
+    height: 48px;
     background: rgba(255, 255, 255, 0.95);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
+    font-size: 18px;
     color: #1e3a5f;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     backdrop-filter: blur(10px);
 }
@@ -150,8 +149,8 @@ body {
 .video-card:hover .play-icon {
     background: #1e3a5f;
     color: white;
-    transform: translate(-50%, -50%) scale(1.15);
-    box-shadow: 0 12px 40px rgba(30, 58, 95, 0.4);
+    transform: scale(1.1);
+    box-shadow: 0 8px 32px rgba(30, 58, 95, 0.4);
 }
 
 .video-card:hover .thumbnail-image {
@@ -343,7 +342,7 @@ body {
 .video-category {
     position: absolute;
     top: 12px;
-    left: 12px;
+    right: 12px;
     background: rgba(30, 58, 95, 0.9);
     color: white;
     padding: 4px 10px;
@@ -362,7 +361,7 @@ body {
 .video-duration {
     position: absolute;
     bottom: 12px;
-    right: 12px;
+    left: 12px;
     background: rgba(0, 0, 0, 0.8);
     color: white;
     padding: 4px 8px;
