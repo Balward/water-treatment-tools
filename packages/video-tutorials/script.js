@@ -10,6 +10,13 @@ function getVideoPath(filename) {
     }
 }
 
+// Function to get thumbnail path
+function getThumbnailPath(filename) {
+    // Extract base name and replace with .svg extension
+    const baseName = filename.replace('.mp4', '');
+    return `thumbnails/${baseName}.svg`;
+}
+
 // Function to get static video list
 function getVideos() {
     return getStaticVideos();
@@ -145,10 +152,9 @@ const closeBtn = document.querySelector('.close');
 function createVideoCard(video) {
     const card = document.createElement('div');
     card.className = 'video-card';
-    const videoPath = getVideoPath(video.filename);
     
-    // Extract video number for placeholder
-    const videoNumber = video.title.split(' - ')[0];
+    // Get thumbnail path
+    const thumbnailPath = getThumbnailPath(video.filename);
     
     card.innerHTML = `
         <div class="video-info">
@@ -156,13 +162,7 @@ function createVideoCard(video) {
             <div class="video-description">${video.description}</div>
         </div>
         <div class="video-thumbnail">
-            <div class="video-placeholder">
-                <div class="video-number">${videoNumber}</div>
-                <div class="loading-text">Hover to load preview</div>
-            </div>
-            <video muted preload="none" style="display: none;">
-                <source data-src="${videoPath}" type="video/mp4">
-            </video>
+            <img src="${thumbnailPath}" alt="${video.title}" class="thumbnail-image">
             <div class="play-icon">▶</div>
         </div>
     `;
@@ -171,64 +171,9 @@ function createVideoCard(video) {
         openModal(video);
     });
 
-    // Lazy load thumbnail on hover
-    let thumbnailLoaded = false;
-    card.addEventListener('mouseenter', () => {
-        if (!thumbnailLoaded) {
-            loadThumbnail(card, video);
-            thumbnailLoaded = true;
-        }
-    });
-
     return card;
 }
 
-function loadThumbnail(card, video) {
-    const thumbnailVideo = card.querySelector('video');
-    const placeholder = card.querySelector('.video-placeholder');
-    const source = thumbnailVideo.querySelector('source');
-    
-    // Update loading text
-    placeholder.querySelector('.loading-text').textContent = 'Loading...';
-    
-    // Set the actual source and load
-    source.src = source.getAttribute('data-src');
-    thumbnailVideo.load();
-    
-    // Set thumbnail to show frame from middle portion of video
-    thumbnailVideo.addEventListener('loadedmetadata', () => {
-        if (thumbnailVideo.duration && isFinite(thumbnailVideo.duration)) {
-            // Use a consistent frame from the middle 60% of the video (20%-80%)
-            // Create a hash from filename for consistent thumbnail selection
-            const hash = video.filename.split('').reduce((a, b) => {
-                a = ((a << 5) - a) + b.charCodeAt(0);
-                return a & a;
-            }, 0);
-            
-            // Use hash to select consistent frame position for this video
-            const normalizedHash = Math.abs(hash) / 2147483647; // Normalize to 0-1
-            const framePosition = 0.2 + (normalizedHash * 0.6); // 20% to 80% of video
-            const thumbnailTime = thumbnailVideo.duration * framePosition;
-            
-            thumbnailVideo.currentTime = thumbnailTime;
-        }
-    });
-    
-    thumbnailVideo.addEventListener('seeked', () => {
-        // Hide placeholder and show video thumbnail
-        placeholder.style.display = 'none';
-        thumbnailVideo.style.display = 'block';
-    });
-    
-    // Handle video loading errors gracefully
-    thumbnailVideo.addEventListener('error', (e) => {
-        console.warn(`Failed to load thumbnail for ${video.filename}:`, e);
-        placeholder.querySelector('.loading-text').textContent = 'Preview unavailable';
-        // Hide the play icon if video fails to load
-        const playIcon = card.querySelector('.play-icon');
-        if (playIcon) playIcon.style.display = 'none';
-    });
-}
 
 function openModal(video) {
     modalVideo.src = getVideoPath(video.filename);
