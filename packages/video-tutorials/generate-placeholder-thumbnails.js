@@ -4,46 +4,46 @@ const path = require('path');
 // Configuration
 const thumbnailsDir = path.join(__dirname, 'thumbnails');
 
-// List of videos with their info
+// List of videos with their info - using muted, professional color palette
 const videos = [
-    { number: '1', title: 'Unit Conversions', color: '#667eea' },
-    { number: '2', title: 'Working With Formulas', color: '#764ba2' },
-    { number: '3', title: 'Understanding\nPercentages', color: '#f093fb' },
-    { number: '4', title: 'Calculating Area', color: '#f5576c' },
-    { number: '5', title: 'Calculating Volume', color: '#4facfe' },
-    { number: '6', title: 'Weight-Volume Relationships', color: '#43e97b' },
-    { number: '7', title: 'Force-Pressure-Head', color: '#fa709a' },
-    { number: '8', title: 'Velocity and Flow Rate', color: '#fee140' },
-    { number: '9', title: 'Pumps', color: '#a8edea' },
-    { number: '10', title: 'The Metric System', color: '#d299c2' },
-    { number: '11', title: 'Problem Solving', color: '#89f7fe' },
-    { number: '12', title: 'Flow Problems', color: '#66a6ff' },
-    { number: '13', title: 'Chemical Dose Problems', color: '#f6d365' },
-    { number: '14', title: 'Source Water', color: '#fda085' },
-    { number: '15', title: 'Water Wells', color: '#a8e6cf' },
-    { number: '16', title: 'Reservoir Problems', color: '#dcedc1' },
-    { number: '17', title: 'Coagulation and Flocculation', color: '#ffd3e1' },
-    { number: '18', title: 'Coagulation and Flocculation Problems', color: '#c1c8e4' },
-    { number: '19', title: 'Sedimentation', color: '#84fab0' },
-    { number: '20', title: 'Sedimentation Problems', color: '#8fd3f4' },
-    { number: '21', title: 'Filtration', color: '#b8cdf8' },
-    { number: '22', title: 'Filtration Problems', color: '#f8b8d4' },
-    { number: '23', title: 'Disinfection', color: '#c7d2fe' },
-    { number: '24', title: 'Disinfection Problems', color: '#a7f3d0' },
-    { number: '25', title: 'Pumps and Motors', color: '#fde68a' },
-    { number: '26', title: 'Electricity', color: '#fed7d7' },
-    { number: '27', title: 'Corrosion Control', color: '#c6f6d5' },
-    { number: '28', title: 'Fluoridation', color: '#bee3f8' },
-    { number: '29', title: 'Iron and Manganese', color: '#e9d8fd' },
-    { number: '30', title: 'Lime Softening', color: '#fed7e2' },
-    { number: '31', title: 'Regulations', color: '#feebc8' },
-    { number: '32', title: 'Membrane Technology', color: '#c5f2c7' },
-    { number: '33', title: 'Aeration', color: '#b3e5fc' },
-    { number: '34', title: 'Adsorption', color: '#f8bbd9' },
-    { number: '35', title: 'Laboratory', color: '#d1c4e9' },
-    { number: '36', title: 'Laboratory Problems', color: '#ffecb3' },
-    { number: '37', title: 'Treatment Plant\nChemicals', color: '#ffcdd2' },
-    { number: '38', title: 'Management Principles', color: '#dcedc8' }
+    { number: '1', title: 'Unit Conversions', color: '#4a5568' },
+    { number: '2', title: 'Working With Formulas', color: '#2d3748' },
+    { number: '3', title: 'Understanding\nPercentages', color: '#4a5568' },
+    { number: '4', title: 'Calculating Area', color: '#2d3748' },
+    { number: '5', title: 'Calculating Volume', color: '#4a5568' },
+    { number: '6', title: 'Weight-Volume Relationships', color: '#2d3748' },
+    { number: '7', title: 'Force-Pressure-Head', color: '#4a5568' },
+    { number: '8', title: 'Velocity and Flow Rate', color: '#2d3748' },
+    { number: '9', title: 'Pumps', color: '#4a5568' },
+    { number: '10', title: 'The Metric System', color: '#2d3748' },
+    { number: '11', title: 'Problem Solving', color: '#4a5568' },
+    { number: '12', title: 'Flow Problems', color: '#2d3748' },
+    { number: '13', title: 'Chemical Dose Problems', color: '#4a5568' },
+    { number: '14', title: 'Source Water', color: '#2d3748' },
+    { number: '15', title: 'Water Wells', color: '#4a5568' },
+    { number: '16', title: 'Reservoir Problems', color: '#2d3748' },
+    { number: '17', title: 'Coagulation and Flocculation', color: '#4a5568' },
+    { number: '18', title: 'Coagulation and Flocculation Problems', color: '#2d3748' },
+    { number: '19', title: 'Sedimentation', color: '#4a5568' },
+    { number: '20', title: 'Sedimentation Problems', color: '#2d3748' },
+    { number: '21', title: 'Filtration', color: '#4a5568' },
+    { number: '22', title: 'Filtration Problems', color: '#2d3748' },
+    { number: '23', title: 'Disinfection', color: '#4a5568' },
+    { number: '24', title: 'Disinfection Problems', color: '#2d3748' },
+    { number: '25', title: 'Pumps and Motors', color: '#4a5568' },
+    { number: '26', title: 'Electricity', color: '#2d3748' },
+    { number: '27', title: 'Corrosion Control', color: '#4a5568' },
+    { number: '28', title: 'Fluoridation', color: '#2d3748' },
+    { number: '29', title: 'Iron and Manganese', color: '#4a5568' },
+    { number: '30', title: 'Lime Softening', color: '#2d3748' },
+    { number: '31', title: 'Regulations', color: '#4a5568' },
+    { number: '32', title: 'Membrane Technology', color: '#2d3748' },
+    { number: '33', title: 'Aeration', color: '#4a5568' },
+    { number: '34', title: 'Adsorption', color: '#2d3748' },
+    { number: '35', title: 'Laboratory', color: '#4a5568' },
+    { number: '36', title: 'Laboratory Problems', color: '#2d3748' },
+    { number: '37', title: 'Treatment Plant\nChemicals', color: '#4a5568' },
+    { number: '38', title: 'Management Principles', color: '#2d3748' }
 ];
 
 function createThumbnailsDirectory() {
@@ -151,10 +151,9 @@ function generateSVGThumbnail(video) {
   <!-- Title (prominent, centered) -->
   ${titleLines.map((line, index) => {
       const yPosition = titleLines.length === 1 ? 130 : 
-                       titleLines.length === 2 ? 110 + (index * 30) : 
-                       100 + (index * 25);
-      const fontSize = titleLines.length === 1 ? 28 : 
-                      titleLines.length === 2 ? 24 : 20;
+                       titleLines.length === 2 ? 115 + (index * 30) : 
+                       100 + (index * 28);
+      const fontSize = 24; // Consistent font size for all thumbnails
       
       return `<text x="180" y="${yPosition}" font-family="Arial, sans-serif" font-size="${fontSize}" font-weight="700" 
               text-anchor="middle" fill="white" filter="url(#shadow)">${line}</text>`;
