@@ -42,7 +42,8 @@
       "Bash(git ls-tree:*)",
       "Bash(cmd /c:*)",
       "Bash(nginx:*)",
-      "Bash(del \"18 - Coagulation Problems.svg\" \"7 - Force-Pressure-Head.svg\")"
+      "Bash(del \"18 - Coagulation Problems.svg\" \"7 - Force-Pressure-Head.svg\")",
+      "Bash(npm start)"
     ],
     "deny": []
   }

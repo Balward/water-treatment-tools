@@ -150,6 +150,81 @@ function getStaticVideos() {
             filename: '23 - Disinfection.mp4',
             title: '23 - Disinfection',
             description: 'Learn about disinfection methods, chlorine chemistry, and CT calculations for pathogen inactivation'
+        },
+        {
+            filename: '24 - Disinfection Problems.mp4',
+            title: '24 - Disinfection Problems',
+            description: 'Practice disinfection calculations including chlorine dosing, CT values, and disinfection byproduct formation'
+        },
+        {
+            filename: '25 - Pumps and Motors.mp4',
+            title: '25 - Pumps and Motors',
+            description: 'Learn about pump types, motor efficiency calculations, and electrical power requirements for water treatment systems'
+        },
+        {
+            filename: '26 - Electricity.mp4',
+            title: '26 - Electricity',
+            description: 'Understand electrical fundamentals, power calculations, and energy costs for water treatment facility operations'
+        },
+        {
+            filename: '27 - Corrosion Control.mp4',
+            title: '27 - Corrosion Control',
+            description: 'Learn about corrosion mechanisms, inhibitor dosing, and pH adjustment for distribution system protection'
+        },
+        {
+            filename: '28 - Fluoridation.mp4',
+            title: '28 - Fluoridation',
+            description: 'Understand fluoride dosing calculations, equipment calibration, and monitoring procedures for dental health benefits'
+        },
+        {
+            filename: '29 - Iron and Manganese.mp4',
+            title: '29 - Iron and Manganese',
+            description: 'Learn about iron and manganese removal processes, oxidation calculations, and filtration design'
+        },
+        {
+            filename: '30 - Lime Softening.mp4',
+            title: '30 - Lime Softening',
+            description: 'Master lime softening calculations, hardness removal, and chemical feed system design'
+        },
+        {
+            filename: '31 - Regulations.mp4',
+            title: '31 - Regulations',
+            description: 'Understand drinking water regulations, monitoring requirements, and compliance calculations'
+        },
+        {
+            filename: '32 - Membrane Technology.mp4',
+            title: '32 - Membrane Technology',
+            description: 'Learn about membrane processes including RO, nanofiltration, and ultrafiltration design calculations'
+        },
+        {
+            filename: '33 - Aeration.mp4',
+            title: '33 - Aeration',
+            description: 'Understand aeration processes, oxygen transfer calculations, and equipment sizing for treatment applications'
+        },
+        {
+            filename: '34 - Adsorption.mp4',
+            title: '34 - Adsorption',
+            description: 'Learn about activated carbon adsorption, contact time calculations, and carbon replacement schedules'
+        },
+        {
+            filename: '35 - Laboratory.mp4',
+            title: '35 - Laboratory',
+            description: 'Understand laboratory testing procedures, quality control, and data interpretation for water treatment monitoring'
+        },
+        {
+            filename: '36 - Laboratory Problems.mp4',
+            title: '36 - Laboratory Problems',
+            description: 'Practice laboratory calculations including dilutions, standard preparations, and analytical result interpretations'
+        },
+        {
+            filename: '37 - Treatment Plant Chemicals.mp4',
+            title: '37 - Treatment Plant Chemicals',
+            description: 'Learn about chemical selection, storage requirements, and safety considerations for water treatment operations'
+        },
+        {
+            filename: '38 - Management Principles.mp4',
+            title: '38 - Management Principles',
+            description: 'Understand management fundamentals, personnel supervision, and operational decision-making for water treatment facilities'
         }
     ];
 }
