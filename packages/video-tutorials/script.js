@@ -11,34 +11,13 @@ function getVideoPath(filename) {
     }
 }
 
-// Function to fetch videos from multiple sources
-async function fetchVideos() {
-    try {
-        // First, try to load from generated video data (Z: drive scanning)
-        if (typeof DISCOVERED_VIDEOS !== 'undefined' && DISCOVERED_VIDEOS.length > 0) {
-            console.log('Using discovered videos from Z: drive mapping');
-            return DISCOVERED_VIDEOS;
-        }
-        
-        // Fallback to API for server deployment
-        const response = await fetch('/api/videos');
-        if (response.ok) {
-            const videos = await response.json();
-            console.log('Using videos from API');
-            return videos;
-        }
-        
-        // Final fallback to hardcoded videos
-        console.warn('Neither discovered videos nor API available, using fallback videos');
-        return getFallbackVideos();
-    } catch (error) {
-        console.warn('Failed to fetch videos, using fallback:', error);
-        return getFallbackVideos();
-    }
+// Function to get static video list
+function getVideos() {
+    return getStaticVideos();
 }
 
-// Fallback videos for local development or if API fails
-function getFallbackVideos() {
+// Static video list
+function getStaticVideos() {
     return [
         {
             filename: 'Unit Conversions.mp4',
@@ -202,52 +181,25 @@ document.addEventListener('keydown', (e) => {
 });
 
 // Function to load and display videos
-async function loadVideos() {
-    try {
-        // Clear existing video cards
-        videoGrid.innerHTML = '';
-        
-        const videos = await fetchVideos();
-        
-        if (videos.length === 0) {
-            videoGrid.innerHTML = '<div class="error-message">No videos found. Please add video files to the Videos directory.</div>';
-            return;
-        }
-        
-        videos.forEach(video => {
-            const card = createVideoCard(video);
-            videoGrid.appendChild(card);
-        });
-    } catch (error) {
-        console.error('Failed to load videos:', error);
-        // Show error message to user
-        videoGrid.innerHTML = '<div class="error-message">Failed to load videos. Please refresh the page.</div>';
+function loadVideos() {
+    // Clear existing video cards
+    videoGrid.innerHTML = '';
+    
+    const videos = getVideos();
+    
+    if (videos.length === 0) {
+        videoGrid.innerHTML = '<div class="error-message">No videos found.</div>';
+        return;
     }
+    
+    videos.forEach(video => {
+        const card = createVideoCard(video);
+        videoGrid.appendChild(card);
+    });
 }
 
-// Add refresh button functionality
-function addRefreshButton() {
-    const header = document.querySelector('.header .nav');
-    if (header && !document.getElementById('refreshBtn')) {
-        const refreshBtn = document.createElement('button');
-        refreshBtn.id = 'refreshBtn';
-        refreshBtn.className = 'refresh-btn';
-        refreshBtn.innerHTML = '🔄 Refresh Videos';
-        refreshBtn.title = 'Reload video list to detect new or removed videos';
-        refreshBtn.addEventListener('click', () => {
-            refreshBtn.disabled = true;
-            refreshBtn.innerHTML = '🔄 Loading...';
-            loadVideos().finally(() => {
-                refreshBtn.disabled = false;
-                refreshBtn.innerHTML = '🔄 Refresh Videos';
-            });
-        });
-        header.insertBefore(refreshBtn, header.firstChild);
-    }
-}
 
 // Load videos on page load
 document.addEventListener('DOMContentLoaded', () => {
     loadVideos();
-    addRefreshButton();
 });
