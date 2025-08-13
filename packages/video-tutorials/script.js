@@ -2,11 +2,10 @@
 function getVideoPath(filename) {
     // Check if we're running locally (file://) or on the hosted server
     if (window.location.protocol === 'file:') {
-        return `../../Videos/${filename}`;
-    } else if (window.location.hostname === 'water.gibbhub.io') {
-        return `/Videos/${filename}`;
+        // Local file system - use Z: drive path for Windows
+        return `Z:/water-treatment-tools/Videos/${filename}`;
     } else {
-        // For local development or other environments
+        // Hosted server - videos should be accessible at /Videos/
         return `/Videos/${filename}`;
     }
 }
