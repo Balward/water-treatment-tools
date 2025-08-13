@@ -147,14 +147,21 @@ function createVideoCard(video) {
     card.className = 'video-card';
     const videoPath = getVideoPath(video.filename);
     
+    // Extract video number for placeholder
+    const videoNumber = video.title.split(' - ')[0];
+    
     card.innerHTML = `
         <div class="video-info">
             <div class="video-title">${video.title}</div>
             <div class="video-description">${video.description}</div>
         </div>
         <div class="video-thumbnail">
-            <video muted preload="metadata">
-                <source src="${videoPath}" type="video/mp4">
+            <div class="video-placeholder">
+                <div class="video-number">${videoNumber}</div>
+                <div class="loading-text">Hover to load preview</div>
+            </div>
+            <video muted preload="none" style="display: none;">
+                <source data-src="${videoPath}" type="video/mp4">
             </video>
             <div class="play-icon">▶</div>
         </div>
@@ -164,8 +171,31 @@ function createVideoCard(video) {
         openModal(video);
     });
 
-    // Set thumbnail to show frame from middle portion of video
+    // Lazy load thumbnail on hover
+    let thumbnailLoaded = false;
+    card.addEventListener('mouseenter', () => {
+        if (!thumbnailLoaded) {
+            loadThumbnail(card, video);
+            thumbnailLoaded = true;
+        }
+    });
+
+    return card;
+}
+
+function loadThumbnail(card, video) {
     const thumbnailVideo = card.querySelector('video');
+    const placeholder = card.querySelector('.video-placeholder');
+    const source = thumbnailVideo.querySelector('source');
+    
+    // Update loading text
+    placeholder.querySelector('.loading-text').textContent = 'Loading...';
+    
+    // Set the actual source and load
+    source.src = source.getAttribute('data-src');
+    thumbnailVideo.load();
+    
+    // Set thumbnail to show frame from middle portion of video
     thumbnailVideo.addEventListener('loadedmetadata', () => {
         if (thumbnailVideo.duration && isFinite(thumbnailVideo.duration)) {
             // Use a consistent frame from the middle 60% of the video (20%-80%)
@@ -184,15 +214,20 @@ function createVideoCard(video) {
         }
     });
     
+    thumbnailVideo.addEventListener('seeked', () => {
+        // Hide placeholder and show video thumbnail
+        placeholder.style.display = 'none';
+        thumbnailVideo.style.display = 'block';
+    });
+    
     // Handle video loading errors gracefully
     thumbnailVideo.addEventListener('error', (e) => {
         console.warn(`Failed to load thumbnail for ${video.filename}:`, e);
+        placeholder.querySelector('.loading-text').textContent = 'Preview unavailable';
         // Hide the play icon if video fails to load
         const playIcon = card.querySelector('.play-icon');
         if (playIcon) playIcon.style.display = 'none';
     });
-
-    return card;
 }
 
 function openModal(video) {
