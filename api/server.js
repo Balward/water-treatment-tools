@@ -133,6 +133,45 @@ app.delete('/api/collections/:username', (req, res) => {
     });
 });
 
+// Video discovery endpoint
+app.get('/api/videos', (req, res) => {
+    const videosDir = path.join(__dirname, '../Videos');
+    
+    try {
+        // Check if Videos directory exists
+        if (!fs.existsSync(videosDir)) {
+            return res.json([]);
+        }
+        
+        // Read directory contents
+        const files = fs.readdirSync(videosDir);
+        
+        // Filter for video files and create video objects
+        const videoFiles = files.filter(file => {
+            const ext = path.extname(file).toLowerCase();
+            return ['.mp4', '.avi', '.mov', '.mkv', '.webm'].includes(ext);
+        });
+        
+        const videos = videoFiles.map(filename => {
+            // Extract title from filename (remove extension and clean up)
+            const title = path.basename(filename, path.extname(filename))
+                .replace(/[-_]/g, ' ')
+                .replace(/\b\w/g, l => l.toUpperCase());
+            
+            return {
+                filename: filename,
+                title: title,
+                description: `Learn ${title.toLowerCase()} - Essential water treatment concepts and calculations`
+            };
+        });
+        
+        res.json(videos);
+    } catch (error) {
+        console.error('Error reading videos directory:', error);
+        res.status(500).json({ error: 'Failed to read videos directory' });
+    }
+});
+
 // Health check endpoint
 app.get('/api/health', (req, res) => {
     db.get("SELECT COUNT(*) as count FROM collections", (err, row) => {
