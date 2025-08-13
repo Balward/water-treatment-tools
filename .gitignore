@@ -1,6 +1,9 @@
 # Video files - hosted separately on server
 Videos/
 
+# Generated video data files
+packages/video-tutorials/videos-data.js
+
 # Node modules
 node_modules/
 

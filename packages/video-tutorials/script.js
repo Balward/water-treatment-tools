@@ -11,21 +11,28 @@ function getVideoPath(filename) {
     }
 }
 
-// Function to fetch videos from API
+// Function to fetch videos from multiple sources
 async function fetchVideos() {
     try {
-        // Try to fetch from API first
+        // First, try to load from generated video data (Z: drive scanning)
+        if (typeof DISCOVERED_VIDEOS !== 'undefined' && DISCOVERED_VIDEOS.length > 0) {
+            console.log('Using discovered videos from Z: drive mapping');
+            return DISCOVERED_VIDEOS;
+        }
+        
+        // Fallback to API for server deployment
         const response = await fetch('/api/videos');
         if (response.ok) {
             const videos = await response.json();
+            console.log('Using videos from API');
             return videos;
         }
         
-        // Fallback to hardcoded videos if API is not available
-        console.warn('API not available, using fallback videos');
+        // Final fallback to hardcoded videos
+        console.warn('Neither discovered videos nor API available, using fallback videos');
         return getFallbackVideos();
     } catch (error) {
-        console.warn('Failed to fetch videos from API, using fallback:', error);
+        console.warn('Failed to fetch videos, using fallback:', error);
         return getFallbackVideos();
     }
 }
