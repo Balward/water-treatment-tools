@@ -45,7 +45,8 @@
       "Bash(del \"18 - Coagulation Problems.svg\" \"7 - Force-Pressure-Head.svg\")",
       "Bash(npm start)",
       "Bash(dir:*)",
-      "Bash(del \"7 - Force, Pressure & Head.svg\")"
+      "Bash(del \"7 - Force, Pressure & Head.svg\")",
+      "Bash(git submodule:*)"
     ],
     "deny": []
   }
