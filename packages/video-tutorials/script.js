@@ -235,21 +235,55 @@ const modalVideo = document.getElementById('modalVideo');
 const modalTitle = document.getElementById('modalTitle');
 const closeBtn = document.querySelector('.close');
 
+function getVideoCategory(videoNum) {
+    if (videoNum <= 13) return { name: 'Basics', class: 'basics' };
+    if (videoNum <= 30) return { name: 'Processes', class: 'processes' };
+    if (videoNum <= 36) return { name: 'Advanced', class: 'advanced' };
+    return { name: 'Management', class: 'management' };
+}
+
+function getEstimatedDuration(videoNum) {
+    // Estimate duration based on video type and content
+    if ([1, 2, 3, 10, 11].includes(videoNum)) return '15-20 min';
+    if ([4, 5, 6, 7, 8].includes(videoNum)) return '20-25 min';
+    if ([12, 13, 16, 18, 20, 22, 24].includes(videoNum)) return '25-30 min';
+    if ([17, 19, 21, 23, 25, 26, 27, 28, 29, 30].includes(videoNum)) return '30-35 min';
+    if ([31, 32, 33, 34].includes(videoNum)) return '35-40 min';
+    return '25-30 min';
+}
+
+function getRandomProgress() {
+    // Simulate random progress for demonstration
+    const progressOptions = [0, 25, 50, 75, 100];
+    return progressOptions[Math.floor(Math.random() * progressOptions.length)];
+}
+
 function createVideoCard(video) {
     const card = document.createElement('div');
     card.className = 'video-card';
+    
+    // Extract video number from filename
+    const videoNum = parseInt(video.filename.match(/^(\d+)/)[1]);
+    const category = getVideoCategory(videoNum);
+    const duration = getEstimatedDuration(videoNum);
+    const progress = getRandomProgress();
     
     // Get thumbnail path
     const thumbnailPath = getThumbnailPath(video.filename);
     
     card.innerHTML = `
+        <div class="video-thumbnail">
+            <img src="${thumbnailPath}" alt="${video.title}" class="thumbnail-image">
+            <div class="video-category ${category.class}">${category.name}</div>
+            <div class="video-duration">${duration}</div>
+            <div class="play-icon">▶</div>
+        </div>
         <div class="video-info">
             <div class="video-title">${video.title}</div>
             <div class="video-description">${video.description}</div>
         </div>
-        <div class="video-thumbnail">
-            <img src="${thumbnailPath}" alt="${video.title}" class="thumbnail-image">
-            <div class="play-icon">▶</div>
+        <div class="video-progress">
+            <div class="video-progress-bar" style="width: ${progress}%"></div>
         </div>
     `;
 
