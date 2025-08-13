@@ -20,74 +20,119 @@ function getVideos() {
 function getStaticVideos() {
     return [
         {
-            filename: 'Unit Conversions.mp4',
-            title: 'Unit Conversions',
+            filename: '1 - Unit Conversions.mp4',
+            title: '1 - Unit Conversions',
             description: 'Master converting between metric and imperial units for flow rates, volumes, pressures, and chemical concentrations in water treatment'
         },
         {
-            filename: 'Working with Formulas.mp4',
-            title: 'Working with Formulas',
+            filename: '2 - Working With Formulas.mp4',
+            title: '2 - Working With Formulas',
             description: 'Step-by-step approach to solving water treatment formulas including detention time, flow calculations, and chemical dosing equations'
         },
         {
-            filename: 'Calculating Area.mp4',
-            title: 'Calculating Area',
-            description: 'Calculate surface areas for tanks, basins, and treatment units - essential for loading rates, detention times, and process design'
-        },
-        {
-            filename: 'Understanding Percentages.mp4',
-            title: 'Understanding Percentages',
+            filename: '3 - Understanding Percentages.mp4',
+            title: '3 - Understanding Percentages',
             description: 'Apply percentage calculations to chemical concentrations, removal efficiencies, and treatment performance metrics'
         },
         {
-            filename: 'Calculating Volume.mp4',
-            title: 'Calculating Volume',
+            filename: '4 - Calculating Area.mp4',
+            title: '4 - Calculating Area',
+            description: 'Calculate surface areas for tanks, basins, and treatment units - essential for loading rates, detention times, and process design'
+        },
+        {
+            filename: '5 - Calculating Volume.mp4',
+            title: '5 - Calculating Volume',
             description: 'Learn to calculate volumes for tanks, reservoirs, and treatment units - critical for storage capacity and chemical dosing calculations'
         },
         {
-            filename: 'Chemical Dose Problems.mp4',
-            title: 'Chemical Dose Problems',
-            description: 'Master chemical dosing calculations including chlorine, coagulants, and pH adjustment chemicals for optimal treatment performance'
+            filename: '6 - Weight-Volume Relationships.mp4',
+            title: '6 - Weight-Volume Relationships',
+            description: 'Understand density, specific gravity, and weight-volume relationships for chemical mixing and treatment process calculations'
         },
         {
-            filename: 'Flow Problems.mp4',
-            title: 'Flow Problems',
-            description: 'Solve flow rate problems, including pump calculations, pipe sizing, and hydraulic loading rates for treatment processes'
-        },
-        {
-            filename: 'Force-Pressure-Head.mp4',
-            title: 'Force, Pressure & Head',
+            filename: '7 - Force-Pressure-Head.mp4',
+            title: '7 - Force, Pressure & Head',
             description: 'Understand relationships between force, pressure, and head calculations essential for pump operations and system design'
         },
         {
-            filename: 'Problem Solving.mp4',
-            title: 'Problem Solving',
-            description: 'Develop systematic approaches to tackle complex water treatment math problems and exam questions with confidence'
-        },
-        {
-            filename: 'Pumps.mp4',
-            title: 'Pumps',
-            description: 'Learn pump calculations including efficiency, power requirements, and performance curves for water treatment applications'
-        },
-        {
-            filename: 'Source Water Review 1.mp4',
-            title: 'Source Water Review 1',
-            description: 'Comprehensive review of source water quality parameters, sampling procedures, and regulatory requirements for treatment planning'
-        },
-        {
-            filename: 'The Metric System.mp4',
-            title: 'The Metric System',
-            description: 'Master metric system fundamentals and conversions essential for water treatment calculations and international standards'
-        },
-        {
-            filename: 'Velocity and Flow Rate.mp4',
-            title: 'Velocity and Flow Rate',
+            filename: '8 - Velocity and Flow Rate.mp4',
+            title: '8 - Velocity and Flow Rate',
             description: 'Calculate velocity and flow rates in pipes, channels, and treatment units - fundamental for hydraulic design and operations'
         },
         {
-            filename: 'Weight-Volume Relationships.mp4',
-            title: 'Weight-Volume Relationships',
-            description: 'Understand density, specific gravity, and weight-volume relationships for chemical mixing and treatment process calculations'
+            filename: '9 - Pumps.mp4',
+            title: '9 - Pumps',
+            description: 'Learn pump calculations including efficiency, power requirements, and performance curves for water treatment applications'
+        },
+        {
+            filename: '10 - The Metric System.mp4',
+            title: '10 - The Metric System',
+            description: 'Master metric system fundamentals and conversions essential for water treatment calculations and international standards'
+        },
+        {
+            filename: '11 - Problem Solving.mp4',
+            title: '11 - Problem Solving',
+            description: 'Develop systematic approaches to tackle complex water treatment math problems and exam questions with confidence'
+        },
+        {
+            filename: '12 - Flow Problems.mp4',
+            title: '12 - Flow Problems',
+            description: 'Solve flow rate problems, including pump calculations, pipe sizing, and hydraulic loading rates for treatment processes'
+        },
+        {
+            filename: '13 - Chemical Dose Problems.mp4',
+            title: '13 - Chemical Dose Problems',
+            description: 'Master chemical dosing calculations including chlorine, coagulants, and pH adjustment chemicals for optimal treatment performance'
+        },
+        {
+            filename: '14 - Source Water.mp4',
+            title: '14 - Source Water',
+            description: 'Comprehensive review of source water quality parameters, sampling procedures, and regulatory requirements for treatment planning'
+        },
+        {
+            filename: '15 - Water Wells.mp4',
+            title: '15 - Water Wells',
+            description: 'Learn about water well systems, pumping calculations, and groundwater quality considerations for water treatment'
+        },
+        {
+            filename: '16 - Reservoir Problems.mp4',
+            title: '16 - Reservoir Problems',
+            description: 'Solve problems related to reservoir storage, capacity calculations, and water supply management'
+        },
+        {
+            filename: '17 - Coagulation and Flocculation.mp4',
+            title: '17 - Coagulation and Flocculation',
+            description: 'Understand the theory and process of coagulation and flocculation in water treatment systems'
+        },
+        {
+            filename: '18 - Coagulation and Flocculation Problems.mp4',
+            title: '18 - Coagulation and Flocculation Problems',
+            description: 'Practice calculations for coagulant dosing, mixing requirements, and flocculation basin design'
+        },
+        {
+            filename: '19 - Sedimentation.mp4',
+            title: '19 - Sedimentation',
+            description: 'Learn the principles of sedimentation basins and settling processes in water treatment'
+        },
+        {
+            filename: '20 - Sedimentation Problems.mp4',
+            title: '20 - Sedimentation Problems',
+            description: 'Practice sedimentation calculations including settling velocity, overflow rates, and basin design'
+        },
+        {
+            filename: '21 - Filtration.mp4',
+            title: '21 - Filtration',
+            description: 'Understand filtration processes, filter media, and backwashing procedures in water treatment'
+        },
+        {
+            filename: '22 - Filtration Problems.mp4',
+            title: '22 - Filtration Problems',
+            description: 'Practice filtration calculations including filter loading rates, headloss, and backwash requirements'
+        },
+        {
+            filename: '23 - Disinfection.mp4',
+            title: '23 - Disinfection',
+            description: 'Learn about disinfection methods, chlorine chemistry, and CT calculations for pathogen inactivation'
         }
     ];
 }
