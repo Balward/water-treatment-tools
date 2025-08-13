@@ -15,9 +15,17 @@ function getThumbnailPath(filename) {
     // Extract base name and replace with .svg extension
     const baseName = filename.replace('.mp4', '');
     
+    // Map video filenames to thumbnail filenames (handle special characters)
+    const thumbnailMapping = {
+        '7 - Force-Pressure-Head': '7 - Force, Pressure & Head'
+    };
+    
+    // Use mapped name if it exists, otherwise use the base name
+    const thumbnailName = thumbnailMapping[baseName] || baseName;
+    
     // Add cache-busting parameter to force browser to reload thumbnails
     const cacheBuster = '20250813011';
-    return `thumbnails/${baseName}.svg?v=${cacheBuster}`;
+    return `thumbnails/${thumbnailName}.svg?v=${cacheBuster}`;
 }
 
 // Function to get static video list
@@ -59,7 +67,7 @@ function getStaticVideos() {
             description: 'Understand density, specific gravity, and weight-volume relationships for chemical mixing and treatment process calculations'
         },
         {
-            filename: '7 - Force, Pressure & Head.mp4',
+            filename: '7 - Force-Pressure-Head.mp4',
             title: '7 - Force, Pressure & Head',
             description: 'Understand relationships between force, pressure, and head calculations essential for pump operations and system design'
         },
