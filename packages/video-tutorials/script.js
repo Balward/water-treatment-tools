@@ -134,12 +134,32 @@ function createVideoCard(video) {
         openModal(video);
     });
 
-    // Set thumbnail to show random frame
+    // Set thumbnail to show frame from middle portion of video
     const thumbnailVideo = card.querySelector('video');
     thumbnailVideo.addEventListener('loadedmetadata', () => {
-        // Generate random time between 10% and 80% of video duration
-        const randomTime = thumbnailVideo.duration * (0.1 + Math.random() * 0.7);
-        thumbnailVideo.currentTime = randomTime;
+        if (thumbnailVideo.duration && isFinite(thumbnailVideo.duration)) {
+            // Use a consistent frame from the middle 60% of the video (20%-80%)
+            // Create a hash from filename for consistent thumbnail selection
+            const hash = video.filename.split('').reduce((a, b) => {
+                a = ((a << 5) - a) + b.charCodeAt(0);
+                return a & a;
+            }, 0);
+            
+            // Use hash to select consistent frame position for this video
+            const normalizedHash = Math.abs(hash) / 2147483647; // Normalize to 0-1
+            const framePosition = 0.2 + (normalizedHash * 0.6); // 20% to 80% of video
+            const thumbnailTime = thumbnailVideo.duration * framePosition;
+            
+            thumbnailVideo.currentTime = thumbnailTime;
+        }
+    });
+    
+    // Handle video loading errors gracefully
+    thumbnailVideo.addEventListener('error', (e) => {
+        console.warn(`Failed to load thumbnail for ${video.filename}:`, e);
+        // Hide the play icon if video fails to load
+        const playIcon = card.querySelector('.play-icon');
+        if (playIcon) playIcon.style.display = 'none';
     });
 
     return card;
@@ -174,10 +194,19 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-// Load videos on page load
-document.addEventListener('DOMContentLoaded', async () => {
+// Function to load and display videos
+async function loadVideos() {
     try {
+        // Clear existing video cards
+        videoGrid.innerHTML = '';
+        
         const videos = await fetchVideos();
+        
+        if (videos.length === 0) {
+            videoGrid.innerHTML = '<div class="error-message">No videos found. Please add video files to the Videos directory.</div>';
+            return;
+        }
+        
         videos.forEach(video => {
             const card = createVideoCard(video);
             videoGrid.appendChild(card);
@@ -187,4 +216,31 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Show error message to user
         videoGrid.innerHTML = '<div class="error-message">Failed to load videos. Please refresh the page.</div>';
     }
+}
+
+// Add refresh button functionality
+function addRefreshButton() {
+    const header = document.querySelector('.header .nav');
+    if (header && !document.getElementById('refreshBtn')) {
+        const refreshBtn = document.createElement('button');
+        refreshBtn.id = 'refreshBtn';
+        refreshBtn.className = 'refresh-btn';
+        refreshBtn.innerHTML = '🔄 Refresh Videos';
+        refreshBtn.title = 'Reload video list to detect new or removed videos';
+        refreshBtn.addEventListener('click', () => {
+            refreshBtn.disabled = true;
+            refreshBtn.innerHTML = '🔄 Loading...';
+            loadVideos().finally(() => {
+                refreshBtn.disabled = false;
+                refreshBtn.innerHTML = '🔄 Refresh Videos';
+            });
+        });
+        header.insertBefore(refreshBtn, header.firstChild);
+    }
+}
+
+// Load videos on page load
+document.addEventListener('DOMContentLoaded', () => {
+    loadVideos();
+    addRefreshButton();
 });
