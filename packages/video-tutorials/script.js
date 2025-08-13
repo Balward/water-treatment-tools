@@ -14,8 +14,9 @@ function getVideoPath(filename) {
 function getThumbnailPath(filename) {
     // Extract base name and replace with .svg extension
     const baseName = filename.replace('.mp4', '');
+    
     // Add cache-busting parameter to force browser to reload thumbnails
-    const cacheBuster = '20250813010';
+    const cacheBuster = '20250813011';
     return `thumbnails/${baseName}.svg?v=${cacheBuster}`;
 }
 
@@ -58,7 +59,7 @@ function getStaticVideos() {
             description: 'Understand density, specific gravity, and weight-volume relationships for chemical mixing and treatment process calculations'
         },
         {
-            filename: '7 - Force-Pressure-Head.mp4',
+            filename: '7 - Force, Pressure & Head.mp4',
             title: '7 - Force, Pressure & Head',
             description: 'Understand relationships between force, pressure, and head calculations essential for pump operations and system design'
         },
