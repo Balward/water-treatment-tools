@@ -51,7 +51,7 @@
         }
         
         .hamburger-menu {
-            display: none;
+            display: flex;
             flex-direction: column;
             cursor: pointer;
             padding: 8px;
@@ -274,8 +274,33 @@
             margin-bottom: 20px;
         }
         
+        .gamefound-card-footer {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .gamefound-card-action {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: #ffffff;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+        
+        .gamefound-card-action:hover {
+            background: linear-gradient(135deg, #2563eb, #1e40af);
+            transform: translateY(-1px);
+        }
+        
         .gamefound-card-progress,
-        .gamefound-card-footer,
         .gamefound-floating-badge {
             display: none;
         }
@@ -326,10 +351,6 @@
             .gamefound-grid {
                 grid-template-columns: 1fr;
                 gap: 24px;
-            }
-            
-            .hamburger-menu {
-                display: flex;
             }
             
             .gamefound-container {
@@ -389,7 +410,7 @@
         </div>
         
         <div class="gamefound-grid">
-            <a href="../robojar-analyzer/index.html" class="gamefound-card">
+            <div class="gamefound-card">
                 <div class="gamefound-card-header">
                     <div class="gamefound-card-icon">🤖</div>
                     <h3 class="gamefound-card-title">RoboJar Analyzer</h3>
@@ -399,10 +420,13 @@
                     <p class="gamefound-card-description">
                         Upload and analyze RoboJar Excel reports with advanced statistics and forecasting capabilities.
                     </p>
+                    <div class="gamefound-card-footer">
+                        <a href="../robojar-analyzer/index.html" class="gamefound-card-action">Launch</a>
+                    </div>
                 </div>
-            </a>
+            </div>
             
-            <a href="../dose-predictor/index.html" class="gamefound-card">
+            <div class="gamefound-card">
                 <div class="gamefound-card-header">
                     <div class="gamefound-card-icon">🧪</div>
                     <h3 class="gamefound-card-title">Dose Predictor</h3>
@@ -412,10 +436,13 @@
                     <p class="gamefound-card-description">
                         AI-powered sodium permanganate dose optimization using machine learning algorithms trained on operational data.
                     </p>
+                    <div class="gamefound-card-footer">
+                        <a href="../dose-predictor/index.html" class="gamefound-card-action">Launch</a>
+                    </div>
                 </div>
-            </a>
+            </div>
             
-            <a href="../regulation-100-study/index.html" class="gamefound-card">
+            <div class="gamefound-card">
                 <div class="gamefound-card-header">
                     <div class="gamefound-card-icon">📚</div>
                     <h3 class="gamefound-card-title">Regulation 100 Study Guide</h3>
@@ -425,10 +452,13 @@
                     <p class="gamefound-card-description">
                         Interactive slideshow for mastering water and wastewater facility operator certification requirements.
                     </p>
+                    <div class="gamefound-card-footer">
+                        <a href="../regulation-100-study/index.html" class="gamefound-card-action">Launch</a>
+                    </div>
                 </div>
-            </a>
+            </div>
             
-            <a href="../water-treatment-flashcards/index.html" class="gamefound-card">
+            <div class="gamefound-card">
                 <div class="gamefound-card-header">
                     <div class="gamefound-card-icon">🃏</div>
                     <h3 class="gamefound-card-title">Water Treatment Flashcards</h3>
@@ -438,10 +468,13 @@
                     <p class="gamefound-card-description">
                         Master water treatment terminology with interactive flashcards from professional reference books.
                     </p>
+                    <div class="gamefound-card-footer">
+                        <a href="../water-treatment-flashcards/index.html" class="gamefound-card-action">Launch</a>
+                    </div>
                 </div>
-            </a>
+            </div>
             
-            <a href="../sodium-hypochlorite-calculator/index.html" class="gamefound-card">
+            <div class="gamefound-card">
                 <div class="gamefound-card-header">
                     <div class="gamefound-card-icon">💧</div>
                     <h3 class="gamefound-card-title">Sodium Hypochlorite Calculator</h3>
@@ -451,10 +484,13 @@
                     <p class="gamefound-card-description">
                         Calculate chemical addition to filter basins for residual increase using 10% sodium hypochlorite solution.
                     </p>
+                    <div class="gamefound-card-footer">
+                        <a href="../sodium-hypochlorite-calculator/index.html" class="gamefound-card-action">Launch</a>
+                    </div>
                 </div>
-            </a>
+            </div>
             
-            <a href="../data-parser/index.html" class="gamefound-card">
+            <div class="gamefound-card">
                 <div class="gamefound-card-header">
                     <div class="gamefound-card-icon">📊</div>
                     <h3 class="gamefound-card-title">MWAT & Daily Maximum Calculator</h3>
@@ -464,10 +500,13 @@
                     <p class="gamefound-card-description">
                         Calculate Maximum Weekly Average Temperature and Daily Maximum Temperature per Colorado DMR requirements.
                     </p>
+                    <div class="gamefound-card-footer">
+                        <a href="../data-parser/index.html" class="gamefound-card-action">Launch</a>
+                    </div>
                 </div>
-            </a>
+            </div>
             
-            <a href="../data-analyzer/index.html" class="gamefound-card">
+            <div class="gamefound-card">
                 <div class="gamefound-card-header">
                     <div class="gamefound-card-icon">📈</div>
                     <h3 class="gamefound-card-title">Water Treatment Data Analyzer</h3>
@@ -477,10 +516,13 @@
                     <p class="gamefound-card-description">
                         Interactive analysis of streaming current and water treatment parameters with correlation and optimization charts.
                     </p>
+                    <div class="gamefound-card-footer">
+                        <a href="../data-analyzer/index.html" class="gamefound-card-action">Launch</a>
+                    </div>
                 </div>
-            </a>
+            </div>
             
-            <a href="../video-tutorials/index.html" class="gamefound-card">
+            <div class="gamefound-card">
                 <div class="gamefound-card-header">
                     <div class="gamefound-card-icon">📹</div>
                     <h3 class="gamefound-card-title">Video Tutorials</h3>
@@ -490,8 +532,11 @@
                     <p class="gamefound-card-description">
                         Learn water treatment calculations and tool usage through interactive video tutorials.
                     </p>
+                    <div class="gamefound-card-footer">
+                        <a href="../video-tutorials/index.html" class="gamefound-card-action">Launch</a>
+                    </div>
                 </div>
-            </a>
+            </div>
             
             <div class="gamefound-card gamefound-coming-soon">
                 <div class="gamefound-card-header">
@@ -503,6 +548,9 @@
                     <p class="gamefound-card-description">
                         More powerful apps are being developed to expand your toolkit.
                     </p>
+                    <div class="gamefound-card-footer">
+                        <span class="gamefound-card-action" style="opacity: 0.5; pointer-events: none;">Soon</span>
+                    </div>
                 </div>
             </div>
         </div>
