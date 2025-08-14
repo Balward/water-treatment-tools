@@ -233,7 +233,7 @@ const videoGrid = document.getElementById('videoGrid');
 const modal = document.getElementById('videoModal');
 const modalVideo = document.getElementById('modalVideo');
 const modalTitle = document.getElementById('modalTitle');
-const closeBtn = document.querySelector('.close');
+const closeBtn = document.querySelector('.wt-modal-close');
 
 function getVideoCategory(videoNum) {
     if (videoNum <= 13) return { name: 'Basics', class: 'basics' };

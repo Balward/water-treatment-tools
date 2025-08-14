@@ -4,27 +4,33 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Video Tutorials - Water Treatment Tools</title>
+    <link rel="icon" type="image/png" href="../../assets/logos/favicon.png" />
+    <link rel="stylesheet" href="../../global-styles.css" />
     <link rel="stylesheet" href="styles.css" />
   </head>
-  <body>
-    <div class="container">
-      <header class="header">
-        <div class="brand">
-          <div class="brand-text">
-            <h1>Water Treatment Exam Preparation Grade 4 - Video Tutorials</h1>
-            <p class="tagline">
+  <body class="wt-body-gradient">
+    <div class="wt-container">
+      <header class="wt-header">
+        <div class="wt-header-content">
+          <div class="wt-header-logo">
+            <img src="../../assets/logos/logo-vert.png" alt="City Logo" class="wt-logo-main" />
+          </div>
+          <div class="wt-header-text">
+            <h1 class="wt-header-title">Water Treatment Exam Preparation Grade 4 - Video Tutorials</h1>
+            <p class="wt-header-subtitle">
               Learn water treatment calculations and tool usage
             </p>
           </div>
+          <nav class="wt-header-nav">
+            <a href="../../" class="wt-nav-btn">
+              <span class="wt-nav-icon">🏠</span>
+              <span class="wt-nav-text">Dashboard</span>
+            </a>
+          </nav>
         </div>
-        <nav class="nav">
-          <a href="/" class="nav-link"
-            >← Back to Dashboard</a
-          >
-        </nav>
       </header>
 
-      <main class="main-content">
+      <main class="wt-main-content">
         <div class="video-grid" id="videoGrid">
           <!-- Videos will be loaded here -->
         </div>
@@ -32,13 +38,13 @@
     </div>
 
     <!-- Modal -->
-    <div id="videoModal" class="modal">
-      <div class="modal-content">
-        <span class="close">&times;</span>
+    <div id="videoModal" class="wt-modal">
+      <div class="wt-modal-content">
+        <span class="wt-modal-close">&times;</span>
         <video id="modalVideo" class="modal-video" controls>
           Your browser does not support the video tag.
         </video>
-        <h3 id="modalTitle" class="modal-title"></h3>
+        <h3 id="modalTitle" class="wt-modal-title"></h3>
       </div>
     </div>
 
