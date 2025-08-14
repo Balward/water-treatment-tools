@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Water Treatment Tools - Retro Synthwave Dashboard</title>
+    <link rel="icon" type="image/png" href="../../assets/logos/favicon.png" />
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600;800&family=Share+Tech+Mono&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f0f23, #1a0a2e, #16213e);
+            color: #fff;
+            font-family: 'Exo 2', sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        /* Animated background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(255, 0, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(255, 255, 0, 0.1) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+            z-index: -2;
+        }
+        
+        @keyframes float {
+            0%, 100% { 
+                transform: scale(1) rotate(0deg);
+                opacity: 0.7;
+            }
+            50% { 
+                transform: scale(1.1) rotate(180deg);
+                opacity: 1;
+            }
+        }
+        
+        /* Grid lines */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(255, 0, 255, 0.2) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 0, 255, 0.2) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 10s linear infinite;
+            z-index: -1;
+            opacity: 0.3;
+        }
+        
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+        
+        .retro-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .retro-header {
+            text-align: center;
+            margin-bottom: 60px;
+            position: relative;
+        }
+        
+        .retro-title {
+            font-family: 'Exo 2', sans-serif;
+            font-size: 4rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, #ff00ff, #00ffff, #ffff00, #ff00ff);
+            background-size: 400% 400%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 3s ease-in-out infinite;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 20px rgba(255, 0, 255, 0.5));
+        }
+        
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        .retro-subtitle {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1.2rem;
+            color: #00ffff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            animation: textPulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes textPulse {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+        
+        .retro-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+        
+        .retro-card {
+            background: linear-gradient(135deg, rgba(255, 0, 255, 0.1), rgba(0, 255, 255, 0.1));
+            border: 2px solid transparent;
+            border-radius: 15px;
+            padding: 30px;
+            text-decoration: none;
+            color: inherit;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .retro-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, #ff00ff, #00ffff, #ffff00, #ff00ff);
+            background-size: 400% 400%;
+            animation: borderGlow 4s ease infinite;
+            border-radius: 15px;
+            z-index: -1;
+            opacity: 0.6;
+        }
+        
+        .retro-card::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            right: 2px;
+            bottom: 2px;
+            background: linear-gradient(135deg, rgba(15, 15, 35, 0.9), rgba(26, 10, 46, 0.9));
+            border-radius: 13px;
+            z-index: -1;
+        }
+        
+        @keyframes borderGlow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        .retro-card:hover {
+            transform: translateY(-10px) scale(1.03);
+            box-shadow: 
+                0 20px 40px rgba(255, 0, 255, 0.3),
+                0 0 60px rgba(0, 255, 255, 0.2);
+        }
+        
+        .retro-card:hover::before {
+            animation-duration: 1s;
+            opacity: 1;
+        }
+        
+        .retro-icon {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 15px currentColor);
+            animation: iconFloat 4s ease-in-out infinite;
+        }
+        
+        @keyframes iconFloat {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(180deg); }
+        }
+        
+        .retro-app-title {
+            font-family: 'Exo 2', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+        
+        .retro-app-description {
+            color: #cccccc;
+            line-height: 1.6;
+            font-size: 1rem;
+            font-family: 'Share Tech Mono', monospace;
+        }
+        
+        .retro-stats {
+            position: fixed;
+            top: 30px;
+            left: 30px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid #00ffff;
+            border-radius: 10px;
+            padding: 20px;
+            font-family: 'Share Tech Mono', monospace;
+            backdrop-filter: blur(10px);
+        }
+        
+        .retro-stats-title {
+            color: #00ffff;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+        
+        .retro-stats-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 0.8rem;
+        }
+        
+        .retro-stats-value {
+            color: #ff00ff;
+            font-weight: bold;
+        }
+        
+        .retro-footer {
+            text-align: center;
+            margin-top: 80px;
+            padding: 40px;
+            border-top: 2px solid rgba(255, 0, 255, 0.3);
+            background: linear-gradient(135deg, rgba(255, 0, 255, 0.05), rgba(0, 255, 255, 0.05));
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .retro-footer-text {
+            font-family: 'Share Tech Mono', monospace;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        /* Waveform animation */
+        .retro-wave {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: linear-gradient(180deg, transparent, rgba(255, 0, 255, 0.1));
+            z-index: -1;
+        }
+        
+        .retro-wave::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 200%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 10px,
+                rgba(0, 255, 255, 0.3) 10px,
+                rgba(0, 255, 255, 0.3) 12px
+            );
+            animation: waveMove 5s linear infinite;
+        }
+        
+        @keyframes waveMove {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100px); }
+        }
+        
+        .coming-soon-retro {
+            opacity: 0.6;
+            filter: grayscale(1);
+            pointer-events: none;
+        }
+        
+        .coming-soon-retro:hover {
+            transform: none;
+            box-shadow: none;
+        }
+        
+        @media (max-width: 768px) {
+            .retro-title {
+                font-size: 2.5rem;
+                letter-spacing: 2px;
+            }
+            
+            .retro-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .retro-stats {
+                position: relative;
+                top: auto;
+                left: auto;
+                margin-bottom: 30px;
+                width: 100%;
+            }
+            
+            .retro-card {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="retro-wave"></div>
+    
+    <div class="retro-stats">
+        <div class="retro-stats-title">System Status</div>
+        <div class="retro-stats-item">
+            <span>CPU:</span>
+            <span class="retro-stats-value">98%</span>
+        </div>
+        <div class="retro-stats-item">
+            <span>Memory:</span>
+            <span class="retro-stats-value">87%</span>
+        </div>
+        <div class="retro-stats-item">
+            <span>Network:</span>
+            <span class="retro-stats-value">ONLINE</span>
+        </div>
+    </div>
+    
+    <div class="retro-container">
+        <header class="retro-header">
+            <h1 class="retro-title">Water Treatment Protocol</h1>
+            <p class="retro-subtitle">>>> Synthwave Analysis System <<<</p>
+        </header>
+        
+        <main>
+            <div class="retro-grid">
+                <a href="../robojar-analyzer/index.html" class="retro-card">
+                    <div class="retro-icon">🤖</div>
+                    <h3 class="retro-app-title">RoboJar Synthesizer</h3>
+                    <p class="retro-app-description">
+                        Execute.exe advanced Excel data parsing with neon-powered statistical algorithms and predictive wave synthesis
+                    </p>
+                </a>
+                
+                <a href="../dose-predictor/index.html" class="retro-card">
+                    <div class="retro-icon">🧪</div>
+                    <h3 class="retro-app-title">Chemical Wave Optimizer</h3>
+                    <p class="retro-app-description">
+                        AI-driven sodium permanganate dosing through retrowave machine learning models trained on temporal data streams
+                    </p>
+                </a>
+                
+                <a href="../regulation-100-study/index.html" class="retro-card">
+                    <div class="retro-icon">📚</div>
+                    <h3 class="retro-app-title">Regulation Databank</h3>
+                    <p class="retro-app-description">
+                        Interactive holographic learning interface for operator certification with synthwave-enhanced knowledge transfer
+                    </p>
+                </a>
+                
+                <a href="../water-treatment-flashcards/index.html" class="retro-card">
+                    <div class="retro-icon">🃏</div>
+                    <h3 class="retro-app-title">Memory Core Cards</h3>
+                    <p class="retro-app-description">
+                        Neural pathway enhancement through neon-flash terminology cards with retro-futuristic learning protocols
+                    </p>
+                </a>
+                
+                <a href="../sodium-hypochlorite-calculator/index.html" class="retro-card">
+                    <div class="retro-icon">💧</div>
+                    <h3 class="retro-app-title">Hypochlorite Synthesizer</h3>
+                    <p class="retro-app-description">
+                        Quantum chemical dosing calculations for filter basin optimization using cyberpunk mathematical matrices
+                    </p>
+                </a>
+                
+                <a href="../data-parser/index.html" class="retro-card">
+                    <div class="retro-icon">📊</div>
+                    <h3 class="retro-app-title">Temperature Wave Parser</h3>
+                    <p class="retro-app-description">
+                        MWAT and daily maximum analysis through retrowave data processing conforming to Colorado digital protocols
+                    </p>
+                </a>
+                
+                <a href="../data-analyzer/index.html" class="retro-card">
+                    <div class="retro-icon">📈</div>
+                    <h3 class="retro-app-title">Stream Wave Analyzer</h3>
+                    <p class="retro-app-description">
+                        Real-time current correlation analysis with neon-enhanced visualization and synthwave optimization algorithms
+                    </p>
+                </a>
+                
+                <a href="../video-tutorials/index.html" class="retro-card">
+                    <div class="retro-icon">📹</div>
+                    <h3 class="retro-app-title">Training Holo-Deck</h3>
+                    <p class="retro-app-description">
+                        Immersive calculation tutorials through retro-futuristic interfaces with synthwave-enhanced learning experiences
+                    </p>
+                </a>
+                
+                <div class="retro-card coming-soon-retro">
+                    <div class="retro-icon">➕</div>
+                    <h3 class="retro-app-title">Incoming Transmission</h3>
+                    <p class="retro-app-description">
+                        New synthwave protocols are being compiled in the mainframe for deployment to your neural interface grid
+                    </p>
+                </div>
+            </div>
+        </main>
+        
+        <footer class="retro-footer">
+            <p class="retro-footer-text">© 2025 Synthwave Water Treatment Systems | Neon Efficiency Protocol v2.0</p>
+        </footer>
+    </div>
+</body>
+</html>
