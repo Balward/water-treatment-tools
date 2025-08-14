@@ -864,8 +864,8 @@ async function loadTestData() {
         
         // Paths to the test data files (relative to the root of the project)
         const testFiles = [
-            '../../data/UST1A-03112025_2025-04-16_11_55_34_MDT_(Data_MDT).csv',
-            '../../data/UST1A-04162025_2025-05-16_12_19_32_MDT_(Data_MDT).csv'
+            '../../sample-data/UST1A-03112025_2025-04-16_11_55_34_MDT_(Data_MDT).csv',
+            '../../sample-data/UST1A-04162025_2025-05-16_12_19_32_MDT_(Data_MDT).csv'
         ];
         
         const allData = [];

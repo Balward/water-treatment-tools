@@ -70,7 +70,7 @@ async function loadData() {
         await new Promise(resolve => setTimeout(resolve, 400));
         
         await updateLoadingProgress(25, 'Fetching Excel file...');
-        const response = await fetch('../../data/Week1SC.xlsx');
+        const response = await fetch('../../sample-data/Week1SC.xlsx');
         if (!response.ok) throw new Error('Failed to fetch data file');
         
         await updateLoadingProgress(40, 'Downloading spreadsheet data...');
