@@ -9,7 +9,7 @@
             "type": "firefox",
             "request": "launch",
             "reAttach": true,
-            "file": "${workspaceFolder}/packages/dashboard/dashboard.html"
+            "file": "${workspaceFolder}/apps/dashboard/dashboard.html"
         },
         {
             "name": "Launch localhost",
