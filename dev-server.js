@@ -59,11 +59,13 @@ function getMimeType(filePath) {
 }
 
 function serveFile(res, filePath) {
-    const fullPath = path.join(ROOT_DIR, filePath);
+    // Decode URL-encoded characters (like %20 for spaces)
+    const decodedFilePath = decodeURIComponent(filePath);
+    const fullPath = path.join(ROOT_DIR, decodedFilePath);
     
     fs.readFile(fullPath, (err, data) => {
         if (err) {
-            console.log(`404: ${filePath}`);
+            console.log(`404: ${decodedFilePath}`);
             res.writeHead(404, { 'Content-Type': 'text/html' });
             res.end('<h1>404 Not Found</h1>');
             return;
@@ -84,7 +86,7 @@ function serveFile(res, filePath) {
         
         res.writeHead(200, headers);
         res.end(data);
-        console.log(`200: ${filePath} (${mimeType})`);
+        console.log(`200: ${decodedFilePath} (${mimeType})`);
     });
 }
 
