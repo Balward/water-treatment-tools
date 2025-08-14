@@ -5,31 +5,69 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch Dashboard",
+            "name": "🚀 Launch Dashboard (Dev Server)",
+            "type": "firefox",
+            "request": "launch",
+            "reAttach": true,
+            "url": "http://localhost:8080/",
+            "webRoot": "${workspaceFolder}",
+            "preLaunchTask": "Start Dev Server"
+        },
+        {
+            "name": "🧪 Launch Sodium Hypochlorite Calculator",
+            "type": "firefox",
+            "request": "launch",
+            "reAttach": true,
+            "url": "http://localhost:8080/sodium-hypochlorite-calculator/",
+            "webRoot": "${workspaceFolder}",
+            "preLaunchTask": "Start Dev Server"
+        },
+        {
+            "name": "📊 Launch Data Analyzer",
+            "type": "firefox",
+            "request": "launch",
+            "reAttach": true,
+            "url": "http://localhost:8080/data-analyzer/",
+            "webRoot": "${workspaceFolder}",
+            "preLaunchTask": "Start Dev Server"
+        },
+        {
+            "name": "📹 Launch Video Tutorials",
+            "type": "firefox",
+            "request": "launch",
+            "reAttach": true,
+            "url": "http://localhost:8080/video-tutorials/",
+            "webRoot": "${workspaceFolder}",
+            "preLaunchTask": "Start Dev Server"
+        },
+        {
+            "name": "🔗 Launch Any App",
+            "type": "firefox",
+            "request": "launch",
+            "reAttach": true,
+            "url": "http://localhost:8080/",
+            "webRoot": "${workspaceFolder}",
+            "preLaunchTask": "Start Dev Server"
+        },
+        {
+            "name": "📄 Direct File (Simple - Dashboard Only)",
             "type": "firefox",
             "request": "launch",
             "reAttach": true,
             "file": "${workspaceFolder}/apps/dashboard/dashboard.html"
         },
         {
-            "name": "Launch localhost",
+            "name": "🐳 Connect to Docker Container",
             "type": "firefox",
             "request": "launch",
             "reAttach": true,
-            "url": "http://localhost/index.html",
+            "url": "http://localhost:6767/",
             "webRoot": "${workspaceFolder}"
         },
         {
-            "name": "Attach",
+            "name": "🔧 Attach to Running Browser",
             "type": "firefox",
             "request": "attach"
-        },
-        {
-            "name": "Launch WebExtension",
-            "type": "firefox",
-            "request": "launch",
-            "reAttach": true,
-            "addonPath": "${workspaceFolder}"
         }
     ]
 }

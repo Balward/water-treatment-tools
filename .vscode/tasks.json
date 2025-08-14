@@ -1,0 +1,102 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Start Dev Server",
+            "type": "shell",
+            "command": "node",
+            "args": ["dev-server.js"],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false,
+                "close": false
+            },
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "isBackground": true,
+            "problemMatcher": {
+                "owner": "dev-server",
+                "pattern": {
+                    "regexp": "__________"
+                },
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": "🚀 Water Treatment Tools Development Server",
+                    "endsPattern": "🛑 Press Ctrl\\+C to stop the server"
+                }
+            },
+            "detail": "Starts the custom development server on port 8080 with proper routing that mimics the Docker/nginx setup"
+        },
+        {
+            "label": "Stop Dev Server",
+            "type": "shell",
+            "command": "taskkill",
+            "args": ["/F", "/IM", "node.exe", "/FI", "WINDOWTITLE eq *dev-server*"],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared"
+            },
+            "detail": "Stops the development server"
+        },
+        {
+            "label": "Start Docker Dev Environment",
+            "type": "shell",
+            "command": "docker-compose",
+            "args": ["-f", "deployment/docker-compose.yml", "up", "-d"],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "detail": "Starts the Docker container for full production-like testing"
+        },
+        {
+            "label": "Stop Docker Dev Environment",
+            "type": "shell",
+            "command": "docker-compose",
+            "args": ["-f", "deployment/docker-compose.yml", "down"],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "detail": "Stops the Docker container"
+        },
+        {
+            "label": "Restart Docker Dev Environment",
+            "type": "shell",
+            "command": "docker-compose",
+            "args": ["-f", "deployment/docker-compose.yml", "restart"],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "detail": "Restarts the Docker container to pick up changes"
+        }
+    ]
+}
