@@ -46,7 +46,9 @@
       "Bash(npm start)",
       "Bash(dir:*)",
       "Bash(del \"7 - Force, Pressure & Head.svg\")",
-      "Bash(git submodule:*)"
+      "Bash(git submodule:*)",
+      "WebFetch(domain:gamefound.com)",
+      "WebSearch"
     ],
     "deny": []
   }

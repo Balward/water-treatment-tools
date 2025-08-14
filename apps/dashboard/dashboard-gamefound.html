@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Water Treatment Tools - Gamefound Dashboard</title>
+    <link rel="icon" type="image/png" href="../../assets/logos/favicon.png" />
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            color: #ffffff;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        .gamefound-header {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 16px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .gamefound-nav {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+        }
+        
+        .gamefound-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 24px;
+            font-weight: 800;
+            color: #ffffff;
+        }
+        
+        .gamefound-nav-items {
+            display: flex;
+            gap: 32px;
+            align-items: center;
+        }
+        
+        .gamefound-nav-link {
+            color: #cbd5e1;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        
+        .gamefound-nav-link:hover,
+        .gamefound-nav-link.active {
+            color: #60a5fa;
+        }
+        
+        .gamefound-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+        
+        .gamefound-hero {
+            text-align: center;
+            margin-bottom: 60px;
+            position: relative;
+        }
+        
+        .gamefound-hero::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(96, 165, 250, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            z-index: -1;
+        }
+        
+        .gamefound-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #60a5fa, #3b82f6, #1d4ed8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .gamefound-subtitle {
+            font-size: 1.3rem;
+            color: #cbd5e1;
+            max-width: 600px;
+            margin: 0 auto 30px;
+        }
+        
+        .gamefound-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+        
+        .gamefound-stat {
+            text-align: center;
+        }
+        
+        .gamefound-stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #60a5fa;
+            display: block;
+        }
+        
+        .gamefound-stat-label {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .gamefound-section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 32px;
+        }
+        
+        .gamefound-section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+        
+        .gamefound-view-all {
+            color: #60a5fa;
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .gamefound-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 32px;
+            margin-bottom: 80px;
+        }
+        
+        .gamefound-card {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(51, 65, 85, 0.6));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            overflow: hidden;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            backdrop-filter: blur(20px);
+        }
+        
+        .gamefound-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(96, 165, 250, 0.3);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(96, 165, 250, 0.2);
+        }
+        
+        .gamefound-card-header {
+            background: linear-gradient(135deg, #1e293b, #334155);
+            padding: 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+        
+        .gamefound-card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 16px;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+        }
+        
+        .gamefound-card-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+        
+        .gamefound-card-category {
+            display: inline-block;
+            background: rgba(96, 165, 250, 0.2);
+            color: #60a5fa;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .gamefound-card-body {
+            padding: 24px;
+        }
+        
+        .gamefound-card-description {
+            color: #cbd5e1;
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .gamefound-card-progress {
+            margin-bottom: 16px;
+        }
+        
+        .gamefound-progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .gamefound-progress-text {
+            color: #94a3b8;
+        }
+        
+        .gamefound-progress-value {
+            color: #60a5fa;
+            font-weight: 600;
+        }
+        
+        .gamefound-progress-bar {
+            background: rgba(30, 41, 59, 0.6);
+            border-radius: 8px;
+            height: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .gamefound-progress-fill {
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+            height: 100%;
+            border-radius: 8px;
+            transition: width 0.8s ease;
+            box-shadow: 0 0 12px rgba(96, 165, 250, 0.4);
+        }
+        
+        .gamefound-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .gamefound-card-stats {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .gamefound-card-stat {
+            text-align: center;
+        }
+        
+        .gamefound-card-stat-number {
+            font-weight: 700;
+            color: #ffffff;
+            font-size: 1rem;
+        }
+        
+        .gamefound-card-stat-label {
+            color: #94a3b8;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+        
+        .gamefound-card-action {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: #ffffff;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.2s;
+        }
+        
+        .gamefound-card-action:hover {
+            background: linear-gradient(135deg, #2563eb, #1e40af);
+            transform: translateY(-1px);
+        }
+        
+        .gamefound-coming-soon {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+        
+        .gamefound-coming-soon .gamefound-card-category {
+            background: rgba(156, 163, 175, 0.2);
+            color: #9ca3af;
+        }
+        
+        .gamefound-coming-soon .gamefound-progress-fill {
+            background: linear-gradient(90deg, #6b7280, #9ca3af);
+            width: 15% !important;
+        }
+        
+        .gamefound-floating-badge {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        /* Animation for progress bars */
+        @keyframes fillProgress {
+            from { width: 0; }
+            to { width: var(--progress-width); }
+        }
+        
+        .gamefound-card:hover .gamefound-progress-fill {
+            animation: fillProgress 1s ease-out;
+        }
+        
+        @media (max-width: 768px) {
+            .gamefound-title {
+                font-size: 2.5rem;
+            }
+            
+            .gamefound-grid {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+            
+            .gamefound-nav-items {
+                gap: 16px;
+            }
+            
+            .gamefound-stats {
+                gap: 24px;
+            }
+            
+            .gamefound-container {
+                padding: 24px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="gamefound-header">
+        <nav class="gamefound-nav">
+            <div class="gamefound-logo">
+                💧 WaterTools
+            </div>
+            <div class="gamefound-nav-items">
+                <a href="#" class="gamefound-nav-link active">Dashboard</a>
+                <a href="#" class="gamefound-nav-link">Analytics</a>
+                <a href="#" class="gamefound-nav-link">Reports</a>
+                <a href="#" class="gamefound-nav-link">Settings</a>
+            </div>
+        </nav>
+    </header>
+    
+    <div class="gamefound-container">
+        <div class="gamefound-hero">
+            <h1 class="gamefound-title">Water Treatment Command Center</h1>
+            <p class="gamefound-subtitle">
+                Discover and deploy powerful water treatment tools. Each application is designed to optimize your facility's performance and compliance.
+            </p>
+            
+            <div class="gamefound-stats">
+                <div class="gamefound-stat">
+                    <span class="gamefound-stat-number">8</span>
+                    <span class="gamefound-stat-label">Active Tools</span>
+                </div>
+                <div class="gamefound-stat">
+                    <span class="gamefound-stat-number">1,247</span>
+                    <span class="gamefound-stat-label">Users</span>
+                </div>
+                <div class="gamefound-stat">
+                    <span class="gamefound-stat-number">98%</span>
+                    <span class="gamefound-stat-label">Uptime</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="gamefound-section-header">
+            <h2 class="gamefound-section-title">Featured Applications</h2>
+            <a href="#" class="gamefound-view-all">View All →</a>
+        </div>
+        
+        <div class="gamefound-grid">
+            <a href="../robojar-analyzer/index.html" class="gamefound-card">
+                <div class="gamefound-floating-badge">Live</div>
+                <div class="gamefound-card-header">
+                    <div class="gamefound-card-icon">🤖</div>
+                    <h3 class="gamefound-card-title">RoboJar Analyzer</h3>
+                    <span class="gamefound-card-category">Data Analysis</span>
+                </div>
+                <div class="gamefound-card-body">
+                    <p class="gamefound-card-description">
+                        Upload and analyze RoboJar Excel reports with advanced statistics and forecasting capabilities for operational insights.
+                    </p>
+                    <div class="gamefound-card-progress">
+                        <div class="gamefound-progress-label">
+                            <span class="gamefound-progress-text">Deployment Progress</span>
+                            <span class="gamefound-progress-value">92%</span>
+                        </div>
+                        <div class="gamefound-progress-bar">
+                            <div class="gamefound-progress-fill" style="width: 92%;"></div>
+                        </div>
+                    </div>
+                    <div class="gamefound-card-footer">
+                        <div class="gamefound-card-stats">
+                            <div class="gamefound-card-stat">
+                                <div class="gamefound-card-stat-number">342</div>
+                                <div class="gamefound-card-stat-label">Users</div>
+                            </div>
+                            <div class="gamefound-card-stat">
+                                <div class="gamefound-card-stat-number">4.8</div>
+                                <div class="gamefound-card-stat-label">Rating</div>
+                            </div>
+                        </div>
+                        <span class="gamefound-card-action">Launch</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="../dose-predictor/index.html" class="gamefound-card">
+                <div class="gamefound-floating-badge">Live</div>
+                <div class="gamefound-card-header">
+                    <div class="gamefound-card-icon">🧪</div>
+                    <h3 class="gamefound-card-title">Dose Predictor</h3>
+                    <span class="gamefound-card-category">AI Optimization</span>
+                </div>
+                <div class="gamefound-card-body">
+                    <p class="gamefound-card-description">
+                        AI-powered sodium permanganate dose optimization using machine learning algorithms trained on operational data.
+                    </p>
+                    <div class="gamefound-card-progress">
+                        <div class="gamefound-progress-label">
+                            <span class="gamefound-progress-text">Accuracy Rate</span>
+                            <span class="gamefound-progress-value">96%</span>
+                        </div>
+                        <div class="gamefound-progress-bar">
+                            <div class="gamefound-progress-fill" style="width: 96%;"></div>
+                        </div>
+                    </div>
+                    <div class="gamefound-card-footer">
+                        <div class="gamefound-card-stats">
+                            <div class="gamefound-card-stat">
+                                <div class="gamefound-card-stat-number">189</div>
+                                <div class="gamefound-card-stat-label">Users</div>
+                            </div>
+                            <div class="gamefound-card-stat">
+                                <div class="gamefound-card-stat-number">4.9</div>
+                                <div class="gamefound-card-stat-label">Rating</div>
+                            </div>
+                        </div>
+                        <span class="gamefound-card-action">Launch</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="../regulation-100-study/index.html" class="gamefound-card">
+                <div class="gamefound-floating-badge">Live</div>
+                <div class="gamefound-card-header">
+                    <div class="gamefound-card-icon">📚</div>
+                    <h3 class="gamefound-card-title">Regulation 100 Study Guide</h3>
+                    <span class="gamefound-card-category">Education</span>
+                </div>
+                <div class="gamefound-card-body">
+                    <p class="gamefound-card-description">
+                        Interactive slideshow for mastering water and wastewater facility operator certification requirements.
+                    </p>
+                    <div class="gamefound-card-progress">
+                        <div class="gamefound-progress-label">
+                            <span class="gamefound-progress-text">Completion Rate</span>
+                            <span class="gamefound-progress-value">87%</span>
+                        </div>
+                        <div class="gamefound-progress-bar">
+                            <div class="gamefound-progress-fill" style="width: 87%;"></div>
+                        </div>
+                    </div>
+                    <div class="gamefound-card-footer">
+                        <div class="gamefound-card-stats">
+                            <div class="gamefound-card-stat">
+                                <div class="gamefound-card-stat-number">267</div>
+                                <div class="gamefound-card-stat-label">Users</div>
+                            </div>
+                            <div class="gamefound-card-stat">
+                                <div class="gamefound-card-stat-number">4.7</div>
+                                <div class="gamefound-card-stat-label">Rating</div>
+                            </div>
+                        </div>
+                        <span class="gamefound-card-action">Launch</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="../water-treatment-flashcards/index.html" class="gamefound-card">
+                <div class="gamefound-floating-badge">Live</div>
+                <div class="gamefound-card-header">
+                    <div class="gamefound-card-icon">🃏</div>
+                    <h3 class="gamefound-card-title">Water Treatment Flashcards</h3>
+                    <span class="gamefound-card-category">Learning</span>
+                </div>
+                <div class="gamefound-card-body">
+                    <p class="gamefound-card-description">
+                        Master water treatment terminology with interactive flashcards curated from professional reference materials.
+                    </p>
+                    <div class="gamefound-card-progress">
+                        <div class="gamefound-progress-label">
+                            <span class="gamefound-progress-text">Knowledge Retention</span>
+                            <span class="gamefound-progress-value">94%</span>
+                        </div>
+                        <div class="gamefound-progress-bar">
+                            <div class="gamefound-progress-fill" style="width: 94%;"></div>
+                        </div>
+                    </div>
+                    <div class="gamefound-card-footer">
+                        <div class="gamefound-card-stats">
+                            <div class="gamefound-card-stat">
+                                <div class="gamefound-card-stat-number">423</div>
+                                <div class="gamefound-card-stat-label">Users</div>
+                            </div>
+                            <div class="gamefound-card-stat">
+                                <div class="gamefound-card-stat-number">4.6</div>
+                                <div class="gamefound-card-stat-label">Rating</div>
+                            </div>
+                        </div>
+                        <span class="gamefound-card-action">Launch</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="../sodium-hypochlorite-calculator/index.html" class="gamefound-card">
+                <div class="gamefound-floating-badge">Live</div>
+                <div class="gamefound-card-header">
+                    <div class="gamefound-card-icon">💧</div>
+                    <h3 class="gamefound-card-title">Sodium Hypochlorite Calculator</h3>
+                    <span class="gamefound-card-category">Calculation</span>
+                </div>
+                <div class="gamefound-card-body">
+                    <p class="gamefound-card-description">
+                        Calculate precise chemical addition to filter basins for residual increase using 10% sodium hypochlorite solution.
+                    </p>
+                    <div class="gamefound-card-progress">
+                        <div class="gamefound-progress-label">
+                            <span class="gamefound-progress-text">Precision Rate</span>
+                            <span class="gamefound-progress-value">99%</span>
+                        </div>
+                        <div class="gamefound-progress-bar">
+                            <div class="gamefound-progress-fill" style="width: 99%;"></div>
+                        </div>
+                    </div>
+                    <div class="gamefound-card-footer">
+                        <div class="gamefound-card-stats">
+                            <div class="gamefound-card-stat">
+                                <div class="gamefound-card-stat-number">156</div>
+                                <div class="gamefound-card-stat-label">Users</div>
+                            </div>
+                            <div class="gamefound-card-stat">
+                                <div class="gamefound-card-stat-number">4.9</div>
+                                <div class="gamefound-card-stat-label">Rating</div>
+                            </div>
+                        </div>
+                        <span class="gamefound-card-action">Launch</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="../data-parser/index.html" class="gamefound-card">
+                <div class="gamefound-floating-badge">Live</div>
+                <div class="gamefound-card-header">
+                    <div class="gamefound-card-icon">📊</div>
+                    <h3 class="gamefound-card-title">MWAT & Daily Maximum Calculator</h3>
+                    <span class="gamefound-card-category">Compliance</span>
+                </div>
+                <div class="gamefound-card-body">
+                    <p class="gamefound-card-description">
+                        Calculate Maximum Weekly Average Temperature and Daily Maximum Temperature per Colorado DMR requirements.
+                    </p>
+                    <div class="gamefound-card-progress">
+                        <div class="gamefound-progress-label">
+                            <span class="gamefound-progress-text">Compliance Rate</span>
+                            <span class="gamefound-progress-value">100%</span>
+                        </div>
+                        <div class="gamefound-progress-bar">
+                            <div class="gamefound-progress-fill" style="width: 100%;"></div>
+                        </div>
+                    </div>
+                    <div class="gamefound-card-footer">
+                        <div class="gamefound-card-stats">
+                            <div class="gamefound-card-stat">
+                                <div class="gamefound-card-stat-number">89</div>
+                                <div class="gamefound-card-stat-label">Users</div>
+                            </div>
+                            <div class="gamefound-card-stat">
+                                <div class="gamefound-card-stat-number">5.0</div>
+                                <div class="gamefound-card-stat-label">Rating</div>
+                            </div>
+                        </div>
+                        <span class="gamefound-card-action">Launch</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="../data-analyzer/index.html" class="gamefound-card">
+                <div class="gamefound-floating-badge">Live</div>
+                <div class="gamefound-card-header">
+                    <div class="gamefound-card-icon">📈</div>
+                    <h3 class="gamefound-card-title">Water Treatment Data Analyzer</h3>
+                    <span class="gamefound-card-category">Analytics</span>
+                </div>
+                <div class="gamefound-card-body">
+                    <p class="gamefound-card-description">
+                        Interactive analysis of streaming current and water treatment parameters with correlation and optimization visualization.
+                    </p>
+                    <div class="gamefound-card-progress">
+                        <div class="gamefound-progress-label">
+                            <span class="gamefound-progress-text">Analysis Accuracy</span>
+                            <span class="gamefound-progress-value">95%</span>
+                        </div>
+                        <div class="gamefound-progress-bar">
+                            <div class="gamefound-progress-fill" style="width: 95%;"></div>
+                        </div>
+                    </div>
+                    <div class="gamefound-card-footer">
+                        <div class="gamefound-card-stats">
+                            <div class="gamefound-card-stat">
+                                <div class="gamefound-card-stat-number">134</div>
+                                <div class="gamefound-card-stat-label">Users</div>
+                            </div>
+                            <div class="gamefound-card-stat">
+                                <div class="gamefound-card-stat-number">4.8</div>
+                                <div class="gamefound-card-stat-label">Rating</div>
+                            </div>
+                        </div>
+                        <span class="gamefound-card-action">Launch</span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="../video-tutorials/index.html" class="gamefound-card">
+                <div class="gamefound-floating-badge">Live</div>
+                <div class="gamefound-card-header">
+                    <div class="gamefound-card-icon">📹</div>
+                    <h3 class="gamefound-card-title">Video Tutorials</h3>
+                    <span class="gamefound-card-category">Training</span>
+                </div>
+                <div class="gamefound-card-body">
+                    <p class="gamefound-card-description">
+                        Learn water treatment calculations and tool usage through comprehensive interactive video tutorials.
+                    </p>
+                    <div class="gamefound-card-progress">
+                        <div class="gamefound-progress-label">
+                            <span class="gamefound-progress-text">Watch Completion</span>
+                            <span class="gamefound-progress-value">78%</span>
+                        </div>
+                        <div class="gamefound-progress-bar">
+                            <div class="gamefound-progress-fill" style="width: 78%;"></div>
+                        </div>
+                    </div>
+                    <div class="gamefound-card-footer">
+                        <div class="gamefound-card-stats">
+                            <div class="gamefound-card-stat">
+                                <div class="gamefound-card-stat-number">298</div>
+                                <div class="gamefound-card-stat-label">Users</div>
+                            </div>
+                            <div class="gamefound-card-stat">
+                                <div class="gamefound-card-stat-number">4.5</div>
+                                <div class="gamefound-card-stat-label">Rating</div>
+                            </div>
+                        </div>
+                        <span class="gamefound-card-action">Launch</span>
+                    </div>
+                </div>
+            </a>
+            
+            <div class="gamefound-card gamefound-coming-soon">
+                <div class="gamefound-card-header">
+                    <div class="gamefound-card-icon">➕</div>
+                    <h3 class="gamefound-card-title">Next Generation Tools</h3>
+                    <span class="gamefound-card-category">Coming Soon</span>
+                </div>
+                <div class="gamefound-card-body">
+                    <p class="gamefound-card-description">
+                        Revolutionary new applications are in development to expand your professional water treatment toolkit.
+                    </p>
+                    <div class="gamefound-card-progress">
+                        <div class="gamefound-progress-label">
+                            <span class="gamefound-progress-text">Development Progress</span>
+                            <span class="gamefound-progress-value">15%</span>
+                        </div>
+                        <div class="gamefound-progress-bar">
+                            <div class="gamefound-progress-fill" style="width: 15%;"></div>
+                        </div>
+                    </div>
+                    <div class="gamefound-card-footer">
+                        <div class="gamefound-card-stats">
+                            <div class="gamefound-card-stat">
+                                <div class="gamefound-card-stat-number">-</div>
+                                <div class="gamefound-card-stat-label">Users</div>
+                            </div>
+                            <div class="gamefound-card-stat">
+                                <div class="gamefound-card-stat-number">-</div>
+                                <div class="gamefound-card-stat-label">Rating</div>
+                            </div>
+                        </div>
+                        <span class="gamefound-card-action">Soon</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
