@@ -1,7 +1,7 @@
-/* City Fonts - Source Sans Pro */
+/* Updated Font Paths - Source Sans Pro */
 @font-face {
     font-family: 'SourceSansPro';
-    src: url('../../city-fonts/source-sans-pro/SourceSansPro-Regular.otf') format('opentype');
+    src: url('../../assets/fonts/source-sans-pro/SourceSansPro-Regular.otf') format('opentype');
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -9,7 +9,7 @@
 
 @font-face {
     font-family: 'SourceSansPro';
-    src: url('../../city-fonts/source-sans-pro/SourceSansPro-Bold.otf') format('opentype');
+    src: url('../../assets/fonts/source-sans-pro/SourceSansPro-Bold.otf') format('opentype');
     font-weight: 700;
     font-style: normal;
     font-display: swap;
@@ -17,7 +17,7 @@
 
 @font-face {
     font-family: 'SourceSansPro';
-    src: url('../../city-fonts/source-sans-pro/SourceSansPro-Light.otf') format('opentype');
+    src: url('../../assets/fonts/source-sans-pro/SourceSansPro-Light.otf') format('opentype');
     font-weight: 300;
     font-style: normal;
     font-display: swap;
@@ -25,16 +25,16 @@
 
 @font-face {
     font-family: 'SourceSansPro';
-    src: url('../../city-fonts/source-sans-pro/SourceSansPro-Semibold.otf') format('opentype');
+    src: url('../../assets/fonts/source-sans-pro/SourceSansPro-Semibold.otf') format('opentype');
     font-weight: 600;
     font-style: normal;
     font-display: swap;
 }
 
-/* City Fonts - Helvetica Neue (TTF) */
+/* Updated Font Paths - Helvetica Neue (TTF) */
 @font-face {
     font-family: 'HelveticaNeue';
-    src: url('../../city-fonts/neue helvetica/OpenType TTF Pro/HelveticaNeueLTPro-MdEx.ttf') format('truetype');
+    src: url('../../assets/fonts/helvetica-neue/OpenType TTF Pro/HelveticaNeueLTPro-MdEx.ttf') format('truetype');
     font-weight: 500;
     font-style: normal;
     font-display: swap;
@@ -42,7 +42,7 @@
 
 @font-face {
     font-family: 'HelveticaNeue';
-    src: url('../../city-fonts/neue helvetica/OpenType TTF Pro/HelveticaNeueLTPro-Ex.ttf') format('truetype');
+    src: url('../../assets/fonts/helvetica-neue/OpenType TTF Pro/HelveticaNeueLTPro-Ex.ttf') format('truetype');
     font-weight: 700;
     font-style: normal;
     font-display: swap;
