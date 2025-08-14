@@ -222,6 +222,62 @@
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             backdrop-filter: blur(20px);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        
+        .gamefound-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.85), rgba(51, 65, 85, 0.75));
+            z-index: 1;
+        }
+        
+        .gamefound-card > * {
+            position: relative;
+            z-index: 2;
+        }
+        
+        /* Specific background images for each card type */
+        .card-data-analysis {
+            background-image: url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80');
+        }
+        
+        .card-ai-optimization {
+            background-image: url('https://images.unsplash.com/photo-1507146153580-69a1fe6d8aa1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80');
+        }
+        
+        .card-education {
+            background-image: url('https://images.unsplash.com/photo-1481627834876-b7833e8f5570?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80');
+        }
+        
+        .card-learning {
+            background-image: url('https://images.unsplash.com/photo-1434030216411-0b793f4b4173?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80');
+        }
+        
+        .card-calculation {
+            background-image: url('https://images.unsplash.com/photo-1584464491033-06628f3a6b7b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80');
+        }
+        
+        .card-compliance {
+            background-image: url('https://images.unsplash.com/photo-1544737151-6e4b3999de8c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80');
+        }
+        
+        .card-analytics {
+            background-image: url('https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80');
+        }
+        
+        .card-training {
+            background-image: url('https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80');
+        }
+        
+        .card-coming-soon {
+            background-image: url('https://images.unsplash.com/photo-1518709268805-4e9042af2176?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80');
         }
         
         .gamefound-card:hover {
@@ -410,7 +466,7 @@
         </div>
         
         <div class="gamefound-grid">
-            <div class="gamefound-card">
+            <div class="gamefound-card card-data-analysis">
                 <div class="gamefound-card-header">
                     <div class="gamefound-card-icon">🤖</div>
                     <h3 class="gamefound-card-title">RoboJar Analyzer</h3>
@@ -426,7 +482,7 @@
                 </div>
             </div>
             
-            <div class="gamefound-card">
+            <div class="gamefound-card card-ai-optimization">
                 <div class="gamefound-card-header">
                     <div class="gamefound-card-icon">🧪</div>
                     <h3 class="gamefound-card-title">Dose Predictor</h3>
@@ -442,7 +498,7 @@
                 </div>
             </div>
             
-            <div class="gamefound-card">
+            <div class="gamefound-card card-education">
                 <div class="gamefound-card-header">
                     <div class="gamefound-card-icon">📚</div>
                     <h3 class="gamefound-card-title">Regulation 100 Study Guide</h3>
@@ -458,7 +514,7 @@
                 </div>
             </div>
             
-            <div class="gamefound-card">
+            <div class="gamefound-card card-learning">
                 <div class="gamefound-card-header">
                     <div class="gamefound-card-icon">🃏</div>
                     <h3 class="gamefound-card-title">Water Treatment Flashcards</h3>
@@ -474,7 +530,7 @@
                 </div>
             </div>
             
-            <div class="gamefound-card">
+            <div class="gamefound-card card-calculation">
                 <div class="gamefound-card-header">
                     <div class="gamefound-card-icon">💧</div>
                     <h3 class="gamefound-card-title">Sodium Hypochlorite Calculator</h3>
@@ -490,7 +546,7 @@
                 </div>
             </div>
             
-            <div class="gamefound-card">
+            <div class="gamefound-card card-compliance">
                 <div class="gamefound-card-header">
                     <div class="gamefound-card-icon">📊</div>
                     <h3 class="gamefound-card-title">MWAT & Daily Maximum Calculator</h3>
@@ -506,7 +562,7 @@
                 </div>
             </div>
             
-            <div class="gamefound-card">
+            <div class="gamefound-card card-analytics">
                 <div class="gamefound-card-header">
                     <div class="gamefound-card-icon">📈</div>
                     <h3 class="gamefound-card-title">Water Treatment Data Analyzer</h3>
@@ -522,7 +578,7 @@
                 </div>
             </div>
             
-            <div class="gamefound-card">
+            <div class="gamefound-card card-training">
                 <div class="gamefound-card-header">
                     <div class="gamefound-card-icon">📹</div>
                     <h3 class="gamefound-card-title">Video Tutorials</h3>
@@ -538,7 +594,7 @@
                 </div>
             </div>
             
-            <div class="gamefound-card gamefound-coming-soon">
+            <div class="gamefound-card gamefound-coming-soon card-coming-soon">
                 <div class="gamefound-card-header">
                     <div class="gamefound-card-icon">➕</div>
                     <h3 class="gamefound-card-title">Coming Soon</h3>
