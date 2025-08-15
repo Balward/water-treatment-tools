@@ -1,317 +1,358 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Water Treatment Tools - Minimal Dashboard</title>
     <link rel="icon" type="image/png" href="../../assets/logos/favicon.png" />
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: #ffffff;
-            color: #1a1a1a;
-            line-height: 1.6;
-            font-weight: 400;
-        }
-        
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap");
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+        background: #ffffff;
+        color: #1a1a1a;
+        line-height: 1.6;
+        font-weight: 400;
+      }
+
+      .minimal-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 60px 40px;
+      }
+
+      .minimal-header {
+        margin-bottom: 80px;
+        text-align: left;
+      }
+
+      .minimal-title {
+        font-size: 2.5rem;
+        font-weight: 300;
+        color: #000;
+        margin-bottom: 8px;
+        letter-spacing: -0.02em;
+      }
+
+      .minimal-subtitle {
+        font-size: 1.1rem;
+        color: #666;
+        font-weight: 400;
+        margin-bottom: 40px;
+      }
+
+      .minimal-divider {
+        width: 60px;
+        height: 1px;
+        background: #000;
+        margin: 0;
+      }
+
+      .minimal-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+        gap: 1px;
+        background: #e5e5e5;
+        border: 1px solid #e5e5e5;
+      }
+
+      .minimal-card {
+        background: #ffffff;
+        padding: 40px;
+        text-decoration: none;
+        color: inherit;
+        transition: all 0.2s ease;
+        border: none;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .minimal-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(0, 0, 0, 0.02),
+          transparent
+        );
+        transition: left 0.5s ease;
+      }
+
+      .minimal-card:hover::before {
+        left: 100%;
+      }
+
+      .minimal-card:hover {
+        background: #fafafa;
+        transform: translateY(-1px);
+      }
+
+      .minimal-icon {
+        font-size: 1.5rem;
+        margin-bottom: 24px;
+        opacity: 0.8;
+      }
+
+      .minimal-app-title {
+        font-size: 1.25rem;
+        font-weight: 500;
+        color: #000;
+        margin-bottom: 12px;
+        letter-spacing: -0.01em;
+      }
+
+      .minimal-app-description {
+        color: #666;
+        font-size: 0.95rem;
+        line-height: 1.5;
+        font-weight: 400;
+      }
+
+      .minimal-status {
+        margin-top: 80px;
+        padding-top: 40px;
+        border-top: 1px solid #e5e5e5;
+        text-align: center;
+      }
+
+      .minimal-status-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.9rem;
+        color: #666;
+      }
+
+      .minimal-status-dot {
+        width: 6px;
+        height: 6px;
+        background: #22c55e;
+        border-radius: 50%;
+      }
+
+      .minimal-footer {
+        margin-top: 60px;
+        text-align: center;
+        color: #999;
+        font-size: 0.85rem;
+        font-weight: 400;
+      }
+
+      .coming-soon {
+        opacity: 0.4;
+        pointer-events: none;
+      }
+
+      .coming-soon .minimal-icon {
+        opacity: 0.3;
+      }
+
+      /* Typography scale */
+      .minimal-number {
+        position: absolute;
+        top: 40px;
+        right: 40px;
+        font-size: 0.75rem;
+        color: #ccc;
+        font-weight: 500;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .minimal-card:nth-child(1) .minimal-number::after {
+        content: "01";
+      }
+      .minimal-card:nth-child(2) .minimal-number::after {
+        content: "02";
+      }
+      .minimal-card:nth-child(3) .minimal-number::after {
+        content: "03";
+      }
+      .minimal-card:nth-child(4) .minimal-number::after {
+        content: "04";
+      }
+      .minimal-card:nth-child(5) .minimal-number::after {
+        content: "05";
+      }
+      .minimal-card:nth-child(6) .minimal-number::after {
+        content: "06";
+      }
+      .minimal-card:nth-child(7) .minimal-number::after {
+        content: "07";
+      }
+      .minimal-card:nth-child(8) .minimal-number::after {
+        content: "08";
+      }
+      .minimal-card:nth-child(9) .minimal-number::after {
+        content: "09";
+      }
+
+      @media (max-width: 768px) {
         .minimal-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 60px 40px;
+          padding: 40px 20px;
         }
-        
-        .minimal-header {
-            margin-bottom: 80px;
-            text-align: left;
-        }
-        
+
         .minimal-title {
-            font-size: 2.5rem;
-            font-weight: 300;
-            color: #000;
-            margin-bottom: 8px;
-            letter-spacing: -0.02em;
+          font-size: 2rem;
         }
-        
-        .minimal-subtitle {
-            font-size: 1.1rem;
-            color: #666;
-            font-weight: 400;
-            margin-bottom: 40px;
-        }
-        
-        .minimal-divider {
-            width: 60px;
-            height: 1px;
-            background: #000;
-            margin: 0;
-        }
-        
+
         .minimal-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
-            gap: 1px;
-            background: #e5e5e5;
-            border: 1px solid #e5e5e5;
+          grid-template-columns: 1fr;
         }
-        
+
         .minimal-card {
-            background: #ffffff;
-            padding: 40px;
-            text-decoration: none;
-            color: inherit;
-            transition: all 0.2s ease;
-            border: none;
-            position: relative;
-            overflow: hidden;
+          padding: 30px 20px;
         }
-        
-        .minimal-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.02), transparent);
-            transition: left 0.5s ease;
-        }
-        
-        .minimal-card:hover::before {
-            left: 100%;
-        }
-        
-        .minimal-card:hover {
-            background: #fafafa;
-            transform: translateY(-1px);
-        }
-        
-        .minimal-icon {
-            font-size: 1.5rem;
-            margin-bottom: 24px;
-            opacity: 0.8;
-        }
-        
-        .minimal-app-title {
-            font-size: 1.25rem;
-            font-weight: 500;
-            color: #000;
-            margin-bottom: 12px;
-            letter-spacing: -0.01em;
-        }
-        
-        .minimal-app-description {
-            color: #666;
-            font-size: 0.95rem;
-            line-height: 1.5;
-            font-weight: 400;
-        }
-        
-        .minimal-status {
-            margin-top: 80px;
-            padding-top: 40px;
-            border-top: 1px solid #e5e5e5;
-            text-align: center;
-        }
-        
-        .minimal-status-indicator {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.9rem;
-            color: #666;
-        }
-        
-        .minimal-status-dot {
-            width: 6px;
-            height: 6px;
-            background: #22c55e;
-            border-radius: 50%;
-        }
-        
-        .minimal-footer {
-            margin-top: 60px;
-            text-align: center;
-            color: #999;
-            font-size: 0.85rem;
-            font-weight: 400;
-        }
-        
-        .coming-soon {
-            opacity: 0.4;
-            pointer-events: none;
-        }
-        
-        .coming-soon .minimal-icon {
-            opacity: 0.3;
-        }
-        
-        /* Typography scale */
+
         .minimal-number {
-            position: absolute;
-            top: 40px;
-            right: 40px;
-            font-size: 0.75rem;
-            color: #ccc;
-            font-weight: 500;
-            font-variant-numeric: tabular-nums;
+          top: 30px;
+          right: 20px;
         }
-        
-        .minimal-card:nth-child(1) .minimal-number::after { content: "01"; }
-        .minimal-card:nth-child(2) .minimal-number::after { content: "02"; }
-        .minimal-card:nth-child(3) .minimal-number::after { content: "03"; }
-        .minimal-card:nth-child(4) .minimal-number::after { content: "04"; }
-        .minimal-card:nth-child(5) .minimal-number::after { content: "05"; }
-        .minimal-card:nth-child(6) .minimal-number::after { content: "06"; }
-        .minimal-card:nth-child(7) .minimal-number::after { content: "07"; }
-        .minimal-card:nth-child(8) .minimal-number::after { content: "08"; }
-        .minimal-card:nth-child(9) .minimal-number::after { content: "09"; }
-        
-        @media (max-width: 768px) {
-            .minimal-container {
-                padding: 40px 20px;
-            }
-            
-            .minimal-title {
-                font-size: 2rem;
-            }
-            
-            .minimal-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .minimal-card {
-                padding: 30px 20px;
-            }
-            
-            .minimal-number {
-                top: 30px;
-                right: 20px;
-            }
+      }
+
+      @media (max-width: 480px) {
+        .minimal-header {
+          margin-bottom: 60px;
         }
-        
-        @media (max-width: 480px) {
-            .minimal-header {
-                margin-bottom: 60px;
-            }
-            
-            .minimal-title {
-                font-size: 1.75rem;
-            }
+
+        .minimal-title {
+          font-size: 1.75rem;
         }
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="minimal-container">
-        <header class="minimal-header">
-            <h1 class="minimal-title">Water Treatment Tools</h1>
-            <p class="minimal-subtitle">Professional analysis and optimization platform for water treatment facilities</p>
-            <div class="minimal-divider"></div>
-        </header>
-        
-        <main>
-            <div class="minimal-grid">
-                <a href="../robojar-analyzer/index.html" class="minimal-card">
-                    <div class="minimal-number"></div>
-                    <div class="minimal-icon">🤖</div>
-                    <h3 class="minimal-app-title">RoboJar Analyzer</h3>
-                    <p class="minimal-app-description">
-                        Upload and analyze RoboJar Excel reports with advanced statistics and forecasting capabilities.
-                    </p>
-                </a>
-                
-                <a href="../dose-predictor/index.html" class="minimal-card">
-                    <div class="minimal-number"></div>
-                    <div class="minimal-icon">🧪</div>
-                    <h3 class="minimal-app-title">Dose Predictor</h3>
-                    <p class="minimal-app-description">
-                        AI-powered sodium permanganate dose optimization using machine learning trained on operational data.
-                    </p>
-                </a>
-                
-                <a href="../regulation-100-study/index.html" class="minimal-card">
-                    <div class="minimal-number"></div>
-                    <div class="minimal-icon">📚</div>
-                    <h3 class="minimal-app-title">Regulation 100 Study Guide</h3>
-                    <p class="minimal-app-description">
-                        Interactive slideshow for mastering water and wastewater facility operator certification requirements.
-                    </p>
-                </a>
-                
-                <a href="../water-treatment-flashcards/index.html" class="minimal-card">
-                    <div class="minimal-number"></div>
-                    <div class="minimal-icon">🃏</div>
-                    <h3 class="minimal-app-title">Water Treatment Flashcards</h3>
-                    <p class="minimal-app-description">
-                        Master water treatment terminology with interactive flashcards from professional reference books.
-                    </p>
-                </a>
-                
-                <a href="../sodium-hypochlorite-calculator/index.html" class="minimal-card">
-                    <div class="minimal-number"></div>
-                    <div class="minimal-icon">💧</div>
-                    <h3 class="minimal-app-title">Sodium Hypochlorite Calculator</h3>
-                    <p class="minimal-app-description">
-                        Calculate chemical addition to filter basins for residual increase using 10% sodium hypochlorite solution.
-                    </p>
-                </a>
-                
-                <a href="../data-parser/index.html" class="minimal-card">
-                    <div class="minimal-number"></div>
-                    <div class="minimal-icon">📊</div>
-                    <h3 class="minimal-app-title">MWAT & Daily Maximum Calculator</h3>
-                    <p class="minimal-app-description">
-                        Calculate Maximum Weekly Average Temperature and Daily Maximum Temperature per Colorado DMR requirements.
-                    </p>
-                </a>
-                
-                <a href="../data-analyzer/index.html" class="minimal-card">
-                    <div class="minimal-number"></div>
-                    <div class="minimal-icon">📈</div>
-                    <h3 class="minimal-app-title">Water Treatment Data Analyzer</h3>
-                    <p class="minimal-app-description">
-                        Interactive analysis of streaming current and water treatment parameters with correlation and optimization charts.
-                    </p>
-                </a>
-                
-                <a href="../video-tutorials/index.html" class="minimal-card">
-                    <div class="minimal-number"></div>
-                    <div class="minimal-icon">📹</div>
-                    <h3 class="minimal-app-title">Video Tutorials</h3>
-                    <p class="minimal-app-description">
-                        Learn water treatment calculations and tool usage through interactive video tutorials.
-                    </p>
-                </a>
-                
-                <div class="minimal-card coming-soon">
-                    <div class="minimal-number"></div>
-                    <div class="minimal-icon">➕</div>
-                    <h3 class="minimal-app-title">Coming Soon</h3>
-                    <p class="minimal-app-description">
-                        Additional tools are being developed to expand your professional toolkit.
-                    </p>
-                </div>
-            </div>
-        </main>
-        
-        <div class="minimal-status">
-            <div class="minimal-status-indicator">
-                <div class="minimal-status-dot"></div>
-                <span>All systems operational</span>
-            </div>
+      <header class="minimal-header">
+        <h1 class="minimal-title">Water Treatment Tools</h1>
+        <p class="minimal-subtitle">
+          Professional analysis and optimization platform for water treatment
+          facilities
+        </p>
+        <div class="minimal-divider"></div>
+      </header>
+
+      <main>
+        <div class="minimal-grid">
+          <a href="../robojar-analyzer/index.html" class="minimal-card">
+            <div class="minimal-number"></div>
+            <div class="minimal-icon">🤖</div>
+            <h3 class="minimal-app-title">RoboJar Analyzer</h3>
+            <p class="minimal-app-description">
+              Upload and analyze RoboJar Excel reports with advanced statistics
+              and forecasting capabilities.
+            </p>
+          </a>
+
+          <a href="../dose-predictor/index.html" class="minimal-card">
+            <div class="minimal-number"></div>
+            <div class="minimal-icon">🧪</div>
+            <h3 class="minimal-app-title">Dose Predictor</h3>
+            <p class="minimal-app-description">
+              AI-powered sodium permanganate dose optimization using machine
+              learning trained on operational data.
+            </p>
+          </a>
+
+          <a href="../regulation-100-study/index.html" class="minimal-card">
+            <div class="minimal-number"></div>
+            <div class="minimal-icon">📚</div>
+            <h3 class="minimal-app-title">Regulation 100 Study Guide</h3>
+            <p class="minimal-app-description">
+              Interactive slideshow for mastering water and wastewater facility
+              operator certification requirements.
+            </p>
+          </a>
+
+          <a
+            href="../water-treatment-flashcards/index.html"
+            class="minimal-card"
+          >
+            <div class="minimal-number"></div>
+            <div class="minimal-icon">🃏</div>
+            <h3 class="minimal-app-title">Water Treatment Flashcards</h3>
+            <p class="minimal-app-description">
+              Master water treatment terminology with interactive flashcards
+              from professional reference books.
+            </p>
+          </a>
+
+          <a
+            href="../sodium-hypochlorite-calculator/index.html"
+            class="minimal-card"
+          >
+            <div class="minimal-number"></div>
+            <div class="minimal-icon">💧</div>
+            <h3 class="minimal-app-title">Sodium Hypochlorite Calculator</h3>
+            <p class="minimal-app-description">
+              Calculate chemical addition to filter basins for residual increase
+              using 10% sodium hypochlorite solution.
+            </p>
+          </a>
+
+          <a href="../data-parser/index.html" class="minimal-card">
+            <div class="minimal-number"></div>
+            <div class="minimal-icon">📊</div>
+            <h3 class="minimal-app-title">MWAT & Daily Maximum Calculator</h3>
+            <p class="minimal-app-description">
+              Calculate Maximum Weekly Average Temperature and Daily Maximum
+              Temperature per Colorado DMR requirements.
+            </p>
+          </a>
+
+          <a href="../data-analyzer/index.html" class="minimal-card">
+            <div class="minimal-number"></div>
+            <div class="minimal-icon">📈</div>
+            <h3 class="minimal-app-title">Water Treatment Data Analyzer</h3>
+            <p class="minimal-app-description">
+              Interactive analysis of streaming current and water treatment
+              parameters with correlation and optimization charts.
+            </p>
+          </a>
+
+          <a href="../video-tutorials/index.html" class="minimal-card">
+            <div class="minimal-number"></div>
+            <div class="minimal-icon">📹</div>
+            <h3 class="minimal-app-title">Video Tutorials</h3>
+            <p class="minimal-app-description">
+              Learn water treatment calculations and tool usage through
+              interactive video tutorials.
+            </p>
+          </a>
+
+          <div class="minimal-card coming-soon">
+            <div class="minimal-number"></div>
+            <div class="minimal-icon">➕</div>
+            <h3 class="minimal-app-title">Coming Soon</h3>
+            <p class="minimal-app-description">
+              Additional tools are being developed to expand your professional
+              toolkit.
+            </p>
+          </div>
         </div>
-        
-        <footer class="minimal-footer">
-            <p>© 2025 Water Treatment Tools</p>
-        </footer>
+      </main>
+
+      <div class="minimal-status">
+        <div class="minimal-status-indicator">
+          <div class="minimal-status-dot"></div>
+          <span>All systems operational</span>
+        </div>
+      </div>
+
+      <footer class="minimal-footer">
+        <p>© 2025 Water Treatment Tools</p>
+      </footer>
     </div>
-</body>
+  </body>
 </html>
