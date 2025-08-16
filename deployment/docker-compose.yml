@@ -2,7 +2,9 @@ version: '3.8'
 
 services:
   water-treatment-tools:
-    build: .
+    build: 
+      context: ..
+      dockerfile: deployment/Dockerfile
     image: water-treatment-tools:latest
     container_name: water-treatment-tools
     restart: unless-stopped
@@ -57,7 +59,9 @@ version: '3.8'
 
 services:
   water-treatment-tools:
-    build: .
+    build: 
+      context: ..
+      dockerfile: deployment/Dockerfile
     container_name: water-treatment-tools-local
     restart: unless-stopped
     ports:
