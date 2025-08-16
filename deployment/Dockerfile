@@ -5,13 +5,13 @@ FROM node:18-alpine AS api-builder
 WORKDIR /app/api
 
 # Copy API package files
-COPY api/package*.json ./
+COPY deployment/api/package*.json ./
 
 # Install API dependencies
 RUN npm install --production
 
 # Copy API source code
-COPY api/ ./
+COPY deployment/api/ ./
 
 # Final stage - nginx with supervisor to run both nginx and node
 FROM nginx:alpine
@@ -29,25 +29,22 @@ WORKDIR /usr/share/nginx/html
 RUN rm -rf /usr/share/nginx/html/*
 
 # Copy the entire project structure
-COPY packages/ ./packages/
-COPY city-logos/ ./city-logos/
-COPY city-fonts/ ./city-fonts/
-COPY Videos/ ./Videos/
+COPY apps/ ./apps/
+COPY assets/ ./assets/
+COPY docs/ ./docs/
+COPY sample-data/ ./sample-data/
 COPY README.md ./
-COPY data/ ./data/
-
-# Ensure video-tutorials thumbnails are explicitly copied
-COPY packages/video-tutorials/thumbnails/ ./packages/video-tutorials/thumbnails/
+COPY global-styles.css ./
+COPY dev-server.js ./
 
 # Copy dashboard as the root index
-COPY packages/dashboard/dashboard.html ./index.html
-COPY packages/dashboard/dashboard-styles.css ./dashboard-styles.css
+COPY apps/dashboard/dashboard.html ./index.html
 
 # Copy API from builder stage
 COPY --from=api-builder /app/api /app/api
 
 # Create nginx configuration
-COPY nginx.conf /etc/nginx/nginx.conf
+COPY deployment/nginx.conf /etc/nginx/nginx.conf
 
 # Create supervisor configuration
 RUN echo '[supervisord]' > /etc/supervisor/conf.d/supervisord.conf && \
