@@ -44,7 +44,7 @@ COPY apps/dashboard/dashboard.html ./index.html
 COPY --from=api-builder /app/api /app/api
 
 # Create nginx configuration
-COPY deployment/nginx.conf /etc/nginx/nginx.conf
+COPY nginx.conf /etc/nginx/nginx.conf
 
 # Create supervisor configuration
 RUN echo '[supervisord]' > /etc/supervisor/conf.d/supervisord.conf && \

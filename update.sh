@@ -31,8 +31,8 @@ print_error() {
 }
 
 # Check if we're in the right directory
-if [ ! -f "deployment/docker-compose.yml" ]; then
-    print_error "deployment/docker-compose.yml not found! Please run this script from the water-treatment-tools directory."
+if [ ! -f "docker-compose.yml" ]; then
+    print_error "docker-compose.yml not found! Please run this script from the water-treatment-tools directory."
     echo "Expected location: /mnt/user/appdata/water-treatment-tools/"
     exit 1
 fi
@@ -93,7 +93,7 @@ fi
 
 # Step 4: Stop current containers
 print_status "Stopping current containers..."
-docker-compose -f deployment/docker-compose.yml down
+docker-compose down
 if [ $? -eq 0 ]; then
     print_success "Containers stopped successfully"
 else
@@ -103,10 +103,10 @@ fi
 # Step 5: Rebuild and start containers
 if [ "$NEEDS_REBUILD" = true ]; then
     print_status "Rebuilding and starting containers with latest changes..."
-    docker-compose -f deployment/docker-compose.yml up -d --build
+    docker-compose up -d --build
 else
     print_status "Starting containers (no rebuild needed)..."
-    docker-compose -f deployment/docker-compose.yml up -d
+    docker-compose up -d
 fi
 
 if [ $? -eq 0 ]; then
@@ -122,7 +122,7 @@ sleep 5
 
 # Step 7: Check container status
 print_status "Checking container status..."
-docker-compose -f deployment/docker-compose.yml ps
+docker-compose ps
 
 # Step 8: Test application health
 print_status "Testing application health..."
@@ -156,7 +156,7 @@ echo "   • Data Parser: http://$(hostname -I | awk '{print $1}'):6767/apps/dat
 echo "   • Video Tutorials: http://$(hostname -I | awk '{print $1}'):6767/apps/video-tutorials/"
 echo
 echo "📊 Container Status:"
-docker-compose -f deployment/docker-compose.yml ps --format "table {{.Name}}\t{{.Status}}\t{{.Ports}}"
+docker-compose ps --format "table {{.Name}}\t{{.Status}}\t{{.Ports}}"
 echo
 echo "🕐 Update completed at: $(date)"
 echo "========================================"
