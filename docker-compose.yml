@@ -1,4 +1,3 @@
-version: '3.8'
 
 services:
   water-treatment-tools:
@@ -47,7 +46,6 @@ networks:
 # Alternative compose file for simple local deployment
 ---
 # docker-compose.local.yml
-version: '3.8'
 
 services:
   water-treatment-tools:
