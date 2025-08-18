@@ -3,6 +3,9 @@
 # Water Treatment Tools - Update Script for Unraid
 # This script pulls the latest changes and rebuilds the Docker containers
 
+# Make this script executable
+chmod +x "$0"
+
 echo "🚀 Water Treatment Tools - Update Script"
 echo "========================================"
 
