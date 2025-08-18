@@ -126,7 +126,7 @@ docker-compose ps
 
 # Step 8: Test application health
 print_status "Testing application health..."
-HEALTH_CHECK=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:6767/health 2>/dev/null)
+HEALTH_CHECK=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:6767/ 2>/dev/null)
 if [ "$HEALTH_CHECK" = "200" ]; then
     print_success "Application is healthy and responding"
 else

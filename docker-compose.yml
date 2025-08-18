@@ -18,10 +18,8 @@ services:
       - "traefik.http.routers.water-treatment.tls.certresolver=letsencrypt"
       - "traefik.http.services.water-treatment.loadbalancer.server.port=80"
     volumes:
-      # Optional: Mount a volume for data persistence if needed
+      # Mount sample data for the apps
       - ./sample-data:/usr/share/nginx/html/sample-data:ro
-      # BGG collection data persistence
-      - bgg_collections:/app/api/data
     networks:
       - cerberusnet
 
@@ -42,10 +40,6 @@ services:
     networks:
       - cerberusnet
 
-volumes:
-  bgg_collections:
-    driver: local
-
 networks:
   cerberusnet:
     external: true
@@ -61,19 +55,13 @@ services:
     container_name: water-treatment-tools-local
     restart: unless-stopped
     ports:
-      - "6767:80"   # Web interface (API accessible via nginx proxy)
+      - "6767:80"   # Web interface
     environment:
       - TZ=America/New_York
-      - NODE_ENV=production
     volumes:
       - ./sample-data:/usr/share/nginx/html/sample-data:ro
-      - bgg_collections_local:/app/api/data
     networks:
       - cerberusnet
-
-volumes:
-  bgg_collections_local:
-    driver: local
 
 networks:
   cerberusnet:
