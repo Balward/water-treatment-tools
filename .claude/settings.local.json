@@ -48,8 +48,12 @@
       "Bash(del \"7 - Force, Pressure & Head.svg\")",
       "Bash(git submodule:*)",
       "WebFetch(domain:gamefound.com)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(git rm:*)",
+      "WebFetch(domain:uiverse.io)",
+      "Bash(git update-index:*)"
     ],
-    "deny": []
+    "deny": [],
+    "defaultMode": "acceptEdits"
   }
 }
