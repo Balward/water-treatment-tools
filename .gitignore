@@ -7,10 +7,11 @@ packages/video-tutorials/videos-data.js
 # Node modules
 node_modules/
 
-# Environment files
+# Environment files (contains API keys)
 .env
 .env.local
 .env.production
+.env.backup
 
 # Logs
 *.log

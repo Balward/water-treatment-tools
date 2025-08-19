@@ -6,10 +6,12 @@ services:
     container_name: water-treatment-tools
     restart: unless-stopped
     ports:
-      - "6767:80"   # Web interface (API accessible via nginx proxy)
+      - "6767:80"   # Web interface
+      - "6768:3001" # Claude proxy API
     environment:
       - TZ=America/New_York  # Adjust to your timezone
       - NODE_ENV=production
+      - CLAUDE_API_KEY=${CLAUDE_API_KEY}  # Set this in .env file
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.water-treatment.rule=Host(`water-treatment.yourdomain.com`)"
@@ -54,8 +56,10 @@ services:
     restart: unless-stopped
     ports:
       - "6767:80"   # Web interface
+      - "6768:3001" # Claude proxy API
     environment:
       - TZ=America/New_York
+      - CLAUDE_API_KEY=${CLAUDE_API_KEY}  # Set this in .env file
     volumes:
       - ./sample-data:/usr/share/nginx/html/sample-data:ro
     networks:

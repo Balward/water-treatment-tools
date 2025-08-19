@@ -58,11 +58,23 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# Step 2: Stash any local changes
-print_status "Stashing any local changes..."
-git stash push -m "Auto-stash before update $(date)"
+# Step 2: Protect .env file and stash other local changes
+if [ -f ".env" ]; then
+    print_status "Backing up .env file (contains API keys)..."
+    cp .env .env.backup
+    print_success ".env file backed up"
+fi
+
+print_status "Stashing any local changes (excluding .env)..."
+# Add .env to .gitignore if not already there to prevent accidental commits
+if ! grep -q "^\.env$" .gitignore 2>/dev/null; then
+    echo ".env" >> .gitignore
+    print_status "Added .env to .gitignore for security"
+fi
+
+git stash push -m "Auto-stash before update $(date)" -- ':!.env'
 if [ $? -eq 0 ]; then
-    print_success "Local changes stashed successfully"
+    print_success "Local changes stashed successfully (.env preserved)"
 else
     print_warning "No local changes to stash"
 fi
@@ -94,7 +106,15 @@ else
     exit 1
 fi
 
-# Step 4: Stop current containers
+# Step 4: Restore .env file if backup exists
+if [ -f ".env.backup" ]; then
+    print_status "Restoring .env file from backup..."
+    cp .env.backup .env
+    rm .env.backup
+    print_success ".env file restored"
+fi
+
+# Step 5: Stop current containers
 print_status "Stopping current containers..."
 docker-compose down
 if [ $? -eq 0 ]; then
@@ -103,7 +123,7 @@ else
     print_warning "Some containers may not have been running"
 fi
 
-# Step 5: Rebuild and start containers
+# Step 6: Rebuild and start containers
 if [ "$NEEDS_REBUILD" = true ]; then
     print_status "Rebuilding and starting containers with latest changes..."
     docker-compose up -d --build
@@ -119,24 +139,32 @@ else
     exit 1
 fi
 
-# Step 6: Wait a moment for containers to start
+# Step 7: Wait a moment for containers to start
 print_status "Waiting for containers to initialize..."
 sleep 5
 
-# Step 7: Check container status
+# Step 8: Check container status
 print_status "Checking container status..."
 docker-compose ps
 
-# Step 8: Test application health
+# Step 9: Test application health
 print_status "Testing application health..."
 HEALTH_CHECK=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:6767/ 2>/dev/null)
 if [ "$HEALTH_CHECK" = "200" ]; then
-    print_success "Application is healthy and responding"
+    print_success "Web interface is healthy and responding"
 else
-    print_warning "Health check failed (HTTP $HEALTH_CHECK). Application may still be starting..."
+    print_warning "Web interface health check failed (HTTP $HEALTH_CHECK). Application may still be starting..."
 fi
 
-# Step 9: Clean up old Docker images
+# Test Claude proxy health
+CLAUDE_HEALTH=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:6768/health 2>/dev/null)
+if [ "$CLAUDE_HEALTH" = "200" ]; then
+    print_success "Claude AI proxy is healthy and responding"
+else
+    print_warning "Claude proxy health check failed (HTTP $CLAUDE_HEALTH). Check .env file and API key."
+fi
+
+# Step 10: Clean up old Docker images
 print_status "Cleaning up old Docker images..."
 docker image prune -f > /dev/null 2>&1
 if [ $? -eq 0 ]; then
@@ -157,6 +185,10 @@ echo "   • Dose Predictor: http://$(hostname -I | awk '{print $1}'):6767/apps/
 echo "   • Data Analyzer: http://$(hostname -I | awk '{print $1}'):6767/apps/data-analyzer/"
 echo "   • Data Parser: http://$(hostname -I | awk '{print $1}'):6767/apps/data-parser/"
 echo "   • Video Tutorials: http://$(hostname -I | awk '{print $1}'):6767/apps/video-tutorials/"
+echo
+echo "🤖 Claude AI Integration:"
+echo "   • Proxy Health Check: http://$(hostname -I | awk '{print $1}'):6768/health"
+echo "   • AI explanations available in Data Analyzer → Optimization tab"
 echo
 echo "📊 Container Status:"
 docker-compose ps --format "table {{.Name}}\t{{.Status}}\t{{.Ports}}"
