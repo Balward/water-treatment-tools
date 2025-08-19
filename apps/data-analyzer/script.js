@@ -998,6 +998,12 @@ function updateOptimizationChart() {
         document.getElementById('optimizationTitle').textContent = 
             `No correlations ≥ ${minCorr} found for ${targetVar}`;
         document.getElementById('optimizationSubtitle').textContent = '';
+        
+        // Hide the explain button
+        const explainBtn = document.getElementById('explainCorrelationBtn');
+        if (explainBtn) {
+            explainBtn.style.display = 'none';
+        }
     }
 }
 
@@ -1053,6 +1059,10 @@ function displayCorrelationMatrix(correlations, targetVar) {
 
 // Create optimization scatter plot
 function createOptimizationScatter(targetVar, strongestVar) {
+    // Set current variables for AI explanation
+    currentTargetVariable = targetVar;
+    currentPredictorVariable = strongestVar;
+    
     const chartData = data.map(d => ({
         x: d[strongestVar],
         y: d[targetVar]
@@ -1170,6 +1180,8 @@ function createOptimizationScatter(targetVar, strongestVar) {
     
     // Update title with correlation and R² values
     const correlation = calculateCorrelation(xValues, yValues);
+    currentCorrelationValue = correlation; // Store for AI explanation
+    
     const xUnit = units[strongestVar] ? ` (${units[strongestVar]})` : '';
     const yUnit = units[targetVar] ? ` (${units[targetVar]})` : '';
     document.getElementById('optimizationTitle').textContent = 
@@ -1179,6 +1191,12 @@ function createOptimizationScatter(targetVar, strongestVar) {
     const subtitleElement = document.getElementById('optimizationSubtitle');
     if (subtitleElement) {
         subtitleElement.textContent = `R = ${correlation.toFixed(3)} • R² = ${regression.r2.toFixed(3)}`;
+    }
+    
+    // Show the explain correlation button
+    const explainBtn = document.getElementById('explainCorrelationBtn');
+    if (explainBtn) {
+        explainBtn.style.display = 'block';
     }
 }
 
@@ -1408,6 +1426,128 @@ function showNotification(message, type = 'info') {
     }, 4000);
 }
 
+// Global variables for current correlation context
+let currentTargetVariable = null;
+let currentPredictorVariable = null;
+let currentCorrelationValue = null;
+
+// OpenAI API Configuration
+const OPENAI_API_KEY = ''; // You'll need to set this
+const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
+
+// AI Explanation Functions
+async function explainCorrelation() {
+    if (!currentTargetVariable || !currentPredictorVariable) {
+        showNotification('No correlation selected for explanation', 'warning');
+        return;
+    }
+
+    if (!OPENAI_API_KEY) {
+        showNotification('OpenAI API key not configured. Please add your API key to use AI explanations.', 'error');
+        return;
+    }
+
+    showExplanationModal();
+}
+
+function showExplanationModal() {
+    const modal = document.getElementById('explanationModal');
+    const titleElement = document.getElementById('modalCorrelationTitle');
+    const detailsElement = document.getElementById('modalCorrelationDetails');
+    const loadingElement = document.getElementById('explanationLoading');
+    const textElement = document.getElementById('explanationText');
+
+    // Set correlation info
+    titleElement.textContent = `${currentTargetVariable} vs ${currentPredictorVariable}`;
+    
+    const correlationStrength = Math.abs(currentCorrelationValue);
+    let strengthDesc = correlationStrength > 0.7 ? 'Strong' : 
+                      correlationStrength > 0.5 ? 'Moderate' : 
+                      correlationStrength > 0.3 ? 'Weak' : 'Very Weak';
+    
+    const direction = currentCorrelationValue > 0 ? 'positive' : 'negative';
+    detailsElement.textContent = `${strengthDesc} ${direction} correlation (R = ${currentCorrelationValue.toFixed(3)})`;
+
+    // Show modal and loading
+    modal.style.display = 'flex';
+    loadingElement.style.display = 'flex';
+    textElement.innerHTML = '';
+
+    // Get AI explanation
+    getAIExplanation();
+}
+
+function closeExplanationModal() {
+    const modal = document.getElementById('explanationModal');
+    modal.style.display = 'none';
+}
+
+async function getAIExplanation() {
+    const loadingElement = document.getElementById('explanationLoading');
+    const textElement = document.getElementById('explanationText');
+
+    try {
+        const prompt = `You are a water treatment expert. Explain why "${currentTargetVariable}" and "${currentPredictorVariable}" might show a correlation coefficient of ${currentCorrelationValue.toFixed(3)} in a water treatment facility.
+
+Consider:
+- Physical and chemical processes in water treatment
+- Seasonal effects and operational factors
+- Equipment interactions and process dependencies
+- Water quality relationships
+
+Provide a clear, technical explanation focused on the underlying mechanisms. Keep it concise but informative (2-3 paragraphs).`;
+
+        const response = await fetch(OPENAI_API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${OPENAI_API_KEY}`
+            },
+            body: JSON.stringify({
+                model: 'gpt-3.5-turbo',
+                messages: [{
+                    role: 'user',
+                    content: prompt
+                }],
+                max_tokens: 400,
+                temperature: 0.7
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`API request failed: ${response.status}`);
+        }
+
+        const data = await response.json();
+        const explanation = data.choices[0].message.content.trim();
+
+        // Hide loading and show explanation
+        loadingElement.style.display = 'none';
+        textElement.innerHTML = `<p>${explanation}</p>`;
+
+    } catch (error) {
+        console.error('Error getting AI explanation:', error);
+        loadingElement.style.display = 'none';
+        textElement.innerHTML = `
+            <div style="color: #d32f2f; padding: 1rem; background: #ffebee; border-radius: 4px;">
+                <strong>Unable to generate explanation:</strong><br>
+                ${error.message.includes('API key') ? 'API key not configured or invalid' : 'Network or API error occurred'}
+            </div>
+            <p style="margin-top: 1rem; color: #666;">
+                Consider the operational factors, seasonal variations, and process dependencies that might explain this correlation in your water treatment system.
+            </p>
+        `;
+    }
+}
+
+// Click outside modal to close
+window.onclick = function(event) {
+    const modal = document.getElementById('explanationModal');
+    if (event.target === modal) {
+        closeExplanationModal();
+    }
+}
+
 // Make functions globally available
 window.switchTab = switchTab;
 window.updateCorrelationChart = updateCorrelationChart;
@@ -1415,3 +1555,5 @@ window.updateTimeSeriesChart = updateTimeSeriesChart;
 window.updateDistributionChart = updateDistributionChart;
 window.updateOptimizationChart = updateOptimizationChart;
 window.selectCorrelationVariable = selectCorrelationVariable;
+window.explainCorrelation = explainCorrelation;
+window.closeExplanationModal = closeExplanationModal;

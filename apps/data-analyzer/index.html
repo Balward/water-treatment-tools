@@ -12,7 +12,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/2.0.1/chartjs-plugin-zoom.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <link rel="stylesheet" href="styles.css?v=20250818001">
+    <link rel="stylesheet" href="styles.css?v=20250819001">
 </head>
 <body>
     <header>
@@ -228,8 +228,15 @@
                     <div id="correlationMatrix"></div>
                 </div>
                 <div class="chart-container">
-                    <h4 id="optimizationTitle">Select target variable for optimization analysis</h4>
-                    <p id="optimizationSubtitle" class="chart-subtitle"></p>
+                    <div class="chart-header">
+                        <div class="chart-title-section">
+                            <h4 id="optimizationTitle">Select target variable for optimization analysis</h4>
+                            <p id="optimizationSubtitle" class="chart-subtitle"></p>
+                        </div>
+                        <button id="explainCorrelationBtn" class="explain-btn" onclick="explainCorrelation()" style="display: none;">
+                            🤖 Explain Correlation
+                        </button>
+                    </div>
                     <canvas id="optimizationChart"></canvas>
                 </div>
             </div>
@@ -238,6 +245,33 @@
 
     <div id="notificationContainer" class="notification-container"></div>
 
-    <script src="script.js?v=20250818001"></script>
+    <!-- AI Explanation Modal -->
+    <div id="explanationModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>🤖 AI Correlation Explanation</h3>
+                <span class="close" onclick="closeExplanationModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="correlation-info">
+                    <h4 id="modalCorrelationTitle">Correlation Analysis</h4>
+                    <p id="modalCorrelationDetails" class="correlation-details"></p>
+                </div>
+                <div class="explanation-content">
+                    <div id="explanationLoading" class="loading-explanation" style="display: none;">
+                        <div class="loading-spinner"></div>
+                        <p>Generating AI explanation...</p>
+                    </div>
+                    <div id="explanationText" class="explanation-text"></div>
+                </div>
+                <div class="modal-footer">
+                    <p class="disclaimer">⚠️ AI-generated explanation. Please verify with your water treatment expertise.</p>
+                    <button class="btn-secondary" onclick="closeExplanationModal()">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js?v=20250819001"></script>
 </body>
 </html>
