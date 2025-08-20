@@ -1021,91 +1021,10 @@ main {
   flex: 1;
 }
 
-/* AI Insights Section */
-.ai-insights-section {
-  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-  padding: 2rem 0;
-  margin-top: 2rem;
-}
-
-.ai-insights-card {
-  background: white;
-  border-radius: 12px;
-  padding: 2rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border-left: 4px solid #00677f;
-}
-
-.ai-insights-header h3 {
-  color: #00677f;
-  margin: 0 0 0.5rem 0;
-  font-size: 1.5rem;
-  font-weight: 600;
-}
-
-.ai-insights-description {
-  color: #6c757d;
-  margin: 0 0 1.5rem 0;
-  font-size: 1rem;
-  line-height: 1.5;
-}
-
-.ai-insights-content {
-  text-align: center;
-}
-
-.correlation-info {
-  background: #f8f9fa;
-  border-radius: 8px;
-  padding: 1rem;
-  margin-bottom: 1.5rem;
-  border: 1px solid #dee2e6;
-}
-
-.correlation-info p {
-  margin: 0.5rem 0;
-  color: #495057;
-}
-
-.correlation-value {
-  font-weight: 600;
-  color: #00677f;
-}
-
-.explain-btn-prominent {
-  background: linear-gradient(135deg, #00677f, #004d5c);
-  color: white;
-  border: none;
-  padding: 1rem 2rem;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 1.1rem;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(0, 103, 127, 0.3);
-  margin: 1rem 0;
-  min-width: 200px;
-}
-
-.explain-btn-prominent:hover {
-  background: linear-gradient(135deg, #004d5c, #003540);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 103, 127, 0.4);
-}
-
-.explain-btn-prominent:disabled {
-  background: #ccc;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-}
-
-.ai-disclaimer {
-  font-size: 0.85rem;
-  color: #6c757d;
-  font-style: italic;
+.chart-footer {
+  display: flex;
+  justify-content: center;
   margin-top: 1rem;
-  line-height: 1.4;
 }
 
 .explain-btn {
