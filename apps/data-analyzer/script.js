@@ -1701,9 +1701,21 @@ function hideAIInsightsPanel() {
 }
 
 // Claude Proxy Configuration - detects if running in container or locally
-const CLAUDE_PROXY_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-  ? "http://localhost:3001/api/claude"  // Local development
-  : `http://${window.location.hostname}:6768/api/claude`;  // Docker/Unraid deployment
+const CLAUDE_PROXY_URL = (() => {
+  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    return "http://localhost:3001/api/claude";  // Local development
+  }
+  
+  // For production, try main domain first (if Traefik is configured to proxy /api/claude)
+  // Otherwise fallback to port-based URL
+  if (window.location.protocol === 'https:') {
+    return `${window.location.protocol}//${window.location.hostname}/api/claude`;
+  } else {
+    return `${window.location.protocol}//${window.location.hostname}:6768/api/claude`;
+  }
+})();
+
+console.log('Claude Proxy URL detected:', CLAUDE_PROXY_URL);
 
 // Set to true to use Claude AI, false for hardcoded explanations
 const USE_AI = true;

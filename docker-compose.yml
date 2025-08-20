@@ -14,10 +14,16 @@ services:
       - CLAUDE_API_KEY=${CLAUDE_API_KEY}  # Set this in .env file
     labels:
       - "traefik.enable=true"
+      # Main web interface
       - "traefik.http.routers.water-treatment.rule=Host(`water-treatment.yourdomain.com`)"
       - "traefik.http.routers.water-treatment.tls=true"
       - "traefik.http.routers.water-treatment.tls.certresolver=letsencrypt"
       - "traefik.http.services.water-treatment.loadbalancer.server.port=80"
+      # Claude API proxy endpoint
+      - "traefik.http.routers.water-treatment-api.rule=Host(`water-treatment.yourdomain.com`) && PathPrefix(`/api/claude`)"
+      - "traefik.http.routers.water-treatment-api.tls=true"
+      - "traefik.http.routers.water-treatment-api.tls.certresolver=letsencrypt"
+      - "traefik.http.services.water-treatment-api.loadbalancer.server.port=3001"
     volumes:
       # Mount sample data for the apps
       - ./sample-data:/usr/share/nginx/html/sample-data:ro
