@@ -1,6 +1,6 @@
 // Wait for all scripts to load, then register zoom plugin
 document.addEventListener("DOMContentLoaded", function () {
-  console.log("🔄 Data Analyzer Script v20250820003 loaded - with AI provider selection");
+  console.log("🔄 Data Analyzer Script v20250820004 loaded - unified card layout");
   console.log("Chart.js version:", Chart.version);
   console.log(
     "Available on window:",

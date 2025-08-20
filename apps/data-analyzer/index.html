@@ -12,7 +12,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/2.0.1/chartjs-plugin-zoom.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <link rel="stylesheet" href="styles.css?v=20250820003">
+    <link rel="stylesheet" href="styles.css?v=20250820004">
 </head>
 <body>
     <header>
@@ -201,10 +201,12 @@
 
         <!-- Optimization Analysis -->
         <section id="optimization-tab" class="tab-content">
-            <div class="controls-panel">
-                <h3>🎯 Optimization Analysis</h3>
-                <p class="instruction-text">ℹ️ <strong>How to use:</strong> Select a target variable to optimize. The correlation matrix shows which variables most strongly influence your target. Click correlation buttons to view scatter plots with trend lines.</p>
-                
+            <div class="unified-analysis-card">
+                <div class="card-header">
+                    <h3>🎯 Optimization Analysis</h3>
+                    <p class="instruction-text">ℹ️ <strong>How to use:</strong> Select a target variable to optimize. The correlation matrix shows which variables most strongly influence your target. Click correlation buttons to view scatter plots with trend lines.</p>
+                </div>
+
                 <!-- AI Insights Section -->
                 <div class="ai-insights-panel" id="aiInsightsPanel" style="display: none;">
                     <div class="ai-insights-header">
@@ -234,6 +236,8 @@
                         </button>
                     </div>
                 </div>
+
+                <!-- Controls Section -->
                 <div class="control-group">
                     <div class="control">
                         <label for="targetVariable">Target Variable:</label>
@@ -251,20 +255,22 @@
                         </select>
                     </div>
                 </div>
-            </div>
-            <div class="analysis-container">
-                <div class="correlation-matrix">
-                    <h4>🎯 Correlation Matrix</h4>
-                    <div id="correlationMatrix"></div>
-                </div>
-                <div class="chart-container">
-                    <div class="chart-header">
-                        <div class="chart-title-section">
-                            <h4 id="optimizationTitle">Select target variable for optimization analysis</h4>
-                            <p id="optimizationSubtitle" class="chart-subtitle"></p>
-                        </div>
+
+                <!-- Analysis Content -->
+                <div class="unified-content">
+                    <div class="correlation-matrix">
+                        <h4>🎯 Correlation Matrix</h4>
+                        <div id="correlationMatrix"></div>
                     </div>
-                    <canvas id="optimizationChart"></canvas>
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <div class="chart-title-section">
+                                <h4 id="optimizationTitle">Select target variable for optimization analysis</h4>
+                                <p id="optimizationSubtitle" class="chart-subtitle"></p>
+                            </div>
+                        </div>
+                        <canvas id="optimizationChart"></canvas>
+                    </div>
                 </div>
             </div>
         </section>
@@ -299,6 +305,6 @@
         </div>
     </div>
 
-    <script src="script.js?v=20250820003"></script>
+    <script src="script.js?v=20250820004"></script>
 </body>
 </html>
