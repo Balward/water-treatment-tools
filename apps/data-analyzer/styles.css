@@ -308,9 +308,11 @@ main {
 .header-dataset-stats {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 2rem;
   flex-wrap: wrap;
   height: 100%;
+  width: 100%;
 }
 
 .header-stat-item {
