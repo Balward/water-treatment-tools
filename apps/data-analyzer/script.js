@@ -313,26 +313,28 @@ function displayDataInfo() {
   });
 
   headerDataInfo.innerHTML = `
-    <div class="header-dataset-card">
-      <span class="header-dataset-icon">📊</span>
-      <h4 class="header-dataset-title">Dataset Overview</h4>
-    </div>
-    <div class="header-dataset-summary">
-      <div class="header-stat-item">
-        <span class="header-stat-label">Data Period:</span>
-        <span class="header-stat-number">${dateRange}</span>
+    <div class="header-dataset-single-line">
+      <div class="header-dataset-title-section">
+        <span class="header-dataset-icon">📊</span>
+        <span class="header-dataset-title">Dataset Overview</span>
       </div>
-      <div class="header-stat-item">
-        <span class="header-stat-label">Records:</span>
-        <span class="header-stat-number">${totalRows.toLocaleString()}</span>
-      </div>
-      <div class="header-stat-item">
-        <span class="header-stat-label">Data Points:</span>
-        <span class="header-stat-number">${totalDatapoints.toLocaleString()}</span>
-      </div>
-      <div class="header-stat-item">
-        <span class="header-stat-label">Variables:</span>
-        <span class="header-stat-number">${totalVariables}</span>
+      <div class="header-dataset-stats">
+        <div class="header-stat-item">
+          <span class="header-stat-label">Data Period:</span>
+          <span class="header-stat-number">${dateRange}</span>
+        </div>
+        <div class="header-stat-item">
+          <span class="header-stat-label">Records:</span>
+          <span class="header-stat-number">${totalRows.toLocaleString()}</span>
+        </div>
+        <div class="header-stat-item">
+          <span class="header-stat-label">Data Points:</span>
+          <span class="header-stat-number">${totalDatapoints.toLocaleString()}</span>
+        </div>
+        <div class="header-stat-item">
+          <span class="header-stat-label">Variables:</span>
+          <span class="header-stat-number">${totalVariables}</span>
+        </div>
       </div>
     </div>
   `;
