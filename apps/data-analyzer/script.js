@@ -1661,28 +1661,28 @@ let currentTargetVariable = null;
 let currentPredictorVariable = null;
 let currentCorrelationValue = null;
 
-// Show AI Insights section with correlation information
+// Show AI Insights card with correlation information
 function showAIInsightsSection(predictorVar, targetVar, correlationValue) {
   // Store current correlation context
   currentTargetVariable = targetVar;
   currentPredictorVariable = predictorVar;
   currentCorrelationValue = correlationValue;
 
-  // Show the AI Insights section
-  const aiInsightsSection = document.getElementById("aiInsightsSection");
-  if (aiInsightsSection) {
-    aiInsightsSection.style.display = "block";
+  // Show the AI Insights card
+  const aiInsightsCard = document.getElementById("aiInsightsCard");
+  if (aiInsightsCard) {
+    aiInsightsCard.style.display = "block";
   }
 
-  // Show and populate correlation info
-  const correlationInfo = document.getElementById("correlationInfo");
+  // Show and populate correlation summary
+  const correlationSummary = document.getElementById("correlationSummary");
   const correlationText = document.getElementById("selectedCorrelationText");
   const correlationValueElement = document.getElementById("selectedCorrelationValue");
   
-  if (correlationInfo && correlationText && correlationValueElement) {
+  if (correlationSummary && correlationText && correlationValueElement) {
     correlationText.textContent = `${predictorVar} → ${targetVar}`;
     correlationValueElement.textContent = correlationValue.toFixed(3);
-    correlationInfo.style.display = "block";
+    correlationSummary.style.display = "block";
   }
 
   // Show the explain correlation button
@@ -1692,11 +1692,11 @@ function showAIInsightsSection(predictorVar, targetVar, correlationValue) {
   }
 }
 
-// Hide AI Insights section
+// Hide AI Insights card
 function hideAIInsightsSection() {
-  const aiInsightsSection = document.getElementById("aiInsightsSection");
-  if (aiInsightsSection) {
-    aiInsightsSection.style.display = "none";
+  const aiInsightsCard = document.getElementById("aiInsightsCard");
+  if (aiInsightsCard) {
+    aiInsightsCard.style.display = "none";
   }
 }
 

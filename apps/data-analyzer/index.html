@@ -236,27 +236,27 @@
                     </div>
                     <canvas id="optimizationChart"></canvas>
                 </div>
-            </div>
-        </section>
 
-        <!-- AI Insights Section -->
-        <section id="aiInsightsSection" class="ai-insights-section" style="display: none;">
-            <div class="container">
-                <div class="ai-insights-card">
-                    <div class="ai-insights-header">
-                        <h3>🤖 AI Insights</h3>
-                        <p class="ai-insights-description">Get intelligent explanations about correlations in your water treatment data</p>
+                <!-- AI Insights Card -->
+                <div id="aiInsightsCard" class="ai-insights-compact" style="display: none;">
+                    <div class="ai-insights-compact-header">
+                        <span class="ai-icon">🤖</span>
+                        <span class="ai-title">AI Correlation Insights</span>
                     </div>
-                    <div class="ai-insights-content">
-                        <div class="correlation-info" id="correlationInfo" style="display: none;">
-                            <p><strong>Selected Correlation:</strong> <span id="selectedCorrelationText"></span></p>
-                            <p class="correlation-value">Correlation Value: <span id="selectedCorrelationValue"></span></p>
+                    <div class="ai-insights-compact-content">
+                        <div class="correlation-summary" id="correlationSummary" style="display: none;">
+                            <span id="selectedCorrelationText"></span> 
+                            <span class="correlation-value">R = <span id="selectedCorrelationValue"></span></span>
                         </div>
-                        <button id="explainCorrelationBtn" class="explain-btn-prominent" onclick="explainCorrelation()" style="display: none;">
-                            💡 Explain This Correlation
+                        <button id="explainCorrelationBtn" class="explain-btn-compact" onclick="explainCorrelation()" style="display: none;">
+                            💡 Explain
                         </button>
-                        <p class="ai-disclaimer">AI explanations are generated to help understand potential relationships in your data. Always validate insights with domain expertise.</p>
                     </div>
+                </div>
+
+                <div class="correlation-matrix">
+                    <h4>🎯 Correlation Matrix</h4>
+                    <div id="correlationMatrix"></div>
                 </div>
             </div>
         </section>

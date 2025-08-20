@@ -1021,91 +1021,76 @@ main {
   flex: 1;
 }
 
-/* AI Insights Section */
-.ai-insights-section {
-  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-  padding: 2rem 0;
-  margin-top: 2rem;
-}
-
-.ai-insights-card {
+/* AI Insights Compact Card */
+.ai-insights-compact {
   background: white;
-  border-radius: 12px;
-  padding: 2rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border-left: 4px solid #00677f;
-}
-
-.ai-insights-header h3 {
-  color: #00677f;
-  margin: 0 0 0.5rem 0;
-  font-size: 1.5rem;
-  font-weight: 600;
-}
-
-.ai-insights-description {
-  color: #6c757d;
-  margin: 0 0 1.5rem 0;
-  font-size: 1rem;
-  line-height: 1.5;
-}
-
-.ai-insights-content {
-  text-align: center;
-}
-
-.correlation-info {
-  background: #f8f9fa;
+  border: 2px solid #00677f;
   border-radius: 8px;
   padding: 1rem;
   margin-bottom: 1.5rem;
-  border: 1px solid #dee2e6;
+  box-shadow: 0 2px 8px rgba(0, 103, 127, 0.1);
 }
 
-.correlation-info p {
-  margin: 0.5rem 0;
+.ai-insights-compact-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.ai-icon {
+  font-size: 1.2rem;
+  margin-right: 0.5rem;
+}
+
+.ai-title {
+  font-weight: 600;
+  color: #00677f;
+  font-size: 1rem;
+}
+
+.ai-insights-compact-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.correlation-summary {
+  font-size: 0.9rem;
   color: #495057;
 }
 
 .correlation-value {
   font-weight: 600;
   color: #00677f;
+  margin-left: 0.5rem;
 }
 
-.explain-btn-prominent {
+.explain-btn-compact {
   background: linear-gradient(135deg, #00677f, #004d5c);
   color: white;
   border: none;
-  padding: 1rem 2rem;
-  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
   cursor: pointer;
-  font-size: 1.1rem;
-  font-weight: 600;
+  font-size: 0.9rem;
+  font-weight: 500;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(0, 103, 127, 0.3);
-  margin: 1rem 0;
-  min-width: 200px;
+  box-shadow: 0 2px 6px rgba(0, 103, 127, 0.2);
+  white-space: nowrap;
 }
 
-.explain-btn-prominent:hover {
+.explain-btn-compact:hover {
   background: linear-gradient(135deg, #004d5c, #003540);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 103, 127, 0.4);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(0, 103, 127, 0.3);
 }
 
-.explain-btn-prominent:disabled {
+.explain-btn-compact:disabled {
   background: #ccc;
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
-}
-
-.ai-disclaimer {
-  font-size: 0.85rem;
-  color: #6c757d;
-  font-style: italic;
-  margin-top: 1rem;
-  line-height: 1.4;
 }
 
 .explain-btn {
