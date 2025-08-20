@@ -12,7 +12,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/2.0.1/chartjs-plugin-zoom.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <link rel="stylesheet" href="styles.css?v=20250820005">
+    <link rel="stylesheet" href="styles.css?v=20250820006">
 </head>
 <body>
     <header>
@@ -66,9 +66,13 @@
 
         <!-- Correlation Analysis -->
         <section id="correlation-tab" class="tab-content active">
-            <div class="controls-panel">
-                <h3>📈 Parameter Correlation Analysis</h3>
-                <p class="instruction-text">ℹ️ <strong>How to use:</strong> Select X and Y variables to explore relationships. Add color grouping to see how a third variable affects the correlation. Larger bubbles indicate multiple data points at the same location.</p>
+            <div class="unified-analysis-card">
+                <div class="card-header">
+                    <h3>📈 Parameter Correlation Analysis</h3>
+                    <p class="instruction-text">ℹ️ <strong>How to use:</strong> Select X and Y variables to explore relationships. Add color grouping to see how a third variable affects the correlation. Larger bubbles indicate multiple data points at the same location.</p>
+                </div>
+
+                <!-- Controls Section -->
                 <div class="control-group">
                     <div class="control">
                         <label for="corrXAxis">X-Axis Variable:</label>
@@ -89,22 +93,30 @@
                         </select>
                     </div>
                 </div>
-            </div>
-            <div class="chart-container">
-                <h4 id="correlationTitle">Select variables to view correlation</h4>
-                <p id="correlationSubtitle" class="chart-subtitle"></p>
-                <canvas id="correlationChart"></canvas>
-                <div class="empty-state" id="correlationEmpty">
-                    <p>🔍 Choose X and Y axis variables above to explore correlations between water treatment parameters.</p>
+
+                <!-- Chart Content -->
+                <div class="chart-section">
+                    <div class="chart-container">
+                        <h4 id="correlationTitle">Select variables to view correlation</h4>
+                        <p id="correlationSubtitle" class="chart-subtitle"></p>
+                        <canvas id="correlationChart"></canvas>
+                        <div class="empty-state" id="correlationEmpty">
+                            <p>🔍 Choose X and Y axis variables above to explore correlations between water treatment parameters.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
 
         <!-- Time Series Analysis -->
         <section id="timeseries-tab" class="tab-content">
-            <div class="controls-panel">
-                <h3>📉 Time Series Analysis</h3>
-                <p class="instruction-text">ℹ️ <strong>How to use:</strong> Select up to 4 variables to view trends over time. Check "Own Y-axis" to force a variable onto its own axis, or let the system automatically group by similar scales. Use scroll to zoom into time periods, drag to pan left/right.</p>
+            <div class="unified-analysis-card">
+                <div class="card-header">
+                    <h3>📉 Time Series Analysis</h3>
+                    <p class="instruction-text">ℹ️ <strong>How to use:</strong> Select up to 4 variables to view trends over time. Check "Own Y-axis" to force a variable onto its own axis, or let the system automatically group by similar scales. Use scroll to zoom into time periods, drag to pan left/right.</p>
+                </div>
+
+                <!-- Controls Section -->
                 <div class="control-group">
                     <div class="control">
                         <label for="timeVar1">Variable 1:</label>
@@ -155,19 +167,27 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="chart-container">
-                <h4 id="timeSeriesTitle">Variables over Time</h4>
-                <canvas id="timeSeriesChart"></canvas>
-                <p class="chart-zoom-hint">💡 Scroll to zoom, drag to pan, double-click to reset</p>
+
+                <!-- Chart Content -->
+                <div class="chart-section">
+                    <div class="chart-container">
+                        <h4 id="timeSeriesTitle">Variables over Time</h4>
+                        <canvas id="timeSeriesChart"></canvas>
+                        <p class="chart-zoom-hint">💡 Scroll to zoom, drag to pan, double-click to reset</p>
+                    </div>
+                </div>
             </div>
         </section>
 
         <!-- Distribution Analysis -->
         <section id="distribution-tab" class="tab-content">
-            <div class="controls-panel">
-                <h3>📊 Distribution Analysis</h3>
-                <p class="instruction-text">ℹ️ <strong>How to use:</strong> Select a variable to see its frequency distribution. Adjust bin count to change histogram detail. Statistics panel shows key metrics like mean, median, and standard deviation.</p>
+            <div class="unified-analysis-card">
+                <div class="card-header">
+                    <h3>📊 Distribution Analysis</h3>
+                    <p class="instruction-text">ℹ️ <strong>How to use:</strong> Select a variable to see its frequency distribution. Adjust bin count to change histogram detail. Statistics panel shows key metrics like mean, median, and standard deviation.</p>
+                </div>
+
+                <!-- Controls Section -->
                 <div class="control-group">
                     <div class="control">
                         <label for="distVariable">Variable:</label>
@@ -186,15 +206,17 @@
                         </select>
                     </div>
                 </div>
-            </div>
-            <div class="analysis-container">
-                <div class="chart-container">
-                    <h4 id="distributionTitle">Select variable to view distribution</h4>
-                    <canvas id="distributionChart"></canvas>
-                </div>
-                <div class="stats-panel">
-                    <h4>📈 Statistics</h4>
-                    <div id="distributionStats"></div>
+
+                <!-- Analysis Content -->
+                <div class="unified-content">
+                    <div class="stats-panel">
+                        <h4>📈 Statistics</h4>
+                        <div id="distributionStats"></div>
+                    </div>
+                    <div class="chart-container">
+                        <h4 id="distributionTitle">Select variable to view distribution</h4>
+                        <canvas id="distributionChart"></canvas>
+                    </div>
                 </div>
             </div>
         </section>
@@ -305,6 +327,6 @@
         </div>
     </div>
 
-    <script src="script.js?v=20250820005"></script>
+    <script src="script.js?v=20250820006"></script>
 </body>
 </html>

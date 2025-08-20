@@ -1,6 +1,6 @@
 // Wait for all scripts to load, then register zoom plugin
 document.addEventListener("DOMContentLoaded", function () {
-  console.log("🔄 Data Analyzer Script v20250820005 loaded - fixed other tabs styling");
+  console.log("🔄 Data Analyzer Script v20250820006 loaded - all tabs unified card layout");
   console.log("Chart.js version:", Chart.version);
   console.log(
     "Available on window:",
