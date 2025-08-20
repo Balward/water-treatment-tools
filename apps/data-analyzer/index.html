@@ -204,6 +204,24 @@
             <div class="controls-panel">
                 <h3>🎯 Optimization Analysis</h3>
                 <p class="instruction-text">ℹ️ <strong>How to use:</strong> Select a target variable to optimize. The correlation matrix shows which variables most strongly influence your target. Click correlation buttons to view scatter plots with trend lines.</p>
+                
+                <!-- AI Insights Section -->
+                <div class="ai-insights-panel" id="aiInsightsPanel" style="display: none;">
+                    <div class="ai-insights-header">
+                        <h4>🤖 AI Correlation Insights</h4>
+                        <p class="ai-instruction-text">💡 <strong>Get AI explanations:</strong> When viewing a correlation, click "Explain Correlation" to get AI-powered insights about the relationship between variables in your water treatment process.</p>
+                    </div>
+                    <div class="ai-insights-content">
+                        <div class="correlation-context" id="correlationContext" style="display: none;">
+                            <span class="correlation-label">Analyzing:</span>
+                            <span id="correlationDisplayText" class="correlation-display"></span>
+                            <span class="correlation-value">R = <span id="correlationDisplayValue"></span></span>
+                        </div>
+                        <button id="explainCorrelationBtn" class="explain-btn-enhanced" onclick="explainCorrelation()" style="display: none;">
+                            💡 Explain This Correlation
+                        </button>
+                    </div>
+                </div>
                 <div class="control-group">
                     <div class="control">
                         <label for="targetVariable">Target Variable:</label>
@@ -235,11 +253,6 @@
                         </div>
                     </div>
                     <canvas id="optimizationChart"></canvas>
-                    <div class="chart-footer">
-                        <button id="explainCorrelationBtn" class="explain-btn" onclick="explainCorrelation()" style="display: none;">
-                            💡 Explain Correlation
-                        </button>
-                    </div>
                 </div>
             </div>
         </section>

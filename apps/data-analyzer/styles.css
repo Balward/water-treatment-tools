@@ -1021,10 +1021,90 @@ main {
   flex: 1;
 }
 
-.chart-footer {
+/* AI Insights Panel within Optimization Analysis */
+.ai-insights-panel {
+  background: linear-gradient(135deg, #f0f8ff, #e6f3ff);
+  border: 2px solid #00677f;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  box-shadow: 0 2px 8px rgba(0, 103, 127, 0.1);
+}
+
+.ai-insights-header h4 {
+  color: #00677f;
+  margin: 0 0 0.5rem 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.ai-instruction-text {
+  color: #495057;
+  margin: 0 0 1rem 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  font-style: italic;
+}
+
+.ai-insights-content {
   display: flex;
-  justify-content: center;
-  margin-top: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.correlation-context {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: #495057;
+}
+
+.correlation-label {
+  font-weight: 500;
+  color: #6c757d;
+}
+
+.correlation-display {
+  font-weight: 600;
+  color: #00677f;
+}
+
+.correlation-value {
+  font-weight: 600;
+  color: #00677f;
+  background: rgba(0, 103, 127, 0.1);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+.explain-btn-enhanced {
+  background: linear-gradient(135deg, #00677f, #004d5c);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 8px rgba(0, 103, 127, 0.3);
+  white-space: nowrap;
+}
+
+.explain-btn-enhanced:hover {
+  background: linear-gradient(135deg, #004d5c, #003540);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 103, 127, 0.4);
+}
+
+.explain-btn-enhanced:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 .explain-btn {
