@@ -315,20 +315,20 @@ function displayDataInfo() {
   headerDataInfo.innerHTML = `
     <div class="header-dataset-summary">
       <div class="header-stat-item">
+        <span class="header-stat-label">Data Period:</span>
         <span class="header-stat-number">${dateRange}</span>
-        <span class="header-stat-label">Data Period</span>
       </div>
       <div class="header-stat-item">
+        <span class="header-stat-label">Records:</span>
         <span class="header-stat-number">${totalRows.toLocaleString()}</span>
-        <span class="header-stat-label">Records</span>
       </div>
       <div class="header-stat-item">
+        <span class="header-stat-label">Data Points:</span>
         <span class="header-stat-number">${totalDatapoints.toLocaleString()}</span>
-        <span class="header-stat-label">Data Points</span>
       </div>
       <div class="header-stat-item">
+        <span class="header-stat-label">Variables:</span>
         <span class="header-stat-number">${totalVariables}</span>
-        <span class="header-stat-label">Variables</span>
       </div>
     </div>
   `;
