@@ -1193,11 +1193,8 @@ function updateOptimizationChart() {
     ).textContent = `No correlations ≥ ${minCorr} found for ${targetVar}`;
     document.getElementById("optimizationSubtitle").textContent = "";
 
-    // Hide the explain button
-    const explainBtn = document.getElementById("explainCorrelationBtn");
-    if (explainBtn) {
-      explainBtn.style.display = "none";
-    }
+    // Hide AI Insights section
+    hideAIInsightsSection();
   }
 }
 
@@ -1410,11 +1407,8 @@ function createOptimizationScatter(targetVar, strongestVar) {
     )} • R² = ${regression.r2.toFixed(3)}`;
   }
 
-  // Show the explain correlation button
-  const explainBtn = document.getElementById("explainCorrelationBtn");
-  if (explainBtn) {
-    explainBtn.style.display = "block";
-  }
+  // Show AI Insights section and populate correlation info
+  showAIInsightsSection(strongestVar, targetVar, correlation);
 }
 
 // Calculate Pearson correlation coefficient
@@ -1666,6 +1660,45 @@ function showNotification(message, type = "info") {
 let currentTargetVariable = null;
 let currentPredictorVariable = null;
 let currentCorrelationValue = null;
+
+// Show AI Insights section with correlation information
+function showAIInsightsSection(predictorVar, targetVar, correlationValue) {
+  // Store current correlation context
+  currentTargetVariable = targetVar;
+  currentPredictorVariable = predictorVar;
+  currentCorrelationValue = correlationValue;
+
+  // Show the AI Insights section
+  const aiInsightsSection = document.getElementById("aiInsightsSection");
+  if (aiInsightsSection) {
+    aiInsightsSection.style.display = "block";
+  }
+
+  // Show and populate correlation info
+  const correlationInfo = document.getElementById("correlationInfo");
+  const correlationText = document.getElementById("selectedCorrelationText");
+  const correlationValueElement = document.getElementById("selectedCorrelationValue");
+  
+  if (correlationInfo && correlationText && correlationValueElement) {
+    correlationText.textContent = `${predictorVar} → ${targetVar}`;
+    correlationValueElement.textContent = correlationValue.toFixed(3);
+    correlationInfo.style.display = "block";
+  }
+
+  // Show the explain correlation button
+  const explainBtn = document.getElementById("explainCorrelationBtn");
+  if (explainBtn) {
+    explainBtn.style.display = "block";
+  }
+}
+
+// Hide AI Insights section
+function hideAIInsightsSection() {
+  const aiInsightsSection = document.getElementById("aiInsightsSection");
+  if (aiInsightsSection) {
+    aiInsightsSection.style.display = "none";
+  }
+}
 
 // Claude Proxy Configuration - detects if running in container or locally
 const CLAUDE_PROXY_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 

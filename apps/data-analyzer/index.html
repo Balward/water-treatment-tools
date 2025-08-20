@@ -235,10 +235,27 @@
                         </div>
                     </div>
                     <canvas id="optimizationChart"></canvas>
-                    <div class="chart-footer">
-                        <button id="explainCorrelationBtn" class="explain-btn" onclick="explainCorrelation()" style="display: none;">
-                            💡 Explain Correlation
+                </div>
+            </div>
+        </section>
+
+        <!-- AI Insights Section -->
+        <section id="aiInsightsSection" class="ai-insights-section" style="display: none;">
+            <div class="container">
+                <div class="ai-insights-card">
+                    <div class="ai-insights-header">
+                        <h3>🤖 AI Insights</h3>
+                        <p class="ai-insights-description">Get intelligent explanations about correlations in your water treatment data</p>
+                    </div>
+                    <div class="ai-insights-content">
+                        <div class="correlation-info" id="correlationInfo" style="display: none;">
+                            <p><strong>Selected Correlation:</strong> <span id="selectedCorrelationText"></span></p>
+                            <p class="correlation-value">Correlation Value: <span id="selectedCorrelationValue"></span></p>
+                        </div>
+                        <button id="explainCorrelationBtn" class="explain-btn-prominent" onclick="explainCorrelation()" style="display: none;">
+                            💡 Explain This Correlation
                         </button>
+                        <p class="ai-disclaimer">AI explanations are generated to help understand potential relationships in your data. Always validate insights with domain expertise.</p>
                     </div>
                 </div>
             </div>
