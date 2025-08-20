@@ -313,6 +313,10 @@ function displayDataInfo() {
   });
 
   headerDataInfo.innerHTML = `
+    <div class="header-dataset-card">
+      <span class="header-dataset-icon">📊</span>
+      <h4 class="header-dataset-title">Dataset Overview</h4>
+    </div>
     <div class="header-dataset-summary">
       <div class="header-stat-item">
         <span class="header-stat-label">Data Period:</span>
