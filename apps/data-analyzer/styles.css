@@ -250,10 +250,10 @@ main {
   display: none !important;
 }
 
-/* Header Dataset Info - Card Style */
+/* Header Dataset Info - Full Width Card Style */
 .header-dataset-info {
-  margin-top: 0.75rem;
-  padding: 1rem 1.25rem;
+  margin: 1rem 0 0 0;
+  padding: 1rem 2rem;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
   border-left: 4px solid #00677f;
@@ -263,6 +263,8 @@ main {
   border-bottom: 1px solid rgba(0, 103, 127, 0.2);
   box-shadow: 0 2px 8px rgba(0, 103, 127, 0.15);
   font-size: 0.9rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .header-dataset-card {
@@ -313,6 +315,7 @@ main {
 @media (max-width: 768px) {
   .header-dataset-info {
     padding: 0.875rem 1rem;
+    margin: 0.75rem 0 0 0;
   }
   
   .header-dataset-summary {
