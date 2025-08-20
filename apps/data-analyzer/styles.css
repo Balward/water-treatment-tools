@@ -854,7 +854,7 @@ main {
 }
 
 .date-range-dates {
-  font-size: 1.6rem !important;
+  font-size: 1.4rem !important;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1104,12 +1104,15 @@ main {
 
 /* AI Insights Panel within Optimization Analysis */
 .ai-insights-panel {
-  background: linear-gradient(135deg, #f0f8ff, #e6f3ff);
-  border: 2px solid #00677f;
-  border-radius: 8px;
-  padding: 1.5rem;
+  background: rgba(138, 43, 226, 0.05);
+  border-left: 4px solid #8a2be2;
+  border-radius: 0 8px 8px 0;
+  padding: 1.25rem;
   margin: 1.5rem 0;
-  box-shadow: 0 2px 8px rgba(0, 103, 127, 0.1);
+  box-shadow: 0 2px 8px rgba(138, 43, 226, 0.1);
+  border-top: 1px solid rgba(138, 43, 226, 0.1);
+  border-right: 1px solid rgba(138, 43, 226, 0.1);
+  border-bottom: 1px solid rgba(138, 43, 226, 0.1);
 }
 
 .ai-header-top {
@@ -1120,7 +1123,7 @@ main {
 }
 
 .ai-insights-header h4 {
-  color: #00677f;
+  color: #8a2be2;
   margin: 0;
   font-size: 1.1rem;
   font-weight: 600;
@@ -1142,7 +1145,7 @@ main {
 
 .provider-option input[type="radio"] {
   margin: 0;
-  accent-color: #00677f;
+  accent-color: #8a2be2;
 }
 
 .provider-label {
@@ -1151,11 +1154,10 @@ main {
 }
 
 .ai-instruction-text {
-  color: #495057;
+  color: #666;
   margin: 0 0 1rem 0;
   font-size: 0.9rem;
   line-height: 1.5;
-  font-style: italic;
 }
 
 .ai-insights-content {
@@ -1193,7 +1195,7 @@ main {
 }
 
 .explain-btn-enhanced {
-  background: linear-gradient(135deg, #00677f, #004d5c);
+  background: linear-gradient(135deg, #8a2be2, #6b1d9c);
   color: white;
   border: none;
   padding: 0.75rem 1.5rem;
@@ -1202,14 +1204,14 @@ main {
   font-size: 0.95rem;
   font-weight: 600;
   transition: all 0.3s ease;
-  box-shadow: 0 3px 8px rgba(0, 103, 127, 0.3);
+  box-shadow: 0 3px 8px rgba(138, 43, 226, 0.3);
   white-space: nowrap;
 }
 
 .explain-btn-enhanced:hover {
-  background: linear-gradient(135deg, #004d5c, #003540);
+  background: linear-gradient(135deg, #6b1d9c, #4b146d);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 103, 127, 0.4);
+  box-shadow: 0 4px 12px rgba(138, 43, 226, 0.4);
 }
 
 .explain-btn-enhanced:disabled {
