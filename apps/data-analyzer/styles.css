@@ -272,6 +272,7 @@ main {
   align-items: center;
   justify-content: space-between;
   gap: 2rem;
+  min-height: 3rem;
 }
 
 .header-dataset-title-section {
@@ -292,6 +293,8 @@ main {
   line-height: 1.4;
   display: flex;
   align-items: center;
+  height: 100%;
+  min-height: 3rem;
 }
 
 .header-dataset-icon {
