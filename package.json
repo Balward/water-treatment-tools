@@ -8,14 +8,20 @@
     "dev": "nodemon claude-proxy-server.js"
   },
   "dependencies": {
-    "express": "^4.18.2",
     "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "express": "^4.18.2",
     "node-fetch": "^2.7.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
   },
-  "keywords": ["water-treatment", "claude-api", "proxy", "correlation-analysis"],
+  "keywords": [
+    "water-treatment",
+    "claude-api",
+    "proxy",
+    "correlation-analysis"
+  ],
   "author": "Water Treatment Tools",
   "license": "MIT"
 }

@@ -51,7 +51,8 @@
       "WebSearch",
       "Bash(git rm:*)",
       "WebFetch(domain:uiverse.io)",
-      "Bash(git update-index:*)"
+      "Bash(git update-index:*)",
+      "Bash(taskkill:*)"
     ],
     "deny": [],
     "defaultMode": "acceptEdits"

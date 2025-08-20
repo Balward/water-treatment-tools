@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const fetch = require('node-fetch');
@@ -7,6 +8,9 @@ const PORT = 3001;
 
 // Your Claude API key from environment variable
 const CLAUDE_API_KEY = process.env.CLAUDE_API_KEY || "YOUR_CLAUDE_API_KEY_HERE";
+
+// Debug: Check if API key is loaded (without logging the full key)
+console.log('API Key loaded:', CLAUDE_API_KEY ? `${CLAUDE_API_KEY.substring(0, 15)}...` : 'NOT FOUND');
 
 // Middleware
 app.use(cors());
