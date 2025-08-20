@@ -262,7 +262,7 @@ main {
   border-right: 1px solid rgba(0, 103, 127, 0.2);
   border-bottom: 1px solid rgba(0, 103, 127, 0.2);
   box-shadow: 0 2px 8px rgba(0, 103, 127, 0.15);
-  font-size: 0.9rem;
+  font-size: 1rem;
   width: 100%;
   box-sizing: border-box;
 }
@@ -285,13 +285,18 @@ main {
   font-family: "HelveticaNeue", "SourceSansPro", sans-serif;
   font-weight: 600;
   color: #00677f;
-  font-size: 1rem;
+  font-size: 1.1rem;
   margin: 0;
   white-space: nowrap;
+  line-height: 1.2;
 }
 
 .header-dataset-icon {
-  font-size: 1.1rem;
+  font-size: 1.2rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .header-dataset-stats {
