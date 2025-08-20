@@ -1039,11 +1039,42 @@ main {
   box-shadow: 0 2px 8px rgba(0, 103, 127, 0.1);
 }
 
+.ai-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
 .ai-insights-header h4 {
   color: #00677f;
-  margin: 0 0 0.5rem 0;
+  margin: 0;
   font-size: 1.1rem;
   font-weight: 600;
+}
+
+.ai-provider-selector {
+  display: flex;
+  gap: 1rem;
+}
+
+.provider-option {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #495057;
+}
+
+.provider-option input[type="radio"] {
+  margin: 0;
+  accent-color: #00677f;
+}
+
+.provider-label {
+  font-weight: 500;
+  user-select: none;
 }
 
 .ai-instruction-text {

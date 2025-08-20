@@ -12,7 +12,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/2.0.1/chartjs-plugin-zoom.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <link rel="stylesheet" href="styles.css?v=20250820002">
+    <link rel="stylesheet" href="styles.css?v=20250820003">
 </head>
 <body>
     <header>
@@ -208,7 +208,19 @@
                 <!-- AI Insights Section -->
                 <div class="ai-insights-panel" id="aiInsightsPanel" style="display: none;">
                     <div class="ai-insights-header">
-                        <h4>🤖 AI Correlation Insights</h4>
+                        <div class="ai-header-top">
+                            <h4>🤖 AI Correlation Insights</h4>
+                            <div class="ai-provider-selector">
+                                <label class="provider-option">
+                                    <input type="radio" name="aiProvider" value="claude" checked>
+                                    <span class="provider-label">Claude</span>
+                                </label>
+                                <label class="provider-option">
+                                    <input type="radio" name="aiProvider" value="openai">
+                                    <span class="provider-label">OpenAI</span>
+                                </label>
+                            </div>
+                        </div>
                         <p class="ai-instruction-text">💡 <strong>Get AI explanations:</strong> When viewing a correlation, click "Explain Correlation" to get AI-powered insights about the relationship between variables in your water treatment process.</p>
                     </div>
                     <div class="ai-insights-content">
@@ -287,6 +299,6 @@
         </div>
     </div>
 
-    <script src="script.js?v=20250820002"></script>
+    <script src="script.js?v=20250820003"></script>
 </body>
 </html>

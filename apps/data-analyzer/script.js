@@ -1,6 +1,6 @@
 // Wait for all scripts to load, then register zoom plugin
 document.addEventListener("DOMContentLoaded", function () {
-  console.log("🔄 Data Analyzer Script v20250820002 loaded");
+  console.log("🔄 Data Analyzer Script v20250820003 loaded - with AI provider selection");
   console.log("Chart.js version:", Chart.version);
   console.log(
     "Available on window:",
@@ -1847,9 +1847,12 @@ async function getHardcodedExplanation() {
   const textElement = document.getElementById("explanationText");
 
   if (USE_AI) {
-    // Use Claude AI via proxy server
+    // Get selected AI provider
+    const selectedProvider = document.querySelector('input[name="aiProvider"]:checked')?.value || 'claude';
+    
+    // Use selected AI provider via proxy server
     try {
-      console.log("Making Claude proxy request...");
+      console.log(`Making ${selectedProvider.toUpperCase()} proxy request...`);
 
       const response = await fetch(CLAUDE_PROXY_URL, {
         method: "POST",
@@ -1860,17 +1863,18 @@ async function getHardcodedExplanation() {
           targetVariable: currentTargetVariable,
           predictorVariable: currentPredictorVariable,
           correlationValue: currentCorrelationValue,
+          provider: selectedProvider,
         }),
       });
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        console.error("Claude proxy error:", errorData);
-        throw new Error(`Proxy server error: ${response.status} - ${errorData.error || 'Unknown error'}`);
+        console.error(`${selectedProvider.toUpperCase()} proxy error:`, errorData);
+        throw new Error(`${selectedProvider.toUpperCase()} API error: ${response.status} - ${errorData.error || 'Unknown error'}`);
       }
 
       const data = await response.json();
-      console.log("Claude proxy response:", data);
+      console.log(`${selectedProvider.toUpperCase()} proxy response:`, data);
 
       if (data.success && data.explanation) {
         loadingElement.style.display = "none";
@@ -1878,10 +1882,13 @@ async function getHardcodedExplanation() {
         // Format the explanation text with proper paragraph breaks
         const formattedExplanation = formatAIExplanation(data.explanation);
         
+        const providerName = selectedProvider === 'claude' ? 'Claude AI' : 'OpenAI GPT-4';
+        const providerIcon = selectedProvider === 'claude' ? '🤖' : '🧠';
+        
         textElement.innerHTML = `
           ${formattedExplanation}
           <div style="background: #e8f5e8; border: 1px solid #4caf50; border-radius: 4px; padding: 0.75rem; margin-top: 1rem; font-size: 0.9rem;">
-            <strong>🤖 AI-Generated:</strong> Explanation provided by Claude AI via proxy server
+            <strong>${providerIcon} AI-Generated:</strong> Explanation provided by ${providerName}
           </div>
         `;
         return;

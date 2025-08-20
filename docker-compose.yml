@@ -12,6 +12,7 @@ services:
       - TZ=America/New_York  # Adjust to your timezone
       - NODE_ENV=production
       - CLAUDE_API_KEY=${CLAUDE_API_KEY}  # Set this in .env file
+      - OPENAI_API_KEY=${OPENAI_API_KEY}  # Set this in .env file
     labels:
       - "traefik.enable=true"
       # Main web interface
@@ -68,6 +69,7 @@ services:
     environment:
       - TZ=America/New_York
       - CLAUDE_API_KEY=${CLAUDE_API_KEY}  # Set this in .env file
+      - OPENAI_API_KEY=${OPENAI_API_KEY}  # Set this in .env file
     volumes:
       - ./sample-data:/usr/share/nginx/html/sample-data:ro
       # Mount .env file if it exists (optional - environment variables take precedence)
