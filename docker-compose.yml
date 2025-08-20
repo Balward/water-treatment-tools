@@ -21,6 +21,8 @@ services:
     volumes:
       # Mount sample data for the apps
       - ./sample-data:/usr/share/nginx/html/sample-data:ro
+      # Mount .env file if it exists (optional - environment variables take precedence)
+      - ./.env:/app/.env:ro
     networks:
       - cerberusnet
 
@@ -62,6 +64,8 @@ services:
       - CLAUDE_API_KEY=${CLAUDE_API_KEY}  # Set this in .env file
     volumes:
       - ./sample-data:/usr/share/nginx/html/sample-data:ro
+      # Mount .env file if it exists (optional - environment variables take precedence)
+      - ./.env:/app/.env:ro
     networks:
       - cerberusnet
 

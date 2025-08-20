@@ -8,6 +8,9 @@ WORKDIR /app
 COPY package.json ./
 RUN npm install --production
 
+# Copy .env template (actual .env will be mounted or passed via environment)
+COPY .env.template ./.env.template
+
 # Copy the proxy server
 COPY claude-proxy-server.js ./
 
