@@ -24,6 +24,8 @@
                 <h1>Streaming Current Data Analyzer</h1>
                 <p>Interactive analysis of streaming current and water treatment parameters</p>
                 <div class="dev-banner">⚠️ Still under development - some features may behave unexpectedly ⚠️</div>
+                <!-- Inline Dataset Information -->
+                <div id="headerDataInfo" class="header-dataset-info hidden"></div>
             </div>
         </div>
     </header>
@@ -47,14 +49,6 @@
     </div>
 
     <main id="mainContent" class="hidden">
-        <!-- Data Info Panel -->
-        <section class="info-panel">
-            <h3>📊 Dataset Information</h3>
-            <div id="dataInfo"></div>
-            <div class="general-help">
-                <p class="help-text"><strong>ℹ️ Quick Tips:</strong> Navigate between analysis types using the tabs above. Each chart supports different interactions - look for hints below charts. Data is automatically filtered to remove invalid values.</p>
-            </div>
-        </section>
 
         <!-- Navigation Tabs -->
         <nav class="tab-navigation">

@@ -293,7 +293,7 @@ function populateSelectors() {
 
 // Display dataset information
 function displayDataInfo() {
-  const dataInfo = document.getElementById("dataInfo");
+  const headerDataInfo = document.getElementById("headerDataInfo");
   const totalRows = data.length;
   const totalVariables = variables.length;
   const dateRange = getDateRange();
@@ -312,28 +312,29 @@ function displayDataInfo() {
     });
   });
 
-  dataInfo.innerHTML = `
-        <div class="dataset-summary">
-            <div class="stat-item date-range-full-width">
-                <div class="stat-number date-range-dates">${dateRange}</div>
-                <div class="stat-label">Collection Period</div>
-            </div>
-            <div class="stats-grid stats-grid-three">
-                <div class="stat-item">
-                    <div class="stat-number">${totalRows.toLocaleString()}</div>
-                    <div class="stat-label">Total Records</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number">${totalDatapoints.toLocaleString()}</div>
-                    <div class="stat-label">Data Points</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number">${totalVariables}</div>
-                    <div class="stat-label">Variables</div>
-                </div>
-            </div>
-        </div>
-    `;
+  headerDataInfo.innerHTML = `
+    <div class="header-dataset-summary">
+      <div class="header-stat-item">
+        <span class="header-stat-number">${dateRange}</span>
+        <span class="header-stat-label">Data Period</span>
+      </div>
+      <div class="header-stat-item">
+        <span class="header-stat-number">${totalRows.toLocaleString()}</span>
+        <span class="header-stat-label">Records</span>
+      </div>
+      <div class="header-stat-item">
+        <span class="header-stat-number">${totalDatapoints.toLocaleString()}</span>
+        <span class="header-stat-label">Data Points</span>
+      </div>
+      <div class="header-stat-item">
+        <span class="header-stat-number">${totalVariables}</span>
+        <span class="header-stat-label">Variables</span>
+      </div>
+    </div>
+  `;
+  
+  // Show the header dataset info
+  headerDataInfo.classList.remove("hidden");
 }
 
 // Get date range from data

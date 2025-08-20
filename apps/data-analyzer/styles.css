@@ -250,22 +250,47 @@ main {
   display: none !important;
 }
 
-/* Info Panel - Compact Version */
-.info-panel {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border-radius: 8px;
-  padding: 1rem;
-  margin-bottom: 1.5rem;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+/* Header Dataset Info - Inline Compact Version */
+.header-dataset-info {
+  margin-top: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(8px);
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.95);
 }
 
-.info-panel h3 {
-  font-family: "HelveticaNeue", "SourceSansPro", sans-serif;
-  font-weight: 500;
-  margin-bottom: 0.75rem;
-  color: #333;
-  font-size: 1.1rem;
+.header-dataset-summary {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.header-stat-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  white-space: nowrap;
+}
+
+.header-stat-number {
+  font-weight: 700;
+  color: #f2a900;
+}
+
+.header-stat-label {
+  font-weight: 400;
+  opacity: 0.9;
+}
+
+@media (max-width: 768px) {
+  .header-dataset-summary {
+    gap: 1rem;
+    font-size: 0.8rem;
+  }
 }
 
 /* Instruction and Help Text */
