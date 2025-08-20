@@ -1021,6 +1021,12 @@ main {
   flex: 1;
 }
 
+.chart-footer {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
 .explain-btn {
   background: linear-gradient(135deg, #00677f, #004d5c);
   color: white;
@@ -1032,7 +1038,6 @@ main {
   font-weight: 500;
   transition: all 0.3s ease;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin-left: 1rem;
 }
 
 .explain-btn:hover {
