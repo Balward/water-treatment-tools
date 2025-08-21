@@ -65,7 +65,7 @@ body {
   font-family: "SourceSansPro", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   background: linear-gradient(135deg, #00677f 0%, #004d5c 100%);
   min-height: 100vh;
-  color: #333;
+  color: #555;
 }
 
 /* Loading Screen */
@@ -144,7 +144,7 @@ body {
 
 .loading-message {
   font-size: 1.1rem;
-  color: #666;
+  color: #555;
   margin-bottom: 1.5rem;
   animation: fadeInOut 1.5s ease-in-out infinite;
   height: 1.5rem;
@@ -222,8 +222,8 @@ header h1 {
 }
 
 header p {
-  font-size: 1.1rem;
-  color: #666;
+  font-size: 1rem;
+  color: #555;
 }
 
 .dev-banner {
@@ -323,7 +323,7 @@ main {
 
 .header-stat-label {
   font-size: 1.2rem;
-  font-weight: 700;
+  font-weight: 600;
   color: #333;
   opacity: 0.8;
 }
@@ -371,7 +371,7 @@ main {
   font-size: 1rem;
   width: 100%;
   box-sizing: border-box;
-  color: #666;
+  color: #555;
   line-height: 1.5;
   display: none;
   transition: all 0.3s ease;
@@ -414,7 +414,7 @@ main {
 .empty-state {
   text-align: center;
   padding: 3rem 2rem;
-  color: #666;
+  color: #555;
   font-style: italic;
   background: rgba(0, 103, 127, 0.05);
   border-radius: 8px;
@@ -438,6 +438,29 @@ main {
   gap: 2px;
 }
 
+/* Tab Icons */
+.tab-icon {
+  width: 24px;
+  height: 24px;
+  margin-right: 0.5rem;
+  vertical-align: middle;
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
+}
+
+.tab:hover .tab-icon,
+.tab.active .tab-icon {
+  opacity: 1;
+}
+
+/* Card Header Icons */
+.card-header-icon {
+  width: 28px;
+  height: 28px;
+  margin-right: 0.75rem;
+  vertical-align: middle;
+}
+
 .tab {
   flex: 1;
   padding: .75rem .5rem .75rem .5rem;
@@ -447,7 +470,7 @@ main {
   cursor: pointer;
   font-size: 1rem;
   font-weight: 500;
-  color: #666;
+  color: #555;
   border-radius: 12px 12px 0 0;
   transition: all 0.3s ease;
   white-space: nowrap;
@@ -516,30 +539,32 @@ main {
   position: absolute;
   top: 0;
   right: 0;
-  background: rgba(0, 103, 127, 0.1);
-  border: 1px solid rgba(0, 103, 127, 0.2);
-  border-radius: 50%;
-  width: 2.5rem;
-  height: 2.5rem;
+  background: linear-gradient(135deg, #2b67a6, #1e4d7a);
+  border: none;
+  border-radius: 6px;
+  padding: 0.75rem 1.2rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.2rem;
-  color: #00677f;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: white;
   transition: all 0.3s ease;
-  backdrop-filter: blur(5px);
+  box-shadow: 0 3px 8px rgba(43, 103, 166, 0.3);
+  white-space: nowrap;
 }
 
 .help-toggle-btn:hover {
-  background: rgba(0, 103, 127, 0.2);
-  border-color: rgba(0, 103, 127, 0.4);
-  transform: scale(1.05);
+  background: linear-gradient(135deg, #1e4d7a, #14375a);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(43, 103, 166, 0.4);
 }
 
 .help-toggle-btn.active {
-  background: rgba(0, 103, 127, 0.15);
-  border-color: rgba(0, 103, 127, 0.3);
+  background: linear-gradient(135deg, #3a7bc8, #2b67a6);
+  box-shadow: 0 2px 8px rgba(43, 103, 166, 0.3);
 }
 
 /* Controls Panel (for other tabs that still use separate cards) */
@@ -614,7 +639,7 @@ main {
   align-items: center;
   gap: 0.5rem;
   font-size: 0.9rem;
-  color: #666;
+  color: #555;
   cursor: pointer;
   font-weight: 400;
 }
@@ -672,14 +697,14 @@ main {
   font-family: "HelveticaNeue", "SourceSansPro", sans-serif;
   font-weight: 500;
   margin-bottom: 0.5rem;
-  color: #333;
+  color: #555;
   font-size: 1.2rem;
   text-align: center;
 }
 
 .chart-subtitle {
   margin: 0 0 1rem 0;
-  color: #666;
+  color: #555;
   font-size: 0.95rem;
   text-align: center;
   font-style: italic;
@@ -703,7 +728,7 @@ main {
 
 .chart-zoom-hint {
   font-size: 0.8rem;
-  color: #666;
+  color: #555;
   text-align: center;
   margin-top: 0.5rem;
   font-style: italic;
@@ -1027,7 +1052,7 @@ main {
 .stat-label {
   font-size: 0.8rem;
   font-weight: 500;
-  color: #666;
+  color: #555;
   text-transform: uppercase;
   letter-spacing: 0.4px;
 }
@@ -1205,7 +1230,7 @@ main {
 
 .correlation-details {
   margin: 0;
-  color: #666;
+  color: #555;
   font-size: 0.95rem;
 }
 
@@ -1218,7 +1243,7 @@ main {
   flex-direction: column;
   align-items: center;
   padding: 2rem;
-  color: #666;
+  color: #555;
 }
 
 .loading-spinner {
@@ -1259,7 +1284,7 @@ main {
 .disclaimer {
   margin: 0 0 1rem 0;
   font-size: 0.9rem;
-  color: #666;
+  color: #555;
   font-style: italic;
 }
 
@@ -1322,33 +1347,57 @@ main {
 
 .ai-provider-selector {
   display: flex;
-  gap: 1rem;
+  gap: 1.5rem;
 }
 
 .provider-option {
   display: flex;
   align-items: center;
-  gap: 0.3rem;
+  gap: 0.5rem;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 1rem;
   color: #495057;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(138, 43, 226, 0.1);
+}
+
+.provider-option:hover {
+  background: rgba(138, 43, 226, 0.1);
+  border-color: rgba(138, 43, 226, 0.2);
+  color: #8a2be2;
+}
+
+.provider-option input[type="radio"]:checked + .provider-label {
+  color: #8a2be2;
+}
+
+.provider-option:has(input[type="radio"]:checked) {
+  background: rgba(138, 43, 226, 0.15);
+  border-color: rgba(138, 43, 226, 0.3);
+  color: #8a2be2;
 }
 
 .provider-option input[type="radio"] {
   margin: 0;
   accent-color: #8a2be2;
+  transform: scale(1.2);
 }
 
 .provider-label {
-  font-weight: 500;
+  font-size: 1rem;
+  font-weight: 600;
   user-select: none;
 }
 
 .ai-instruction-text {
-  color: #666;
-  margin: 0 0 1rem 0;
+  color: #555;
+  margin: 0 0 1.2rem 0;
   font-size: 1rem;
   line-height: 1.5;
+  font-weight: 500;
 }
 
 .ai-insights-content {
@@ -1368,11 +1417,13 @@ main {
 }
 
 .correlation-label {
-  font-weight: 500;
-  color: #6c757d;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #555;
 }
 
 .correlation-display {
+  font-size: 1rem;
   font-weight: 600;
   color: #00677f;
 }
