@@ -478,7 +478,53 @@ function formatValue(value, variable) {
     .filter((v) => typeof v === "number");
   const decimals = getDecimalPlaces(sampleValues);
 
-  return value.toFixed(decimals);
+  // Format the number with appropriate decimal places
+  let formatted = value.toFixed(decimals);
+  
+  // Clean up formatting for better readability
+  // Remove unnecessary trailing zeros after decimal point
+  if (formatted.includes('.')) {
+    formatted = formatted.replace(/\.?0+$/, '');
+  }
+  
+  // Use proper minus sign for negative numbers (better typography)
+  if (formatted.startsWith('-')) {
+    formatted = formatted.replace('-', '−');
+  }
+  
+  return formatted;
+}
+
+// Format axis labels for better readability, especially with negative numbers
+function formatAxisLabel(label) {
+  if (typeof label === 'string') {
+    // Handle range labels like "-39 ~ -35"
+    if (label.includes('~')) {
+      const parts = label.split('~').map(part => part.trim());
+      return parts.map(part => {
+        const num = parseFloat(part);
+        if (!isNaN(num)) {
+          // Format negative numbers cleanly
+          if (num < 0) {
+            return `−${Math.abs(num)}`; // Use minus sign instead of hyphen
+          }
+          return num.toString();
+        }
+        return part;
+      }).join(' ~ ');
+    }
+    
+    // Handle single numeric values
+    const num = parseFloat(label);
+    if (!isNaN(num)) {
+      if (num < 0) {
+        return `−${Math.abs(num)}`; // Use minus sign instead of hyphen
+      }
+      return num.toString();
+    }
+  }
+  
+  return label;
 }
 
 // Update correlation chart
@@ -615,6 +661,7 @@ function updateCorrelationChart() {
           min: xRange.min,
           max: xRange.max,
           ticks: {
+            maxTicksLimit: 8, // Limit x-axis labels to prevent overcrowding
             callback: function (value) {
               return formatValue(value, xVar);
             },
@@ -629,6 +676,7 @@ function updateCorrelationChart() {
           min: yRange.min,
           max: yRange.max,
           ticks: {
+            maxTicksLimit: 8, // Limit y-axis labels to prevent overcrowding
             callback: function (value) {
               return formatValue(value, yVar);
             },
@@ -1062,11 +1110,22 @@ function updateDistributionChart() {
               units[variable] ? ` (${units[variable]})` : ""
             } Range`,
           },
+          ticks: {
+            maxTicksLimit: 10, // Limit number of x-axis labels to prevent overcrowding
+            callback: function (value, index) {
+              // Format the label value and only show every nth label for better spacing
+              const label = this.getLabelForValue(value);
+              return formatAxisLabel(label);
+            },
+          },
         },
         y: {
           display: true,
           title: { display: true, text: "Frequency" },
           beginAtZero: true,
+          ticks: {
+            precision: 0, // Ensure frequency values are integers
+          },
         },
       },
     },
@@ -1366,6 +1425,7 @@ function createOptimizationScatter(targetVar, strongestVar) {
           min: xRange.min,
           max: xRange.max,
           ticks: {
+            maxTicksLimit: 8, // Limit x-axis labels to prevent overcrowding
             callback: function (value) {
               return formatValue(value, strongestVar);
             },
@@ -1382,6 +1442,7 @@ function createOptimizationScatter(targetVar, strongestVar) {
           min: yRange.min,
           max: yRange.max,
           ticks: {
+            maxTicksLimit: 8, // Limit y-axis labels to prevent overcrowding
             callback: function (value) {
               return formatValue(value, targetVar);
             },
