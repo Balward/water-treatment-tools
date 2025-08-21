@@ -833,7 +833,7 @@ main {
   font-family: "HelveticaNeue", "SourceSansPro", sans-serif;
   font-weight: 500;
   margin-bottom: 1rem;
-  color: #333;
+  color: #555;
   font-size: 1.2rem;
 }
 
@@ -861,15 +861,16 @@ main {
 }
 
 .correlation-button.active {
-  background: linear-gradient(135deg, #00677f, #004d5c);
-  color: white;
+  background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+  color: #334155;
   border-color: #00677f;
   box-shadow: 0 2px 8px rgba(0, 103, 127, 0.3);
+  border-width: 2px;
 }
 
 .correlation-button.active .correlation-value {
-  color: white;
-  background: rgba(255, 255, 255, 0.2);
+  color: #00677f;
+  background: rgba(0, 103, 127, 0.1);
   padding: 0.25rem 0.5rem;
   border-radius: 4px;
   font-weight: bold;
@@ -897,7 +898,8 @@ main {
   height: 16px !important;
   max-width: 16px !important;
   max-height: 16px !important;
-  margin-left: 0.5rem;
+  margin-left: 0.25rem;
+  margin-right: 0.25rem;
   vertical-align: middle;
   object-fit: contain;
 }
