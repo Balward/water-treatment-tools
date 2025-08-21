@@ -725,28 +725,49 @@ function updateCorrelationChart() {
   ).textContent = `R = ${correlationText}${colorText}`;
 }
 
-// Create color ranges (maximum 5)
+// Create color ranges using percentiles to handle outliers (maximum 5)
 function createColorRanges(values, variable) {
-  const min = Math.min(...values);
-  const max = Math.max(...values);
-  const range = max - min;
+  const sortedValues = [...values].sort((a, b) => a - b);
+  const n = sortedValues.length;
 
-  if (range === 0) {
-    return [{ min: min, max: max, label: formatValue(min, variable) }];
+  if (n === 0) return [];
+  
+  // If all values are the same
+  if (sortedValues[0] === sortedValues[n - 1]) {
+    const value = sortedValues[0];
+    return [{ min: value, max: value, label: formatValue(value, variable) }];
   }
 
-  const numRanges = Math.min(
-    5,
-    Math.max(2, Math.ceil(Math.sqrt(values.length / 10)))
-  );
-  const rangeSize = range / numRanges;
+  // Use percentile-based ranges to handle outliers better
+  // This ensures more even distribution of data across color ranges
+  const percentiles = [0, 0.25, 0.5, 0.75, 0.95, 1.0]; // 5th, 25th, 50th, 75th, 95th, 100th percentiles
+  const numRanges = Math.min(5, Math.max(2, Math.ceil(Math.sqrt(n / 10))));
+  
+  // Create evenly spaced percentiles based on number of ranges
+  const rangePercentiles = [];
+  for (let i = 0; i <= numRanges; i++) {
+    rangePercentiles.push(i / numRanges);
+  }
+  
+  // Calculate percentile values
+  const getPercentileValue = (p) => {
+    if (p === 0) return sortedValues[0];
+    if (p === 1) return sortedValues[n - 1];
+    const index = p * (n - 1);
+    const lower = Math.floor(index);
+    const upper = Math.ceil(index);
+    if (lower === upper) return sortedValues[lower];
+    const weight = index - lower;
+    return sortedValues[lower] * (1 - weight) + sortedValues[upper] * weight;
+  };
+
   const ranges = [];
+  const unit = units[variable] ? ` ${units[variable]}` : "";
 
   for (let i = 0; i < numRanges; i++) {
-    const rangeMin = min + i * rangeSize;
-    const rangeMax = i === numRanges - 1 ? max : min + (i + 1) * rangeSize;
-    const unit = units[variable] ? ` ${units[variable]}` : "";
-
+    const rangeMin = getPercentileValue(rangePercentiles[i]);
+    const rangeMax = getPercentileValue(rangePercentiles[i + 1]);
+    
     ranges.push({
       min: rangeMin,
       max: rangeMax,
