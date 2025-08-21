@@ -495,35 +495,36 @@ function formatValue(value, variable) {
   return formatted;
 }
 
+// Format individual numbers in ranges with parentheses for negatives
+function formatRangeNumber(value, decimals = 2) {
+  if (typeof value !== "number" || isNaN(value)) return value;
+  
+  // Clean up decimal formatting
+  let formatted = parseFloat(value.toFixed(decimals)).toString();
+  
+  // Use parentheses around negative numbers in ranges for clarity
+  if (value < 0) {
+    return `(−${Math.abs(parseFloat(formatted))})`;
+  }
+  
+  return formatted;
+}
+
 // Format axis labels for better readability, especially with negative numbers
 function formatAxisLabel(label) {
   if (typeof label === 'string') {
-    // Handle range labels like "-39 ~ -35"
-    if (label.includes('~')) {
-      const parts = label.split('~').map(part => part.trim());
-      return parts.map(part => {
-        const num = parseFloat(part);
-        if (!isNaN(num)) {
-          // Format negative numbers cleanly
-          if (num < 0) {
-            return `−${Math.abs(num)}`; // Use minus sign instead of hyphen
-          }
-          return num.toString();
-        }
-        return part;
-      }).join(' ~ ');
-    }
-    
-    // Handle single numeric values
+    // Handle single numeric values (not ranges)
     const num = parseFloat(label);
     if (!isNaN(num)) {
+      let cleanNum = parseFloat(num.toFixed(4)).toString();
       if (num < 0) {
-        return `−${Math.abs(num)}`; // Use minus sign instead of hyphen
+        return `−${Math.abs(num)}`; // Use minus sign for single values
       }
-      return num.toString();
+      return cleanNum;
     }
   }
   
+  // Return as-is for range labels (already properly formatted) and other strings
   return label;
 }
 
@@ -1064,9 +1065,12 @@ function updateDistributionChart() {
   for (let i = 0; i < bins; i++) {
     const binStart = min + i * binWidth;
     const binEnd = min + (i + 1) * binWidth;
-    binLabels.push(
-      `${binStart.toFixed(decimals)} - ${binEnd.toFixed(decimals)}`
-    );
+    
+    // Format the range label with proper handling of negative numbers
+    const startFormatted = formatRangeNumber(binStart, decimals);
+    const endFormatted = formatRangeNumber(binEnd, decimals);
+    
+    binLabels.push(`${startFormatted} to ${endFormatted}`);
   }
 
   values.forEach((value) => {
