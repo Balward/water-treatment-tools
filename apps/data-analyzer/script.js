@@ -1070,7 +1070,7 @@ function updateDistributionChart() {
     const startFormatted = formatRangeNumber(binStart, decimals);
     const endFormatted = formatRangeNumber(binEnd, decimals);
     
-    binLabels.push(`${startFormatted} to ${endFormatted}`);
+    binLabels.push(`${startFormatted} - ${endFormatted}`);
   }
 
   values.forEach((value) => {
