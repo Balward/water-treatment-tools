@@ -1115,11 +1115,12 @@ function updateDistributionChart() {
             } Range`,
           },
           ticks: {
-            maxTicksLimit: 10, // Limit number of x-axis labels to prevent overcrowding
+            maxRotation: 45, // Angle labels for better fit
+            minRotation: 45, // Force consistent angle
             callback: function (value, index) {
-              // Format the label value and only show every nth label for better spacing
+              // Get the original label (which is our properly formatted range)
               const label = this.getLabelForValue(value);
-              return formatAxisLabel(label);
+              return label; // Return the range label as-is (already properly formatted)
             },
           },
         },
