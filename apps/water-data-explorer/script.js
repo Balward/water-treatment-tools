@@ -1,3 +1,17 @@
+// Help toggle function
+function toggleHelp(helpId) {
+  const helpElement = document.getElementById(helpId);
+  const button = event.target;
+  
+  if (helpElement.classList.contains('visible')) {
+    helpElement.classList.remove('visible');
+    button.classList.remove('active');
+  } else {
+    helpElement.classList.add('visible');
+    button.classList.add('active');
+  }
+}
+
 // Wait for all scripts to load, then register zoom plugin
 document.addEventListener("DOMContentLoaded", function () {
   console.log("🔄 Water Data Explorer Script v20250820006 loaded - all tabs unified card layout");
