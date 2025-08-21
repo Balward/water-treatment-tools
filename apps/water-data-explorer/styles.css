@@ -898,10 +898,11 @@ main {
   height: 16px !important;
   max-width: 16px !important;
   max-height: 16px !important;
-  margin-left: 0.25rem;
+  margin-left: -0.25rem;
   margin-right: 0.25rem;
   vertical-align: middle;
   object-fit: contain;
+  display: inline-block;
 }
 
 /* Notifications */
