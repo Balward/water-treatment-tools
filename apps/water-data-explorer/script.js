@@ -1180,7 +1180,7 @@ function updateDistributionChart() {
   ).textContent = `Distribution of ${variable}${unit}`;
 }
 
-// Display statistics
+// Display statistics with enhanced styling
 function displayStats(values, variable) {
   const n = values.length;
   const sorted = [...values].sort((a, b) => a - b);
@@ -1203,38 +1203,48 @@ function displayStats(values, variable) {
   const unit = units[variable] ? ` ${units[variable]}` : "";
 
   document.getElementById("distributionStats").innerHTML = `
-        <div style="font-size: 0.9rem; line-height: 1.6;">
-            <div><strong>Count:</strong> ${stats.count.toLocaleString()}</div>
-            <div><strong>Mean:</strong> ${formatValue(
-              stats.mean,
-              variable
-            )}${unit}</div>
-            <div><strong>Median:</strong> ${formatValue(
-              stats.median,
-              variable
-            )}${unit}</div>
-            <div><strong>Std Dev:</strong> ${formatValue(
-              stats.stdDev,
-              variable
-            )}${unit}</div>
-            <div><strong>Min:</strong> ${formatValue(
-              stats.min,
-              variable
-            )}${unit}</div>
-            <div><strong>Max:</strong> ${formatValue(
-              stats.max,
-              variable
-            )}${unit}</div>
-            <div><strong>Q1:</strong> ${formatValue(
-              stats.q1,
-              variable
-            )}${unit}</div>
-            <div><strong>Q3:</strong> ${formatValue(
-              stats.q3,
-              variable
-            )}${unit}</div>
-        </div>
-    `;
+    <div class="stats-grid">
+      <div class="stat-item-enhanced count">
+        <span class="stat-label-enhanced">📊 Count</span>
+        <span class="stat-value-enhanced">${stats.count.toLocaleString()}</span>
+      </div>
+      
+      <div class="stat-item-enhanced">
+        <span class="stat-label-enhanced">📈 Mean</span>
+        <span class="stat-value-enhanced">${formatValue(stats.mean, variable)}${unit}</span>
+      </div>
+      
+      <div class="stat-item-enhanced">
+        <span class="stat-label-enhanced">📍 Median</span>
+        <span class="stat-value-enhanced">${formatValue(stats.median, variable)}${unit}</span>
+      </div>
+      
+      <div class="stat-item-enhanced">
+        <span class="stat-label-enhanced">📏 Std Dev</span>
+        <span class="stat-value-enhanced">${formatValue(stats.stdDev, variable)}${unit}</span>
+      </div>
+      
+      <div class="stat-item-enhanced range">
+        <span class="stat-label-enhanced">🔻 Min</span>
+        <span class="stat-value-enhanced">${formatValue(stats.min, variable)}${unit}</span>
+      </div>
+      
+      <div class="stat-item-enhanced range">
+        <span class="stat-label-enhanced">🔺 Max</span>
+        <span class="stat-value-enhanced">${formatValue(stats.max, variable)}${unit}</span>
+      </div>
+      
+      <div class="stat-item-enhanced quartile">
+        <span class="stat-label-enhanced">📋 Q1</span>
+        <span class="stat-value-enhanced">${formatValue(stats.q1, variable)}${unit}</span>
+      </div>
+      
+      <div class="stat-item-enhanced quartile">
+        <span class="stat-label-enhanced">📋 Q3</span>
+        <span class="stat-value-enhanced">${formatValue(stats.q3, variable)}${unit}</span>
+      </div>
+    </div>
+  `;
 }
 
 // Update optimization chart

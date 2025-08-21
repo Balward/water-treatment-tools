@@ -772,21 +772,113 @@ main {
   border-top-right-radius: 0;
   padding: 1.5rem;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  height: fit-content;
-  max-height: 565px; /* Match chart container height (500px + padding + title) */
+  height: 565px; /* Fixed height to match chart container height (500px + padding + title) */
   overflow-y: auto;
   border: 1px solid rgba(0, 103, 127, 0.3);
   border-top: none;
   position: relative;
   z-index: 5;
+  display: flex;
+  flex-direction: column;
 }
 
 .stats-panel h4 {
   font-family: "HelveticaNeue", "SourceSansPro", sans-serif;
   font-weight: 500;
-  margin-bottom: 1rem;
-  color: #333;
+  margin-bottom: 1.5rem;
+  color: #555;
   font-size: 1.2rem;
+  text-align: center;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid rgba(0, 103, 127, 0.1);
+}
+
+/* Enhanced Statistics Grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  flex: 1;
+}
+
+.stat-item-enhanced {
+  background: linear-gradient(135deg, rgba(0, 103, 127, 0.05), rgba(0, 103, 127, 0.02));
+  border: 1px solid rgba(0, 103, 127, 0.1);
+  border-radius: 8px;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-item-enhanced::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(135deg, #00677f, #004d5c);
+  opacity: 0.7;
+}
+
+.stat-item-enhanced:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 103, 127, 0.15);
+  border-color: rgba(0, 103, 127, 0.2);
+}
+
+.stat-item-enhanced:hover::before {
+  opacity: 1;
+}
+
+.stat-label-enhanced {
+  font-weight: 600;
+  color: #555;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.stat-value-enhanced {
+  font-family: "HelveticaNeue", "SourceSansPro", sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #00677f;
+  background: rgba(0, 103, 127, 0.1);
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  min-width: 60px;
+  text-align: center;
+}
+
+/* Special styling for different stat types */
+.stat-item-enhanced.count .stat-value-enhanced {
+  background: linear-gradient(135deg, rgba(46, 204, 113, 0.1), rgba(39, 174, 96, 0.1));
+  color: #27ae60;
+}
+
+.stat-item-enhanced.range .stat-value-enhanced {
+  background: linear-gradient(135deg, rgba(231, 76, 60, 0.1), rgba(192, 57, 43, 0.1));
+  color: #e74c3c;
+}
+
+.stat-item-enhanced.quartile .stat-value-enhanced {
+  background: linear-gradient(135deg, rgba(155, 89, 182, 0.1), rgba(142, 68, 173, 0.1));
+  color: #9b59b6;
+}
+
+/* Icon styling for stat items */
+.stat-icon {
+  width: 16px;
+  height: 16px;
+  opacity: 0.7;
 }
 
 /* Correlation Matrix (default for all tabs) */
