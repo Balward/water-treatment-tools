@@ -440,12 +440,15 @@ main {
 
 /* Tab Icons */
 .tab-icon {
-  width: 24px;
-  height: 24px;
+  width: 24px !important;
+  height: 24px !important;
+  max-width: 24px !important;
+  max-height: 24px !important;
   margin-right: 0.5rem;
   vertical-align: middle;
   opacity: 0.8;
   transition: opacity 0.3s ease;
+  object-fit: contain;
 }
 
 .tab:hover .tab-icon,
@@ -455,10 +458,13 @@ main {
 
 /* Card Header Icons */
 .card-header-icon {
-  width: 28px;
-  height: 28px;
+  width: 28px !important;
+  height: 28px !important;
+  max-width: 28px !important;
+  max-height: 28px !important;
   margin-right: 0.75rem;
   vertical-align: middle;
+  object-fit: contain;
 }
 
 .tab {
