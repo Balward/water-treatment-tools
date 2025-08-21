@@ -1,6 +1,6 @@
 // Wait for all scripts to load, then register zoom plugin
 document.addEventListener("DOMContentLoaded", function () {
-  console.log("🔄 Data Analyzer Script v20250820006 loaded - all tabs unified card layout");
+  console.log("🔄 Water Data Explorer Script v20250820006 loaded - all tabs unified card layout");
   console.log("Chart.js version:", Chart.version);
   console.log(
     "Available on window:",
@@ -72,7 +72,7 @@ window.addEventListener("load", function () {
 async function loadData() {
   try {
     // Enhanced loading sequence with realistic timing
-    await updateLoadingProgress(5, "Initializing data analyzer...");
+    await updateLoadingProgress(5, "Initializing Water Data Explorer...");
     await new Promise((resolve) => setTimeout(resolve, 300));
 
     await updateLoadingProgress(15, "Connecting to data source...");

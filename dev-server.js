@@ -49,7 +49,7 @@ const ROUTES = {
     '/regulation-100-study/': '/apps/regulation-100-study/index.html',
     '/water-treatment-flashcards/': '/apps/water-treatment-flashcards/index.html',
     '/sodium-hypochlorite-calculator/': '/apps/sodium-hypochlorite-calculator/index.html',
-    '/data-analyzer/': '/apps/data-analyzer/index.html',
+    '/water-data-explorer/': '/apps/water-data-explorer/index.html',
     '/video-tutorials/': '/apps/video-tutorials/index.html',
 };
 

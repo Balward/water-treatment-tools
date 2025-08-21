@@ -323,14 +323,14 @@ main {
 }
 
 .header-stat-label {
-  font-weight: 500;
+  font-weight: 700;
   color: #333;
   opacity: 0.8;
 }
 
 .header-stat-number {
   font-weight: 700;
-  color: #f2a900;
+  color: #00677f;
   font-size: 0.95em;
 }
 
@@ -339,18 +339,18 @@ main {
     padding: 0.875rem 1rem;
     margin: 0.75rem 0 0 0;
   }
-  
+
   .header-dataset-single-line {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.75rem;
   }
-  
+
   .header-dataset-stats {
     gap: 1.2rem;
     font-size: 0.85rem;
   }
-  
+
   .header-dataset-title {
     font-size: 0.9rem;
   }
@@ -1136,8 +1136,12 @@ main {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .explanation-text {

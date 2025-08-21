@@ -49,7 +49,7 @@ A comprehensive collection of data analysis and visualization tools for water tr
 6. **Export Results**: Save individual PNG charts or generate comprehensive PDF reports
 
 **Recent Updates:**
-- ✅ Added "Load Streaming Current Demo Data" button for specialized datasets
+- ✅ Added "Load Water Quality Demo Data" button for specialized datasets
 - ✅ Paddle RPM enabled by default for comprehensive analysis
 - ✅ Removed dashboard button for cleaner interface
 - ✅ Redesigned UI with tabbed interface for better workflow
@@ -121,11 +121,11 @@ A comprehensive collection of data analysis and visualization tools for water tr
 - Historical performance tracking
 - Operational efficiency analysis
 
-### 📈 Water Treatment Data Analyzer (`packages/data-analyzer/`)
-**Interactive analysis of streaming current and water treatment parameters with correlation, time series, distribution, and optimization charts**
+### 📈 Water Data Explorer (`apps/water-data-explorer/`)
+**Interactive analysis of water quality and treatment parameters with correlation, time series, distribution, and optimization charts**
 
 **Features:**
-- Streaming current data analysis
+- Water quality parameter analysis
 - Water treatment parameter correlation
 - Time series analysis and trending
 - Distribution analysis and statistics
@@ -145,7 +145,7 @@ water-treatment-tools/
 │   ├── water-treatment-flashcards/    # Interactive flashcards
 │   ├── sodium-hypochlorite-calculator/# Chemical dosing calculator
 │   ├── fan-press-tracker/            # Fan press operational data tracker
-│   └── data-analyzer/                # Water treatment data analysis
+│   └── water-data-explorer/          # Water quality data analysis
 ├── data/                              # Sample data files and templates
 ├── docs/                              # Documentation and guides
 ├── city-logos/                        # Branding and visual assets
@@ -164,7 +164,7 @@ water-treatment-tools/
 - **Quality Control**: Statistical analysis with outlier detection and trending
 - **Operations Management**: Track fan press performance and water treatment parameters
 - **Chemical Calculations**: Precise dosing calculations for various treatment chemicals
-- **Process Monitoring**: Real-time analysis of streaming current and treatment data
+- **Process Monitoring**: Real-time analysis of water quality and treatment data
 
 ## 🔧 Technical Details
 
@@ -177,7 +177,7 @@ water-treatment-tools/
 
 ## 📊 Supported File Formats
 
-- **Excel Files**: `.xls`, `.xlsx` (RoboJar reports, streaming current data, operational data)
+- **Excel Files**: `.xls`, `.xlsx` (RoboJar reports, water quality data, operational data)
 - **CSV Files**: Comma-separated values for various data types
 - **Export Formats**: PNG images, PDF reports, data exports
 - **Demo Data**: Built-in test files for immediate functionality testing
