@@ -906,8 +906,10 @@ main {
   border-radius: 8px;
   padding: 1.5rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  min-height: 500px; /* Match chart canvas height */
-  height: 100%; /* Fill available space */
+  height: 565px; /* Fixed height to match chart container (500px + padding + title) */
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Stats Panel within Unified Content */
@@ -924,9 +926,21 @@ main {
 .correlation-matrix h4 {
   font-family: "HelveticaNeue", "SourceSansPro", sans-serif;
   font-weight: 500;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
   color: #555;
   font-size: 1.2rem;
+  text-align: center;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid rgba(0, 103, 127, 0.1);
+  flex-shrink: 0;
+}
+
+/* Correlation matrix content area */
+.unified-content .correlation-matrix > div {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 /* Correlation matrix button styles */
