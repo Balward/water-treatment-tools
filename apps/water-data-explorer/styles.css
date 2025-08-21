@@ -891,6 +891,17 @@ main {
   font-size: 1.1rem;
 }
 
+/* Correlation Arrow Icons */
+.correlation-arrow-icon {
+  width: 16px !important;
+  height: 16px !important;
+  max-width: 16px !important;
+  max-height: 16px !important;
+  margin-left: 0.5rem;
+  vertical-align: middle;
+  object-fit: contain;
+}
+
 /* Notifications */
 .notification-container {
   position: fixed;

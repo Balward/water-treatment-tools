@@ -1308,7 +1308,9 @@ function displayCorrelationMatrix(correlations, targetVar) {
 
   let html = "<div>";
   sortedCorr.forEach(([variable, corr], index) => {
-    const direction = corr > 0 ? "↗️" : "↘️";
+    const arrowIcon = corr > 0 ? 
+      '<img src="/assets/icons/arrow-up.png" alt="↗" class="correlation-arrow-icon">' : 
+      '<img src="/assets/icons/arrow-down.png" alt="↘" class="correlation-arrow-icon">';
     const isFirst = index === 0; // First (strongest) correlation is active by default
     const activeClass = isFirst ? "active" : "";
 
@@ -1316,7 +1318,7 @@ function displayCorrelationMatrix(correlations, targetVar) {
             <button class="correlation-button ${activeClass}" onclick="selectCorrelationVariable('${variable}', '${targetVar}', this)">
                 <span class="variable-name">${variable}</span>
                 <span class="correlation-value">
-                    <span class="correlation-direction">${direction}</span>
+                    ${arrowIcon}
                     ${Math.abs(corr).toFixed(3)}
                 </span>
             </button>
