@@ -1048,22 +1048,26 @@ main {
   transition: filter 0.3s ease;
 }
 
-/* Gradient coloring for correlation arrows */
+/* City brand coloring for correlation arrows */
 .correlation-arrow-icon.positive {
-  filter: hue-rotate(120deg) saturate(1.8) brightness(1.1);
+  /* Green (#84BD00) - using specific filter values to achieve city green */
+  filter: invert(42%) sepia(73%) saturate(1567%) hue-rotate(64deg) brightness(96%) contrast(101%);
 }
 
 .correlation-arrow-icon.negative {
-  filter: hue-rotate(0deg) saturate(2.0) brightness(0.9);
+  /* Red (#CF4520) - using specific filter values to achieve city red */
+  filter: invert(29%) sepia(79%) saturate(1654%) hue-rotate(349deg) brightness(89%) contrast(93%);
 }
 
 /* Enhanced coloring on button hover */
 .correlation-button:hover .correlation-arrow-icon.positive {
-  filter: hue-rotate(120deg) saturate(2.2) brightness(1.2);
+  /* Brighter green on hover */
+  filter: invert(42%) sepia(73%) saturate(1700%) hue-rotate(64deg) brightness(105%) contrast(110%);
 }
 
 .correlation-button:hover .correlation-arrow-icon.negative {
-  filter: hue-rotate(0deg) saturate(2.4) brightness(1.0);
+  /* Brighter red on hover */
+  filter: invert(29%) sepia(79%) saturate(1800%) hue-rotate(349deg) brightness(95%) contrast(100%);
 }
 
 /* Notifications */
