@@ -53,7 +53,8 @@
       "WebFetch(domain:uiverse.io)",
       "Bash(git update-index:*)",
       "Bash(taskkill:*)",
-      "Bash(git revert:*)"
+      "Bash(git revert:*)",
+      "Read(/C:\\Users\\Blain\\OneDrive\\Pictures\\Screenshots\\**)"
     ],
     "deny": [],
     "defaultMode": "acceptEdits"

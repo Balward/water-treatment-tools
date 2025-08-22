@@ -1056,15 +1056,22 @@ function updateTimeSeriesChart() {
   });
 
   // Update chart title with variable names
-  const titleVars = selectedVars
-    .map((v) => {
-      // Truncate long variable names for title display
-      return v.length > 20 ? v.substring(0, 17) + "..." : v;
-    })
-    .join(", ");
-  document.getElementById(
-    "timeSeriesTitle"
-  ).textContent = `${titleVars} over Time`;
+  // Update title with smart multi-line handling
+  const titleElement = document.getElementById("timeSeriesTitle");
+  
+  // Create smart title based on number of variables
+  if (selectedVars.length === 1) {
+    titleElement.textContent = `${selectedVars[0]} over Time`;
+  } else if (selectedVars.length === 2) {
+    titleElement.textContent = `${selectedVars[0]} and ${selectedVars[1]} over Time`;
+  } else if (selectedVars.length === 3) {
+    titleElement.innerHTML = `${selectedVars.slice(0, 2).join(", ")}, and ${selectedVars[2]}<br>over Time`;
+  } else if (selectedVars.length === 4) {
+    titleElement.innerHTML = `${selectedVars.slice(0, 2).join(" and ")}<br>${selectedVars.slice(2, 4).join(" and ")} over Time`;
+  } else {
+    // For more than 4 variables, show count
+    titleElement.innerHTML = `${selectedVars.slice(0, 2).join(" and ")}<br>and ${selectedVars.length - 2} other variables over Time`;
+  }
 }
 
 // Update distribution chart
