@@ -718,7 +718,7 @@ main {
 
 .chart-container canvas {
   max-width: 100%;
-  height: 60vh !important;
+  height: 70vh !important;
   cursor: default;
 }
 
@@ -726,7 +726,7 @@ main {
 .unified-content .chart-container canvas {
   flex: 1;
   height: auto !important;
-  min-height: 55vh;
+  min-height: 70vh;
 }
 
 /* Time series specific cursor styles */
@@ -778,7 +778,7 @@ main {
   border-top-right-radius: 0;
   padding: 1.5rem;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  height: 60vh; /* Responsive height using 60% of viewport to match chart canvas */
+  height: 70vh; /* Responsive height using 70% of viewport to match chart canvas */
   overflow-y: auto;
   border: 1px solid rgba(0, 103, 127, 0.3);
   border-top: none;
@@ -803,21 +803,23 @@ main {
 .stats-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1rem;
+  gap: 1.5vh;
   flex: 1;
+  height: 100%;
 }
 
 .stat-item-enhanced {
   background: linear-gradient(135deg, rgba(0, 103, 127, 0.05), rgba(0, 103, 127, 0.02));
   border: 1px solid rgba(0, 103, 127, 0.1);
   border-radius: 8px;
-  padding: 1rem;
+  padding: 1.5vh 1rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
+  min-height: 8vh;
 }
 
 .stat-item-enhanced::before {
@@ -925,7 +927,7 @@ main {
   border-radius: 8px;
   padding: 1.5rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  min-height: 60vh; /* Match chart canvas height using viewport units */
+  min-height: 70vh; /* Match chart canvas height using viewport units */
   height: 100%; /* Fill available space */
 }
 
@@ -1086,7 +1088,7 @@ main {
   }
 
   .chart-container canvas {
-    height: 50vh !important;
+    height: 70vh !important;
   }
 }
 
@@ -1229,7 +1231,7 @@ main {
 
   .stats-panel,
   .correlation-matrix {
-    max-height: 55vh; /* Adjust for mobile chart height using viewport units */
+    max-height: 70vh; /* Adjust for mobile chart height using viewport units */
   }
 }
 
