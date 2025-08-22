@@ -1495,27 +1495,28 @@ function createOptimizationScatter(targetVar, strongestVar) {
         legend: { position: "top" },
         tooltip: {
           filter: function (tooltipItem) {
-            // Hide tooltip for trend line
-            return tooltipItem.datasetIndex === 0;
-          },
-          mode: 'nearest',
-          intersect: false,
-          callbacks: {
-            title: function (context) {
-              // Show coordinates as title to avoid duplicates
-              if (context.length > 0) {
-                const item = context[0];
-                const x = formatValue(item.parsed.x, strongestVar);
-                const y = formatValue(item.parsed.y, targetVar);
-                return `${strongestVar}: ${x}, ${targetVar}: ${y}`;
+            // Hide tooltip for trend line and show only one tooltip per coordinate
+            if (tooltipItem.datasetIndex !== 0) return false;
+            
+            // Only show tooltip for the first item at each coordinate to avoid duplicates
+            const chart = tooltipItem.chart;
+            const dataset = chart.data.datasets[0];
+            const currentPoint = dataset.data[tooltipItem.dataIndex];
+            
+            // Find if this is the first occurrence of this coordinate
+            for (let i = 0; i < tooltipItem.dataIndex; i++) {
+              const prevPoint = dataset.data[i];
+              if (prevPoint.x === currentPoint.x && prevPoint.y === currentPoint.y) {
+                return false; // Skip if we've already shown a tooltip for this coordinate
               }
-              return '';
-            },
+            }
+            return true;
+          },
+          callbacks: {
             label: function (context) {
-              // Show count of data points at this location
-              const dataPoint = context.raw;
-              const count = dataPoint.count || 1;
-              return count > 1 ? `${count} data points` : '1 data point';
+              const x = formatValue(context.parsed.x, strongestVar);
+              const y = formatValue(context.parsed.y, targetVar);
+              return `(${x}, ${y})`;
             },
           },
         },
