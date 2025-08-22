@@ -1441,8 +1441,8 @@ function createOptimizationScatter(targetVar, strongestVar) {
         {
           label: `${targetVar} vs ${strongestVar}`,
           data: chartData,
-          backgroundColor: "rgba(255, 200, 69, 0.6)", // Citrus yellow with transparency
-          borderColor: "rgba(255, 200, 69, 1)", // Solid citrus yellow
+          backgroundColor: "rgba(0, 103, 127, 0.6)", // Deep teal with transparency
+          borderColor: "rgba(0, 103, 127, 1)", // Solid deep teal
           borderWidth: 2,
           pointRadius: 4,
           pointHoverRadius: 6,
@@ -1452,7 +1452,7 @@ function createOptimizationScatter(targetVar, strongestVar) {
           label: "Trend Line",
           data: trendLineData,
           backgroundColor: "transparent",
-          borderColor: "rgba(233, 79, 55, 1)", // Coral red
+          borderColor: "rgba(132, 189, 0, 1)", // Fresh green
           borderWidth: 3,
           borderDash: [8, 4],
           pointRadius: 0,
