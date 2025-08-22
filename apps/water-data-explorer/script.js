@@ -1498,11 +1498,24 @@ function createOptimizationScatter(targetVar, strongestVar) {
             // Hide tooltip for trend line
             return tooltipItem.datasetIndex === 0;
           },
+          mode: 'nearest',
+          intersect: false,
           callbacks: {
+            title: function (context) {
+              // Show coordinates as title to avoid duplicates
+              if (context.length > 0) {
+                const item = context[0];
+                const x = formatValue(item.parsed.x, strongestVar);
+                const y = formatValue(item.parsed.y, targetVar);
+                return `${strongestVar}: ${x}, ${targetVar}: ${y}`;
+              }
+              return '';
+            },
             label: function (context) {
-              const x = formatValue(context.parsed.x, strongestVar);
-              const y = formatValue(context.parsed.y, targetVar);
-              return `(${x}, ${y})`;
+              // Show count of data points at this location
+              const dataPoint = context.raw;
+              const count = dataPoint.count || 1;
+              return count > 1 ? `${count} data points` : '1 data point';
             },
           },
         },
