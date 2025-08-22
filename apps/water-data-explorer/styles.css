@@ -736,9 +736,9 @@ main {
 
 /* Specific overrides for unified content charts */
 #optimizationChart {
-  height: 500px !important;
-  max-height: 500px !important;
-  min-height: 500px !important;
+  height: 540px !important;
+  max-height: 540px !important;
+  min-height: 540px !important;
 }
 
 /* Distribution chart can use more space since it has less header content */
@@ -966,6 +966,7 @@ main {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  min-height: 550px; /* Ensure content area fills most of the container */
 }
 
 /* Correlation matrix button styles */
