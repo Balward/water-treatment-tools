@@ -666,7 +666,7 @@ main {
   z-index: 5;
 }
 
-/* Chart Container within Unified Card (optimization tab only) */
+/* Chart Container within Unified Card */
 .unified-content .chart-container {
   background: rgba(248, 250, 252, 0.8);
   border: 1px solid #e2e8f0;
@@ -677,6 +677,11 @@ main {
   height: 640px; /* Fixed height to accommodate 500px canvas plus header, titles and padding */
   display: flex;
   flex-direction: column;
+}
+
+/* Distribution chart container can be slightly shorter since it has less header content */
+#distribution-tab .unified-content .chart-container {
+  height: 620px; /* Optimized for distribution chart with simpler header */
 }
 
 /* Chart Section for single-chart tabs */
@@ -730,11 +735,17 @@ main {
 }
 
 /* Specific overrides for unified content charts */
-#distributionChart,
 #optimizationChart {
   height: 500px !important;
   max-height: 500px !important;
   min-height: 500px !important;
+}
+
+/* Distribution chart can use more space since it has less header content */
+#distributionChart {
+  height: 560px !important;
+  max-height: 560px !important;
+  min-height: 560px !important;
 }
 
 /* Time series specific cursor styles */
