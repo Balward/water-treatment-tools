@@ -1466,6 +1466,11 @@ function createOptimizationScatter(targetVar, strongestVar) {
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      layout: {
+        padding: {
+          bottom: 20
+        }
+      },
       plugins: {
         legend: { position: "top" },
         tooltip: {
