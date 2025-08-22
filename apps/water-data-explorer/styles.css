@@ -674,7 +674,7 @@ main {
   padding: 1.5rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   margin-bottom: 0;
-  height: 580px; /* Fixed height to accommodate 500px canvas plus title and padding */
+  height: 640px; /* Fixed height to accommodate 500px canvas plus header, titles and padding */
   display: flex;
   flex-direction: column;
 }
@@ -920,7 +920,7 @@ main {
   border-radius: 8px;
   padding: 1.5rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  height: 580px; /* Fixed height to match chart container */
+  height: 640px; /* Fixed height to match chart container */
   overflow-y: auto;
   display: flex;
   flex-direction: column;
