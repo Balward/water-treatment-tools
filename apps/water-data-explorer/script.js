@@ -1471,6 +1471,7 @@ function createOptimizationScatter(targetVar, strongestVar) {
         {
           label: "Trend Line",
           data: trendLineData,
+          type: "line",
           backgroundColor: "transparent",
           borderColor: "rgba(132, 189, 0, 1)", // Fresh green
           borderWidth: 3,
