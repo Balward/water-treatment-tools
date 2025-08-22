@@ -778,7 +778,7 @@ main {
   border-top-right-radius: 0;
   padding: 1.5rem;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  height: 70vh; /* Responsive height using 70% of viewport to match chart containers */
+  height: 60vh; /* Responsive height using 60% of viewport to match chart canvas */
   overflow-y: auto;
   border: 1px solid rgba(0, 103, 127, 0.3);
   border-top: none;
