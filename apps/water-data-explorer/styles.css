@@ -931,7 +931,7 @@ main {
   border-radius: 8px;
   padding: 1.5rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  height: 640px; /* Fixed height to match chart container */
+  height: 640px !important; /* Fixed height to match chart container */
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -1248,8 +1248,13 @@ main {
   }
 
   .stats-panel,
-  .correlation-matrix {
+  .correlation-matrix:not(.unified-content .correlation-matrix) {
     max-height: 400px; /* Match mobile chart height */
+  }
+  
+  /* Keep optimization tab correlation matrix full height on mobile */
+  .unified-content .correlation-matrix {
+    max-height: 640px !important;
   }
 }
 
