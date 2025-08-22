@@ -479,6 +479,7 @@ main {
 .tab:hover {
   background: rgba(255, 255, 255, 0.9);
   color: #00677f;
+  font-weight: 600;
 }
 
 .tab.active {

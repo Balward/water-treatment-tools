@@ -596,14 +596,14 @@ function updateCorrelationChart() {
     const colorValues = validData.map((d) => d.color);
     const colorRanges = createColorRanges(colorValues, colorVar);
     const colors = [
-      "#667eea",
-      "#764ba2",
-      "#f093fb",
-      "#f5576c",
-      "#4facfe",
-      "#00d2ff",
-      "#667eea",
-      "#764ba2",
+      "#8BC34A",  // Bright lime green
+      "#7CB342",  // Medium lime green
+      "#4CAF50",  // Medium green
+      "#388E3C",  // Forest green
+      "#2E7D32",  // Dark green
+      "#00796B",  // Teal green
+      "#00695C",  // Deep teal
+      "#00677F",  // Teal blue
     ];
 
     colorRanges.forEach((range, index) => {
@@ -627,8 +627,8 @@ function updateCorrelationChart() {
     datasets.push({
       label: `${yVar} vs ${xVar}`,
       data: bubbleData,
-      backgroundColor: "rgba(102, 126, 234, 0.6)",
-      borderColor: "rgba(102, 126, 234, 1)",
+      backgroundColor: "rgba(139, 195, 74, 0.6)",  // Lime green with transparency
+      borderColor: "rgba(139, 195, 74, 1)",  // Solid lime green
       borderWidth: 2,
     });
   }
@@ -876,14 +876,14 @@ function updateTimeSeriesChart() {
   }
 
   const colors = [
-    "#667eea",
-    "#764ba2",
-    "#f093fb",
-    "#f5576c",
-    "#4facfe",
-    "#00d2ff",
-    "#667eea",
-    "#764ba2",
+    "#8BC34A",  // Bright lime green
+    "#7CB342",  // Medium lime green
+    "#4CAF50",  // Medium green
+    "#388E3C",  // Forest green
+    "#2E7D32",  // Dark green
+    "#00796B",  // Teal green
+    "#00695C",  // Deep teal
+    "#00677F",  // Teal blue
   ];
   const datasets = [];
 
@@ -1127,8 +1127,8 @@ function updateDistributionChart() {
         {
           label: "Frequency",
           data: histogram,
-          backgroundColor: "rgba(0, 103, 127, 0.6)",
-          borderColor: "rgba(0, 103, 127, 1)",
+          backgroundColor: "rgba(56, 142, 60, 0.6)",  // Forest green with transparency
+          borderColor: "rgba(56, 142, 60, 1)",  // Solid forest green
           borderWidth: 1,
         },
       ],
@@ -1423,8 +1423,8 @@ function createOptimizationScatter(targetVar, strongestVar) {
         {
           label: `${targetVar} vs ${strongestVar}`,
           data: chartData,
-          backgroundColor: "rgba(220, 38, 38, 0.6)",
-          borderColor: "rgba(220, 38, 38, 1)",
+          backgroundColor: "rgba(0, 105, 92, 0.6)",  // Teal green with transparency  
+          borderColor: "rgba(0, 105, 92, 1)",  // Solid teal green
           borderWidth: 2,
           pointRadius: 4,
           pointHoverRadius: 6,
@@ -1434,7 +1434,7 @@ function createOptimizationScatter(targetVar, strongestVar) {
           label: "Trend Line",
           data: trendLineData,
           backgroundColor: "transparent",
-          borderColor: "rgba(59, 130, 246, 1)",
+          borderColor: "rgba(0, 103, 127, 1)",  // Teal blue
           borderWidth: 3,
           borderDash: [8, 4],
           pointRadius: 0,
