@@ -2,19 +2,21 @@
 function toggleHelp(helpId) {
   const helpElement = document.getElementById(helpId);
   const button = event.target;
-  
-  if (helpElement.classList.contains('visible')) {
-    helpElement.classList.remove('visible');
-    button.classList.remove('active');
+
+  if (helpElement.classList.contains("visible")) {
+    helpElement.classList.remove("visible");
+    button.classList.remove("active");
   } else {
-    helpElement.classList.add('visible');
-    button.classList.add('active');
+    helpElement.classList.add("visible");
+    button.classList.add("active");
   }
 }
 
 // Wait for all scripts to load, then register zoom plugin
 document.addEventListener("DOMContentLoaded", function () {
-  console.log("🔄 Water Data Explorer Script v20250820006 loaded - all tabs unified card layout");
+  console.log(
+    "🔄 Water Data Explorer Script v20250820006 loaded - all tabs unified card layout"
+  );
   console.log("Chart.js version:", Chart.version);
   console.log(
     "Available on window:",
@@ -346,7 +348,7 @@ function displayDataInfo() {
       </div>
     </div>
   `;
-  
+
   // Show the header dataset info
   headerDataInfo.classList.remove("hidden");
 }
@@ -494,39 +496,39 @@ function formatValue(value, variable) {
 
   // Format the number with appropriate decimal places
   let formatted = value.toFixed(decimals);
-  
+
   // Clean up formatting for better readability
   // Remove unnecessary trailing zeros after decimal point
-  if (formatted.includes('.')) {
-    formatted = formatted.replace(/\.?0+$/, '');
+  if (formatted.includes(".")) {
+    formatted = formatted.replace(/\.?0+$/, "");
   }
-  
+
   // Use proper minus sign for negative numbers (better typography)
-  if (formatted.startsWith('-')) {
-    formatted = formatted.replace('-', '−');
+  if (formatted.startsWith("-")) {
+    formatted = formatted.replace("-", "−");
   }
-  
+
   return formatted;
 }
 
 // Format individual numbers in ranges with parentheses for negatives
 function formatRangeNumber(value, decimals = 2) {
   if (typeof value !== "number" || isNaN(value)) return value;
-  
+
   // Clean up decimal formatting
   let formatted = parseFloat(value.toFixed(decimals)).toString();
-  
+
   // Use parentheses around negative numbers in ranges for clarity
   if (value < 0) {
     return `(−${Math.abs(parseFloat(formatted))})`;
   }
-  
+
   return formatted;
 }
 
 // Format axis labels for better readability, especially with negative numbers
 function formatAxisLabel(label) {
-  if (typeof label === 'string') {
+  if (typeof label === "string") {
     // Handle single numeric values (not ranges)
     const num = parseFloat(label);
     if (!isNaN(num)) {
@@ -537,7 +539,7 @@ function formatAxisLabel(label) {
       return cleanNum;
     }
   }
-  
+
   // Return as-is for range labels (already properly formatted) and other strings
   return label;
 }
@@ -596,14 +598,11 @@ function updateCorrelationChart() {
     const colorValues = validData.map((d) => d.color);
     const colorRanges = createColorRanges(colorValues, colorVar);
     const colors = [
-      "#8BC34A",  // Bright lime green
-      "#7CB342",  // Medium lime green
-      "#4CAF50",  // Medium green
-      "#388E3C",  // Forest green
-      "#2E7D32",  // Dark green
-      "#00796B",  // Teal green
-      "#00695C",  // Deep teal
-      "#00677F",  // Teal blue
+      "#00677F", // Deep Teal (your anchor)
+      "#84BD00", // Fresh Green (your anchor)
+      "#FFC845", // Citrus Yellow (bright contrast accent)
+      "#E94F37", // Coral Red (warm complementary pop)
+      "#2F3E46", // Cool Charcoal (grounding neutral)
     ];
 
     colorRanges.forEach((range, index) => {
@@ -627,8 +626,8 @@ function updateCorrelationChart() {
     datasets.push({
       label: `${yVar} vs ${xVar}`,
       data: bubbleData,
-      backgroundColor: "rgba(139, 195, 74, 0.6)",  // Lime green with transparency
-      borderColor: "rgba(139, 195, 74, 1)",  // Solid lime green
+      backgroundColor: "rgba(132, 189, 0, 0.6)", // Fresh green with transparency
+      borderColor: "rgba(132, 189, 0, 1)", // Solid fresh green
       borderWidth: 2,
     });
   }
@@ -731,7 +730,7 @@ function createColorRanges(values, variable) {
   const n = sortedValues.length;
 
   if (n === 0) return [];
-  
+
   // If all values are the same
   if (sortedValues[0] === sortedValues[n - 1]) {
     const value = sortedValues[0];
@@ -742,13 +741,13 @@ function createColorRanges(values, variable) {
   // This ensures more even distribution of data across color ranges
   const percentiles = [0, 0.25, 0.5, 0.75, 0.95, 1.0]; // 5th, 25th, 50th, 75th, 95th, 100th percentiles
   const numRanges = Math.min(5, Math.max(2, Math.ceil(Math.sqrt(n / 10))));
-  
+
   // Create evenly spaced percentiles based on number of ranges
   const rangePercentiles = [];
   for (let i = 0; i <= numRanges; i++) {
     rangePercentiles.push(i / numRanges);
   }
-  
+
   // Calculate percentile values
   const getPercentileValue = (p) => {
     if (p === 0) return sortedValues[0];
@@ -767,7 +766,7 @@ function createColorRanges(values, variable) {
   for (let i = 0; i < numRanges; i++) {
     const rangeMin = getPercentileValue(rangePercentiles[i]);
     const rangeMax = getPercentileValue(rangePercentiles[i + 1]);
-    
+
     ranges.push({
       min: rangeMin,
       max: rangeMax,
@@ -876,14 +875,11 @@ function updateTimeSeriesChart() {
   }
 
   const colors = [
-    "#8BC34A",  // Bright lime green
-    "#7CB342",  // Medium lime green
-    "#4CAF50",  // Medium green
-    "#388E3C",  // Forest green
-    "#2E7D32",  // Dark green
-    "#00796B",  // Teal green
-    "#00695C",  // Deep teal
-    "#00677F",  // Teal blue
+    "#00677F", // Deep Teal (your anchor)
+    "#84BD00", // Fresh Green (your anchor)
+    "#FFC845", // Citrus Yellow (bright contrast accent)
+    "#E94F37", // Coral Red (warm complementary pop)
+    "#2F3E46", // Cool Charcoal (grounding neutral)
   ];
   const datasets = [];
 
@@ -1100,11 +1096,11 @@ function updateDistributionChart() {
   for (let i = 0; i < bins; i++) {
     const binStart = min + i * binWidth;
     const binEnd = min + (i + 1) * binWidth;
-    
+
     // Format the range label with proper handling of negative numbers
     const startFormatted = formatRangeNumber(binStart, decimals);
     const endFormatted = formatRangeNumber(binEnd, decimals);
-    
+
     binLabels.push(`${startFormatted} - ${endFormatted}`);
   }
 
@@ -1127,8 +1123,8 @@ function updateDistributionChart() {
         {
           label: "Frequency",
           data: histogram,
-          backgroundColor: "rgba(56, 142, 60, 0.6)",  // Forest green with transparency
-          borderColor: "rgba(56, 142, 60, 1)",  // Solid forest green
+          backgroundColor: "rgba(0, 103, 127, 0.6)", // Deep teal with transparency
+          borderColor: "rgba(0, 103, 127, 1)", // Solid deep teal
           borderWidth: 1,
         },
       ],
@@ -1211,37 +1207,58 @@ function displayStats(values, variable) {
       
       <div class="stat-item-enhanced">
         <span class="stat-label-enhanced">📈 Mean</span>
-        <span class="stat-value-enhanced">${formatValue(stats.mean, variable)}${unit}</span>
+        <span class="stat-value-enhanced">${formatValue(
+          stats.mean,
+          variable
+        )}${unit}</span>
       </div>
       
       <div class="stat-item-enhanced">
         <span class="stat-label-enhanced">📍 Median</span>
-        <span class="stat-value-enhanced">${formatValue(stats.median, variable)}${unit}</span>
+        <span class="stat-value-enhanced">${formatValue(
+          stats.median,
+          variable
+        )}${unit}</span>
       </div>
       
       <div class="stat-item-enhanced">
         <span class="stat-label-enhanced">📏 Std Dev</span>
-        <span class="stat-value-enhanced">${formatValue(stats.stdDev, variable)}${unit}</span>
+        <span class="stat-value-enhanced">${formatValue(
+          stats.stdDev,
+          variable
+        )}${unit}</span>
       </div>
       
       <div class="stat-item-enhanced range">
         <span class="stat-label-enhanced">🔻 Min</span>
-        <span class="stat-value-enhanced">${formatValue(stats.min, variable)}${unit}</span>
+        <span class="stat-value-enhanced">${formatValue(
+          stats.min,
+          variable
+        )}${unit}</span>
       </div>
       
       <div class="stat-item-enhanced range">
         <span class="stat-label-enhanced">🔺 Max</span>
-        <span class="stat-value-enhanced">${formatValue(stats.max, variable)}${unit}</span>
+        <span class="stat-value-enhanced">${formatValue(
+          stats.max,
+          variable
+        )}${unit}</span>
       </div>
       
       <div class="stat-item-enhanced quartile">
         <span class="stat-label-enhanced">📋 Q1</span>
-        <span class="stat-value-enhanced">${formatValue(stats.q1, variable)}${unit}</span>
+        <span class="stat-value-enhanced">${formatValue(
+          stats.q1,
+          variable
+        )}${unit}</span>
       </div>
       
       <div class="stat-item-enhanced quartile">
         <span class="stat-label-enhanced">📋 Q3</span>
-        <span class="stat-value-enhanced">${formatValue(stats.q3, variable)}${unit}</span>
+        <span class="stat-value-enhanced">${formatValue(
+          stats.q3,
+          variable
+        )}${unit}</span>
       </div>
     </div>
   `;
@@ -1339,9 +1356,10 @@ function displayCorrelationMatrix(correlations, targetVar) {
 
   let html = "<div>";
   sortedCorr.forEach(([variable, corr], index) => {
-    const arrowIcon = corr > 0 ? 
-      '<img src="/assets/icons/arrow-up.png" alt="↗" class="correlation-arrow-icon">' : 
-      '<img src="/assets/icons/arrow-down.png" alt="↘" class="correlation-arrow-icon">';
+    const arrowIcon =
+      corr > 0
+        ? '<img src="/assets/icons/arrow-up.png" alt="↗" class="correlation-arrow-icon">'
+        : '<img src="/assets/icons/arrow-down.png" alt="↘" class="correlation-arrow-icon">';
     const isFirst = index === 0; // First (strongest) correlation is active by default
     const activeClass = isFirst ? "active" : "";
 
@@ -1423,8 +1441,8 @@ function createOptimizationScatter(targetVar, strongestVar) {
         {
           label: `${targetVar} vs ${strongestVar}`,
           data: chartData,
-          backgroundColor: "rgba(0, 105, 92, 0.6)",  // Teal green with transparency  
-          borderColor: "rgba(0, 105, 92, 1)",  // Solid teal green
+          backgroundColor: "rgba(255, 200, 69, 0.6)", // Citrus yellow with transparency
+          borderColor: "rgba(255, 200, 69, 1)", // Solid citrus yellow
           borderWidth: 2,
           pointRadius: 4,
           pointHoverRadius: 6,
@@ -1434,7 +1452,7 @@ function createOptimizationScatter(targetVar, strongestVar) {
           label: "Trend Line",
           data: trendLineData,
           backgroundColor: "transparent",
-          borderColor: "rgba(0, 103, 127, 1)",  // Teal blue
+          borderColor: "rgba(233, 79, 55, 1)", // Coral red
           borderWidth: 3,
           borderDash: [8, 4],
           pointRadius: 0,
@@ -1791,9 +1809,13 @@ function showAIInsightsPanel(predictorVar, targetVar, correlationValue) {
 
   // Show and populate correlation context
   const correlationContext = document.getElementById("correlationContext");
-  const correlationDisplayText = document.getElementById("correlationDisplayText");
-  const correlationDisplayValue = document.getElementById("correlationDisplayValue");
-  
+  const correlationDisplayText = document.getElementById(
+    "correlationDisplayText"
+  );
+  const correlationDisplayValue = document.getElementById(
+    "correlationDisplayValue"
+  );
+
   if (correlationContext && correlationDisplayText && correlationDisplayValue) {
     correlationDisplayText.textContent = `${predictorVar} → ${targetVar}`;
     correlationDisplayValue.textContent = correlationValue.toFixed(3);
@@ -1817,20 +1839,23 @@ function hideAIInsightsPanel() {
 
 // Claude Proxy Configuration - detects if running in container or locally
 const CLAUDE_PROXY_URL = (() => {
-  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-    return "http://localhost:3001/api/claude";  // Local development
+  if (
+    window.location.hostname === "localhost" ||
+    window.location.hostname === "127.0.0.1"
+  ) {
+    return "http://localhost:3001/api/claude"; // Local development
   }
-  
+
   // For production, try main domain first (if Traefik is configured to proxy /api/claude)
   // Otherwise fallback to port-based URL
-  if (window.location.protocol === 'https:') {
+  if (window.location.protocol === "https:") {
     return `${window.location.protocol}//${window.location.hostname}/api/claude`;
   } else {
     return `${window.location.protocol}//${window.location.hostname}:6768/api/claude`;
   }
 })();
 
-console.log('Claude Proxy URL detected:', CLAUDE_PROXY_URL);
+console.log("Claude Proxy URL detected:", CLAUDE_PROXY_URL);
 
 // Set to true to use Claude AI, false for hardcoded explanations
 const USE_AI = true;
@@ -1962,8 +1987,10 @@ async function getHardcodedExplanation() {
 
   if (USE_AI) {
     // Get selected AI provider
-    const selectedProvider = document.querySelector('input[name="aiProvider"]:checked')?.value || 'claude';
-    
+    const selectedProvider =
+      document.querySelector('input[name="aiProvider"]:checked')?.value ||
+      "claude";
+
     // Use selected AI provider via proxy server
     try {
       console.log(`Making ${selectedProvider.toUpperCase()} proxy request...`);
@@ -1983,8 +2010,15 @@ async function getHardcodedExplanation() {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        console.error(`${selectedProvider.toUpperCase()} proxy error:`, errorData);
-        throw new Error(`${selectedProvider.toUpperCase()} API error: ${response.status} - ${errorData.error || 'Unknown error'}`);
+        console.error(
+          `${selectedProvider.toUpperCase()} proxy error:`,
+          errorData
+        );
+        throw new Error(
+          `${selectedProvider.toUpperCase()} API error: ${response.status} - ${
+            errorData.error || "Unknown error"
+          }`
+        );
       }
 
       const data = await response.json();
@@ -1992,13 +2026,14 @@ async function getHardcodedExplanation() {
 
       if (data.success && data.explanation) {
         loadingElement.style.display = "none";
-        
+
         // Format the explanation text with proper paragraph breaks
         const formattedExplanation = formatAIExplanation(data.explanation);
-        
-        const providerName = selectedProvider === 'claude' ? 'Claude AI' : 'OpenAI GPT-4';
-        const providerIcon = selectedProvider === 'claude' ? '🤖' : '🧠';
-        
+
+        const providerName =
+          selectedProvider === "claude" ? "Claude AI" : "OpenAI GPT-4";
+        const providerIcon = selectedProvider === "claude" ? "🤖" : "🧠";
+
         textElement.innerHTML = `
           ${formattedExplanation}
           <div style="background: #e8f5e8; border: 1px solid #4caf50; border-radius: 4px; padding: 0.75rem; margin-top: 1rem; font-size: 0.9rem;">
@@ -2015,11 +2050,13 @@ async function getHardcodedExplanation() {
 
       let errorMessage = "AI service temporarily unavailable";
       if (error.message.includes("Failed to fetch")) {
-        errorMessage = "Proxy server not running - start the proxy server first";
+        errorMessage =
+          "Proxy server not running - start the proxy server first";
       } else if (error.message.includes("401")) {
         errorMessage = "Claude API authentication failed";
       } else if (error.message.includes("429")) {
-        errorMessage = "Claude API rate limit exceeded - please try again later";
+        errorMessage =
+          "Claude API rate limit exceeded - please try again later";
       } else if (error.message.includes("Proxy server error")) {
         errorMessage = error.message;
       }
@@ -2055,39 +2092,39 @@ async function getHardcodedExplanation() {
 function formatAIExplanation(explanation) {
   // Split by double line breaks (paragraph separators)
   let paragraphs = explanation.split(/\n\s*\n/);
-  
+
   // If no double line breaks, try splitting by single line breaks and group sentences
   if (paragraphs.length === 1) {
     // Split by periods followed by space and capital letter (sentence boundaries)
     const sentences = explanation.split(/\.\s+(?=[A-Z])/);
-    
+
     // Group sentences into paragraphs (roughly 2-3 sentences per paragraph)
     paragraphs = [];
     for (let i = 0; i < sentences.length; i += 2) {
       let paragraph = sentences[i];
       if (i + 1 < sentences.length) {
-        paragraph += '. ' + sentences[i + 1];
+        paragraph += ". " + sentences[i + 1];
       }
-      if (!paragraph.endsWith('.')) {
-        paragraph += '.';
+      if (!paragraph.endsWith(".")) {
+        paragraph += ".";
       }
       paragraphs.push(paragraph);
     }
   }
-  
+
   // Clean up and format paragraphs
   const formattedParagraphs = paragraphs
-    .map(p => p.trim())
-    .filter(p => p.length > 0)
-    .map(p => {
+    .map((p) => p.trim())
+    .filter((p) => p.length > 0)
+    .map((p) => {
       // Ensure paragraph ends with period
-      if (!p.endsWith('.') && !p.endsWith('!') && !p.endsWith('?')) {
-        p += '.';
+      if (!p.endsWith(".") && !p.endsWith("!") && !p.endsWith("?")) {
+        p += ".";
       }
       return `<p style="margin-bottom: 1rem; line-height: 1.6;">${p}</p>`;
     });
-  
-  return formattedParagraphs.join('');
+
+  return formattedParagraphs.join("");
 }
 
 function findCorrelationExplanation(var1, var2, correlationValue) {
