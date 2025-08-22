@@ -722,11 +722,11 @@ main {
   cursor: default;
 }
 
-/* Chart canvas within unified content should be flexible */
+/* Chart canvas within unified content should match standard height */
 .unified-content .chart-container canvas {
   flex: 1;
-  height: auto !important;
-  min-height: 400px;
+  height: 500px !important;
+  min-height: 500px;
 }
 
 /* Time series specific cursor styles */
