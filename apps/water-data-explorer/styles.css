@@ -729,6 +729,14 @@ main {
   min-height: 500px;
 }
 
+/* Specific overrides for unified content charts */
+#distributionChart,
+#optimizationChart {
+  height: 500px !important;
+  max-height: 500px !important;
+  min-height: 500px !important;
+}
+
 /* Time series specific cursor styles */
 #timeseries-tab .chart-container canvas {
   cursor: crosshair;
