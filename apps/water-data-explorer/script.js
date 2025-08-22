@@ -650,11 +650,6 @@ function updateCorrelationChart() {
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      layout: {
-        padding: {
-          bottom: 20
-        }
-      },
       plugins: {
         legend: { position: "top" },
         tooltip: {
@@ -952,11 +947,6 @@ function updateTimeSeriesChart() {
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      layout: {
-        padding: {
-          bottom: 20
-        }
-      },
       plugins: {
         legend: { position: "top" },
         tooltip: {
@@ -1142,11 +1132,6 @@ function updateDistributionChart() {
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      layout: {
-        padding: {
-          bottom: 20
-        }
-      },
       plugins: {
         legend: { display: false },
         ...getNoZoomConfig(),
@@ -1481,11 +1466,6 @@ function createOptimizationScatter(targetVar, strongestVar) {
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      layout: {
-        padding: {
-          bottom: 20
-        }
-      },
       plugins: {
         legend: { position: "top" },
         tooltip: {
