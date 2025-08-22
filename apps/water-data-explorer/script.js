@@ -1358,8 +1358,8 @@ function displayCorrelationMatrix(correlations, targetVar) {
   sortedCorr.forEach(([variable, corr], index) => {
     const arrowIcon =
       corr > 0
-        ? '<img src="/assets/icons/arrow-up.png" alt="↗" class="correlation-arrow-icon">'
-        : '<img src="/assets/icons/arrow-down.png" alt="↘" class="correlation-arrow-icon">';
+        ? '<img src="/assets/icons/arrow-up.svg" alt="↗" class="correlation-arrow-icon positive">'
+        : '<img src="/assets/icons/arrow-down.svg" alt="↘" class="correlation-arrow-icon negative">';
     const isFirst = index === 0; // First (strongest) correlation is active by default
     const activeClass = isFirst ? "active" : "";
 

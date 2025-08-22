@@ -1045,6 +1045,25 @@ main {
   vertical-align: middle;
   object-fit: contain;
   display: inline-block;
+  transition: filter 0.3s ease;
+}
+
+/* Gradient coloring for correlation arrows */
+.correlation-arrow-icon.positive {
+  filter: hue-rotate(120deg) saturate(1.8) brightness(1.1);
+}
+
+.correlation-arrow-icon.negative {
+  filter: hue-rotate(0deg) saturate(2.0) brightness(0.9);
+}
+
+/* Enhanced coloring on button hover */
+.correlation-button:hover .correlation-arrow-icon.positive {
+  filter: hue-rotate(120deg) saturate(2.2) brightness(1.2);
+}
+
+.correlation-button:hover .correlation-arrow-icon.negative {
+  filter: hue-rotate(0deg) saturate(2.4) brightness(1.0);
 }
 
 /* Notifications */
