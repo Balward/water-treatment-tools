@@ -1453,20 +1453,20 @@ function createOptimizationScatter(targetVar, strongestVar) {
     optimizationChart.destroy();
   }
 
+  // Create bubble data to handle overlapping points
+  const bubbleData = createBubbleData(chartData.map(point => ({x: point.x, y: point.y})));
+
   const ctx = document.getElementById("optimizationChart").getContext("2d");
   optimizationChart = new Chart(ctx, {
-    type: "scatter",
+    type: "bubble",
     data: {
       datasets: [
         {
           label: `${targetVar} vs ${strongestVar}`,
-          data: chartData,
+          data: bubbleData,
           backgroundColor: "rgba(0, 103, 127, 0.6)", // Deep teal with transparency
           borderColor: "rgba(0, 103, 127, 1)", // Solid deep teal
           borderWidth: 2,
-          pointRadius: 4,
-          pointHoverRadius: 6,
-          showLine: false,
         },
         {
           label: "Trend Line",
@@ -1494,29 +1494,16 @@ function createOptimizationScatter(targetVar, strongestVar) {
       plugins: {
         legend: { position: "top" },
         tooltip: {
-          filter: function (tooltipItem) {
-            // Hide tooltip for trend line and show only one tooltip per coordinate
-            if (tooltipItem.datasetIndex !== 0) return false;
-            
-            // Only show tooltip for the first item at each coordinate to avoid duplicates
-            const chart = tooltipItem.chart;
-            const dataset = chart.data.datasets[0];
-            const currentPoint = dataset.data[tooltipItem.dataIndex];
-            
-            // Find if this is the first occurrence of this coordinate
-            for (let i = 0; i < tooltipItem.dataIndex; i++) {
-              const prevPoint = dataset.data[i];
-              if (prevPoint.x === currentPoint.x && prevPoint.y === currentPoint.y) {
-                return false; // Skip if we've already shown a tooltip for this coordinate
-              }
-            }
-            return true;
-          },
           callbacks: {
             label: function (context) {
+              // Hide tooltip for trend line
+              if (context.datasetIndex !== 0) return null;
+              
               const x = formatValue(context.parsed.x, strongestVar);
               const y = formatValue(context.parsed.y, targetVar);
-              return `(${x}, ${y})`;
+              const count = context.raw.count || 1;
+              const countText = count > 1 ? ` (${count} points)` : "";
+              return `(${x}, ${y})${countText}`;
             },
           },
         },
