@@ -626,8 +626,8 @@ function updateCorrelationChart() {
     datasets.push({
       label: `${yVar} vs ${xVar}`,
       data: bubbleData,
-      backgroundColor: "rgba(132, 189, 0, 0.6)", // Fresh green with transparency
-      borderColor: "rgba(132, 189, 0, 1)", // Solid fresh green
+      backgroundColor: "rgba(0, 103, 127, 0.6)", // City teal with transparency
+      borderColor: "rgba(0, 103, 127, 1)", // Solid city teal
       borderWidth: 2,
     });
   }
@@ -737,9 +737,22 @@ function createColorRanges(values, variable) {
     return [{ min: value, max: value, label: formatValue(value, variable) }];
   }
 
+  // Get unique values to check for low variety
+  const uniqueValues = [...new Set(sortedValues)];
+  const uniqueCount = uniqueValues.length;
+
+  // If there are very few unique values, create discrete ranges for each value
+  if (uniqueCount <= 5) {
+    const unit = units[variable] ? ` ${units[variable]}` : "";
+    return uniqueValues.map(value => ({
+      min: value,
+      max: value,
+      label: `${formatValue(value, variable)}${unit}`
+    }));
+  }
+
   // Use percentile-based ranges to handle outliers better
   // This ensures more even distribution of data across color ranges
-  const percentiles = [0, 0.25, 0.5, 0.75, 0.95, 1.0]; // 5th, 25th, 50th, 75th, 95th, 100th percentiles
   const numRanges = Math.min(5, Math.max(2, Math.ceil(Math.sqrt(n / 10))));
 
   // Create evenly spaced percentiles based on number of ranges
