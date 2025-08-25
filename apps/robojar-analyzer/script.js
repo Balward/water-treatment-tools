@@ -2041,7 +2041,7 @@ async function loadTestFile() {
 
     // Fetch the test Excel file from sample-data folder
     const response = await fetch(
-      "../../sample-data/RoboJarReportExcel 2025-07-25-10-09-36.xls"
+      "../../sample-data/RoboJarReportExcel 2025-07-25-10-09-36.xls?v=" + Date.now()
     );
     if (!response.ok) {
       throw new Error("Test file not found in sample-data folder");
@@ -2071,7 +2071,7 @@ async function loadStreamingCurrentDemo() {
 
     // Fetch the streaming current demo Excel file from sample-data folder
     const response = await fetch(
-      "../../sample-data/RoboJarReportExcel 2025-08-12-07-50-44.xls"
+      "../../sample-data/RoboJarReportExcel 2025-08-12-07-50-44.xls?v=" + Date.now()
     );
     if (!response.ok) {
       throw new Error("Streaming current demo file not found in sample-data folder");

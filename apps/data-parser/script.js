@@ -872,7 +872,7 @@ async function loadTestData() {
         
         for (const filePath of testFiles) {
             try {
-                const response = await fetch(filePath);
+                const response = await fetch(filePath + '?v=' + Date.now());
                 if (!response.ok) {
                     throw new Error(`Failed to load ${filePath}: ${response.status}`);
                 }

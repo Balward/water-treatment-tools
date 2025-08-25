@@ -96,7 +96,7 @@ async function loadData() {
 
     await updateLoadingProgress(25, "Fetching Excel file...");
     const response = await fetch(
-      "../../sample-data/Streaming_Current_Data.xlsx"
+      "../../sample-data/Streaming_Current_Data.xlsx?v=" + Date.now()
     );
     if (!response.ok) throw new Error("Failed to fetch data file");
 
