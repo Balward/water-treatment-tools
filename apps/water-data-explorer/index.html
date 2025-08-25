@@ -20,6 +20,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/2.0.1/chartjs-plugin-zoom.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <link rel="stylesheet" href="styles.css?v=1724292926010" />
   </head>
   <body>
@@ -105,9 +106,14 @@
         <div class="unified-analysis-card">
           <div class="card-header">
             <h3>Correlation Analysis</h3>
-            <button class="help-toggle-btn" onclick="toggleHelp('correlation-help')" title="Show/Hide Help">
-              ℹ️ Help
-            </button>
+            <div class="header-buttons">
+              <button class="help-toggle-btn" onclick="toggleHelp('correlation-help')" title="Show/Hide Help">
+                ℹ️ Help
+              </button>
+              <button class="export-pdf-btn" onclick="exportChartToPDF('correlation')" title="Export Chart as PDF">
+                📄 Export PDF
+              </button>
+            </div>
             <p id="correlation-help" class="instruction-text">
               ℹ️ <strong>How to use:</strong> Select X and Y variables to
               explore relationships. Add color grouping to see how a third
@@ -162,9 +168,14 @@
         <div class="unified-analysis-card">
           <div class="card-header">
             <h3>Time Series Analysis</h3>
-            <button class="help-toggle-btn" onclick="toggleHelp('timeseries-help')" title="Show/Hide Help">
-              ℹ️ Help
-            </button>
+            <div class="header-buttons">
+              <button class="help-toggle-btn" onclick="toggleHelp('timeseries-help')" title="Show/Hide Help">
+                ℹ️ Help
+              </button>
+              <button class="export-pdf-btn" onclick="exportChartToPDF('timeseries')" title="Export Chart as PDF">
+                📄 Export PDF
+              </button>
+            </div>
             <p id="timeseries-help" class="instruction-text">
               ℹ️ <strong>How to use:</strong> Select up to 4 variables to view
               trends over time. Check "Own Y-axis" to force a variable onto its
@@ -259,9 +270,14 @@
         <div class="unified-analysis-card">
           <div class="card-header">
             <h3>Distribution Analysis</h3>
-            <button class="help-toggle-btn" onclick="toggleHelp('distribution-help')" title="Show/Hide Help">
-              ℹ️ Help
-            </button>
+            <div class="header-buttons">
+              <button class="help-toggle-btn" onclick="toggleHelp('distribution-help')" title="Show/Hide Help">
+                ℹ️ Help
+              </button>
+              <button class="export-pdf-btn" onclick="exportChartToPDF('distribution')" title="Export Chart as PDF">
+                📄 Export PDF
+              </button>
+            </div>
             <p id="distribution-help" class="instruction-text">
               ℹ️ <strong>How to use:</strong> Select a variable to see its
               frequency distribution. Adjust bin count to change histogram
@@ -311,9 +327,14 @@
         <div class="unified-analysis-card">
           <div class="card-header">
             <h3>Optimization Analysis</h3>
-            <button class="help-toggle-btn" onclick="toggleHelp('optimization-help')" title="Show/Hide Help">
-              ℹ️ Help
-            </button>
+            <div class="header-buttons">
+              <button class="help-toggle-btn" onclick="toggleHelp('optimization-help')" title="Show/Hide Help">
+                ℹ️ Help
+              </button>
+              <button class="export-pdf-btn" onclick="exportChartToPDF('optimization')" title="Export Chart as PDF">
+                📄 Export PDF
+              </button>
+            </div>
             <p id="optimization-help" class="instruction-text">
               ℹ️ <strong>How to use:</strong> Select a target variable to
               optimize. The correlation matrix shows which variables most

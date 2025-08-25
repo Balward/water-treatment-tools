@@ -532,10 +532,16 @@ main {
   padding-right: 3rem;
 }
 
-.help-toggle-btn {
+/* Header buttons container */
+.header-buttons {
   position: absolute;
   top: 0;
   right: 0;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.help-toggle-btn {
   background: linear-gradient(135deg, #2b67a6, #1e4d7a);
   border: none;
   border-radius: 6px;
@@ -562,6 +568,31 @@ main {
 .help-toggle-btn.active {
   background: linear-gradient(135deg, #3a7bc8, #2b67a6);
   box-shadow: 0 2px 8px rgba(43, 103, 166, 0.3);
+}
+
+/* Export PDF button */
+.export-pdf-btn {
+  background: linear-gradient(135deg, #28a745, #1e7e34);
+  border: none;
+  border-radius: 6px;
+  padding: 0.75rem 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: white;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.export-pdf-btn:hover {
+  background: linear-gradient(135deg, #1e7e34, #155724);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
 }
 
 /* Controls Panel (for other tabs that still use separate cards) */

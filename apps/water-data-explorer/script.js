@@ -2226,6 +2226,144 @@ window.onclick = function (event) {
   }
 };
 
+// PDF Export functionality
+function exportChartToPDF(chartType) {
+  // Get the appropriate chart instance
+  let chart, chartTitle, fileName;
+  
+  switch(chartType) {
+    case 'correlation':
+      chart = correlationChart;
+      chartTitle = 'Correlation Analysis';
+      fileName = 'Water_Data_Correlation_Chart';
+      break;
+    case 'timeseries':
+      chart = timeSeriesChart;
+      chartTitle = 'Time Series Analysis';
+      fileName = 'Water_Data_Time_Series_Chart';
+      break;
+    case 'distribution':
+      chart = distributionChart;
+      chartTitle = 'Distribution Analysis';
+      fileName = 'Water_Data_Distribution_Chart';
+      break;
+    case 'optimization':
+      chart = optimizationChart;
+      chartTitle = 'Optimization Analysis';
+      fileName = 'Water_Data_Optimization_Chart';
+      break;
+    default:
+      console.error('Unknown chart type:', chartType);
+      return;
+  }
+  
+  // Check if chart exists and has data
+  if (!chart) {
+    alert('No chart is currently displayed to export. Please generate a chart first.');
+    return;
+  }
+  
+  try {
+    // Get chart image as base64
+    const chartImageUrl = chart.toBase64Image('image/png', 1.0);
+    
+    // Create PDF using jsPDF
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF('landscape', 'mm', 'a4');
+    
+    // PDF dimensions (A4 landscape: 297x210mm)
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    const margin = 20;
+    
+    // Add title
+    pdf.setFontSize(16);
+    pdf.setTextColor(0, 103, 127); // Match brand color
+    pdf.text(chartTitle, margin, margin + 10);
+    
+    // Add subtitle with timestamp
+    pdf.setFontSize(10);
+    pdf.setTextColor(100, 100, 100);
+    const timestamp = new Date().toLocaleString();
+    pdf.text(`Generated on: ${timestamp}`, margin, margin + 20);
+    
+    // Calculate image dimensions (maintain aspect ratio)
+    const chartCanvas = chart.canvas;
+    const aspectRatio = chartCanvas.width / chartCanvas.height;
+    const maxWidth = pageWidth - (margin * 2);
+    const maxHeight = pageHeight - (margin * 3 + 30); // Account for title and footer
+    
+    let imgWidth = maxWidth;
+    let imgHeight = imgWidth / aspectRatio;
+    
+    if (imgHeight > maxHeight) {
+      imgHeight = maxHeight;
+      imgWidth = imgHeight * aspectRatio;
+    }
+    
+    // Center the image
+    const xPos = (pageWidth - imgWidth) / 2;
+    const yPos = margin + 30;
+    
+    // Add the chart image
+    pdf.addImage(chartImageUrl, 'PNG', xPos, yPos, imgWidth, imgHeight);
+    
+    // Add footer
+    pdf.setFontSize(8);
+    pdf.setTextColor(120, 120, 120);
+    pdf.text('Water Treatment Tools - Data Analysis Report', margin, pageHeight - 10);
+    
+    // Create timestamp for filename
+    const now = new Date();
+    const dateStr = now.toISOString().slice(0, 10).replace(/-/g, '');
+    const timeStr = now.toTimeString().slice(0, 8).replace(/:/g, '');
+    const fullFileName = `${fileName}_${dateStr}_${timeStr}.pdf`;
+    
+    // Save the PDF
+    pdf.save(fullFileName);
+    
+    // Show success notification
+    showNotification(`Chart exported successfully as ${fullFileName}`, 'success', 3000);
+    
+  } catch (error) {
+    console.error('Error exporting chart to PDF:', error);
+    alert('Error exporting chart. Please try again.');
+  }
+}
+
+// Show notification function (if not already defined elsewhere)
+function showNotification(message, type = 'info', duration = 4000) {
+  // Create notification element
+  const notification = document.createElement('div');
+  notification.className = `notification ${type}`;
+  notification.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: ${type === 'success' ? '#28a745' : type === 'error' ? '#dc3545' : '#007bff'};
+    color: white;
+    padding: 12px 20px;
+    border-radius: 6px;
+    z-index: 1000;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    transition: opacity 0.3s ease;
+  `;
+  notification.textContent = message;
+  
+  document.body.appendChild(notification);
+  
+  // Auto remove after duration
+  setTimeout(() => {
+    notification.style.opacity = '0';
+    setTimeout(() => {
+      if (notification.parentNode) {
+        notification.parentNode.removeChild(notification);
+      }
+    }, 300);
+  }, duration);
+}
+
 // Make functions globally available
 window.switchTab = switchTab;
 window.updateCorrelationChart = updateCorrelationChart;
@@ -2235,3 +2373,4 @@ window.updateOptimizationChart = updateOptimizationChart;
 window.selectCorrelationVariable = selectCorrelationVariable;
 window.explainCorrelation = explainCorrelation;
 window.closeExplanationModal = closeExplanationModal;
+window.exportChartToPDF = exportChartToPDF;
