@@ -2229,33 +2229,41 @@ window.onclick = function (event) {
 // PDF Export functionality
 function exportChartToPDF(chartType) {
   // Get the appropriate chart instance
-  let chart, chartTitle, fileName;
+  let chart, sectionTitle, chartTitle, fileName, titleElementId;
   
   switch(chartType) {
     case 'correlation':
       chart = correlationChart;
-      chartTitle = 'Correlation Analysis';
+      sectionTitle = 'Correlation Analysis';
+      titleElementId = 'correlationTitle';
       fileName = 'Water_Data_Correlation_Chart';
       break;
     case 'timeseries':
       chart = timeSeriesChart;
-      chartTitle = 'Time Series Analysis';
+      sectionTitle = 'Time Series Analysis';
+      titleElementId = 'timeSeriesTitle';
       fileName = 'Water_Data_Time_Series_Chart';
       break;
     case 'distribution':
       chart = distributionChart;
-      chartTitle = 'Distribution Analysis';
+      sectionTitle = 'Distribution Analysis';
+      titleElementId = 'distributionTitle';
       fileName = 'Water_Data_Distribution_Chart';
       break;
     case 'optimization':
       chart = optimizationChart;
-      chartTitle = 'Optimization Analysis';
+      sectionTitle = 'Optimization Analysis';
+      titleElementId = 'optimizationTitle';
       fileName = 'Water_Data_Optimization_Chart';
       break;
     default:
       console.error('Unknown chart type:', chartType);
       return;
   }
+  
+  // Get the actual chart title from the DOM
+  const titleElement = document.getElementById(titleElementId);
+  chartTitle = titleElement ? titleElement.textContent.trim() : sectionTitle;
   
   // Check if chart exists and has data
   if (!chart) {
@@ -2276,22 +2284,31 @@ function exportChartToPDF(chartType) {
     const pageHeight = pdf.internal.pageSize.getHeight();
     const margin = 20;
     
-    // Add title
+    // Add section title
     pdf.setFontSize(16);
     pdf.setTextColor(0, 103, 127); // Match brand color
-    pdf.text(chartTitle, margin, margin + 10);
+    pdf.text(sectionTitle, margin, margin + 10);
     
-    // Add subtitle with timestamp
+    // Add chart title (if different from section title)
+    if (chartTitle !== sectionTitle) {
+      pdf.setFontSize(14);
+      pdf.setTextColor(60, 60, 60);
+      pdf.text(chartTitle, margin, margin + 20);
+    }
+    
+    // Add timestamp
     pdf.setFontSize(10);
     pdf.setTextColor(100, 100, 100);
     const timestamp = new Date().toLocaleString();
-    pdf.text(`Generated on: ${timestamp}`, margin, margin + 20);
+    const timestampY = chartTitle !== sectionTitle ? margin + 30 : margin + 20;
+    pdf.text(`Generated on: ${timestamp}`, margin, timestampY);
     
     // Calculate image dimensions (maintain aspect ratio)
     const chartCanvas = chart.canvas;
     const aspectRatio = chartCanvas.width / chartCanvas.height;
     const maxWidth = pageWidth - (margin * 2);
-    const maxHeight = pageHeight - (margin * 3 + 30); // Account for title and footer
+    const headerHeight = chartTitle !== sectionTitle ? 40 : 30; // Account for both titles
+    const maxHeight = pageHeight - (margin * 3 + headerHeight); // Account for title and footer
     
     let imgWidth = maxWidth;
     let imgHeight = imgWidth / aspectRatio;
@@ -2303,7 +2320,7 @@ function exportChartToPDF(chartType) {
     
     // Center the image
     const xPos = (pageWidth - imgWidth) / 2;
-    const yPos = margin + 30;
+    const yPos = margin + headerHeight;
     
     // Add the chart image
     pdf.addImage(chartImageUrl, 'PNG', xPos, yPos, imgWidth, imgHeight);
