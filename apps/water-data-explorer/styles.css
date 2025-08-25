@@ -501,12 +501,14 @@ main {
   font-weight: 600;
   transform: translateY(-2px);
   box-shadow: 0 -4px 20px rgba(0, 103, 127, 0.15);
+  border-bottom: none;
 }
 
 .tab.active {
   background: rgba(255, 255, 255, 0.98);
   color: #00677f;
   border-color: rgba(0, 103, 127, 0.25);
+  border-bottom: none;
   font-weight: 600;
   z-index: 15;
   transform: translateY(-3px);
@@ -766,10 +768,6 @@ main {
   transition: all 0.3s ease;
 }
 
-.chart-section .chart-container:hover {
-  box-shadow: 0 8px 32px rgba(0, 103, 127, 0.12);
-  transform: translateY(-2px);
-}
 
 .chart-container h4 {
   font-family: "HelveticaNeue", "SourceSansPro", sans-serif;
