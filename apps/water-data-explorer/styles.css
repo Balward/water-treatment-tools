@@ -542,8 +542,6 @@ main {
 .card-header {
   margin-bottom: 2rem;
   position: relative;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid rgba(0, 103, 127, 0.1);
 }
 }
 
@@ -662,8 +660,8 @@ main {
 
 .control-group {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.25rem;
   margin-bottom: 2rem;
 }
 
@@ -675,7 +673,7 @@ main {
 
 .control label {
   font-weight: 600;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
   color: #374151;
   font-size: 0.95rem;
   letter-spacing: 0.025em;
