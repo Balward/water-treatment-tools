@@ -420,6 +420,8 @@ function setDefaultSelections() {
   }
   if (alumVar) {
     document.getElementById("timeVar2").value = alumVar;
+    // Default Variable 2 to its own Y-axis
+    document.getElementById("timeVar2Axis").checked = true;
   }
   updateTimeSeriesChart();
 
