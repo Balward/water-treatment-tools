@@ -79,6 +79,12 @@ let timeSeriesChart = null;
 let distributionChart = null;
 let optimizationChart = null;
 
+// Smart delay function that works even when tab is not active
+async function smartDelay(ms) {
+  // Use setTimeout which continues in background regardless of tab visibility
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 // Initialize application
 window.addEventListener("load", function () {
   loadData();
@@ -89,10 +95,10 @@ async function loadData() {
   try {
     // Enhanced loading sequence with realistic timing
     await updateLoadingProgress(5, "Initializing Water Data Explorer...");
-    await new Promise((resolve) => setTimeout(resolve, 300));
+    await smartDelay(150);
 
     await updateLoadingProgress(15, "Connecting to data source...");
-    await new Promise((resolve) => setTimeout(resolve, 400));
+    await smartDelay(200);
 
     await updateLoadingProgress(25, "Fetching Excel file...");
     const response = await fetch(
@@ -101,17 +107,17 @@ async function loadData() {
     if (!response.ok) throw new Error("Failed to fetch data file");
 
     await updateLoadingProgress(40, "Downloading spreadsheet data...");
-    await new Promise((resolve) => setTimeout(resolve, 300));
+    await smartDelay(150);
     const arrayBuffer = await response.arrayBuffer();
 
     await updateLoadingProgress(55, "Parsing Excel workbook...");
-    await new Promise((resolve) => setTimeout(resolve, 400));
+    await smartDelay(200);
     const workbook = XLSX.read(arrayBuffer, { type: "array" });
     const firstSheetName = workbook.SheetNames[0];
     const worksheet = workbook.Sheets[firstSheetName];
 
     await updateLoadingProgress(70, "Extracting variables and units...");
-    await new Promise((resolve) => setTimeout(resolve, 300));
+    await smartDelay(150);
     const jsonData = XLSX.utils.sheet_to_json(worksheet, {
       header: 1,
       defval: null,
@@ -204,10 +210,10 @@ async function loadData() {
       });
 
     await updateLoadingProgress(85, "Processing data rows...");
-    await new Promise((resolve) => setTimeout(resolve, 400));
+    await smartDelay(200);
 
     await updateLoadingProgress(95, "Setting up interface...");
-    await new Promise((resolve) => setTimeout(resolve, 300));
+    await smartDelay(150);
 
     // Initialize UI
     populateSelectors();
@@ -216,7 +222,7 @@ async function loadData() {
     showMainContent();
 
     await updateLoadingProgress(100, "Analysis ready!");
-    await new Promise((resolve) => setTimeout(resolve, 600));
+    await smartDelay(300);
 
     hideLoadingScreen();
   } catch (error) {
@@ -244,7 +250,7 @@ async function updateLoadingProgress(targetPercentage, text) {
     for (let i = 0; i <= steps; i++) {
       const newWidth = currentWidth + increment * i;
       progressFill.style.width = Math.min(newWidth, targetPercentage) + "%";
-      await new Promise((resolve) => setTimeout(resolve, 15));
+      await smartDelay(8);
     }
   }
 }
