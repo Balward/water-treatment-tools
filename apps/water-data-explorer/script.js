@@ -2284,20 +2284,20 @@ function exportChartToPDF(chartType) {
     const pageHeight = pdf.internal.pageSize.getHeight();
     const margin = 20;
     
-    // Add section title
-    pdf.setFontSize(16);
+    // Add section title (smaller, more compact)
+    pdf.setFontSize(14);
     pdf.setTextColor(0, 103, 127); // Match brand color
-    pdf.text(sectionTitle, margin, margin + 10);
+    pdf.text(sectionTitle, margin, margin + 8);
     
-    // Add chart title (if different from section title)
+    // Add chart title (if different from section title) - more compact
     if (chartTitle !== sectionTitle) {
-      pdf.setFontSize(14);
+      pdf.setFontSize(12);
       pdf.setTextColor(60, 60, 60);
-      pdf.text(chartTitle, margin, margin + 20);
+      pdf.text(chartTitle, margin, margin + 16);
     }
     
-    // Add data date range
-    pdf.setFontSize(10);
+    // Add data date range and timestamp on same line to save space
+    pdf.setFontSize(9);
     pdf.setTextColor(100, 100, 100);
     let dataDateRange;
     
@@ -2322,20 +2322,18 @@ function exportChartToPDF(chartType) {
       dataDateRange = getDateRange();
     }
     
-    const dataRangeY = chartTitle !== sectionTitle ? margin + 30 : margin + 20;
-    pdf.text(`Data period: ${dataDateRange}`, margin, dataRangeY);
-    
-    // Add timestamp
+    const metadataY = chartTitle !== sectionTitle ? margin + 24 : margin + 16;
     const timestamp = new Date().toLocaleString();
-    const timestampY = dataRangeY + 10;
-    pdf.text(`Generated on: ${timestamp}`, margin, timestampY);
+    // Combine data period and timestamp on one line, separated by padding
+    pdf.text(`Data period: ${dataDateRange}`, margin, metadataY);
+    pdf.text(`Generated: ${timestamp}`, margin + 120, metadataY);
     
-    // Calculate image dimensions (maintain aspect ratio)
+    // Calculate image dimensions (maintain aspect ratio) - more space for chart
     const chartCanvas = chart.canvas;
     const aspectRatio = chartCanvas.width / chartCanvas.height;
     const maxWidth = pageWidth - (margin * 2);
-    const headerHeight = chartTitle !== sectionTitle ? 50 : 40; // Account for both titles + data range + timestamp
-    const maxHeight = pageHeight - (margin * 3 + headerHeight); // Account for title and footer
+    const compactHeaderHeight = chartTitle !== sectionTitle ? 32 : 24; // Much more compact header
+    const maxHeight = pageHeight - (margin * 2 + compactHeaderHeight + 15); // Less margin, more chart space
     
     let imgWidth = maxWidth;
     let imgHeight = imgWidth / aspectRatio;
@@ -2347,7 +2345,7 @@ function exportChartToPDF(chartType) {
     
     // Center the image
     const xPos = (pageWidth - imgWidth) / 2;
-    const yPos = timestampY + 10; // Position after the timestamp with some spacing
+    const yPos = metadataY + 6; // Minimal spacing after metadata line
     
     // Add the chart image
     pdf.addImage(chartImageUrl, 'PNG', xPos, yPos, imgWidth, imgHeight);
