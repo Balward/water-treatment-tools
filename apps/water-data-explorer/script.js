@@ -2323,17 +2323,15 @@ function exportChartToPDF(chartType) {
     }
     
     const metadataY = chartTitle !== sectionTitle ? margin + 24 : margin + 16;
-    const timestamp = new Date().toLocaleString();
-    // Combine data period and timestamp on one line, separated by padding
+    // Only show data period in header now
     pdf.text(`Data period: ${dataDateRange}`, margin, metadataY);
-    pdf.text(`Generated: ${timestamp}`, margin + 120, metadataY);
     
     // Calculate image dimensions (maintain aspect ratio) - more space for chart
     const chartCanvas = chart.canvas;
     const aspectRatio = chartCanvas.width / chartCanvas.height;
     const maxWidth = pageWidth - (margin * 2);
-    const compactHeaderHeight = chartTitle !== sectionTitle ? 32 : 24; // Much more compact header
-    const maxHeight = pageHeight - (margin * 2 + compactHeaderHeight + 15); // Less margin, more chart space
+    const compactHeaderHeight = chartTitle !== sectionTitle ? 24 : 16; // Even more compact now that timestamp is in footer
+    const maxHeight = pageHeight - (margin * 2 + compactHeaderHeight + 10); // Maximum space for chart
     
     let imgWidth = maxWidth;
     let imgHeight = imgWidth / aspectRatio;
@@ -2350,10 +2348,12 @@ function exportChartToPDF(chartType) {
     // Add the chart image
     pdf.addImage(chartImageUrl, 'PNG', xPos, yPos, imgWidth, imgHeight);
     
-    // Add footer
+    // Add footer with timestamp
     pdf.setFontSize(8);
     pdf.setTextColor(120, 120, 120);
+    const timestamp = new Date().toLocaleString();
     pdf.text('Water Treatment Tools - Data Analysis Report', margin, pageHeight - 10);
+    pdf.text(`Generated: ${timestamp}`, pageWidth - margin - 80, pageHeight - 10);
     
     // Create timestamp for filename
     const now = new Date();
