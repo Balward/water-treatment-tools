@@ -2296,18 +2296,45 @@ function exportChartToPDF(chartType) {
       pdf.text(chartTitle, margin, margin + 20);
     }
     
-    // Add timestamp
+    // Add data date range
     pdf.setFontSize(10);
     pdf.setTextColor(100, 100, 100);
+    let dataDateRange;
+    
+    // For time series charts, get the current zoom range; for others, use full data range
+    if (chartType === 'timeseries' && timeSeriesChart && timeSeriesChart.scales && timeSeriesChart.scales.x) {
+      const xScale = timeSeriesChart.scales.x;
+      const minTime = new Date(xScale.min);
+      const maxTime = new Date(xScale.max);
+      
+      // Format dates consistently with getDateRange format
+      const formatDate = (date) => {
+        const month = date.getMonth() + 1;
+        const day = date.getDate();
+        const year = date.getFullYear();
+        const hour = date.getHours();
+        const minute = date.getMinutes().toString().padStart(2, "0");
+        return `${month}/${day}/${year} ${hour}:${minute}`;
+      };
+      
+      dataDateRange = `${formatDate(minTime)} to ${formatDate(maxTime)}`;
+    } else {
+      dataDateRange = getDateRange();
+    }
+    
+    const dataRangeY = chartTitle !== sectionTitle ? margin + 30 : margin + 20;
+    pdf.text(`Data period: ${dataDateRange}`, margin, dataRangeY);
+    
+    // Add timestamp
     const timestamp = new Date().toLocaleString();
-    const timestampY = chartTitle !== sectionTitle ? margin + 30 : margin + 20;
+    const timestampY = dataRangeY + 10;
     pdf.text(`Generated on: ${timestamp}`, margin, timestampY);
     
     // Calculate image dimensions (maintain aspect ratio)
     const chartCanvas = chart.canvas;
     const aspectRatio = chartCanvas.width / chartCanvas.height;
     const maxWidth = pageWidth - (margin * 2);
-    const headerHeight = chartTitle !== sectionTitle ? 40 : 30; // Account for both titles
+    const headerHeight = chartTitle !== sectionTitle ? 50 : 40; // Account for both titles + data range + timestamp
     const maxHeight = pageHeight - (margin * 3 + headerHeight); // Account for title and footer
     
     let imgWidth = maxWidth;
@@ -2320,7 +2347,7 @@ function exportChartToPDF(chartType) {
     
     // Center the image
     const xPos = (pageWidth - imgWidth) / 2;
-    const yPos = margin + headerHeight;
+    const yPos = timestampY + 10; // Position after the timestamp with some spacing
     
     // Add the chart image
     pdf.addImage(chartImageUrl, 'PNG', xPos, yPos, imgWidth, imgHeight);
