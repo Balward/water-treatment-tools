@@ -438,6 +438,14 @@
                   </h4>
                   <p id="optimizationSubtitle" class="chart-subtitle"></p>
                 </div>
+                <div class="trend-line-controls">
+                  <label class="trend-line-label">Trend Line:</label>
+                  <div class="trend-line-buttons">
+                    <button class="trend-line-btn active" data-type="linear" onclick="changeTrendLine('linear')">Linear</button>
+                    <button class="trend-line-btn" data-type="quadratic" onclick="changeTrendLine('quadratic')">Quadratic</button>
+                    <button class="trend-line-btn" data-type="cubic" onclick="changeTrendLine('cubic')">Cubic</button>
+                  </div>
+                </div>
               </div>
               <canvas id="optimizationChart"></canvas>
             </div>

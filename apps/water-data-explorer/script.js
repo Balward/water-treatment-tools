@@ -1368,6 +1368,27 @@ function selectCorrelationVariable(variable, targetVar, buttonElement) {
   createOptimizationScatter(targetVar, variable);
 }
 
+// Handle trend line type change
+function changeTrendLine(trendType) {
+  // Remove active class from all trend line buttons
+  document
+    .querySelectorAll(".trend-line-btn")
+    .forEach((btn) => btn.classList.remove("active"));
+
+  // Add active class to clicked button
+  document
+    .querySelector(`[data-type="${trendType}"]`)
+    .classList.add("active");
+
+  // Update global trend line type
+  currentTrendLineType = trendType;
+
+  // Recreate the chart if we have current variables
+  if (currentTargetVariable && currentPredictorVariable) {
+    createOptimizationScatter(currentTargetVariable, currentPredictorVariable);
+  }
+}
+
 // Display correlation matrix as interactive buttons
 function displayCorrelationMatrix(correlations, targetVar) {
   const container = document.getElementById("correlationMatrix");
@@ -1439,22 +1460,44 @@ function createOptimizationScatter(targetVar, strongestVar) {
     return;
   }
 
-  // Calculate linear regression for trend line
+  // Calculate regression based on selected trend line type
   const xValues = chartData.map((d) => d.x);
   const yValues = chartData.map((d) => d.y);
-  const regression = calculateLinearRegression(xValues, yValues);
+  
+  let regression, trendLineData;
+  
+  if (currentTrendLineType === 'linear') {
+    regression = calculateLinearRegression(xValues, yValues);
+    
+    // Create linear trend line points
+    const minX = Math.min(...xValues);
+    const maxX = Math.max(...xValues);
+    trendLineData = [
+      { x: minX, y: regression.slope * minX + regression.intercept },
+      { x: maxX, y: regression.slope * maxX + regression.intercept },
+    ];
+  } else {
+    // Polynomial regression (quadratic = degree 2, cubic = degree 3)
+    const degree = currentTrendLineType === 'quadratic' ? 2 : 3;
+    regression = calculatePolynomialRegression(xValues, yValues, degree);
+    
+    // Create smooth curve points
+    const minX = Math.min(...xValues);
+    const maxX = Math.max(...xValues);
+    const numPoints = 100;
+    const stepSize = (maxX - minX) / (numPoints - 1);
+    
+    trendLineData = [];
+    for (let i = 0; i < numPoints; i++) {
+      const x = minX + i * stepSize;
+      const y = evaluatePolynomial(regression.coefficients, x);
+      trendLineData.push({ x, y });
+    }
+  }
 
   // Calculate axis ranges with buffer
   const xRange = calculateAxisRange(xValues, strongestVar);
   const yRange = calculateAxisRange(yValues, targetVar);
-
-  // Create trend line points across data range
-  const minX = Math.min(...xValues);
-  const maxX = Math.max(...xValues);
-  const trendLineData = [
-    { x: minX, y: regression.slope * minX + regression.intercept },
-    { x: maxX, y: regression.slope * maxX + regression.intercept },
-  ];
 
   // Destroy existing chart
   if (optimizationChart) {
@@ -1477,13 +1520,13 @@ function createOptimizationScatter(targetVar, strongestVar) {
           borderWidth: 2,
         },
         {
-          label: "Trend Line",
+          label: `${currentTrendLineType.charAt(0).toUpperCase() + currentTrendLineType.slice(1)} Trend`,
           data: trendLineData,
           type: "line",
           backgroundColor: "transparent",
           borderColor: "rgba(132, 189, 0, 1)", // Fresh green
           borderWidth: 3,
-          borderDash: [8, 4],
+          borderDash: currentTrendLineType === 'linear' ? [8, 4] : [5, 3],
           pointRadius: 0,
           pointHoverRadius: 0,
           showLine: true,
@@ -1570,9 +1613,8 @@ function createOptimizationScatter(targetVar, strongestVar) {
   // Create subtitle with correlation info
   const subtitleElement = document.getElementById("optimizationSubtitle");
   if (subtitleElement) {
-    subtitleElement.textContent = `R = ${correlation.toFixed(
-      3
-    )} • R² = ${regression.r2.toFixed(3)}`;
+    const trendLabel = currentTrendLineType.charAt(0).toUpperCase() + currentTrendLineType.slice(1);
+    subtitleElement.textContent = `Pearson R = ${correlation.toFixed(3)} • ${trendLabel} R² = ${regression.r2.toFixed(3)}`;
   }
 
   // Show AI Insights panel and populate correlation info
@@ -1617,6 +1659,114 @@ function calculateLinearRegression(x, y) {
   const r2 = correlation * correlation;
 
   return { slope, intercept, r2 };
+}
+
+// Calculate polynomial regression using least squares
+function calculatePolynomialRegression(x, y, degree = 2) {
+  const n = Math.min(x.length, y.length);
+  if (n < degree + 1) return { coefficients: [], r2: 0 };
+
+  // Create design matrix (Vandermonde matrix)
+  const matrix = [];
+  for (let i = 0; i < n; i++) {
+    const row = [];
+    for (let j = 0; j <= degree; j++) {
+      row.push(Math.pow(x[i], j));
+    }
+    matrix.push(row);
+  }
+
+  // Solve normal equations: (X^T * X) * coeffs = X^T * y
+  const xt = transposeMatrix(matrix);
+  const xtx = multiplyMatrices(xt, matrix);
+  const xty = multiplyMatrixVector(xt, y.slice(0, n));
+  
+  // Solve using Gaussian elimination
+  const coefficients = solveLinearSystem(xtx, xty);
+  
+  // Calculate R-squared
+  const yMean = y.slice(0, n).reduce((sum, val) => sum + val, 0) / n;
+  let ssRes = 0, ssTot = 0;
+  
+  for (let i = 0; i < n; i++) {
+    const predicted = evaluatePolynomial(coefficients, x[i]);
+    ssRes += Math.pow(y[i] - predicted, 2);
+    ssTot += Math.pow(y[i] - yMean, 2);
+  }
+  
+  const r2 = ssTot === 0 ? 0 : 1 - (ssRes / ssTot);
+  
+  return { coefficients, r2 };
+}
+
+// Helper functions for matrix operations
+function transposeMatrix(matrix) {
+  return matrix[0].map((_, colIndex) => matrix.map(row => row[colIndex]));
+}
+
+function multiplyMatrices(a, b) {
+  const result = [];
+  for (let i = 0; i < a.length; i++) {
+    result[i] = [];
+    for (let j = 0; j < b[0].length; j++) {
+      let sum = 0;
+      for (let k = 0; k < b.length; k++) {
+        sum += a[i][k] * b[k][j];
+      }
+      result[i][j] = sum;
+    }
+  }
+  return result;
+}
+
+function multiplyMatrixVector(matrix, vector) {
+  return matrix.map(row => 
+    row.reduce((sum, val, i) => sum + val * vector[i], 0)
+  );
+}
+
+function solveLinearSystem(matrix, vector) {
+  const n = matrix.length;
+  const augmented = matrix.map((row, i) => [...row, vector[i]]);
+  
+  // Gaussian elimination with partial pivoting
+  for (let i = 0; i < n; i++) {
+    // Find pivot
+    let maxRow = i;
+    for (let k = i + 1; k < n; k++) {
+      if (Math.abs(augmented[k][i]) > Math.abs(augmented[maxRow][i])) {
+        maxRow = k;
+      }
+    }
+    
+    // Swap rows
+    [augmented[i], augmented[maxRow]] = [augmented[maxRow], augmented[i]];
+    
+    // Make all rows below this one 0 in current column
+    for (let k = i + 1; k < n; k++) {
+      if (augmented[i][i] === 0) continue;
+      const factor = augmented[k][i] / augmented[i][i];
+      for (let j = i; j < n + 1; j++) {
+        augmented[k][j] -= factor * augmented[i][j];
+      }
+    }
+  }
+  
+  // Back substitution
+  const solution = new Array(n);
+  for (let i = n - 1; i >= 0; i--) {
+    solution[i] = augmented[i][n];
+    for (let j = i + 1; j < n; j++) {
+      solution[i] -= augmented[i][j] * solution[j];
+    }
+    solution[i] /= augmented[i][i];
+  }
+  
+  return solution;
+}
+
+function evaluatePolynomial(coefficients, x) {
+  return coefficients.reduce((sum, coeff, power) => sum + coeff * Math.pow(x, power), 0);
 }
 
 // Get zoom configuration for time series charts only
@@ -1828,6 +1978,7 @@ function showNotification(message, type = "info") {
 let currentTargetVariable = null;
 let currentPredictorVariable = null;
 let currentCorrelationValue = null;
+let currentTrendLineType = 'linear';
 
 // Show AI Insights panel with correlation information
 function showAIInsightsPanel(predictorVar, targetVar, correlationValue) {
@@ -2421,6 +2572,7 @@ window.updateTimeSeriesChart = updateTimeSeriesChart;
 window.updateDistributionChart = updateDistributionChart;
 window.updateOptimizationChart = updateOptimizationChart;
 window.selectCorrelationVariable = selectCorrelationVariable;
+window.changeTrendLine = changeTrendLine;
 window.explainCorrelation = explainCorrelation;
 window.closeExplanationModal = closeExplanationModal;
 window.exportChartToPDF = exportChartToPDF;
