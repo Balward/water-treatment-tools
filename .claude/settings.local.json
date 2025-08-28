@@ -54,8 +54,7 @@
       "Bash(git update-index:*)",
       "Bash(taskkill:*)",
       "Bash(git revert:*)",
-      "Read(/C:\\Users\\Blain\\OneDrive\\Pictures\\Screenshots\\**)",
-      "Bash(del analyze_outliers.js)"
+      "Read(/C:\\Users\\Blain\\OneDrive\\Pictures\\Screenshots\\**)"
     ],
     "deny": [],
     "defaultMode": "acceptEdits"
