@@ -85,6 +85,98 @@ async function smartDelay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+// Gentle outlier removal - only removes extreme outliers per variable
+function removeExtremeOutliers(data, variables, method = 'iqr', multiplier = 1.5) {
+  let removedCount = 0;
+  const outlierLog = {};
+  
+  // Create a copy to work with
+  let cleanedData = [...data];
+  
+  variables.forEach((variable, index) => {
+    // Skip date columns
+    if (index === 0 || variable.toLowerCase().includes("date") || variable.toLowerCase().includes("timestamp")) {
+      return;
+    }
+    
+    // Get valid numeric values for this variable
+    const values = cleanedData
+      .map(d => d[variable])
+      .filter(v => typeof v === 'number' && !isNaN(v));
+    
+    if (values.length === 0) return;
+    
+    let outlierThresholds;
+    
+    if (method === 'iqr') {
+      // IQR method - more conservative
+      const sorted = [...values].sort((a, b) => a - b);
+      const q1 = sorted[Math.floor(sorted.length * 0.25)];
+      const q3 = sorted[Math.floor(sorted.length * 0.75)];
+      const iqr = q3 - q1;
+      outlierThresholds = {
+        lower: q1 - multiplier * iqr,
+        upper: q3 + multiplier * iqr
+      };
+    } else if (method === 'percentile') {
+      // Percentile capping - caps at specified percentiles
+      const sorted = [...values].sort((a, b) => a - b);
+      const lowerPerc = (100 - multiplier) / 200; // e.g., 2.5% for 95% range
+      const upperPerc = 1 - lowerPerc; // e.g., 97.5%
+      outlierThresholds = {
+        lower: sorted[Math.floor(sorted.length * lowerPerc)],
+        upper: sorted[Math.floor(sorted.length * upperPerc)]
+      };
+    }
+    
+    // Count outliers for this variable before removal
+    const variableOutliers = values.filter(v => 
+      v < outlierThresholds.lower || v > outlierThresholds.upper
+    );
+    
+    if (variableOutliers.length > 0) {
+      outlierLog[variable] = {
+        count: variableOutliers.length,
+        values: variableOutliers.slice(0, 5), // Show first 5
+        thresholds: outlierThresholds
+      };
+      
+      // Remove rows with outliers for this specific variable only
+      const beforeCount = cleanedData.length;
+      cleanedData = cleanedData.filter(row => {
+        const value = row[variable];
+        if (typeof value === 'number' && !isNaN(value)) {
+          return value >= outlierThresholds.lower && value <= outlierThresholds.upper;
+        }
+        return true; // Keep rows with null/missing values
+      });
+      removedCount += (beforeCount - cleanedData.length);
+    }
+  });
+  
+  // Log results
+  const originalCount = data.length;
+  const finalCount = cleanedData.length;
+  const totalRemoved = originalCount - finalCount;
+  
+  if (totalRemoved > 0) {
+    console.log(`🧹 Extreme Outlier Removal (${method} method):`);
+    console.log(`  Original records: ${originalCount.toLocaleString()}`);
+    console.log(`  Records removed: ${totalRemoved.toLocaleString()} (${((totalRemoved / originalCount) * 100).toFixed(1)}%)`);
+    console.log(`  Remaining records: ${finalCount.toLocaleString()}`);
+    console.log(`  Variables with outliers removed:`);
+    
+    Object.entries(outlierLog).forEach(([variable, info]) => {
+      console.log(`    ${variable}: ${info.count} outliers (${info.values.map(v => v.toFixed(3)).join(', ')}${info.count > 5 ? '...' : ''})`);
+      console.log(`      Valid range: ${info.thresholds.lower.toFixed(3)} - ${info.thresholds.upper.toFixed(3)}`);
+    });
+  } else {
+    console.log(`✅ No extreme outliers found using ${method} method`);
+  }
+  
+  return cleanedData;
+}
+
 // Initialize application
 window.addEventListener("load", function () {
   loadData();
@@ -208,6 +300,9 @@ async function loadData() {
         });
         return dataPoint;
       });
+
+  // Remove only extreme outliers (gentle approach)
+  data = removeExtremeOutliers(data, variables, 'iqr', 1.5);
 
     await updateLoadingProgress(85, "Processing data rows...");
     await smartDelay(200);
