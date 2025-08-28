@@ -85,89 +85,6 @@ async function smartDelay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-// Remove outliers using 3 standard deviation method
-function removeOutliers(data, variables, stdDevThreshold = 3) {
-  const outlierCounts = {};
-  
-  // Calculate statistics for each numeric variable
-  const variableStats = {};
-  variables.forEach((variable, index) => {
-    // Skip date columns
-    if (index === 0 || variable.toLowerCase().includes("date") || variable.toLowerCase().includes("timestamp")) {
-      return;
-    }
-    
-    // Get valid numeric values
-    const values = data
-      .map(d => d[variable])
-      .filter(v => typeof v === 'number' && !isNaN(v));
-    
-    if (values.length === 0) return;
-    
-    // Calculate mean and standard deviation
-    const mean = values.reduce((sum, v) => sum + v, 0) / values.length;
-    const variance = values.reduce((sum, v) => sum + Math.pow(v - mean, 2), 0) / values.length;
-    const stdDev = Math.sqrt(variance);
-    
-    variableStats[variable] = {
-      mean,
-      stdDev,
-      lowerBound: mean - (stdDevThreshold * stdDev),
-      upperBound: mean + (stdDevThreshold * stdDev)
-    };
-    
-    outlierCounts[variable] = 0;
-  });
-  
-  // Filter out rows with outliers
-  const filteredData = data.filter(row => {
-    let hasOutlier = false;
-    
-    variables.forEach((variable, index) => {
-      // Skip date columns
-      if (index === 0 || variable.toLowerCase().includes("date") || variable.toLowerCase().includes("timestamp")) {
-        return;
-      }
-      
-      const stats = variableStats[variable];
-      if (!stats) return;
-      
-      const value = row[variable];
-      if (typeof value === 'number' && !isNaN(value)) {
-        if (value < stats.lowerBound || value > stats.upperBound) {
-          hasOutlier = true;
-          outlierCounts[variable]++;
-        }
-      }
-    });
-    
-    return !hasOutlier;
-  });
-  
-  // Log outlier removal statistics
-  const originalCount = data.length;
-  const filteredCount = filteredData.length;
-  const removedCount = originalCount - filteredCount;
-  
-  if (removedCount > 0) {
-    console.log(`🧹 Outlier Removal Summary:`);
-    console.log(`  Original records: ${originalCount.toLocaleString()}`);
-    console.log(`  Records removed: ${removedCount.toLocaleString()} (${((removedCount / originalCount) * 100).toFixed(1)}%)`);
-    console.log(`  Remaining records: ${filteredCount.toLocaleString()}`);
-    console.log(`  Outliers by variable:`);
-    
-    Object.entries(outlierCounts).forEach(([variable, count]) => {
-      if (count > 0) {
-        console.log(`    ${variable}: ${count} outliers removed`);
-      }
-    });
-  } else {
-    console.log(`✅ No outliers found (using ${stdDevThreshold} standard deviation threshold)`);
-  }
-  
-  return filteredData;
-}
-
 // Initialize application
 window.addEventListener("load", function () {
   loadData();
@@ -291,9 +208,6 @@ async function loadData() {
         });
         return dataPoint;
       });
-
-  // Apply outlier removal
-  data = removeOutliers(data, variables);
 
     await updateLoadingProgress(85, "Processing data rows...");
     await smartDelay(200);
