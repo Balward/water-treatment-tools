@@ -78,8 +78,6 @@ let correlationChart = null;
 let timeSeriesChart = null;
 let distributionChart = null;
 let optimizationChart = null;
-let optimizationEChart = null;
-let distributionEChart = null;
 
 // Smart delay function that works even when tab is not active
 async function smartDelay(ms) {
@@ -1084,7 +1082,7 @@ function updateTimeSeriesChart() {
   }
 }
 
-// Update distribution chart using ECharts
+// Update distribution chart
 function updateDistributionChart() {
   const variable = document.getElementById("distVariable").value;
   const binCount = document.getElementById("distBins").value;
@@ -1121,20 +1119,17 @@ function updateDistributionChart() {
   // Create histogram data
   const histogram = new Array(bins).fill(0);
   const binLabels = [];
-  const binCenters = [];
   const decimals = getDecimalPlaces(values);
 
   for (let i = 0; i < bins; i++) {
     const binStart = min + i * binWidth;
     const binEnd = min + (i + 1) * binWidth;
-    const binCenter = (binStart + binEnd) / 2;
 
     // Format the range label with proper handling of negative numbers
     const startFormatted = formatRangeNumber(binStart, decimals);
     const endFormatted = formatRangeNumber(binEnd, decimals);
 
     binLabels.push(`${startFormatted} - ${endFormatted}`);
-    binCenters.push(binCenter);
   }
 
   values.forEach((value) => {
@@ -1142,157 +1137,71 @@ function updateDistributionChart() {
     histogram[binIndex]++;
   });
 
-  // Initialize or get ECharts instance
-  const chartDom = document.getElementById('distributionChart');
-  if (distributionEChart) {
-    distributionEChart.dispose();
+  // Destroy existing chart
+  if (distributionChart) {
+    distributionChart.destroy();
   }
-  distributionEChart = echarts.init(chartDom);
 
-  const unit = units[variable] ? ` (${units[variable]})` : "";
-
-  // ECharts configuration
-  const option = {
-    title: {
-      show: false
+  const ctx = document.getElementById("distributionChart").getContext("2d");
+  distributionChart = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: binLabels,
+      datasets: [
+        {
+          label: "Frequency",
+          data: histogram,
+          backgroundColor: "rgba(0, 103, 127, 0.6)", // Deep teal with transparency
+          borderColor: "rgba(0, 103, 127, 1)", // Solid deep teal
+          borderWidth: 1,
+        },
+      ],
     },
-    backgroundColor: 'rgba(248, 250, 252, 0.8)',
-    grid: {
-      left: 60,
-      right: 30,
-      top: 60,
-      bottom: 80,
-      containLabel: true
-    },
-    xAxis: {
-      type: 'category',
-      data: binLabels,
-      name: `${variable}${unit} Range`,
-      nameLocation: 'middle',
-      nameGap: 50,
-      nameTextStyle: {
-        fontSize: 14,
-        fontWeight: 'bold',
-        color: '#374151'
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        ...getNoZoomConfig(),
       },
-      axisLine: {
-        lineStyle: { color: '#E5E7EB', width: 1 }
-      },
-      axisTick: {
-        lineStyle: { color: '#E5E7EB' }
-      },
-      axisLabel: {
-        color: '#6B7280',
-        fontSize: 11,
-        rotate: 45,
-        interval: 0,
-        formatter: function(value) {
-          // Truncate long labels to fit better
-          return value.length > 15 ? value.substring(0, 12) + '...' : value;
-        }
-      },
-      splitLine: {
-        show: false
-      }
-    },
-    yAxis: {
-      type: 'value',
-      name: 'Frequency',
-      nameLocation: 'middle',
-      nameGap: 40,
-      nameTextStyle: {
-        fontSize: 14,
-        fontWeight: 'bold',
-        color: '#374151'
-      },
-      min: 0,
-      axisLine: {
-        lineStyle: { color: '#E5E7EB', width: 1 }
-      },
-      axisTick: {
-        lineStyle: { color: '#E5E7EB' }
-      },
-      axisLabel: {
-        color: '#6B7280',
-        fontSize: 12,
-        formatter: function(value) {
-          return Math.round(value); // Ensure integer frequency values
-        }
-      },
-      splitLine: {
-        lineStyle: { 
-          color: 'rgba(0, 0, 0, 0.1)',
-          width: 1
-        }
-      }
-    },
-    tooltip: {
-      trigger: 'axis',
-      backgroundColor: 'rgba(255, 255, 255, 0.95)',
-      borderColor: '#E5E7EB',
-      borderWidth: 1,
-      textStyle: {
-        color: '#374151',
-        fontSize: 12
-      },
-      formatter: function(params) {
-        const dataIndex = params[0].dataIndex;
-        const frequency = params[0].value;
-        const range = binLabels[dataIndex];
-        const percentage = ((frequency / values.length) * 100).toFixed(1);
-        return `<b>Range:</b> ${range}<br/>
-                <b>Frequency:</b> ${frequency} (${percentage}%)`;
-      }
-    },
-    series: [
-      {
-        name: 'Frequency',
-        type: 'bar',
-        data: histogram,
-        itemStyle: {
-          color: function(params) {
-            // Create a gradient effect based on frequency
-            const maxFreq = Math.max(...histogram);
-            const intensity = params.value / maxFreq;
-            const alpha = Math.max(0.6, intensity);
-            return `rgba(0, 103, 127, ${alpha})`;
+      scales: {
+        x: {
+          display: true,
+          title: {
+            display: true,
+            text: `${variable}${
+              units[variable] ? ` (${units[variable]})` : ""
+            } Range`,
           },
-          borderColor: 'rgba(0, 103, 127, 1)',
-          borderWidth: 1
+          ticks: {
+            maxRotation: 45, // Angle labels for better fit
+            minRotation: 45, // Force consistent angle
+            callback: function (value, index) {
+              // Get the original label (which is our properly formatted range)
+              const label = this.getLabelForValue(value);
+              return label; // Return the range label as-is (already properly formatted)
+            },
+          },
         },
-        emphasis: {
-          itemStyle: {
-            color: 'rgba(0, 103, 127, 0.8)',
-            shadowBlur: 10,
-            shadowColor: 'rgba(0, 103, 127, 0.3)',
-            shadowOffsetY: 2
-          }
+        y: {
+          display: true,
+          title: { display: true, text: "Frequency" },
+          beginAtZero: true,
+          ticks: {
+            precision: 0, // Ensure frequency values are integers
+          },
         },
-        barWidth: '85%'
-      }
-    ],
-    animation: true,
-    animationDuration: 1000,
-    animationEasing: 'cubicOut'
-  };
-
-  // Set the option and render the chart
-  distributionEChart.setOption(option);
+      },
+    },
+  });
 
   // Display statistics
   displayStats(values, variable);
 
-  // Update title
+  const unit = units[variable] ? ` (${units[variable]})` : "";
   document.getElementById(
     "distributionTitle"
   ).textContent = `Distribution of ${variable}${unit}`;
-
-  // Make chart responsive
-  window.addEventListener('resize', function() {
-    if (distributionEChart) {
-      distributionEChart.resize();
-    }
-  });
 }
 
 // Display statistics with enhanced styling
@@ -1503,7 +1412,7 @@ function displayCorrelationMatrix(correlations, targetVar) {
   }
 }
 
-// Create optimization scatter plot using ECharts
+// Create optimization scatter plot
 function createOptimizationScatter(targetVar, strongestVar) {
   // Set current variables for AI explanation
   currentTargetVariable = targetVar;
@@ -1534,183 +1443,131 @@ function createOptimizationScatter(targetVar, strongestVar) {
   const xValues = chartData.map((d) => d.x);
   const yValues = chartData.map((d) => d.y);
   const regression = calculateLinearRegression(xValues, yValues);
-  const correlation = calculateCorrelation(xValues, yValues);
 
   // Calculate axis ranges with buffer
   const xRange = calculateAxisRange(xValues, strongestVar);
   const yRange = calculateAxisRange(yValues, targetVar);
 
-  // Create trend line points
+  // Create trend line points across data range
   const minX = Math.min(...xValues);
   const maxX = Math.max(...xValues);
   const trendLineData = [
-    [minX, regression.slope * minX + regression.intercept],
-    [maxX, regression.slope * maxX + regression.intercept]
+    { x: minX, y: regression.slope * minX + regression.intercept },
+    { x: maxX, y: regression.slope * maxX + regression.intercept },
   ];
 
-  // Get axis units for display
+  // Destroy existing chart
+  if (optimizationChart) {
+    optimizationChart.destroy();
+  }
+
+  // Create bubble data to handle overlapping points
+  const bubbleData = createBubbleData(chartData.map(point => ({x: point.x, y: point.y})));
+
+  const ctx = document.getElementById("optimizationChart").getContext("2d");
+  optimizationChart = new Chart(ctx, {
+    type: "bubble",
+    data: {
+      datasets: [
+        {
+          label: `${targetVar} vs ${strongestVar}`,
+          data: bubbleData,
+          backgroundColor: "rgba(0, 103, 127, 0.6)", // Deep teal with transparency
+          borderColor: "rgba(0, 103, 127, 1)", // Solid deep teal
+          borderWidth: 2,
+        },
+        {
+          label: "Trend Line",
+          data: trendLineData,
+          type: "line",
+          backgroundColor: "transparent",
+          borderColor: "rgba(132, 189, 0, 1)", // Fresh green
+          borderWidth: 3,
+          borderDash: [8, 4],
+          pointRadius: 0,
+          pointHoverRadius: 0,
+          showLine: true,
+          fill: false,
+          tension: 0,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      layout: {
+        padding: {
+          bottom: 20
+        }
+      },
+      plugins: {
+        legend: { position: "top" },
+        tooltip: {
+          callbacks: {
+            label: function (context) {
+              // Hide tooltip for trend line
+              if (context.datasetIndex !== 0) return null;
+              
+              const x = formatValue(context.parsed.x, strongestVar);
+              const y = formatValue(context.parsed.y, targetVar);
+              const count = context.raw.count || 1;
+              const countText = count > 1 ? ` (${count} points)` : "";
+              return `(${x}, ${y})${countText}`;
+            },
+          },
+        },
+        ...getNoZoomConfig(),
+      },
+      scales: {
+        x: {
+          display: true,
+          title: {
+            display: true,
+            text: `${strongestVar}${
+              units[strongestVar] ? ` (${units[strongestVar]})` : ""
+            }`,
+          },
+          min: xRange.min,
+          max: xRange.max,
+          ticks: {
+            maxTicksLimit: 8, // Limit x-axis labels to prevent overcrowding
+            callback: function (value) {
+              return formatValue(value, strongestVar);
+            },
+          },
+        },
+        y: {
+          display: true,
+          title: {
+            display: true,
+            text: `${targetVar}${
+              units[targetVar] ? ` (${units[targetVar]})` : ""
+            }`,
+          },
+          min: yRange.min,
+          max: yRange.max,
+          ticks: {
+            maxTicksLimit: 8, // Limit y-axis labels to prevent overcrowding
+            callback: function (value) {
+              return formatValue(value, targetVar);
+            },
+          },
+        },
+      },
+    },
+  });
+
+  // Update title with correlation and R² values
+  const correlation = calculateCorrelation(xValues, yValues);
+  currentCorrelationValue = correlation; // Store for AI explanation
+
   const xUnit = units[strongestVar] ? ` (${units[strongestVar]})` : "";
   const yUnit = units[targetVar] ? ` (${units[targetVar]})` : "";
-
-  // Initialize or get ECharts instance
-  const chartDom = document.getElementById('optimizationChart');
-  if (optimizationEChart) {
-    optimizationEChart.dispose();
-  }
-  optimizationEChart = echarts.init(chartDom);
-
-  // ECharts configuration
-  const option = {
-    title: {
-      show: false
-    },
-    backgroundColor: 'rgba(248, 250, 252, 0.8)',
-    grid: {
-      left: 70,
-      right: 30,
-      top: 60,
-      bottom: 70,
-      containLabel: true
-    },
-    xAxis: {
-      type: 'value',
-      name: `${strongestVar}${xUnit}`,
-      nameLocation: 'middle',
-      nameGap: 35,
-      nameTextStyle: {
-        fontSize: 14,
-        fontWeight: 'bold',
-        color: '#374151'
-      },
-      min: xRange.min,
-      max: xRange.max,
-      axisLine: {
-        lineStyle: { color: '#E5E7EB', width: 1 }
-      },
-      axisTick: {
-        lineStyle: { color: '#E5E7EB' }
-      },
-      axisLabel: {
-        color: '#6B7280',
-        fontSize: 12,
-        formatter: function(value) {
-          return formatValue(value, strongestVar);
-        }
-      },
-      splitLine: {
-        lineStyle: { 
-          color: 'rgba(0, 0, 0, 0.1)',
-          width: 1
-        }
-      }
-    },
-    yAxis: {
-      type: 'value',
-      name: `${targetVar}${yUnit}`,
-      nameLocation: 'middle',
-      nameGap: 50,
-      nameTextStyle: {
-        fontSize: 14,
-        fontWeight: 'bold',
-        color: '#374151'
-      },
-      min: yRange.min,
-      max: yRange.max,
-      axisLine: {
-        lineStyle: { color: '#E5E7EB', width: 1 }
-      },
-      axisTick: {
-        lineStyle: { color: '#E5E7EB' }
-      },
-      axisLabel: {
-        color: '#6B7280',
-        fontSize: 12,
-        formatter: function(value) {
-          return formatValue(value, targetVar);
-        }
-      },
-      splitLine: {
-        lineStyle: { 
-          color: 'rgba(0, 0, 0, 0.1)',
-          width: 1
-        }
-      }
-    },
-    tooltip: {
-      trigger: 'item',
-      backgroundColor: 'rgba(255, 255, 255, 0.95)',
-      borderColor: '#E5E7EB',
-      borderWidth: 1,
-      textStyle: {
-        color: '#374151',
-        fontSize: 12
-      },
-      formatter: function(params) {
-        if (params.seriesName === 'Trend Line') return '';
-        const x = formatValue(params.value[0], strongestVar);
-        const y = formatValue(params.value[1], targetVar);
-        return `<b>${strongestVar}</b>: ${x}<br/><b>${targetVar}</b>: ${y}`;
-      }
-    },
-    legend: {
-      show: true,
-      top: 10,
-      textStyle: {
-        color: '#374151',
-        fontSize: 12
-      }
-    },
-    series: [
-      {
-        name: `${targetVar} vs ${strongestVar}`,
-        type: 'scatter',
-        data: chartData.map(d => [d.x, d.y]),
-        symbolSize: function(data) {
-          return 8; // Fixed size for now, could implement clustering later
-        },
-        itemStyle: {
-          color: 'rgba(0, 103, 127, 0.7)',
-          borderColor: 'rgba(0, 103, 127, 1)',
-          borderWidth: 1.5
-        },
-        emphasis: {
-          itemStyle: {
-            shadowBlur: 10,
-            shadowColor: 'rgba(0, 103, 127, 0.5)',
-            shadowOffsetY: 0,
-            color: 'rgba(0, 103, 127, 0.9)',
-            borderWidth: 2
-          }
-        }
-      },
-      {
-        name: 'Trend Line',
-        type: 'line',
-        data: trendLineData,
-        lineStyle: {
-          color: '#84BD00',
-          width: 3,
-          type: 'dashed'
-        },
-        symbol: 'none',
-        silent: true,
-        z: 10
-      }
-    ],
-    animation: true,
-    animationDuration: 800,
-    animationEasing: 'cubicOut'
-  };
-
-  // Set the option and render the chart
-  optimizationEChart.setOption(option);
-
-  // Update title and subtitle
-  currentCorrelationValue = correlation; // Store for AI explanation
   document.getElementById(
     "optimizationTitle"
   ).textContent = `${targetVar}${yUnit} vs ${strongestVar}${xUnit}`;
 
+  // Create subtitle with correlation info
   const subtitleElement = document.getElementById("optimizationSubtitle");
   if (subtitleElement) {
     subtitleElement.textContent = `R = ${correlation.toFixed(
@@ -1718,15 +1575,8 @@ function createOptimizationScatter(targetVar, strongestVar) {
     )} • R² = ${regression.r2.toFixed(3)}`;
   }
 
-  // Show AI Insights panel
+  // Show AI Insights panel and populate correlation info
   showAIInsightsPanel(strongestVar, targetVar, correlation);
-
-  // Make chart responsive
-  window.addEventListener('resize', function() {
-    if (optimizationEChart) {
-      optimizationEChart.resize();
-    }
-  });
 }
 
 // Calculate Pearson correlation coefficient
