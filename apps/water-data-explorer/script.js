@@ -227,6 +227,9 @@ async function loadData() {
     await updateLoadingProgress(100, "Analysis ready!");
     await smartDelay(300);
 
+    // Setup event listeners for Sankey controls
+    setupSankeyEventListeners();
+
     hideLoadingScreen();
   } catch (error) {
     console.error("Error loading data:", error);
@@ -474,6 +477,9 @@ function switchTab(tabName) {
       break;
     case "optimization":
       updateOptimizationChart();
+      break;
+    case "coagulationFlow":
+      updateCoagulationSankey();
       break;
   }
 }
@@ -2565,6 +2571,27 @@ function showNotification(message, type = 'info', duration = 4000) {
   }, duration);
 }
 
+// Setup event listeners for Sankey controls
+function setupSankeyEventListeners() {
+  const timeRangeControl = document.getElementById('sankeyTimeRange');
+  const minFlowControl = document.getElementById('sankeyMinFlow');
+  const focusControl = document.getElementById('sankeyFocus');
+  
+  if (timeRangeControl) {
+    timeRangeControl.addEventListener('change', updateCoagulationSankey);
+  }
+  
+  if (minFlowControl) {
+    minFlowControl.addEventListener('input', updateCoagulationSankey);
+  }
+  
+  if (focusControl) {
+    focusControl.addEventListener('change', updateCoagulationSankey);
+  }
+  
+  console.log('Sankey event listeners setup complete');
+}
+
 // Update coagulation Sankey chart
 function updateCoagulationSankey() {
   if (!data || data.length === 0) {
@@ -2720,12 +2747,28 @@ function updateCoagulationSankey() {
 function categorizeCoagulationData(dataset) {
   const categorizedData = [];
   
+  // Debug: Log available columns from first record
+  if (dataset.length > 0) {
+    console.log('Available columns:', Object.keys(dataset[0]));
+  }
+  
   dataset.forEach(record => {
     const turbidity = record['Effluent Turbidity'];
     const pH = record['Effluent pH'];
     const coagulantDose = record['Coagulant Dose']; // Adjust field name as needed
     const streamingCurrent = record['Streaming Current'];
     const residualTurbidity = record['Sodium Permanganate Residual']; // or whatever final measure
+    
+    // Debug: Log some sample values
+    if (categorizedData.length < 3) {
+      console.log('Sample record values:', {
+        turbidity,
+        pH,
+        coagulantDose,
+        streamingCurrent,
+        residualTurbidity
+      });
+    }
     
     // Only process records with key coagulation parameters
     if (typeof turbidity === 'number' && typeof streamingCurrent === 'number') {
@@ -2748,6 +2791,7 @@ function categorizeCoagulationData(dataset) {
     }
   });
   
+  console.log(`Processed ${categorizedData.length} records out of ${dataset.length} total records`);
   return categorizedData;
 }
 
@@ -2792,6 +2836,8 @@ function categorizeFinalPerformance(turbidity, residual) {
 
 // Build Sankey nodes and links from categorized data
 function buildCoagulationFlows(flowData, minFlow, focusArea) {
+  console.log(`Building flows for ${flowData.length} flow records, minFlow=${minFlow}, focusArea=${focusArea}`);
+  
   const flowCounts = {};
   const nodeCounts = {};
   
@@ -2865,6 +2911,10 @@ function buildCoagulationFlows(flowData, minFlow, focusArea) {
       nodes.some(n => n.name === link.source) && 
       nodes.some(n => n.name === link.target)
     );
+  
+  console.log(`Generated ${nodes.length} nodes and ${links.length} links`);
+  console.log('Sample nodes:', nodes.slice(0, 3));
+  console.log('Sample links:', links.slice(0, 3));
   
   return { nodes, links };
 }
