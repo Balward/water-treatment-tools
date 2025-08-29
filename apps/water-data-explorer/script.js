@@ -2750,35 +2750,40 @@ function categorizeCoagulationData(dataset) {
   // Debug: Log available columns from first record
   if (dataset.length > 0) {
     console.log('Available columns:', Object.keys(dataset[0]));
+    console.log('First record sample:', dataset[0]);
   }
   
   dataset.forEach(record => {
-    const turbidity = record['Effluent Turbidity'];
-    const pH = record['Effluent pH'];
-    const coagulantDose = record['Coagulant Dose']; // Adjust field name as needed
+    const turbidity = record['Combined Filter Effluent Turbidity'];
+    const pH = record['Finished Water pH'];
+    const rawTurbidity = record['Raw Water Turbidity'];
+    const aluminumDose = record['Aluminum Sulfate Dose'];
+    const catflocDose = record['Catfloc 8103+ Dose'];
     const streamingCurrent = record['Streaming Current'];
-    const residualTurbidity = record['Sodium Permanganate Residual']; // or whatever final measure
+    const residualTurbidity = record['Sodium Permanganate Residual'];
     
     // Debug: Log some sample values
     if (categorizedData.length < 3) {
       console.log('Sample record values:', {
         turbidity,
         pH,
-        coagulantDose,
+        rawTurbidity,
+        aluminumDose,
+        catflocDose,
         streamingCurrent,
         residualTurbidity
       });
     }
     
     // Only process records with key coagulation parameters
-    if (typeof turbidity === 'number' && typeof streamingCurrent === 'number') {
+    if (typeof rawTurbidity === 'number' && typeof streamingCurrent === 'number') {
       const flow = {
         // Raw water conditions
-        turbidityCategory: categorizeTurbidity(turbidity),
+        turbidityCategory: categorizeRawTurbidity(rawTurbidity),
         pHCategory: categorizePH(pH),
         
         // Coagulation strategy  
-        coagulantStrategy: categorizeCoagulantStrategy(coagulantDose, streamingCurrent),
+        coagulantStrategy: categorizeCoagulantStrategy(aluminumDose, catflocDose),
         
         // Intermediate performance
         streamingCurrentPerformance: categorizeStreamingCurrent(streamingCurrent),
@@ -2796,10 +2801,10 @@ function categorizeCoagulationData(dataset) {
 }
 
 // Helper functions for categorization
-function categorizeTurbidity(turbidity) {
-  if (turbidity < 0.5) return 'Low Turbidity';
-  if (turbidity < 2.0) return 'Medium Turbidity';
-  return 'High Turbidity';
+function categorizeRawTurbidity(turbidity) {
+  if (turbidity < 5) return 'Low Raw Turbidity';
+  if (turbidity < 15) return 'Medium Raw Turbidity';
+  return 'High Raw Turbidity';
 }
 
 function categorizePH(pH) {
@@ -2809,14 +2814,13 @@ function categorizePH(pH) {
   return 'High pH';
 }
 
-function categorizeCoagulantStrategy(dose, streamingCurrent) {
-  // This would need to be adjusted based on your actual coagulant data
-  if (typeof streamingCurrent === 'number') {
-    if (Math.abs(streamingCurrent) < 50) return 'Optimal Dosing';
-    if (Math.abs(streamingCurrent) < 100) return 'Moderate Dosing';
-    return 'Heavy Dosing';
-  }
-  return 'Unknown Dosing';
+function categorizeCoagulantStrategy(aluminumDose, catflocDose) {
+  const totalDose = (aluminumDose || 0) + (catflocDose || 0);
+  
+  if (totalDose === 0) return 'No Coagulant';
+  if (totalDose < 20) return 'Low Dose Strategy';
+  if (totalDose < 50) return 'Standard Dose Strategy';
+  return 'High Dose Strategy';
 }
 
 function categorizeStreamingCurrent(current) {
