@@ -144,33 +144,6 @@
             </div>
           </div>
 
-          <!-- Data Filtering Controls -->
-          <div class="filter-controls">
-            <h4 class="filter-title">📊 Data Filtering</h4>
-            <div class="filter-options">
-              <div class="filter-method">
-                <label for="corrFilterMethod">Filter Method:</label>
-                <select id="corrFilterMethod" onchange="updateCorrelationChart()">
-                  <option value="none">No Filter</option>
-                  <option value="zscore">Z-Score (Standard Deviations)</option>
-                  <option value="iqr">IQR (Interquartile Range)</option>
-                  <option value="percentile">Percentile Range</option>
-                </select>
-              </div>
-              <div class="filter-threshold">
-                <label for="corrFilterThreshold">Sensitivity:</label>
-                <select id="corrFilterThreshold" onchange="updateCorrelationChart()">
-                  <option value="2">Conservative (2σ / 2×IQR / 5th-95th %ile)</option>
-                  <option value="2.5">Moderate (2.5σ / 1.5×IQR / 2.5th-97.5th %ile)</option>
-                  <option value="3" selected>Aggressive (3σ / 1×IQR / 1st-99th %ile)</option>
-                </select>
-              </div>
-              <div class="filter-preview">
-                <span id="corrFilterPreview" class="filter-preview-text">All data points shown</span>
-              </div>
-            </div>
-          </div>
-
           <!-- Chart Content -->
           <div class="chart-section">
             <div class="chart-container">
@@ -279,33 +252,6 @@
             </div>
           </div>
 
-          <!-- Data Filtering Controls -->
-          <div class="filter-controls">
-            <h4 class="filter-title">📊 Data Filtering</h4>
-            <div class="filter-options">
-              <div class="filter-method">
-                <label for="timeFilterMethod">Filter Method:</label>
-                <select id="timeFilterMethod" onchange="updateTimeSeriesChart()">
-                  <option value="none">No Filter</option>
-                  <option value="zscore">Z-Score (Standard Deviations)</option>
-                  <option value="iqr">IQR (Interquartile Range)</option>
-                  <option value="percentile">Percentile Range</option>
-                </select>
-              </div>
-              <div class="filter-threshold">
-                <label for="timeFilterThreshold">Sensitivity:</label>
-                <select id="timeFilterThreshold" onchange="updateTimeSeriesChart()">
-                  <option value="2">Conservative (2σ / 2×IQR / 5th-95th %ile)</option>
-                  <option value="2.5">Moderate (2.5σ / 1.5×IQR / 2.5th-97.5th %ile)</option>
-                  <option value="3" selected>Aggressive (3σ / 1×IQR / 1st-99th %ile)</option>
-                </select>
-              </div>
-              <div class="filter-preview">
-                <span id="timeFilterPreview" class="filter-preview-text">All data points shown</span>
-              </div>
-            </div>
-          </div>
-
           <!-- Chart Content -->
           <div class="chart-section">
             <div class="chart-container">
@@ -361,33 +307,6 @@
                 <option value="15">15</option>
                 <option value="20">20</option>
               </select>
-            </div>
-          </div>
-
-          <!-- Data Filtering Controls -->
-          <div class="filter-controls">
-            <h4 class="filter-title">📊 Data Filtering</h4>
-            <div class="filter-options">
-              <div class="filter-method">
-                <label for="distFilterMethod">Filter Method:</label>
-                <select id="distFilterMethod" onchange="updateDistributionChart()">
-                  <option value="none">No Filter</option>
-                  <option value="zscore">Z-Score (Standard Deviations)</option>
-                  <option value="iqr">IQR (Interquartile Range)</option>
-                  <option value="percentile">Percentile Range</option>
-                </select>
-              </div>
-              <div class="filter-threshold">
-                <label for="distFilterThreshold">Sensitivity:</label>
-                <select id="distFilterThreshold" onchange="updateDistributionChart()">
-                  <option value="2">Conservative (2σ / 2×IQR / 5th-95th %ile)</option>
-                  <option value="2.5">Moderate (2.5σ / 1.5×IQR / 2.5th-97.5th %ile)</option>
-                  <option value="3" selected>Aggressive (3σ / 1×IQR / 1st-99th %ile)</option>
-                </select>
-              </div>
-              <div class="filter-preview">
-                <span id="distFilterPreview" class="filter-preview-text">All data points shown</span>
-              </div>
             </div>
           </div>
 
@@ -502,33 +421,6 @@
                 <option value="0.5">0.5</option>
                 <option value="0.7">0.7</option>
               </select>
-            </div>
-          </div>
-
-          <!-- Data Filtering Controls -->
-          <div class="filter-controls">
-            <h4 class="filter-title">📊 Data Filtering</h4>
-            <div class="filter-options">
-              <div class="filter-method">
-                <label for="optFilterMethod">Filter Method:</label>
-                <select id="optFilterMethod" onchange="updateOptimizationChart()">
-                  <option value="none">No Filter</option>
-                  <option value="zscore">Z-Score (Standard Deviations)</option>
-                  <option value="iqr">IQR (Interquartile Range)</option>
-                  <option value="percentile">Percentile Range</option>
-                </select>
-              </div>
-              <div class="filter-threshold">
-                <label for="optFilterThreshold">Sensitivity:</label>
-                <select id="optFilterThreshold" onchange="updateOptimizationChart()">
-                  <option value="2">Conservative (2σ / 2×IQR / 5th-95th %ile)</option>
-                  <option value="2.5">Moderate (2.5σ / 1.5×IQR / 2.5th-97.5th %ile)</option>
-                  <option value="3" selected>Aggressive (3σ / 1×IQR / 1st-99th %ile)</option>
-                </select>
-              </div>
-              <div class="filter-preview">
-                <span id="optFilterPreview" class="filter-preview-text">All data points shown</span>
-              </div>
             </div>
           </div>
 
