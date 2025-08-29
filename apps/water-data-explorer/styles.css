@@ -1755,3 +1755,100 @@ main {
   transform: none;
   box-shadow: none;
 }
+
+/* Data Filtering Controls */
+.filter-controls {
+  background: rgba(255, 248, 225, 0.8);
+  border-left: 4px solid #ffc845;
+  border-radius: 0 8px 8px 0;
+  padding: 1rem 1.5rem;
+  margin: 1rem 0;
+  border-top: 1px solid rgba(255, 200, 69, 0.3);
+  border-right: 1px solid rgba(255, 200, 69, 0.3);
+  border-bottom: 1px solid rgba(255, 200, 69, 0.3);
+}
+
+.filter-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #b45309;
+  margin: 0 0 1rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.filter-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1rem;
+  align-items: end;
+}
+
+.filter-method,
+.filter-threshold,
+.filter-preview {
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-method label,
+.filter-threshold label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #92400e;
+  margin-bottom: 0.5rem;
+}
+
+.filter-method select,
+.filter-threshold select {
+  padding: 0.5rem;
+  border: 2px solid #fde68a;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.9);
+  font-size: 0.9rem;
+  color: #92400e;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.filter-method select:focus,
+.filter-threshold select:focus {
+  outline: none;
+  border-color: #ffc845;
+  box-shadow: 0 0 0 3px rgba(255, 200, 69, 0.2);
+}
+
+.filter-preview {
+  justify-content: flex-end;
+  align-items: flex-end;
+}
+
+.filter-preview-text {
+  font-size: 0.9rem;
+  color: #6b7280;
+  font-style: italic;
+  text-align: right;
+  padding: 0.5rem 0;
+}
+
+.filter-preview-text.filtered {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .filter-options {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  
+  .filter-preview {
+    align-items: flex-start;
+  }
+  
+  .filter-preview-text {
+    text-align: left;
+  }
+}
+

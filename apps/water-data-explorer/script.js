@@ -85,6 +85,100 @@ async function smartDelay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+// Data filtering functions
+function applyDataFilter(dataset, variables, filterMethod, threshold, previewId) {
+  if (filterMethod === 'none') {
+    updateFilterPreview(previewId, dataset.length, dataset.length);
+    return dataset;
+  }
+
+  // Get numeric variables only (skip date columns)
+  const numericVariables = variables.filter((variable, index) => 
+    index !== 0 && 
+    !variable.toLowerCase().includes("date") && 
+    !variable.toLowerCase().includes("timestamp")
+  );
+
+  let filteredData = [...dataset];
+  let totalOutliers = 0;
+  
+  numericVariables.forEach(variable => {
+    const values = filteredData
+      .map(d => d[variable])
+      .filter(v => typeof v === 'number' && !isNaN(v));
+    
+    if (values.length === 0) return;
+    
+    let outlierBounds = getOutlierBounds(values, filterMethod, parseFloat(threshold));
+    
+    const beforeCount = filteredData.length;
+    filteredData = filteredData.filter(row => {
+      const value = row[variable];
+      if (typeof value === 'number' && !isNaN(value)) {
+        return value >= outlierBounds.lower && value <= outlierBounds.upper;
+      }
+      return true; // Keep rows with null/missing values
+    });
+    
+    totalOutliers += (beforeCount - filteredData.length);
+  });
+  
+  updateFilterPreview(previewId, filteredData.length, dataset.length);
+  return filteredData;
+}
+
+function getOutlierBounds(values, method, threshold) {
+  const sorted = [...values].sort((a, b) => a - b);
+  const n = sorted.length;
+  
+  switch (method) {
+    case 'zscore':
+      const mean = values.reduce((sum, v) => sum + v, 0) / n;
+      const variance = values.reduce((sum, v) => sum + Math.pow(v - mean, 2), 0) / n;
+      const stdDev = Math.sqrt(variance);
+      return {
+        lower: mean - threshold * stdDev,
+        upper: mean + threshold * stdDev
+      };
+      
+    case 'iqr':
+      const q1 = sorted[Math.floor(n * 0.25)];
+      const q3 = sorted[Math.floor(n * 0.75)];
+      const iqr = q3 - q1;
+      const multiplier = threshold === 2 ? 2 : threshold === 2.5 ? 1.5 : 1;
+      return {
+        lower: q1 - multiplier * iqr,
+        upper: q3 + multiplier * iqr
+      };
+      
+    case 'percentile':
+      const lowerPerc = threshold === 2 ? 0.05 : threshold === 2.5 ? 0.025 : 0.01;
+      const upperPerc = 1 - lowerPerc;
+      return {
+        lower: sorted[Math.floor(n * lowerPerc)],
+        upper: sorted[Math.floor(n * upperPerc)]
+      };
+      
+    default:
+      return { lower: -Infinity, upper: Infinity };
+  }
+}
+
+function updateFilterPreview(previewId, filteredCount, totalCount) {
+  const previewElement = document.getElementById(previewId);
+  if (!previewElement) return;
+  
+  if (filteredCount === totalCount) {
+    previewElement.textContent = "All data points shown";
+    previewElement.className = "filter-preview-text";
+  } else {
+    const removedCount = totalCount - filteredCount;
+    const removedPercent = ((removedCount / totalCount) * 100).toFixed(1);
+    previewElement.textContent = `${removedCount} outliers filtered (${removedPercent}%)`;
+    previewElement.className = "filter-preview-text filtered";
+  }
+}
+
 // Initialize application
 window.addEventListener("load", function () {
   loadData();
@@ -557,6 +651,13 @@ function updateCorrelationChart() {
   const xVar = document.getElementById("corrXAxis").value;
   const yVar = document.getElementById("corrYAxis").value;
   const colorVar = document.getElementById("corrColorBy").value;
+  
+  // Get filter settings
+  const filterMethod = document.getElementById("corrFilterMethod").value;
+  const filterThreshold = document.getElementById("corrFilterThreshold").value;
+  
+  // Apply data filtering
+  const filteredData = applyDataFilter(data, variables, filterMethod, filterThreshold, "corrFilterPreview");
 
   const emptyState = document.getElementById("correlationEmpty");
   const chart = document.getElementById("correlationChart");
@@ -576,7 +677,7 @@ function updateCorrelationChart() {
   chart.style.display = "block";
 
   // Get valid data points with color variable if specified
-  let validData = data
+  let validData = filteredData
     .map((d) => ({
       x: d[xVar],
       y: d[yVar],
@@ -858,6 +959,13 @@ function updateTimeSeriesChart() {
   const selectedVars = [1, 2, 3, 4]
     .map((i) => document.getElementById(`timeVar${i}`).value)
     .filter((v) => v && v !== "");
+    
+  // Get filter settings
+  const filterMethod = document.getElementById("timeFilterMethod").value;
+  const filterThreshold = document.getElementById("timeFilterThreshold").value;
+  
+  // Apply data filtering
+  const filteredData = applyDataFilter(data, variables, filterMethod, filterThreshold, "timeFilterPreview");
 
   if (selectedVars.length === 0) {
     document.getElementById("timeSeriesTitle").textContent =
@@ -867,7 +975,7 @@ function updateTimeSeriesChart() {
 
   // Process date column for time axis
   const dateColumn = variables[0]; // First column is always date/time
-  const timeData = data
+  const timeData = filteredData
     .map((d, index) => {
       const dateStr = d[dateColumn];
       if (!dateStr) return null;
@@ -907,13 +1015,14 @@ function updateTimeSeriesChart() {
   // Determine y-axis assignments
   const { assignments, axes } = determineYAxisAssignments(
     selectedVars,
-    datasets
+    datasets,
+    filteredData
   );
 
   selectedVars.forEach((variable, index) => {
     const dataPoints = [];
 
-    data.forEach((point, rowIndex) => {
+    filteredData.forEach((point, rowIndex) => {
       const dateStr = point.Date;
       const value = point[variable];
 
@@ -1000,7 +1109,7 @@ function updateTimeSeriesChart() {
             // Calculate buffered range for this axis
             const allValues = [];
             axisInfo.variables.forEach((variable) => {
-              const values = data
+              const values = filteredData
                 .map((d) => d[variable])
                 .filter((v) => typeof v === "number" && !isNaN(v));
               allValues.push(...values);
@@ -1086,6 +1195,13 @@ function updateTimeSeriesChart() {
 function updateDistributionChart() {
   const variable = document.getElementById("distVariable").value;
   const binCount = document.getElementById("distBins").value;
+  
+  // Get filter settings
+  const filterMethod = document.getElementById("distFilterMethod").value;
+  const filterThreshold = document.getElementById("distFilterThreshold").value;
+  
+  // Apply data filtering
+  const filteredData = applyDataFilter(data, variables, filterMethod, filterThreshold, "distFilterPreview");
 
   if (!variable) {
     document.getElementById("distributionTitle").textContent =
@@ -1094,7 +1210,7 @@ function updateDistributionChart() {
   }
 
   // Get valid numeric values
-  const values = data
+  const values = filteredData
     .map((d) => d[variable])
     .filter((v) => typeof v === "number" && !isNaN(v));
 
@@ -1296,6 +1412,13 @@ function displayStats(values, variable) {
 function updateOptimizationChart() {
   const targetVar = document.getElementById("targetVariable").value;
   const minCorr = parseFloat(document.getElementById("minCorrelation").value);
+  
+  // Get filter settings
+  const filterMethod = document.getElementById("optFilterMethod").value;
+  const filterThreshold = document.getElementById("optFilterThreshold").value;
+  
+  // Apply data filtering
+  const filteredData = applyDataFilter(data, variables, filterMethod, filterThreshold, "optFilterPreview");
 
   if (!targetVar) {
     document.getElementById("optimizationTitle").textContent =
@@ -1312,7 +1435,7 @@ function updateOptimizationChart() {
     if (variable === targetVar || isDateColumn) return;
 
     // Get paired data points where both variables have valid values
-    const pairedData = data
+    const pairedData = filteredData
       .map((d) => ({
         target: d[targetVar],
         var: d[variable],
@@ -1418,7 +1541,12 @@ function createOptimizationScatter(targetVar, strongestVar) {
   currentTargetVariable = targetVar;
   currentPredictorVariable = strongestVar;
 
-  const chartData = data
+  // Get current filter settings and apply them
+  const filterMethod = document.getElementById("optFilterMethod").value;
+  const filterThreshold = document.getElementById("optFilterThreshold").value;
+  const filteredData = applyDataFilter(data, variables, filterMethod, filterThreshold, "optFilterPreview");
+
+  const chartData = filteredData
     .map((d) => ({
       x: d[strongestVar],
       y: d[targetVar],
@@ -1649,7 +1777,7 @@ function getNoZoomConfig() {
 }
 
 // Determine y-axis assignments for time series variables
-function determineYAxisAssignments(selectedVars, datasets) {
+function determineYAxisAssignments(selectedVars, datasets, filteredData) {
   if (selectedVars.length <= 1) {
     return {
       assignments: { [selectedVars[0]]: "y" },
@@ -1666,10 +1794,11 @@ function determineYAxisAssignments(selectedVars, datasets) {
     }
   });
 
-  // Calculate ranges for each variable
+  // Calculate ranges for each variable (this function should receive filteredData from its caller)
+  // Note: This function is called from updateTimeSeriesChart which now passes filteredData
   const varRanges = {};
   selectedVars.forEach((variable) => {
-    const values = data
+    const values = filteredData
       .map((d) => d[variable])
       .filter((v) => typeof v === "number" && !isNaN(v));
     if (values.length > 0) {
