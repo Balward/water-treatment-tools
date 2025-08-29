@@ -100,6 +100,14 @@
           <img src="/assets/icons/optimization.png?v=2" alt="" class="tab-icon">
           Optimization
         </button>
+        <button
+          class="tab"
+          data-tab="coagulation"
+          onclick="switchTab('coagulation')"
+        >
+          <img src="/assets/icons/optimization.png?v=2" alt="" class="tab-icon">
+          Coagulation Flow
+        </button>
       </nav>
 
       <!-- Correlation Analysis -->
@@ -441,6 +449,79 @@
                 </div>
               </div>
               <div id="optimizationChart" style="width: 100%; height: 540px;"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Coagulation Flow Analysis -->
+      <section id="coagulation-tab" class="tab-content">
+        <div class="unified-analysis-card">
+          <div class="card-header">
+            <h3>Coagulation Process Flow Analysis</h3>
+            <div class="header-buttons">
+              <button class="help-toggle-btn" onclick="toggleHelp('coagulation-help')" title="Show/Hide Help">
+                ℹ️ Help
+              </button>
+              <button class="export-pdf-btn" onclick="exportChartToPDF('coagulation')" title="Export Chart as PDF">
+                📄 Export PDF
+              </button>
+            </div>
+            <p id="coagulation-help" class="instruction-text">
+              🌊 <strong>Coagulation Flow Analysis:</strong> This Sankey diagram shows how raw water conditions flow through your coagulation process to final performance outcomes. 
+              Track how different turbidity and pH conditions lead to specific coagulant strategies and treatment effectiveness. 
+              Use this to identify optimal coagulation pathways and process efficiency opportunities.
+            </p>
+          </div>
+
+          <!-- Controls Section -->
+          <div class="control-group">
+            <div class="control">
+              <label for="sankeyTimeRange">Time Period:</label>
+              <select id="sankeyTimeRange" onchange="updateCoagulationSankey()">
+                <option value="all" selected>All Data</option>
+                <option value="recent">Last 30 Days</option>
+                <option value="seasonal">By Season</option>
+              </select>
+            </div>
+            <div class="control">
+              <label for="sankeyMinFlow">Minimum Flow Size:</label>
+              <select id="sankeyMinFlow" onchange="updateCoagulationSankey()">
+                <option value="1">Show All Flows (1+ records)</option>
+                <option value="10" selected>Significant Flows (10+ records)</option>
+                <option value="50">Major Flows (50+ records)</option>
+                <option value="100">Primary Flows (100+ records)</option>
+              </select>
+            </div>
+            <div class="control">
+              <label for="sankeyFocus">Focus Area:</label>
+              <select id="sankeyFocus" onchange="updateCoagulationSankey()">
+                <option value="full" selected>Complete Process Flow</option>
+                <option value="input">Raw Water → Coagulation</option>
+                <option value="output">Coagulation → Performance</option>
+                <option value="efficiency">Efficiency Pathways</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Analysis Content -->
+          <div class="unified-content">
+            <div class="sankey-insights-panel">
+              <h4>Flow Insights</h4>
+              <div id="sankeyInsights">
+                <p class="empty-state">Select parameters to view coagulation flow analysis</p>
+              </div>
+            </div>
+            <div class="chart-container">
+              <div class="chart-header">
+                <div class="chart-title-section">
+                  <h4 id="sankeyTitle">
+                    Coagulation Process Flow Analysis
+                  </h4>
+                  <p id="sankeySubtitle" class="chart-subtitle">Raw Water → Coagulation Strategy → Performance Outcomes</p>
+                </div>
+              </div>
+              <div id="coagulationSankey" style="width: 100%; height: 540px;"></div>
             </div>
           </div>
         </div>
