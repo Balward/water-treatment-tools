@@ -834,6 +834,7 @@ main {
   height: 560px !important;
   max-height: 560px !important;
   min-height: 560px !important;
+  border-radius: 8px;
 }
 
 /* Time series specific cursor styles */
