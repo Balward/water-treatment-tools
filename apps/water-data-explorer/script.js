@@ -944,7 +944,7 @@ function updateTimeSeriesChart() {
         borderWidth: 2,
         fill: false,
         tension: 0.1,
-        pointRadius: 2,
+        pointRadius: 0,
         pointHoverRadius: 5,
         yAxisID: assignments[variable] || "y",
       });
