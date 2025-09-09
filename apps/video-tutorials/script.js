@@ -349,7 +349,7 @@ function createVideoCard(video) {
 function openModal(video) {
     modalVideo.src = getVideoPath(video.filename);
     modalTitle.textContent = video.title;
-    modal.style.display = 'block';
+    modal.style.display = 'flex';
     document.body.style.overflow = 'hidden';
 }
 
