@@ -893,6 +893,45 @@ function applySmoothingToData(dataPoints, smoothingHours) {
   return smoothedData;
 }
 
+// Update variable card colors to match chart series colors
+function updateVariableCardColors() {
+  const colors = [
+    "#00677F", // Deep Teal (your anchor)
+    "#84BD00", // Fresh Green (your anchor)
+    "#FFC845", // Citrus Yellow (bright contrast accent)
+    "#E94F37", // Coral Red (warm complementary pop)
+    "#2F3E46", // Cool Charcoal (grounding neutral)
+  ];
+  
+  const selectedVars = [1, 2, 3, 4]
+    .map((i) => ({
+      index: i,
+      value: document.getElementById(`timeVar${i}`).value
+    }))
+    .filter((v) => v.value && v.value !== "");
+  
+  // Reset all cards to default color first
+  for (let i = 1; i <= 4; i++) {
+    const card = document.querySelector(`.variable-card:nth-child(${i})`);
+    if (card) {
+      card.style.removeProperty('border-color');
+      card.style.removeProperty('background-color');
+      card.classList.remove('has-variable');
+    }
+  }
+  
+  // Apply colors to cards with selected variables
+  selectedVars.forEach((variable, seriesIndex) => {
+    const card = document.querySelector(`.variable-card:nth-child(${variable.index})`);
+    if (card) {
+      const color = colors[seriesIndex % colors.length];
+      card.style.borderColor = color;
+      card.style.backgroundColor = color + '08'; // Very light background tint
+      card.classList.add('has-variable');
+    }
+  });
+}
+
 // Update time series chart
 function updateTimeSeriesChart() {
   const selectedVars = [1, 2, 3, 4]
@@ -1138,6 +1177,9 @@ function updateTimeSeriesChart() {
     // For more than 4 variables, show count
     titleElement.innerHTML = `${selectedVars.slice(0, 2).join(" and ")}<br>and ${selectedVars.length - 2} other variables over Time`;
   }
+  
+  // Update variable card colors to match chart series
+  updateVariableCardColors();
 }
 
 // Update distribution chart
