@@ -853,6 +853,46 @@ function calculateAxisRange(values, variable) {
   };
 }
 
+// Apply smoothing to time series data
+function applySmoothingToData(dataPoints, smoothingHours) {
+  if (smoothingHours === 0 || dataPoints.length < 2) {
+    return dataPoints;
+  }
+  
+  const smoothedData = [];
+  const smoothingMs = smoothingHours * 60 * 60 * 1000; // Convert hours to milliseconds
+  
+  for (let i = 0; i < dataPoints.length; i++) {
+    const currentPoint = dataPoints[i];
+    const currentTime = currentPoint.x.getTime();
+    
+    // Find points within the smoothing window (centered around current point)
+    const windowStart = currentTime - smoothingMs / 2;
+    const windowEnd = currentTime + smoothingMs / 2;
+    
+    const pointsInWindow = dataPoints.filter(point => {
+      const pointTime = point.x.getTime();
+      return pointTime >= windowStart && pointTime <= windowEnd;
+    });
+    
+    if (pointsInWindow.length > 0) {
+      // Calculate moving average
+      const sum = pointsInWindow.reduce((total, point) => total + point.y, 0);
+      const average = sum / pointsInWindow.length;
+      
+      smoothedData.push({
+        x: currentPoint.x,
+        y: average
+      });
+    } else {
+      // If no points in window, keep original value
+      smoothedData.push(currentPoint);
+    }
+  }
+  
+  return smoothedData;
+}
+
 // Update time series chart
 function updateTimeSeriesChart() {
   const selectedVars = [1, 2, 3, 4]
@@ -936,9 +976,27 @@ function updateTimeSeriesChart() {
     });
 
     if (dataPoints.length > 0) {
+      // Find which timeVar dropdown contains this variable
+      let smoothingHours = 0;
+      for (let i = 1; i <= 4; i++) {
+        if (document.getElementById(`timeVar${i}`).value === variable) {
+          smoothingHours = parseInt(document.getElementById(`timeVar${i}Smooth`).value) || 0;
+          break;
+        }
+      }
+      
+      // Apply smoothing if requested
+      const processedDataPoints = applySmoothingToData(dataPoints, smoothingHours);
+      
+      // Create label with smoothing info
+      let label = `${variable}${units[variable] ? ` (${units[variable]})` : ""}`;
+      if (smoothingHours > 0) {
+        label += ` [${smoothingHours}h avg]`;
+      }
+      
       datasets.push({
-        label: `${variable}${units[variable] ? ` (${units[variable]})` : ""}`,
-        data: dataPoints,
+        label: label,
+        data: processedDataPoints,
         borderColor: colors[index % colors.length],
         backgroundColor: colors[index % colors.length] + "20",
         borderWidth: 2,

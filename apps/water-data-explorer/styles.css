@@ -732,6 +732,25 @@ main {
   color: #00677f;
 }
 
+.smoothing-dropdown {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: #555;
+  font-weight: 400;
+}
+
+.smoothing-dropdown span {
+  white-space: nowrap;
+}
+
+.smoothing-dropdown select {
+  flex: 1;
+  min-width: 100px;
+  font-size: 0.85rem;
+}
+
 /* Chart Container (original for all tabs) */
 .chart-container {
   background: rgba(255, 255, 255, 0.95);
