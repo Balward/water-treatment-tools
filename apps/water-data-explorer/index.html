@@ -442,54 +442,14 @@
                   >R = <span id="correlationDisplayValue"></span
                 ></span>
               </div>
-              <div class="explain-buttons-container">
-                <button
-                  id="explainCorrelationBtn"
-                  class="explain-btn-enhanced"
-                  onclick="explainCorrelation()"
-                  style="display: none"
-                >
-                  🤖 Explain This Correlation
-                </button>
-                <button
-                  id="customPromptBtn"
-                  class="explain-btn-enhanced secondary"
-                  onclick="showCustomPrompt()"
-                  style="display: none"
-                >
-                  💬 Ask Custom Question
-                </button>
-              </div>
-              
-              <!-- Custom Prompt Section -->
-              <div id="customPromptSection" class="custom-prompt-section" style="display: none">
-                <div class="custom-prompt-header">
-                  <h5>💬 Ask Your Own Question</h5>
-                  <p>Ask the AI anything about this correlation between <span id="customPromptVars"></span>:</p>
-                </div>
-                <div class="custom-prompt-input">
-                  <textarea
-                    id="customPromptText"
-                    placeholder="e.g., What operational changes could improve this relationship? How does this correlation compare to industry standards? What factors might be causing this pattern?"
-                    rows="3"
-                  ></textarea>
-                  <div class="custom-prompt-buttons">
-                    <button
-                      id="submitCustomPromptBtn"
-                      class="explain-btn-enhanced"
-                      onclick="explainCorrelationCustom()"
-                    >
-                      🤖 Ask AI
-                    </button>
-                    <button
-                      class="explain-btn-enhanced cancel"
-                      onclick="hideCustomPrompt()"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </div>
-              </div>
+              <button
+                id="explainCorrelationBtn"
+                class="explain-btn-enhanced"
+                onclick="explainCorrelation()"
+                style="display: none"
+              >
+                🤖 Explain This Correlation
+              </button>
             </div>
           </div>
 

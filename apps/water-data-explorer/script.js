@@ -1957,15 +1957,10 @@ function showAIInsightsPanel(predictorVar, targetVar, correlationValue) {
     correlationContext.style.display = "flex";
   }
 
-  // Show the explain correlation buttons
+  // Show the explain correlation button
   const explainBtn = document.getElementById("explainCorrelationBtn");
   if (explainBtn) {
     explainBtn.style.display = "block";
-  }
-  
-  const customPromptBtn = document.getElementById("customPromptBtn");
-  if (customPromptBtn) {
-    customPromptBtn.style.display = "block";
   }
 }
 
@@ -1975,61 +1970,6 @@ function hideAIInsightsPanel() {
   if (aiInsightsPanel) {
     aiInsightsPanel.style.display = "none";
   }
-}
-
-// Show custom prompt section
-function showCustomPrompt() {
-  const customPromptSection = document.getElementById("customPromptSection");
-  const customPromptVars = document.getElementById("customPromptVars");
-  const customPromptText = document.getElementById("customPromptText");
-  
-  if (customPromptSection) {
-    customPromptSection.style.display = "block";
-  }
-  
-  if (customPromptVars && currentTargetVariable && currentPredictorVariable) {
-    customPromptVars.textContent = `${currentPredictorVariable} and ${currentTargetVariable}`;
-  }
-  
-  if (customPromptText) {
-    customPromptText.focus();
-  }
-}
-
-// Hide custom prompt section
-function hideCustomPrompt() {
-  const customPromptSection = document.getElementById("customPromptSection");
-  const customPromptText = document.getElementById("customPromptText");
-  
-  if (customPromptSection) {
-    customPromptSection.style.display = "none";
-  }
-  
-  if (customPromptText) {
-    customPromptText.value = "";
-  }
-}
-
-// Handle custom prompt submission
-async function explainCorrelationCustom() {
-  const customPromptText = document.getElementById("customPromptText");
-  const customPrompt = customPromptText ? customPromptText.value.trim() : "";
-  
-  if (!customPrompt) {
-    showNotification("Please enter a question", "warning");
-    return;
-  }
-  
-  if (!currentTargetVariable || !currentPredictorVariable) {
-    showNotification("No correlation selected for explanation", "warning");
-    return;
-  }
-  
-  // Call the existing explanation function but with custom prompt
-  await explainCorrelation(customPrompt);
-  
-  // Hide the custom prompt section after submitting
-  hideCustomPrompt();
 }
 
 // Claude Proxy Configuration - detects if running in container or locally
@@ -2128,16 +2068,16 @@ const CORRELATION_EXPLANATIONS = {
 };
 
 // Hardcoded Explanation Functions
-async function explainCorrelation(customPrompt = null) {
+async function explainCorrelation() {
   if (!currentTargetVariable || !currentPredictorVariable) {
     showNotification("No correlation selected for explanation", "warning");
     return;
   }
 
-  showExplanationModal(customPrompt);
+  showExplanationModal();
 }
 
-function showExplanationModal(customPrompt = null) {
+function showExplanationModal() {
   const modal = document.getElementById("explanationModal");
   const titleElement = document.getElementById("modalCorrelationTitle");
   const detailsElement = document.getElementById("modalCorrelationDetails");
@@ -2145,11 +2085,7 @@ function showExplanationModal(customPrompt = null) {
   const textElement = document.getElementById("explanationText");
 
   // Set correlation info
-  if (customPrompt) {
-    titleElement.textContent = `Custom Question: ${currentTargetVariable} vs ${currentPredictorVariable}`;
-  } else {
-    titleElement.textContent = `${currentTargetVariable} vs ${currentPredictorVariable}`;
-  }
+  titleElement.textContent = `${currentTargetVariable} vs ${currentPredictorVariable}`;
 
   const correlationStrength = Math.abs(currentCorrelationValue);
   let strengthDesc =
@@ -2172,7 +2108,7 @@ function showExplanationModal(customPrompt = null) {
   textElement.innerHTML = "";
 
   // Get hardcoded explanation
-  getHardcodedExplanation(customPrompt);
+  getHardcodedExplanation();
 }
 
 function closeExplanationModal() {
@@ -2180,7 +2116,7 @@ function closeExplanationModal() {
   modal.style.display = "none";
 }
 
-async function getHardcodedExplanation(customPrompt = null) {
+async function getHardcodedExplanation() {
   const loadingElement = document.getElementById("explanationLoading");
   const textElement = document.getElementById("explanationText");
 
@@ -2204,7 +2140,6 @@ async function getHardcodedExplanation(customPrompt = null) {
           predictorVariable: currentPredictorVariable,
           correlationValue: currentCorrelationValue,
           provider: selectedProvider,
-          customPrompt: customPrompt,
         }),
       });
 
@@ -2588,7 +2523,4 @@ window.updateOptimizationChart = updateOptimizationChart;
 window.selectCorrelationVariable = selectCorrelationVariable;
 window.explainCorrelation = explainCorrelation;
 window.closeExplanationModal = closeExplanationModal;
-window.showCustomPrompt = showCustomPrompt;
-window.hideCustomPrompt = hideCustomPrompt;
-window.explainCorrelationCustom = explainCorrelationCustom;
 window.exportChartToPDF = exportChartToPDF;

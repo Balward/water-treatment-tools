@@ -1762,12 +1762,6 @@ main {
 
 .ai-insights-content {
   display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.explain-buttons-container {
-  display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
@@ -1820,79 +1814,6 @@ main {
   background: linear-gradient(135deg, #6b1d9c, #4b146d);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(138, 43, 226, 0.4);
-}
-
-.explain-btn-enhanced.secondary {
-  background: linear-gradient(135deg, #00677f, #4a90a4);
-  border: none;
-}
-
-.explain-btn-enhanced.secondary:hover {
-  background: linear-gradient(135deg, #004d5c, #00677f);
-  box-shadow: 0 8px 25px rgba(0, 103, 127, 0.4);
-}
-
-.explain-btn-enhanced.cancel {
-  background: linear-gradient(135deg, #6c757d, #868e96);
-  border: none;
-}
-
-.explain-btn-enhanced.cancel:hover {
-  background: linear-gradient(135deg, #5a6268, #6c757d);
-  box-shadow: 0 8px 25px rgba(108, 117, 125, 0.4);
-}
-
-/* Custom Prompt Section */
-.custom-prompt-section {
-  background: rgba(255, 255, 255, 0.95);
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 1.5rem;
-  margin-top: 1rem;
-}
-
-.custom-prompt-header h5 {
-  margin: 0 0 0.5rem 0;
-  color: #00677f;
-  font-size: 1.1rem;
-  font-weight: 600;
-}
-
-.custom-prompt-header p {
-  margin: 0 0 1rem 0;
-  color: #6b7280;
-  font-size: 0.9rem;
-}
-
-.custom-prompt-input textarea {
-  width: 100%;
-  min-height: 80px;
-  padding: 0.75rem;
-  border: 2px solid #e2e8f0;
-  border-radius: 8px;
-  font-family: inherit;
-  font-size: 0.9rem;
-  line-height: 1.4;
-  resize: vertical;
-  transition: border-color 0.2s ease;
-}
-
-.custom-prompt-input textarea:focus {
-  outline: none;
-  border-color: #00677f;
-  box-shadow: 0 0 0 3px rgba(0, 103, 127, 0.1);
-}
-
-.custom-prompt-input textarea::placeholder {
-  color: #9ca3af;
-  font-style: italic;
-}
-
-.custom-prompt-buttons {
-  display: flex;
-  gap: 0.75rem;
-  justify-content: flex-end;
-  margin-top: 1rem;
 }
 
 .explain-btn-enhanced:disabled {
