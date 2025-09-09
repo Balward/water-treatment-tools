@@ -1597,7 +1597,10 @@ function createOptimizationScatter(targetVar, strongestVar) {
       maintainAspectRatio: false,
       layout: {
         padding: {
-          bottom: 20
+          bottom: 40,
+          top: 10,
+          left: 10,
+          right: 10
         }
       },
       plugins: {
