@@ -702,15 +702,44 @@ main {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
 }
 
-/* Time series variable controls */
-.time-var-controls {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+/* Time series variable controls - new card layout */
+.time-series-controls {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
-.time-var-controls select {
-  flex: 1;
+.variable-card {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.variable-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: #00677f;
+}
+
+.variable-card-title {
+  margin: 0 0 0.75rem 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #00677f;
+  text-align: center;
+}
+
+.variable-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.variable-card-content select {
+  width: 100%;
 }
 
 .axis-checkbox {
@@ -749,6 +778,34 @@ main {
   flex: 1;
   min-width: 100px;
   font-size: 0.85rem;
+}
+
+/* Responsive design for variable cards */
+@media (max-width: 1200px) {
+  .time-series-controls {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .time-series-controls {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  
+  .variable-card {
+    padding: 0.75rem;
+  }
+  
+  .variable-card-title {
+    font-size: 0.85rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .variable-card-content {
+    gap: 0.5rem;
+  }
 }
 
 /* Chart Container (original for all tabs) */
