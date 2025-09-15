@@ -113,6 +113,9 @@
               <button class="export-pdf-btn" onclick="exportChartToPDF('correlation')" title="Export Chart as PDF">
                 📄 Export PDF
               </button>
+              <button class="fullscreen-btn" onclick="toggleFullscreen('correlationChart')" title="Toggle Fullscreen">
+                🔍 Fullscreen
+              </button>
             </div>
             <p id="correlation-help" class="instruction-text">
               ℹ️ <strong>How to use:</strong> Select X and Y variables to
@@ -174,6 +177,9 @@
               </button>
               <button class="export-pdf-btn" onclick="exportChartToPDF('timeseries')" title="Export Chart as PDF">
                 📄 Export PDF
+              </button>
+              <button class="fullscreen-btn" onclick="toggleFullscreen('timeSeriesChart')" title="Toggle Fullscreen">
+                🔍 Fullscreen
               </button>
             </div>
             <p id="timeseries-help" class="instruction-text">
@@ -325,6 +331,9 @@
               <button class="export-pdf-btn" onclick="exportChartToPDF('distribution')" title="Export Chart as PDF">
                 📄 Export PDF
               </button>
+              <button class="fullscreen-btn" onclick="toggleFullscreen('distributionChart')" title="Toggle Fullscreen">
+                🔍 Fullscreen
+              </button>
             </div>
             <p id="distribution-help" class="instruction-text">
               ℹ️ <strong>How to use:</strong> Select a variable to see its
@@ -385,6 +394,9 @@
               </button>
               <button class="export-pdf-btn" onclick="exportChartToPDF('optimization')" title="Export Chart as PDF">
                 📄 Export PDF
+              </button>
+              <button class="fullscreen-btn" onclick="toggleFullscreen('optimizationChart')" title="Toggle Fullscreen">
+                🔍 Fullscreen
               </button>
             </div>
             <p id="optimization-help" class="instruction-text">
@@ -495,6 +507,19 @@
     </main>
 
     <div id="notificationContainer" class="notification-container"></div>
+
+    <!-- Fullscreen Overlay -->
+    <div id="fullscreenOverlay" class="fullscreen-overlay" style="display: none;">
+      <div class="fullscreen-header">
+        <h3 id="fullscreenTitle">Chart Fullscreen</h3>
+        <button class="fullscreen-close" onclick="exitFullscreen()" title="Exit Fullscreen">
+          ✕ Exit Fullscreen
+        </button>
+      </div>
+      <div class="fullscreen-content">
+        <canvas id="fullscreenCanvas"></canvas>
+      </div>
+    </div>
 
     <!-- AI Explanation Modal -->
     <div id="explanationModal" class="modal" style="display: none">

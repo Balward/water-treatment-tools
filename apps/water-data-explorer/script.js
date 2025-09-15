@@ -2517,6 +2517,136 @@ function showNotification(message, type = 'info', duration = 4000) {
   }, duration);
 }
 
+// Fullscreen functionality
+let fullscreenChart = null;
+let originalChartCanvas = null;
+
+function toggleFullscreen(chartId) {
+  const overlay = document.getElementById('fullscreenOverlay');
+  const fullscreenCanvas = document.getElementById('fullscreenCanvas');
+  const fullscreenTitle = document.getElementById('fullscreenTitle');
+
+  // Get the appropriate chart instance
+  let chart = null;
+  let chartTitle = '';
+
+  switch(chartId) {
+    case 'correlationChart':
+      chart = correlationChart;
+      chartTitle = 'Correlation Analysis';
+      break;
+    case 'timeSeriesChart':
+      chart = timeSeriesChart;
+      chartTitle = 'Time Series Analysis';
+      break;
+    case 'distributionChart':
+      chart = distributionChart;
+      chartTitle = 'Distribution Analysis';
+      break;
+    case 'optimizationChart':
+      chart = optimizationChart;
+      chartTitle = 'Optimization Analysis';
+      break;
+  }
+
+  if (!chart) {
+    showNotification('No chart data available for fullscreen view', 'error');
+    return;
+  }
+
+  // Store references
+  originalChartCanvas = chart.canvas;
+
+  // Set fullscreen title
+  fullscreenTitle.textContent = chartTitle;
+
+  // Create fullscreen chart
+  createFullscreenChart(chart, fullscreenCanvas);
+
+  // Show overlay
+  overlay.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+
+  // Add ESC key listener
+  document.addEventListener('keydown', handleEscapeKey);
+}
+
+function createFullscreenChart(sourceChart, targetCanvas) {
+  // Calculate optimal size for fullscreen
+  const container = targetCanvas.parentElement;
+  const containerRect = container.getBoundingClientRect();
+
+  // Set canvas size to fill available space while maintaining aspect ratio
+  const maxWidth = containerRect.width - 40; // Some padding
+  const maxHeight = containerRect.height - 40;
+
+  targetCanvas.style.width = maxWidth + 'px';
+  targetCanvas.style.height = maxHeight + 'px';
+
+  // Get chart configuration and data
+  const config = JSON.parse(JSON.stringify(sourceChart.config));
+
+  // Enhance configuration for fullscreen
+  if (config.options) {
+    // Increase font sizes for better readability
+    config.options.plugins = config.options.plugins || {};
+    config.options.plugins.legend = config.options.plugins.legend || {};
+    config.options.plugins.legend.labels = config.options.plugins.legend.labels || {};
+    config.options.plugins.legend.labels.font = { size: 16 };
+
+    // Increase title font size
+    if (config.options.plugins.title) {
+      config.options.plugins.title.font = { size: 20, weight: 'bold' };
+    }
+
+    // Increase axis label font sizes
+    if (config.options.scales) {
+      Object.keys(config.options.scales).forEach(scaleKey => {
+        if (config.options.scales[scaleKey].ticks) {
+          config.options.scales[scaleKey].ticks.font = { size: 14 };
+        }
+        if (config.options.scales[scaleKey].title) {
+          config.options.scales[scaleKey].title.font = { size: 16, weight: 'bold' };
+        }
+      });
+    }
+
+    // Maintain responsiveness
+    config.options.responsive = true;
+    config.options.maintainAspectRatio = false;
+  }
+
+  // Create new chart instance
+  const ctx = targetCanvas.getContext('2d');
+  fullscreenChart = new Chart(ctx, config);
+}
+
+function exitFullscreen() {
+  const overlay = document.getElementById('fullscreenOverlay');
+
+  // Hide overlay
+  overlay.style.display = 'none';
+  document.body.style.overflow = '';
+
+  // Destroy fullscreen chart
+  if (fullscreenChart) {
+    fullscreenChart.destroy();
+    fullscreenChart = null;
+  }
+
+  // Clear references
+  originalChartCanvas = null;
+
+  // Remove ESC key listener
+  document.removeEventListener('keydown', handleEscapeKey);
+}
+
+function handleEscapeKey(event) {
+  if (event.key === 'Escape') {
+    exitFullscreen();
+  }
+}
+
 // Make functions globally available
 window.switchTab = switchTab;
 window.updateCorrelationChart = updateCorrelationChart;
@@ -2527,3 +2657,5 @@ window.selectCorrelationVariable = selectCorrelationVariable;
 window.explainCorrelation = explainCorrelation;
 window.closeExplanationModal = closeExplanationModal;
 window.exportChartToPDF = exportChartToPDF;
+window.toggleFullscreen = toggleFullscreen;
+window.exitFullscreen = exitFullscreen;
