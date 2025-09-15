@@ -2572,6 +2572,12 @@ function toggleFullscreen(chartId) {
 }
 
 function createFullscreenChart(sourceChart, targetCanvas) {
+  // First destroy any existing fullscreen chart
+  if (fullscreenChart) {
+    fullscreenChart.destroy();
+    fullscreenChart = null;
+  }
+
   // Calculate optimal size for fullscreen
   const container = targetCanvas.parentElement;
   const containerRect = container.getBoundingClientRect();
@@ -2580,11 +2586,23 @@ function createFullscreenChart(sourceChart, targetCanvas) {
   const maxWidth = containerRect.width - 40; // Some padding
   const maxHeight = containerRect.height - 40;
 
+  targetCanvas.width = maxWidth;
+  targetCanvas.height = maxHeight;
   targetCanvas.style.width = maxWidth + 'px';
   targetCanvas.style.height = maxHeight + 'px';
 
-  // Get chart configuration and data
-  const config = JSON.parse(JSON.stringify(sourceChart.config));
+  // Create a deep copy of the chart configuration
+  const config = {
+    type: sourceChart.config.type,
+    data: {
+      labels: sourceChart.data.labels ? [...sourceChart.data.labels] : [],
+      datasets: sourceChart.data.datasets ? sourceChart.data.datasets.map(dataset => ({
+        ...dataset,
+        data: [...dataset.data]
+      })) : []
+    },
+    options: JSON.parse(JSON.stringify(sourceChart.config.options || {}))
+  };
 
   // Enhance configuration for fullscreen
   if (config.options) {
@@ -2618,7 +2636,14 @@ function createFullscreenChart(sourceChart, targetCanvas) {
 
   // Create new chart instance
   const ctx = targetCanvas.getContext('2d');
-  fullscreenChart = new Chart(ctx, config);
+
+  try {
+    fullscreenChart = new Chart(ctx, config);
+    console.log('Fullscreen chart created successfully:', fullscreenChart);
+  } catch (error) {
+    console.error('Error creating fullscreen chart:', error);
+    showNotification('Error creating fullscreen chart', 'error');
+  }
 }
 
 function exitFullscreen() {
