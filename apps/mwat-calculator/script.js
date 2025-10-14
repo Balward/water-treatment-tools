@@ -164,9 +164,31 @@ function buildTable(columns, rows) {
     .map((col) => `<th scope="col">${col}</th>`)
     .join("")}</tr></thead>`;
 
-  const tbody = `<tbody>${rows
-    .map((row) => `<tr>${row.map((cell) => `<td>${cell}</td>`).join("")}</tr>`)
-    .join("")}</tbody>`;
+  const tbodyRows = rows
+    .map((row) => {
+      const cells = Array.isArray(row) ? row : row.cells;
+      const highlightIndices = new Set(
+        Array.isArray(row.highlightIndices) ? row.highlightIndices : []
+      );
+      const rowClass = !Array.isArray(row) && row.rowClass ? ` class="${row.rowClass}"` : "";
+      const cellMarkup = cells
+        .map((cell, index) => {
+          const isHighlighted = highlightIndices.has(index);
+          const cellClass = isHighlighted ? " class=\"table__cell--highlight\"" : "";
+          const badge = isHighlighted
+            ? '<span class="table__badge" aria-label="Reported value" title="Reported value">Reported</span>'
+            : "";
+          const content = isHighlighted
+            ? `<span class="table__cell-inner">${cell}</span>${badge}`
+            : cell;
+          return `<td${cellClass}>${content}</td>`;
+        })
+        .join("");
+      return `<tr${rowClass}>${cellMarkup}</tr>`;
+    })
+    .join("");
+
+  const tbody = `<tbody>${tbodyRows}</tbody>`;
 
   return `<div class="table-wrapper"><table class="table">${thead}${tbody}</table></div>`;
 }
@@ -363,7 +385,7 @@ function summarizeRecords(records) {
   };
 }
 
-function renderDailyTable(daily, dailyMaxLookup) {
+function renderDailyTable(daily, dailyMaxLookup, highlightKey) {
   if (!daily.length) {
     return "<p>No daily averages were recorded in the selected month.</p>";
   }
@@ -379,25 +401,42 @@ function renderDailyTable(daily, dailyMaxLookup) {
       maxCell = `${valueLabel}<div class="table__subtext">${windowLabel}</div>`;
     }
 
-    return [
-      formatSingleDate(day.date),
-      day.count.toString(),
-      `${formatNumber(day.average, 3)} °C`,
-      maxCell
-    ];
+    const highlight = highlightKey && key === highlightKey;
+
+    return {
+      cells: [
+        formatSingleDate(day.date),
+        day.count.toString(),
+        `${formatNumber(day.average, 3)} °C`,
+        maxCell
+      ],
+      highlightIndices: highlight ? [3] : [],
+      rowClass: highlight ? "table__row--highlight" : ""
+    };
   });
 
   return buildTable(["Date", "Readings", "Daily Average", "2-hr Maximum"], rows);
 }
 
-function renderWindowTable(windows) {
+function renderWindowTable(windows, highlightedWindow) {
   const sorted = windows.slice().sort((a, b) => a.end - b.end);
-  const rows = sorted.map((window, index) => [
-    (index + 1).toString(),
-    formatDateRange(window.start, window.end),
-    formatSingleDate(window.end),
-    `${formatNumber(window.mean, 3)} °C`
-  ]);
+  const rows = sorted.map((window, index) => {
+    const isHighlighted =
+      highlightedWindow &&
+      window.start.getTime() === highlightedWindow.start.getTime() &&
+      window.end.getTime() === highlightedWindow.end.getTime();
+
+    return {
+      cells: [
+        (index + 1).toString(),
+        formatDateRange(window.start, window.end),
+        formatSingleDate(window.end),
+        `${formatNumber(window.mean, 3)} °C`
+      ],
+      highlightIndices: isHighlighted ? [3] : [],
+      rowClass: isHighlighted ? "table__row--highlight" : ""
+    };
+  });
   return buildTable(["MWAT #", "7-Day Range", "Ending Day", "Rolling Average"], rows);
 }
 
@@ -488,10 +527,6 @@ async function processFiles() {
       return;
     }
 
-    const monthlyDaily = daily.filter((day) => day.date.getMonth() === monthIndex);
-    dailyTableContainer.innerHTML = renderDailyTable(monthlyDaily, dailyMaxLookup);
-    dailySection.classList.remove("hidden");
-
     const windows = computeSevenDayWindows(daily);
 
     if (!windows.length) {
@@ -514,6 +549,11 @@ async function processFiles() {
     const monthlyDailyMax = monthlyDailyMaxima.reduce((best, current) =>
       current.value > best.value ? current : best
     );
+
+    const monthlyDaily = daily.filter((day) => day.date.getMonth() === monthIndex);
+    const highlightKey = toDateKey(monthlyDailyMax.date);
+    dailyTableContainer.innerHTML = renderDailyTable(monthlyDaily, dailyMaxLookup, highlightKey);
+    dailySection.classList.remove("hidden");
 
     const targetYear = monthlyDailyMax.date.getFullYear();
     const windowsForMonth = windows.filter((window) => window.monthIndex === monthIndex);
@@ -543,7 +583,7 @@ async function processFiles() {
 
     metricsPanel.classList.remove("hidden");
 
-    windowTableContainer.innerHTML = renderWindowTable(windowsForMonth);
+    windowTableContainer.innerHTML = renderWindowTable(windowsForMonth, best);
     resultsSection.classList.remove("hidden");
     showMessage("MWAT calculations complete.", "success");
   } catch (error) {
