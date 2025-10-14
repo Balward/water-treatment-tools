@@ -38,6 +38,7 @@ COPY global-styles.css ./
 
 # Copy dashboard as the root index
 COPY apps/dashboard/dashboard.html ./index.html
+COPY apps/dashboard/dashboard.css ./dashboard.css
 
 # Create nginx configuration
 COPY nginx.conf /etc/nginx/nginx.conf
