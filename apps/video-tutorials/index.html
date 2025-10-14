@@ -8,40 +8,108 @@
     <link rel="stylesheet" href="../../global-styles.css?v=1757369234" />
     <link rel="stylesheet" href="styles.css?v=1757369234" />
   </head>
-  <body class="wt-body-gradient">
+  <body>
     <div class="wt-container">
       <header class="wt-header">
         <div class="wt-header-content">
-          <div class="wt-header-logo">
-            <img src="../../assets/logos/logo-vert.png" alt="City Logo" class="wt-logo-main" />
+          <div class="wt-brand">
+            <img
+              src="../../assets/logos/logo-vert.png"
+              alt="City Logo"
+              class="wt-logo"
+            />
+            <div class="wt-brand-text">
+              <h1>Water Treatment Tools</h1>
+              <p class="wt-tagline">Guided video training for every critical process</p>
+            </div>
           </div>
-          <div class="wt-header-text">
-            <h1 class="wt-header-title">Water Treatment Exam Preparation Grade 4 - Video Tutorials</h1>
-            <p class="wt-header-subtitle">
-              Learn water treatment calculations and tool usage
-            </p>
-          </div>
-          <nav class="wt-header-nav">
-            <a href="../../" class="wt-nav-btn">
-              <span class="wt-nav-icon">🏠</span>
-              <span class="wt-nav-text">Dashboard</span>
+          <nav class="wt-nav">
+            <a href="../../" class="wt-nav-link">
+              <span aria-hidden="true">🏠</span>
+              <span>Return to dashboard</span>
             </a>
           </nav>
         </div>
       </header>
 
-      <main class="wt-main-content">
-        <div class="video-grid" id="videoGrid">
-          <!-- Videos will be loaded here -->
-        </div>
+      <main class="wt-main">
+        <section class="wt-card wt-video-hero">
+          <div class="wt-video-hero-text">
+            <h2>Master every calculation with guided walkthroughs</h2>
+            <p>
+              Follow along with HD lessons covering formulas, plant operations, and
+              compliance strategies so you can move from theory to confident
+              execution in the field.
+            </p>
+            <div class="wt-hero-actions">
+              <a class="wt-btn wt-btn-primary" href="#library">Browse lessons</a>
+              <a class="wt-btn wt-btn-outline" href="../../">Open dashboard</a>
+            </div>
+            <div class="wt-video-metrics">
+              <div class="wt-metric">
+                <span class="wt-metric-value">38</span>
+                <span class="wt-metric-label">Curated tutorials</span>
+              </div>
+              <div class="wt-metric">
+                <span class="wt-metric-value">24+</span>
+                <span class="wt-metric-label">Hours of instruction</span>
+              </div>
+              <div class="wt-metric">
+                <span class="wt-metric-value">5</span>
+                <span class="wt-metric-label">Core knowledge tracks</span>
+              </div>
+            </div>
+          </div>
+          <div class="wt-video-hero-panel">
+            <div class="wt-video-hero-card">
+              <h3>What you'll gain</h3>
+              <ul>
+                <li>Step-by-step math walkthroughs for exam prep</li>
+                <li>Operational best practices from veteran operators</li>
+                <li>Download-ready formulas and printable references</li>
+              </ul>
+            </div>
+            <div class="wt-video-hero-card secondary">
+              <h3>Popular focus areas</h3>
+              <div class="wt-focus-tags">
+                <span>Jar testing &amp; dosing</span>
+                <span>Filtration performance</span>
+                <span>Regulatory compliance</span>
+                <span>Pumps &amp; hydraulics</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="library" class="wt-card wt-video-library">
+          <div class="wt-section-header">
+            <div>
+              <h2>Video library</h2>
+              <p>Pick a lesson to watch instantly in your browser</p>
+            </div>
+            <div class="wt-filter-chips">
+              <span class="wt-filter-chip">Foundations</span>
+              <span class="wt-filter-chip">Process control</span>
+              <span class="wt-filter-chip">Advanced math</span>
+              <span class="wt-filter-chip">Management &amp; safety</span>
+            </div>
+          </div>
+          <div id="videoGrid" class="wt-grid wt-grid-auto wt-video-grid">
+            <!-- Videos rendered via script.js -->
+          </div>
+        </section>
       </main>
+
+      <footer class="wt-card wt-footer">
+        <p class="text-gray-600">&copy; 2025 Water Treatment Tools</p>
+        <p class="text-gray-500">Learning resources curated for operators, engineers, and analysts.</p>
+      </footer>
     </div>
 
-    <!-- Modal -->
     <div id="videoModal" class="wt-modal">
       <div class="wt-modal-content">
-        <span class="wt-modal-close">&times;</span>
-        <video id="modalVideo" class="modal-video" controls>
+        <button class="wt-modal-close" type="button" aria-label="Close video">&times;</button>
+        <video id="modalVideo" class="wt-modal-video" controls>
           Your browser does not support the video tag.
         </video>
         <h3 id="modalTitle" class="wt-modal-title"></h3>

@@ -288,53 +288,45 @@ function getEstimatedDuration(videoNum) {
     return durations[videoNum] || '30m';
 }
 
-function getAccentColor(videoNum) {
-    // Muted color accents for visual variety
-    const accentColors = [
-        '#6b7280', // Cool Gray
-        '#78716c', // Warm Gray  
-        '#6b7280', // Cool Gray
-        '#78716c', // Warm Gray
-        '#6b7280', // Cool Gray
-        '#78716c', // Warm Gray
-        '#6b7280', // Cool Gray
-        '#78716c', // Warm Gray
-        '#6b7280', // Cool Gray
-        '#78716c', // Warm Gray
-    ];
-    
-    const categoryIndex = Math.floor((videoNum - 1) / 4) % accentColors.length;
-    return accentColors[categoryIndex];
+function getAccentColor(categoryClass) {
+    const accentMap = {
+        basics: 'var(--success-green)',
+        processes: 'var(--secondary-blue)',
+        advanced: 'var(--accent-gold)',
+        management: 'var(--primary-teal-light)'
+    };
+
+    return accentMap[categoryClass] || 'var(--primary-teal)';
 }
 
 function createVideoCard(video) {
-    const card = document.createElement('div');
-    card.className = 'video-card';
-    
+    const card = document.createElement('article');
+    card.className = 'wt-video-card';
+
     // Extract video number from filename
     const videoNum = parseInt(video.filename.match(/^(\d+)/)[1]);
     const category = getVideoCategory(videoNum);
     const duration = getEstimatedDuration(videoNum);
-    const accentColor = getAccentColor(videoNum);
-    
+    const accentColor = getAccentColor(category.class);
+
     // Get thumbnail path
     const thumbnailPath = getThumbnailPath(video.filename);
-    
+
     card.innerHTML = `
-        <div class="video-thumbnail">
-            <img src="${thumbnailPath}" alt="${video.title}" class="thumbnail-image">
-            <div class="play-icon">▶</div>
+        <div class="wt-video-thumbnail">
+            <img src="${thumbnailPath}" alt="${video.title}" class="wt-video-thumbnail-image">
+            <div class="wt-video-play">▶</div>
         </div>
-        <div class="video-info">
-            <div class="video-title">${video.title}</div>
-            <div class="video-description">${video.description}</div>
-            <div class="video-meta">
-                <span class="video-category ${category.class}">${category.name}</span>
-                <span class="video-duration">${duration}</span>
+        <div class="wt-video-info">
+            <h3 class="wt-video-title">${video.title}</h3>
+            <p class="wt-video-description">${video.description}</p>
+            <div class="wt-video-meta">
+                <span class="wt-video-category ${category.class}">${category.name}</span>
+                <span class="wt-video-duration">${duration}</span>
             </div>
         </div>
-        <div class="video-accent">
-            <div class="video-accent-bar" style="background-color: ${accentColor}"></div>
+        <div class="wt-video-accent">
+            <div class="wt-video-accent-bar" style="background: ${accentColor};"></div>
         </div>
     `;
 
@@ -381,9 +373,9 @@ function loadVideos() {
     videoGrid.innerHTML = '';
     
     const videos = getVideos();
-    
+
     if (videos.length === 0) {
-        videoGrid.innerHTML = '<div class="error-message">No videos found.</div>';
+        videoGrid.innerHTML = '<div class="wt-video-empty">No videos found.</div>';
         return;
     }
     
