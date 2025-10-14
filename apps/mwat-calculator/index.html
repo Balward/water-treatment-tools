@@ -3,18 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Stream MWAT Calculator</title>
+  <title>MWAT &amp; Daily Maximum Temperature Calculator</title>
   <link rel="stylesheet" href="../../global-styles.css" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <main class="page">
     <header class="hero">
-      <p class="hero__badge">Water Quality Insights</p>
-      <h1>Stream Maximum Weekly Average Temperature</h1>
+      <h1>MWAT &amp; Daily Maximum Temperature Calculator</h1>
       <p class="hero__lede">
-        Upload 15-minute stream temperature logs, merge overlapping files, and instantly surface compliance-ready
-        MWAT and daily maximum temperatures for the month you report.
+        Upload 15-minute temperature logs, merge overlapping files, and instantly surface compliance-ready MWAT and
+        daily maximum temperatures for the month you report.
       </p>
     </header>
 
@@ -51,8 +50,8 @@
 
     <section id="summarySection" class="card hidden">
       <div class="card__header">
-        <h2>Data summary</h2>
-        <p>Confirm the merged dataset spans the days and record counts you expect before reviewing results.</p>
+        <h2>Data snapshot</h2>
+        <p>A quick look at the merged records before reviewing results.</p>
       </div>
       <dl class="summary">
         <div>
@@ -73,17 +72,17 @@
     <section id="resultsSection" class="card hidden">
       <div class="card__header">
         <h2>Monthly highlights</h2>
-        <p>The MWAT is constrained to the compliance window (4th &ndash; 3rd) and the daily maximum follows the two-hour
-          rolling average guidance.</p>
+        <p>The MWAT highlights the highest seven-day rolling average with at least four days in the selected month, and
+          the daily maximum follows the two-hour rolling average guidance.</p>
       </div>
       <div id="metricsPanel" class="metric-grid hidden">
-        <article class="metric">
+        <article class="metric metric--mwat">
           <h3 class="metric__title">Maximum Weekly Average Temperature</h3>
           <p class="metric__value" id="mwatValue">&mdash;</p>
           <p class="metric__detail" id="mwatRange"></p>
           <p class="metric__note" id="mwatContext"></p>
         </article>
-        <article class="metric">
+        <article class="metric metric--daily">
           <h3 class="metric__title">Daily Maximum (2-hr mean)</h3>
           <p class="metric__value" id="dailyMaxValue">&mdash;</p>
           <p class="metric__detail" id="dailyMaxRange"></p>
@@ -92,16 +91,16 @@
       </div>
       <div class="card__divider"></div>
       <h3 class="card__subtitle">Qualified seven-day windows</h3>
-      <div id="windowTableContainer"></div>
+      <div id="windowTableContainer" class="table-group table-group--mwat"></div>
     </section>
 
     <section id="dailySection" class="card hidden">
       <div class="card__header">
         <h2>Daily temperature detail</h2>
-        <p>Daily averages require at least three readings per day. Two-hour windows need eight consecutive 15-minute
-          samples to contribute to the daily maximum.</p>
+        <p>Daily averages require at least three readings per day. Only days in the selected month are displayed. Two-hour
+          windows need eight consecutive 15-minute samples to contribute to the daily maximum.</p>
       </div>
-      <div id="dailyTableContainer"></div>
+      <div id="dailyTableContainer" class="table-group table-group--daily"></div>
     </section>
   </main>
 
