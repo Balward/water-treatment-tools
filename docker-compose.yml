@@ -28,6 +28,8 @@ services:
     volumes:
       # Mount sample data for the apps
       - ./sample-data:/usr/share/nginx/html/sample-data:ro
+      # Mount training videos directory from host
+      - /mnt/user/appdata/water-treatment-tools/Videos:/usr/share/nginx/html/Videos:ro
       # Mount .env file if it exists (optional - environment variables take precedence)
       - ./.env:/app/.env:ro
     networks:
@@ -72,6 +74,7 @@ services:
       - OPENAI_API_KEY=${OPENAI_API_KEY}  # Set this in .env file
     volumes:
       - ./sample-data:/usr/share/nginx/html/sample-data:ro
+      - /mnt/user/appdata/water-treatment-tools/Videos:/usr/share/nginx/html/Videos:ro
       # Mount .env file if it exists (optional - environment variables take precedence)
       - ./.env:/app/.env:ro
     networks:
