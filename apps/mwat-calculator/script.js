@@ -259,15 +259,7 @@ function computeDailyMaxLookup(twoHourWindows) {
 }
 
 function isWithinReportingWindow(window, monthIndex, year) {
-  const monthDay = window.days.find(
-    (day) => day.date.getMonth() === monthIndex && (year === undefined || day.date.getFullYear() === year)
-  );
-
-  if (!monthDay) {
-    return false;
-  }
-
-  const referenceYear = monthDay.date.getFullYear();
+  const referenceYear = year ?? window.end.getFullYear();
   const startBoundary = new Date(referenceYear, monthIndex, 4);
   const nextMonth = monthIndex === 11 ? 0 : monthIndex + 1;
   const endYear = monthIndex === 11 ? referenceYear + 1 : referenceYear;
@@ -337,32 +329,12 @@ function computeSevenDayWindows(dailyAverages) {
       continue;
     }
 
-    const total = segment.reduce((sum, day) => sum + day.average, 0);
-    const mean = total / segment.length;
-    const monthCounts = segment.reduce((counts, day) => {
-      const month = day.date.getMonth();
-      counts[month] = (counts[month] || 0) + 1;
-      return counts;
-    }, {});
-
-    const monthIndex = Object.entries(monthCounts).reduce((best, current) => {
-      const [month, count] = current.map(Number);
-      if (best === null) {
-        return month;
-      }
-      const bestCount = monthCounts[best];
-      return count > bestCount ? month : best;
-    }, null);
-
-    if (monthIndex === null || monthCounts[monthIndex] < 4) {
-      continue;
-    }
+    const mean = segment.reduce((sum, day) => sum + day.average, 0) / segment.length;
 
     windows.push({
       start: segment[0].date,
       end: segment[segment.length - 1].date,
       mean,
-      monthIndex: Number(monthIndex),
       days: segment
     });
   }
