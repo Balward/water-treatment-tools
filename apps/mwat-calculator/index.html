@@ -76,13 +76,13 @@
           the daily maximum follows the two-hour rolling average guidance.</p>
       </div>
       <div id="metricsPanel" class="metric-grid hidden">
-        <article class="metric">
+        <article class="metric metric--mwat">
           <h3 class="metric__title">Maximum Weekly Average Temperature</h3>
           <p class="metric__value" id="mwatValue">&mdash;</p>
           <p class="metric__detail" id="mwatRange"></p>
           <p class="metric__note" id="mwatContext"></p>
         </article>
-        <article class="metric">
+        <article class="metric metric--daily">
           <h3 class="metric__title">Daily Maximum (2-hr mean)</h3>
           <p class="metric__value" id="dailyMaxValue">&mdash;</p>
           <p class="metric__detail" id="dailyMaxRange"></p>
@@ -91,7 +91,7 @@
       </div>
       <div class="card__divider"></div>
       <h3 class="card__subtitle">Qualified seven-day windows</h3>
-      <div id="windowTableContainer"></div>
+      <div id="windowTableContainer" class="table-group table-group--mwat"></div>
     </section>
 
     <section id="dailySection" class="card hidden">
@@ -100,7 +100,7 @@
         <p>Daily averages require at least three readings per day. Only days in the selected month are displayed. Two-hour
           windows need eight consecutive 15-minute samples to contribute to the daily maximum.</p>
       </div>
-      <div id="dailyTableContainer"></div>
+      <div id="dailyTableContainer" class="table-group table-group--daily"></div>
     </section>
   </main>
 
