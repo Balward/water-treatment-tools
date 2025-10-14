@@ -8,6 +8,7 @@ A comprehensive collection of data analysis and visualization tools for water tr
 2. **Navigate to Tools**: Use the dashboard to access individual applications
 3. **Sample Data**: Test files are available in the `data/` directory
 4. **Documentation**: Detailed guides available in the `docs/` directory
+5. **Working with the AI Agent**: See [docs/agent-single-branch-workflow.md](docs/agent-single-branch-workflow.md) for tips on using short-lived PR branches that merge back into `main`.
 
 ## 🛠️ Available Tools
 
