@@ -22,9 +22,17 @@ const dailySection = document.getElementById("dailySection");
 const recordCount = document.getElementById("recordCount");
 const dayCount = document.getElementById("dayCount");
 const dateRange = document.getElementById("dateRange");
-const mwatHighlight = document.getElementById("mwatHighlight");
+const metricsPanel = document.getElementById("metricsPanel");
+const mwatValue = document.getElementById("mwatValue");
+const mwatRange = document.getElementById("mwatRange");
+const mwatContext = document.getElementById("mwatContext");
+const dailyMaxValue = document.getElementById("dailyMaxValue");
+const dailyMaxRange = document.getElementById("dailyMaxRange");
+const dailyMaxContext = document.getElementById("dailyMaxContext");
 const windowTableContainer = document.getElementById("windowTableContainer");
 const dailyTableContainer = document.getElementById("dailyTableContainer");
+
+const FIFTEEN_MINUTES = 15 * 60 * 1000;
 
 function initMonthOptions() {
   monthNames.forEach((name, index) => {
@@ -121,7 +129,13 @@ function clearSections() {
   summarySection.classList.add("hidden");
   resultsSection.classList.add("hidden");
   dailySection.classList.add("hidden");
-  mwatHighlight.innerHTML = "";
+  metricsPanel.classList.add("hidden");
+  mwatValue.textContent = "—";
+  mwatRange.textContent = "";
+  mwatContext.textContent = "";
+  dailyMaxValue.textContent = "—";
+  dailyMaxRange.textContent = "";
+  dailyMaxContext.textContent = "";
   windowTableContainer.innerHTML = "";
   dailyTableContainer.innerHTML = "";
 }
@@ -178,6 +192,120 @@ function computeDailyAverages(records) {
     .sort((a, b) => a.date - b.date);
 
   return daily;
+}
+
+function computeTwoHourWindows(records) {
+  const windows = [];
+
+  if (records.length < 8) {
+    return windows;
+  }
+
+  for (let i = 7; i < records.length; i++) {
+    const segment = records.slice(i - 7, i + 1);
+    let consecutive = true;
+
+    for (let j = 1; j < segment.length; j++) {
+      const diff = segment[j].date.getTime() - segment[j - 1].date.getTime();
+      if (diff !== FIFTEEN_MINUTES) {
+        consecutive = false;
+        break;
+      }
+    }
+
+    if (!consecutive) {
+      continue;
+    }
+
+    const average = segment.reduce((sum, item) => sum + item.temperature, 0) / segment.length;
+
+    windows.push({
+      start: segment[0].date,
+      end: segment[segment.length - 1].date,
+      average
+    });
+  }
+
+  return windows;
+}
+
+function computeDailyMaxLookup(twoHourWindows) {
+  const lookup = new Map();
+
+  for (const window of twoHourWindows) {
+    const end = window.end;
+    const key = toDateKey(end);
+
+    if (!lookup.has(key) || window.average > lookup.get(key).value) {
+      lookup.set(key, {
+        date: new Date(end.getFullYear(), end.getMonth(), end.getDate()),
+        value: window.average,
+        window
+      });
+    }
+  }
+
+  return lookup;
+}
+
+function isWithinReportingWindow(window, monthIndex, year) {
+  const monthDay = window.days.find(
+    (day) => day.date.getMonth() === monthIndex && (year === undefined || day.date.getFullYear() === year)
+  );
+
+  if (!monthDay) {
+    return false;
+  }
+
+  const referenceYear = monthDay.date.getFullYear();
+  const startBoundary = new Date(referenceYear, monthIndex, 4);
+  const nextMonth = monthIndex === 11 ? 0 : monthIndex + 1;
+  const endYear = monthIndex === 11 ? referenceYear + 1 : referenceYear;
+  const endBoundary = new Date(endYear, nextMonth, 3, 23, 59, 59, 999);
+
+  return window.start >= startBoundary && window.end <= endBoundary;
+}
+
+function describeReportingWindow(monthIndex, year) {
+  const start = new Date(year, monthIndex, 4);
+  const nextMonth = monthIndex === 11 ? 0 : monthIndex + 1;
+  const endYear = monthIndex === 11 ? year + 1 : year;
+  const end = new Date(endYear, nextMonth, 3);
+  return formatDateRange(start, end);
+}
+
+function formatDateTime(date) {
+  const formatter = new Intl.DateTimeFormat("en", {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+  return formatter.format(date);
+}
+
+function formatTimeRange(start, end) {
+  const sameDay =
+    start.getFullYear() === end.getFullYear() &&
+    start.getMonth() === end.getMonth() &&
+    start.getDate() === end.getDate();
+
+  const timeFormatter = new Intl.DateTimeFormat("en", {
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+
+  const dayFormatter = new Intl.DateTimeFormat("en", {
+    month: "short",
+    day: "2-digit"
+  });
+
+  if (sameDay) {
+    return `${dayFormatter.format(start)} ${timeFormatter.format(start)} – ${timeFormatter.format(end)}`;
+  }
+
+  return `${dayFormatter.format(start)} ${timeFormatter.format(start)} – ${dayFormatter.format(end)} ${timeFormatter.format(end)}`;
 }
 
 function computeSevenDayWindows(dailyAverages) {
@@ -251,20 +379,33 @@ function summarizeRecords(records) {
   };
 }
 
-function renderDailyTable(daily) {
-  const formatter = new Intl.DateTimeFormat("en", {
+function renderDailyTable(daily, dailyMaxLookup) {
+  const dateFormatter = new Intl.DateTimeFormat("en", {
     year: "numeric",
     month: "short",
     day: "2-digit"
   });
 
-  const rows = daily.map((day) => [
-    formatter.format(day.date),
-    day.count.toString(),
-    `${formatNumber(day.average, 3)} °C`
-  ]);
+  const rows = daily.map((day) => {
+    const key = toDateKey(day.date);
+    const dailyMax = dailyMaxLookup.get(key);
 
-  return buildTable(["Date", "Readings", "Daily Average"], rows);
+    let maxCell = "—";
+    if (dailyMax) {
+      const valueLabel = `${formatNumber(dailyMax.value, 3)} °C`;
+      const windowLabel = formatTimeRange(dailyMax.window.start, dailyMax.window.end);
+      maxCell = `${valueLabel}<div class="table__subtext">${windowLabel}</div>`;
+    }
+
+    return [
+      dateFormatter.format(day.date),
+      day.count.toString(),
+      `${formatNumber(day.average, 3)} °C`,
+      maxCell
+    ];
+  });
+
+  return buildTable(["Date", "Readings", "Daily Average", "2-hr Maximum"], rows);
 }
 
 function renderWindowTable(windows) {
@@ -352,13 +493,15 @@ async function processFiles() {
     summarySection.classList.remove("hidden");
 
     const daily = computeDailyAverages(uniqueRecords);
+    const twoHourWindows = computeTwoHourWindows(uniqueRecords);
+    const dailyMaxLookup = computeDailyMaxLookup(twoHourWindows);
 
     if (daily.length < 7) {
       showMessage("At least seven consecutive days of data are required to compute MWAT.", "error");
       return;
     }
 
-    dailyTableContainer.innerHTML = renderDailyTable(daily);
+    dailyTableContainer.innerHTML = renderDailyTable(daily, dailyMaxLookup);
     dailySection.classList.remove("hidden");
 
     const windows = computeSevenDayWindows(daily);
@@ -369,22 +512,51 @@ async function processFiles() {
     }
 
     const monthIndex = Number.parseInt(monthValue, 10);
+    const monthlyDailyMaxima = Array.from(dailyMaxLookup.values()).filter(
+      (entry) => entry.date.getMonth() === monthIndex
+    );
+
+    if (!monthlyDailyMaxima.length) {
+      showMessage(
+        "No qualifying two-hour windows were found within the selected month to compute a daily maximum temperature.",
+        "error"
+      );
+      return;
+    }
+
+    const monthlyDailyMax = monthlyDailyMaxima.reduce((best, current) =>
+      current.value > best.value ? current : best
+    );
+
+    const targetYear = monthlyDailyMax.date.getFullYear();
     const windowsForMonth = windows
-      .filter((window) => window.monthIndex === monthIndex)
+      .filter(
+        (window) => window.monthIndex === monthIndex && isWithinReportingWindow(window, monthIndex, targetYear)
+      )
       .sort((a, b) => b.mean - a.mean);
 
     if (!windowsForMonth.length) {
-      showMessage("No qualifying seven-day windows were attributed to the selected month.", "error");
+      showMessage(
+        "No qualifying seven-day windows fell within the reporting window (4th through 3rd) for the selected month.",
+        "error"
+      );
       return;
     }
 
     const best = windowsForMonth[0];
     const rangeLabel = formatDateRange(best.start, best.end);
-    mwatHighlight.innerHTML = `
-      <h3>${monthNames[monthIndex]} MWAT</h3>
-      <p><strong>${formatNumber(best.mean, 3)} °C</strong> (${rangeLabel})</p>
-      <p>The highest rolling seven-day average temperature attributed to ${monthNames[monthIndex]}.</p>
-    `;
+    const reportingWindowLabel = describeReportingWindow(monthIndex, targetYear);
+
+    mwatValue.textContent = `${formatNumber(best.mean, 3)} °C`;
+    mwatRange.textContent = `${rangeLabel}`;
+    mwatContext.textContent = `Highest seven-day rolling average within ${reportingWindowLabel}.`;
+
+    const windowDetails = monthlyDailyMax.window;
+    dailyMaxValue.textContent = `${formatNumber(monthlyDailyMax.value, 3)} °C`;
+    dailyMaxRange.textContent = `${formatDateTime(windowDetails.start)} – ${formatDateTime(windowDetails.end)}`;
+    dailyMaxContext.textContent = `Peak two-hour mean recorded for ${monthNames[monthIndex]} ${targetYear}.`;
+
+    metricsPanel.classList.remove("hidden");
 
     windowTableContainer.innerHTML = renderWindowTable(windowsForMonth);
     resultsSection.classList.remove("hidden");
