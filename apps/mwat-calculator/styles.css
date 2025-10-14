@@ -208,13 +208,62 @@ body {
 }
 
 .metric {
-  background: linear-gradient(135deg, rgba(37, 99, 235, 0.2), rgba(16, 185, 129, 0.1));
+  background: rgba(15, 23, 42, 0.78);
   border-radius: 18px;
   padding: 1.5rem 1.75rem;
-  border: 1px solid rgba(148, 163, 184, 0.25);
+  border: 1px solid rgba(148, 163, 184, 0.2);
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.metric::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.25;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.metric--mwat {
+  border-color: rgba(96, 165, 250, 0.45);
+  box-shadow: 0 25px 40px rgba(37, 99, 235, 0.25);
+}
+
+.metric--mwat::before {
+  background: radial-gradient(circle at top left, rgba(96, 165, 250, 0.65), transparent 60%),
+    linear-gradient(135deg, rgba(14, 165, 233, 0.45), transparent 65%);
+}
+
+.metric--mwat .metric__title,
+.metric--mwat .metric__detail {
+  color: rgba(191, 219, 254, 0.92);
+}
+
+.metric--mwat .metric__note {
+  color: rgba(191, 219, 254, 0.68);
+}
+
+.metric--daily {
+  border-color: rgba(251, 191, 36, 0.45);
+  box-shadow: 0 25px 40px rgba(245, 158, 11, 0.28);
+}
+
+.metric--daily::before {
+  background: radial-gradient(circle at top right, rgba(245, 158, 11, 0.75), transparent 60%),
+    linear-gradient(135deg, rgba(217, 119, 6, 0.5), transparent 65%);
+}
+
+.metric--daily .metric__title,
+.metric--daily .metric__detail {
+  color: rgba(254, 243, 199, 0.92);
+}
+
+.metric--daily .metric__note {
+  color: rgba(254, 243, 199, 0.68);
 }
 
 .metric--mwat {
@@ -291,9 +340,19 @@ body {
 .table-group {
   border-radius: 22px;
   padding: 0.5rem;
-  background: rgba(15, 23, 42, 0.55);
-  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: rgba(15, 23, 42, 0.65);
+  border: 1px solid rgba(148, 163, 184, 0.18);
   box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.35);
+  position: relative;
+  overflow: hidden;
+}
+
+.table-group::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.2;
+  pointer-events: none;
 }
 
 .table {
@@ -355,17 +414,20 @@ body {
 }
 
 .table-group--mwat {
-  background: rgba(30, 41, 59, 0.6);
-  border-color: rgba(96, 165, 250, 0.24);
-  box-shadow: 0 18px 40px rgba(30, 64, 175, 0.32);
+  border-color: rgba(96, 165, 250, 0.4);
+  box-shadow: 0 22px 45px rgba(37, 99, 235, 0.28);
+}
+
+.table-group--mwat::before {
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.4), transparent 65%);
 }
 
 .table-group--mwat .table thead {
-  background: rgba(59, 130, 246, 0.36);
+  background: rgba(37, 99, 235, 0.55);
 }
 
 .table-group--mwat .table__row--highlight {
-  background: rgba(59, 130, 246, 0.32) !important;
+  background: rgba(59, 130, 246, 0.38) !important;
 }
 
 .table-group--mwat .table__cell--highlight {
@@ -373,22 +435,25 @@ body {
 }
 
 .table-group--mwat .table__badge {
-  background: rgba(37, 99, 235, 0.72);
+  background: rgba(37, 99, 235, 0.75);
   color: #dbeafe;
 }
 
 .table-group--daily {
-  background: rgba(39, 39, 12, 0.55);
-  border-color: rgba(245, 158, 11, 0.28);
-  box-shadow: 0 18px 40px rgba(245, 158, 11, 0.28);
+  border-color: rgba(245, 158, 11, 0.42);
+  box-shadow: 0 22px 45px rgba(245, 158, 11, 0.28);
+}
+
+.table-group--daily::before {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.55), transparent 65%);
 }
 
 .table-group--daily .table thead {
-  background: rgba(245, 158, 11, 0.32);
+  background: rgba(245, 158, 11, 0.5);
 }
 
 .table-group--daily .table__row--highlight {
-  background: rgba(251, 191, 36, 0.28) !important;
+  background: rgba(251, 191, 36, 0.34) !important;
 }
 
 .table-group--daily .table__cell--highlight {
@@ -396,7 +461,7 @@ body {
 }
 
 .table-group--daily .table__badge {
-  background: rgba(217, 119, 6, 0.7);
+  background: rgba(217, 119, 6, 0.76);
   color: #fffbeb;
 }
 
