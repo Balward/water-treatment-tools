@@ -134,6 +134,17 @@ A comprehensive collection of data analysis and visualization tools for water tr
 - Interactive data visualization
 - Multiple chart types and views
 
+### 🌡️ Stream MWAT Calculator (`apps/mwat-calculator/`)
+**Combine overlapping CSV exports to compute monthly Maximum Weekly Average Temperature values**
+
+**Features:**
+- Accepts two CSV files with timestamps in column B and temperatures in column C
+- Automatically merges overlapping 15-minute readings and computes daily averages
+- Calculates rolling seven-day MWAT windows following regulatory guidance
+- Attributes cross-month windows to the month containing at least four days in the span
+- Highlights the highest MWAT for the selected reporting month and lists all qualifying windows
+- Provides a daily-average summary table for transparency and QA checks
+
 ## 📁 Project Structure
 ```
 water-treatment-tools/

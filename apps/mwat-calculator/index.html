@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stream MWAT Calculator</title>
+  <link rel="stylesheet" href="../../global-styles.css" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="page">
+    <header class="page__header">
+      <h1>Stream Maximum Weekly Average Temperature (MWAT) Calculator</h1>
+      <p>
+        Upload two overlapping CSV files containing 15-minute stream temperature readings to
+        calculate the Maximum Weekly Average Temperature (MWAT) for a selected month.
+      </p>
+      <p class="page__info">
+        Each CSV should contain a single header row. The timestamp must be located in column B and the
+        corresponding temperature in column C. All other columns will be ignored.
+      </p>
+    </header>
+
+    <section class="card">
+      <h2>Inputs</h2>
+      <div class="input-grid">
+        <label class="input-group">
+          <span>CSV File 1</span>
+          <input type="file" id="csvFile1" accept=".csv" />
+        </label>
+        <label class="input-group">
+          <span>CSV File 2</span>
+          <input type="file" id="csvFile2" accept=".csv" />
+        </label>
+        <label class="input-group">
+          <span>Month to Report</span>
+          <select id="monthSelect">
+            <option value="" selected disabled>Select month</option>
+          </select>
+        </label>
+      </div>
+      <button id="processButton" class="button">Calculate MWAT</button>
+      <p class="note">
+        The MWAT is calculated by averaging all temperature data points collected during a calendar day and then
+        averaging those daily averages across seven consecutive days. For windows that span months, the result is
+        attributed to the month that contains at least four of the seven days, as shown in the MWAT guidance chart.
+      </p>
+      <div id="messages" role="status" aria-live="polite"></div>
+    </section>
+
+    <section id="summarySection" class="card hidden">
+      <h2>Data Summary</h2>
+      <dl class="summary">
+        <div>
+          <dt>Total records processed</dt>
+          <dd id="recordCount">0</dd>
+        </div>
+        <div>
+          <dt>Unique days with data</dt>
+          <dd id="dayCount">0</dd>
+        </div>
+        <div>
+          <dt>Data range</dt>
+          <dd id="dateRange">&mdash;</dd>
+        </div>
+      </dl>
+    </section>
+
+    <section id="resultsSection" class="card hidden">
+      <h2>Monthly MWAT Results</h2>
+      <div id="mwatHighlight" class="highlight"></div>
+      <div id="windowTableContainer"></div>
+    </section>
+
+    <section id="dailySection" class="card hidden">
+      <h2>Daily Average Temperatures</h2>
+      <div id="dailyTableContainer"></div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
