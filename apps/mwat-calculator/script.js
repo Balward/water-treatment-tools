@@ -110,13 +110,23 @@ function toDateKey(date) {
   return `${year}-${month}-${day}`;
 }
 
-function formatDateRange(start, end) {
-  const formatter = new Intl.DateTimeFormat("en", {
+function createDateFormatter(options = {}) {
+  return new Intl.DateTimeFormat("en", {
     year: "numeric",
     month: "short",
-    day: "2-digit"
+    day: "2-digit",
+    ...options
   });
-  return `${formatter.format(start)} – ${formatter.format(end)}`;
+}
+
+const dateFormatter = createDateFormatter();
+
+function formatDateRange(start, end) {
+  return `${dateFormatter.format(start)} – ${dateFormatter.format(end)}`;
+}
+
+function formatSingleDate(date) {
+  return dateFormatter.format(date);
 }
 
 function formatNumber(value, decimals = 2) {
@@ -249,21 +259,13 @@ function computeDailyMaxLookup(twoHourWindows) {
 }
 
 function isWithinReportingWindow(window, monthIndex, year) {
-  const monthDay = window.days.find(
-    (day) => day.date.getMonth() === monthIndex && (year === undefined || day.date.getFullYear() === year)
-  );
-
-  if (!monthDay) {
-    return false;
-  }
-
-  const referenceYear = monthDay.date.getFullYear();
+  const referenceYear = year ?? window.end.getFullYear();
   const startBoundary = new Date(referenceYear, monthIndex, 4);
   const nextMonth = monthIndex === 11 ? 0 : monthIndex + 1;
   const endYear = monthIndex === 11 ? referenceYear + 1 : referenceYear;
   const endBoundary = new Date(endYear, nextMonth, 3, 23, 59, 59, 999);
 
-  return window.start >= startBoundary && window.end <= endBoundary;
+  return window.end >= startBoundary && window.end <= endBoundary;
 }
 
 function describeReportingWindow(monthIndex, year) {
@@ -327,32 +329,12 @@ function computeSevenDayWindows(dailyAverages) {
       continue;
     }
 
-    const total = segment.reduce((sum, day) => sum + day.average, 0);
-    const mean = total / segment.length;
-    const monthCounts = segment.reduce((counts, day) => {
-      const month = day.date.getMonth();
-      counts[month] = (counts[month] || 0) + 1;
-      return counts;
-    }, {});
-
-    const monthIndex = Object.entries(monthCounts).reduce((best, current) => {
-      const [month, count] = current.map(Number);
-      if (best === null) {
-        return month;
-      }
-      const bestCount = monthCounts[best];
-      return count > bestCount ? month : best;
-    }, null);
-
-    if (monthIndex === null || monthCounts[monthIndex] < 4) {
-      continue;
-    }
+    const mean = segment.reduce((sum, day) => sum + day.average, 0) / segment.length;
 
     windows.push({
       start: segment[0].date,
       end: segment[segment.length - 1].date,
       mean,
-      monthIndex: Number(monthIndex),
       days: segment
     });
   }
@@ -380,12 +362,6 @@ function summarizeRecords(records) {
 }
 
 function renderDailyTable(daily, dailyMaxLookup) {
-  const dateFormatter = new Intl.DateTimeFormat("en", {
-    year: "numeric",
-    month: "short",
-    day: "2-digit"
-  });
-
   const rows = daily.map((day) => {
     const key = toDateKey(day.date);
     const dailyMax = dailyMaxLookup.get(key);
@@ -398,7 +374,7 @@ function renderDailyTable(daily, dailyMaxLookup) {
     }
 
     return [
-      dateFormatter.format(day.date),
+      formatSingleDate(day.date),
       day.count.toString(),
       `${formatNumber(day.average, 3)} °C`,
       maxCell
@@ -409,11 +385,14 @@ function renderDailyTable(daily, dailyMaxLookup) {
 }
 
 function renderWindowTable(windows) {
-  const rows = windows.map((window) => [
+  const sorted = windows.slice().sort((a, b) => a.end - b.end);
+  const rows = sorted.map((window, index) => [
+    (index + 1).toString(),
     formatDateRange(window.start, window.end),
+    formatSingleDate(window.end),
     `${formatNumber(window.mean, 3)} °C`
   ]);
-  return buildTable(["7-Day Range", "Rolling Average"], rows);
+  return buildTable(["MWAT #", "7-Day Range", "Ending Day", "Rolling Average"], rows);
 }
 
 async function processFiles() {
@@ -529,11 +508,9 @@ async function processFiles() {
     );
 
     const targetYear = monthlyDailyMax.date.getFullYear();
-    const windowsForMonth = windows
-      .filter(
-        (window) => window.monthIndex === monthIndex && isWithinReportingWindow(window, monthIndex, targetYear)
-      )
-      .sort((a, b) => b.mean - a.mean);
+    const windowsForMonth = windows.filter((window) =>
+      isWithinReportingWindow(window, monthIndex, targetYear)
+    );
 
     if (!windowsForMonth.length) {
       showMessage(
@@ -543,7 +520,9 @@ async function processFiles() {
       return;
     }
 
-    const best = windowsForMonth[0];
+    const best = windowsForMonth.reduce((currentBest, candidate) =>
+      candidate.mean > currentBest.mean ? candidate : currentBest
+    );
     const rangeLabel = formatDateRange(best.start, best.end);
     const reportingWindowLabel = describeReportingWindow(monthIndex, targetYear);
 
