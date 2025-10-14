@@ -263,7 +263,7 @@ function isWithinReportingWindow(window, monthIndex, year) {
   const endYear = monthIndex === 11 ? referenceYear + 1 : referenceYear;
   const endBoundary = new Date(endYear, nextMonth, 3, 23, 59, 59, 999);
 
-  return window.start >= startBoundary && window.end <= endBoundary;
+  return window.end >= startBoundary && window.end <= endBoundary;
 }
 
 function describeReportingWindow(monthIndex, year) {
