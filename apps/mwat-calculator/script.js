@@ -258,24 +258,6 @@ function computeDailyMaxLookup(twoHourWindows) {
   return lookup;
 }
 
-function isWithinReportingWindow(window, monthIndex, year) {
-  const referenceYear = year ?? window.end.getFullYear();
-  const startBoundary = new Date(referenceYear, monthIndex, 4);
-  const nextMonth = monthIndex === 11 ? 0 : monthIndex + 1;
-  const endYear = monthIndex === 11 ? referenceYear + 1 : referenceYear;
-  const endBoundary = new Date(endYear, nextMonth, 3, 23, 59, 59, 999);
-
-  return window.end >= startBoundary && window.end <= endBoundary;
-}
-
-function describeReportingWindow(monthIndex, year) {
-  const start = new Date(year, monthIndex, 4);
-  const nextMonth = monthIndex === 11 ? 0 : monthIndex + 1;
-  const endYear = monthIndex === 11 ? year + 1 : year;
-  const end = new Date(endYear, nextMonth, 3);
-  return formatDateRange(start, end);
-}
-
 function formatDateTime(date) {
   const formatter = new Intl.DateTimeFormat("en", {
     year: "numeric",
@@ -331,11 +313,31 @@ function computeSevenDayWindows(dailyAverages) {
 
     const mean = segment.reduce((sum, day) => sum + day.average, 0) / segment.length;
 
+    const monthCounts = new Map();
+    for (const day of segment) {
+      const month = day.date.getMonth();
+      monthCounts.set(month, (monthCounts.get(month) ?? 0) + 1);
+    }
+
+    let monthIndex = null;
+    let maxCount = 0;
+    for (const [month, count] of monthCounts.entries()) {
+      if (count > maxCount) {
+        monthIndex = month;
+        maxCount = count;
+      }
+    }
+
+    if (monthIndex === null || maxCount < 4) {
+      continue;
+    }
+
     windows.push({
       start: segment[0].date,
       end: segment[segment.length - 1].date,
       mean,
-      days: segment
+      days: segment,
+      monthIndex
     });
   }
 
@@ -508,13 +510,11 @@ async function processFiles() {
     );
 
     const targetYear = monthlyDailyMax.date.getFullYear();
-    const windowsForMonth = windows.filter((window) =>
-      isWithinReportingWindow(window, monthIndex, targetYear)
-    );
+    const windowsForMonth = windows.filter((window) => window.monthIndex === monthIndex);
 
     if (!windowsForMonth.length) {
       showMessage(
-        "No qualifying seven-day windows fell within the reporting window (4th through 3rd) for the selected month.",
+        "No qualifying seven-day windows with at least four days in the selected month were found.",
         "error"
       );
       return;
@@ -524,11 +524,11 @@ async function processFiles() {
       candidate.mean > currentBest.mean ? candidate : currentBest
     );
     const rangeLabel = formatDateRange(best.start, best.end);
-    const reportingWindowLabel = describeReportingWindow(monthIndex, targetYear);
+    const mwatYear = best.end.getFullYear();
 
     mwatValue.textContent = `${formatNumber(best.mean, 3)} °C`;
     mwatRange.textContent = `${rangeLabel}`;
-    mwatContext.textContent = `Highest seven-day rolling average within ${reportingWindowLabel}.`;
+    mwatContext.textContent = `Highest seven-day rolling average with at least four days in ${monthNames[monthIndex]} ${mwatYear}.`;
 
     const windowDetails = monthlyDailyMax.window;
     dailyMaxValue.textContent = `${formatNumber(monthlyDailyMax.value, 3)} °C`;
