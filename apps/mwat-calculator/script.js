@@ -364,6 +364,10 @@ function summarizeRecords(records) {
 }
 
 function renderDailyTable(daily, dailyMaxLookup) {
+  if (!daily.length) {
+    return "<p>No daily averages were recorded in the selected month.</p>";
+  }
+
   const rows = daily.map((day) => {
     const key = toDateKey(day.date);
     const dailyMax = dailyMaxLookup.get(key);
@@ -413,6 +417,8 @@ async function processFiles() {
     showMessage("Select a month to report before calculating.", "error");
     return;
   }
+
+  const monthIndex = Number.parseInt(monthValue, 10);
 
   try {
     const [text1, text2] = await Promise.all([readFile(file1), readFile(file2)]);
@@ -482,7 +488,8 @@ async function processFiles() {
       return;
     }
 
-    dailyTableContainer.innerHTML = renderDailyTable(daily, dailyMaxLookup);
+    const monthlyDaily = daily.filter((day) => day.date.getMonth() === monthIndex);
+    dailyTableContainer.innerHTML = renderDailyTable(monthlyDaily, dailyMaxLookup);
     dailySection.classList.remove("hidden");
 
     const windows = computeSevenDayWindows(daily);
@@ -492,7 +499,6 @@ async function processFiles() {
       return;
     }
 
-    const monthIndex = Number.parseInt(monthValue, 10);
     const monthlyDailyMaxima = Array.from(dailyMaxLookup.values()).filter(
       (entry) => entry.date.getMonth() === monthIndex
     );
