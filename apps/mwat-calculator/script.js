@@ -13,7 +13,10 @@ const monthNames = [
   "December"
 ];
 
+const csvFile1Input = document.getElementById("csvFile1");
+const csvFile2Input = document.getElementById("csvFile2");
 const monthSelect = document.getElementById("monthSelect");
+const locationSelect = document.getElementById("locationSelect");
 const processButton = document.getElementById("processButton");
 const messages = document.getElementById("messages");
 const summarySection = document.getElementById("summarySection");
@@ -31,8 +34,132 @@ const dailyMaxRange = document.getElementById("dailyMaxRange");
 const dailyMaxContext = document.getElementById("dailyMaxContext");
 const windowTableContainer = document.getElementById("windowTableContainer");
 const dailyTableContainer = document.getElementById("dailyTableContainer");
+const dischargeTypeContainer = document.getElementById("dischargeTypeContainer");
+const intermittentContainer = document.getElementById("intermittentContainer");
+const dischargeTypeInputs = Array.from(
+  document.querySelectorAll('input[name="dischargeType"]')
+);
+const periodStartInput = document.getElementById("periodStart");
+const periodEndInput = document.getElementById("periodEnd");
+const addPeriodButton = document.getElementById("addPeriodButton");
+const periodError = document.getElementById("periodError");
+const periodList = document.getElementById("periodList");
+
+const DISCHARGE_LOCATIONS = new Set(["001", "004", "007"]);
+let dischargePeriods = [];
 
 const FIFTEEN_MINUTES = 15 * 60 * 1000;
+
+function updatePeriodError(message = "") {
+  if (!periodError) {
+    return;
+  }
+  periodError.textContent = message;
+  if (message) {
+    periodError.classList.remove("hidden");
+  } else {
+    periodError.classList.add("hidden");
+  }
+}
+
+function getSelectedDischargeType() {
+  const selected = dischargeTypeInputs.find((input) => input.checked);
+  return selected ? selected.value : null;
+}
+
+function clearDischargeRadios() {
+  dischargeTypeInputs.forEach((input) => {
+    input.checked = false;
+  });
+  syncRadioStates();
+}
+
+function syncRadioStates() {
+  dischargeTypeInputs.forEach((input) => {
+    const parent = input.parentElement;
+    if (parent && parent.classList) {
+      parent.classList.toggle("radio--checked", input.checked);
+    }
+  });
+}
+
+function renderPeriods() {
+  if (!periodList) {
+    return;
+  }
+
+  if (!dischargePeriods.length) {
+    periodList.innerHTML = "";
+    periodList.classList.add("hidden");
+    return;
+  }
+
+  const formatter = new Intl.DateTimeFormat("en", {
+    month: "short",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+
+  periodList.innerHTML = dischargePeriods
+    .slice()
+    .sort((a, b) => a.start - b.start)
+    .map((period) => {
+      const startLabel = formatter.format(period.start);
+      const endLabel = formatter.format(period.end);
+      return `<li class="period-list__item"><span class="period-list__label">${startLabel} – ${endLabel}</span><button type="button" class="period-list__remove" data-id="${period.id}">Remove</button></li>`;
+    })
+    .join("");
+
+  periodList.classList.remove("hidden");
+}
+
+function resetDischargeOptions() {
+  dischargePeriods = [];
+  renderPeriods();
+  clearDischargeRadios();
+  updatePeriodError("");
+}
+
+function updateDischargeVisibility() {
+  const location = locationSelect.value;
+  const requiresDischarge = DISCHARGE_LOCATIONS.has(location);
+  if (requiresDischarge) {
+    dischargeTypeContainer.classList.remove("hidden");
+  } else {
+    dischargeTypeContainer.classList.add("hidden");
+    intermittentContainer.classList.add("hidden");
+    resetDischargeOptions();
+  }
+
+  const dischargeType = getSelectedDischargeType();
+  if (requiresDischarge && dischargeType === "intermittent") {
+    intermittentContainer.classList.remove("hidden");
+  } else {
+    intermittentContainer.classList.add("hidden");
+    updatePeriodError("");
+  }
+
+  syncRadioStates();
+}
+
+function updateProcessButtonState() {
+  const monthSelected = monthSelect.value !== "";
+  const locationSelected = locationSelect.value !== "";
+  const requiresDischarge = DISCHARGE_LOCATIONS.has(locationSelect.value);
+  const dischargeType = getSelectedDischargeType();
+
+  let dischargeReady = true;
+  if (requiresDischarge) {
+    if (!dischargeType) {
+      dischargeReady = false;
+    } else if (dischargeType === "intermittent" && dischargePeriods.length === 0) {
+      dischargeReady = false;
+    }
+  }
+
+  processButton.disabled = !(monthSelected && locationSelected && dischargeReady);
+}
 
 function initMonthOptions() {
   monthNames.forEach((name, index) => {
@@ -148,6 +275,7 @@ function clearSections() {
   dailyMaxContext.textContent = "";
   windowTableContainer.innerHTML = "";
   dailyTableContainer.innerHTML = "";
+  updatePeriodError("");
 }
 
 function showMessage(text, type = "success") {
@@ -443,9 +571,10 @@ function renderWindowTable(windows, highlightedWindow) {
 async function processFiles() {
   clearSections();
 
-  const file1 = document.getElementById("csvFile1").files[0];
-  const file2 = document.getElementById("csvFile2").files[0];
+  const file1 = csvFile1Input.files[0];
+  const file2 = csvFile2Input.files[0];
   const monthValue = monthSelect.value;
+  const locationValue = locationSelect.value;
 
   if (!file1 || !file2) {
     showMessage("Please select two CSV files before calculating.", "error");
@@ -454,6 +583,24 @@ async function processFiles() {
 
   if (monthValue === "") {
     showMessage("Select a month to report before calculating.", "error");
+    return;
+  }
+
+  if (!locationValue) {
+    showMessage("Select a monitoring location before calculating.", "error");
+    return;
+  }
+
+  const requiresDischargeChoice = DISCHARGE_LOCATIONS.has(locationValue);
+  const dischargeType = getSelectedDischargeType();
+
+  if (requiresDischargeChoice && !dischargeType) {
+    showMessage("Choose a discharge type for the selected location before calculating.", "error");
+    return;
+  }
+
+  if (requiresDischargeChoice && dischargeType === "intermittent" && dischargePeriods.length === 0) {
+    showMessage("Add at least one discharge period for intermittent discharge locations before calculating.", "error");
     return;
   }
 
@@ -512,14 +659,32 @@ async function processFiles() {
     const uniqueRecords = Array.from(dedupedMap.values());
     uniqueRecords.sort((a, b) => a.date - b.date);
 
-    const summary = summarizeRecords(uniqueRecords);
+    let workingRecords = uniqueRecords;
+
+    if (requiresDischargeChoice && dischargeType === "intermittent") {
+      const filtered = workingRecords.filter((record) =>
+        dischargePeriods.some((period) => record.date >= period.start && record.date <= period.end)
+      );
+
+      if (!filtered.length) {
+        showMessage(
+          "No readings fall within the provided discharge periods. Adjust the periods and try again.",
+          "error"
+        );
+        return;
+      }
+
+      workingRecords = filtered;
+    }
+
+    const summary = summarizeRecords(workingRecords);
     recordCount.textContent = summary.recordCount.toString();
     dayCount.textContent = summary.dayCount.toString();
     dateRange.textContent = summary.range;
     summarySection.classList.remove("hidden");
 
-    const daily = computeDailyAverages(uniqueRecords);
-    const twoHourWindows = computeTwoHourWindows(uniqueRecords);
+    const daily = computeDailyAverages(workingRecords);
+    const twoHourWindows = computeTwoHourWindows(workingRecords);
     const dailyMaxLookup = computeDailyMaxLookup(twoHourWindows);
 
     if (daily.length < 7) {
@@ -591,5 +756,76 @@ async function processFiles() {
     showMessage("An error occurred while processing the files. Please try again.", "error");
   }
 }
+
+locationSelect.addEventListener("change", () => {
+  updateDischargeVisibility();
+  updateProcessButtonState();
+});
+
+monthSelect.addEventListener("change", updateProcessButtonState);
+
+dischargeTypeInputs.forEach((input) => {
+  input.addEventListener("change", () => {
+    updateDischargeVisibility();
+    updateProcessButtonState();
+  });
+});
+
+addPeriodButton.addEventListener("click", () => {
+  updatePeriodError("");
+  const startValue = periodStartInput.value;
+  const endValue = periodEndInput.value;
+
+  if (!startValue || !endValue) {
+    updatePeriodError("Enter both a start and stop date/time before adding the discharge period.");
+    return;
+  }
+
+  const start = new Date(startValue);
+  const end = new Date(endValue);
+
+  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
+    updatePeriodError("The provided start or stop time is invalid. Please adjust the values.");
+    return;
+  }
+
+  if (end <= start) {
+    updatePeriodError("The stop time must be after the start time for a discharge period.");
+    return;
+  }
+
+  const id = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  dischargePeriods.push({ id, start, end });
+  dischargePeriods.sort((a, b) => a.start - b.start);
+  renderPeriods();
+  updateProcessButtonState();
+  periodStartInput.value = "";
+  periodEndInput.value = "";
+});
+
+periodList.addEventListener("click", (event) => {
+  const target = event.target;
+  if (!(target instanceof HTMLElement)) {
+    return;
+  }
+
+  if (target.matches(".period-list__remove")) {
+    const id = target.getAttribute("data-id");
+    if (!id) {
+      return;
+    }
+
+    dischargePeriods = dischargePeriods.filter((period) => period.id !== id);
+    renderPeriods();
+    updateProcessButtonState();
+  }
+});
+
+csvFile1Input.addEventListener("change", updateProcessButtonState);
+csvFile2Input.addEventListener("change", updateProcessButtonState);
+
+syncRadioStates();
+updateDischargeVisibility();
+updateProcessButtonState();
 
 processButton.addEventListener("click", processFiles);

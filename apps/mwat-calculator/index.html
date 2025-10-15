@@ -37,9 +37,50 @@
             <option value="" selected disabled>Select month</option>
           </select>
         </label>
+        <label class="input-group">
+          <span>Monitoring location</span>
+          <select id="locationSelect">
+            <option value="" selected disabled>Select location</option>
+            <option value="001">001</option>
+            <option value="004">004</option>
+            <option value="007">007</option>
+            <option value="UV">UV</option>
+            <option value="UST1">UST1</option>
+          </select>
+        </label>
+      </div>
+      <div id="dischargeTypeContainer" class="input-group hidden">
+        <span>Discharge type</span>
+        <div class="radio-group" role="radiogroup" aria-label="Discharge type">
+          <label class="radio">
+            <input type="radio" name="dischargeType" value="continuous" />
+            <span>Continuous discharge</span>
+          </label>
+          <label class="radio">
+            <input type="radio" name="dischargeType" value="intermittent" />
+            <span>Intermittent discharge</span>
+          </label>
+        </div>
+      </div>
+      <div id="intermittentContainer" class="intermittent hidden" aria-live="polite">
+        <div class="input-grid input-grid--periods">
+          <label class="input-group">
+            <span>Discharge start</span>
+            <input type="datetime-local" id="periodStart" />
+          </label>
+          <label class="input-group">
+            <span>Discharge stop</span>
+            <input type="datetime-local" id="periodEnd" />
+          </label>
+        </div>
+        <div class="intermittent__actions">
+          <button type="button" id="addPeriodButton" class="button button--subtle">Add discharge period</button>
+        </div>
+        <p id="periodError" class="input-error hidden" role="alert"></p>
+        <ul id="periodList" class="period-list hidden" aria-live="polite"></ul>
       </div>
       <div class="card__actions">
-        <button id="processButton" class="button">Run calculations</button>
+        <button id="processButton" class="button" disabled>Run calculations</button>
         <p class="note">
           Column B must contain the timestamp and column C the recorded temperature (°C). Header rows are ignored and
           all other columns are safely discarded.
