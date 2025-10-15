@@ -7,6 +7,53 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <nav class="global-nav" aria-label="Global navigation">
+    <a class="global-nav__brand" href="../dashboard/dashboard.html">
+      <img class="global-nav__logo" src="../../assets/logos/logo-horizontal.png" alt="City of Northglenn" />
+      <div class="global-nav__brand-text">
+          <span class="global-nav__overline">Utilities</span>
+          <span class="global-nav__title">Treatment Operations &amp; Training Portal</span>
+      </div>
+    </a>
+    <ul class="global-nav__menu">
+      <li class="global-nav__item">
+        <a class="global-nav__link" href="../dashboard/dashboard.html">Home</a>
+      </li>
+      <li class="global-nav__item global-nav__item--dropdown">
+        <button class="global-nav__link global-nav__toggle" type="button" aria-expanded="false">
+          Water Treatment
+          <span class="global-nav__caret" aria-hidden="true"></span>
+        </button>
+        <div class="global-nav__dropdown" role="menu">
+          <a class="global-nav__dropdown-link" href="../dose-predictor/index.html" role="menuitem">Sodium Permanganate Dose Predictor</a>
+          <a class="global-nav__dropdown-link" href="../robojar-analyzer/index.html" role="menuitem">RoboJar Analyzer</a>
+          <a class="global-nav__dropdown-link" href="../sodium-hypochlorite-calculator/index.html" role="menuitem">Sodium Hypochlorite Calculator</a>
+          <a class="global-nav__dropdown-link" href="../water-data-explorer/index.html" role="menuitem">Water Data Explorer</a>
+        </div>
+      </li>
+      <li class="global-nav__item global-nav__item--dropdown">
+        <button class="global-nav__link global-nav__toggle" type="button" aria-expanded="false">
+          Wastewater Treatment
+          <span class="global-nav__caret" aria-hidden="true"></span>
+        </button>
+        <div class="global-nav__dropdown" role="menu">
+          <a class="global-nav__dropdown-link" href="../mwat-calculator/index.html" role="menuitem">MWAT &amp; DM Calculator</a>
+        </div>
+      </li>
+      <li class="global-nav__item global-nav__item--dropdown">
+        <button class="global-nav__link global-nav__toggle" type="button" aria-expanded="false">
+          Training
+          <span class="global-nav__caret" aria-hidden="true"></span>
+        </button>
+        <div class="global-nav__dropdown" role="menu">
+          <a class="global-nav__dropdown-link" href="../regulation-100-study/index.html" role="menuitem">Regulation 100 Study Guide</a>
+          <a class="global-nav__dropdown-link" href="../video-tutorials/index.html" role="menuitem">Water Treatment Class A Training Videos</a>
+          <a class="global-nav__dropdown-link" href="../water-treatment-flashcards/index.html" role="menuitem">Water Treatment Flashcards</a>
+        </div>
+      </li>
+    </ul>
+  </nav>
+
   <main class="page">
     <header class="hero">
       <h1>MWAT &amp; Daily Maximum Temperature Calculator</h1>

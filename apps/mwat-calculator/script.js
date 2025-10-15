@@ -46,6 +46,7 @@ const addPeriodButton = document.getElementById("addPeriodButton");
 const periodError = document.getElementById("periodError");
 const periodList = document.getElementById("periodList");
 const exportPdfButton = document.getElementById("exportPdfButton");
+const navToggles = Array.from(document.querySelectorAll(".global-nav__toggle"));
 
 const DISCHARGE_LOCATIONS = new Set(["001", "004", "007"]);
 let dischargePeriods = [];
@@ -1203,4 +1204,53 @@ processButton.addEventListener("click", processFiles);
 
 if (exportPdfButton) {
   exportPdfButton.addEventListener("click", exportResultsToPdf);
+}
+
+if (navToggles.length) {
+  const closeAllMenus = () => {
+    navToggles.forEach((toggle) => {
+      const item = toggle.closest(".global-nav__item--dropdown");
+      if (item) {
+        item.classList.remove("global-nav__item--open");
+      }
+      toggle.setAttribute("aria-expanded", "false");
+    });
+  };
+
+  navToggles.forEach((toggle) => {
+    toggle.addEventListener("click", (event) => {
+      event.stopPropagation();
+      const item = toggle.closest(".global-nav__item--dropdown");
+      if (!item) {
+        return;
+      }
+
+      const isOpen = item.classList.contains("global-nav__item--open");
+      closeAllMenus();
+      if (!isOpen) {
+        item.classList.add("global-nav__item--open");
+        toggle.setAttribute("aria-expanded", "true");
+      }
+    });
+  });
+
+  document.addEventListener("click", (event) => {
+    if (!(event.target instanceof Node)) {
+      return;
+    }
+    if (
+      !navToggles.some((toggle) => {
+        const item = toggle.closest(".global-nav__item--dropdown");
+        return item && item.contains(event.target);
+      })
+    ) {
+      closeAllMenus();
+    }
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      closeAllMenus();
+    }
+  });
 }

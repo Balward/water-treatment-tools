@@ -8,162 +8,273 @@
     <link rel="stylesheet" href="./dashboard.css" />
   </head>
   <body>
-    <div class="dashboard">
-      <header class="dashboard__header">
-        <div class="brand">
-          <img
-            src="../../assets/logos/logo-vert.png"
-            alt="City of Northglenn"
-            class="brand__mark"
-          />
-          <div class="brand__copy">
-            <span class="brand__overline">Water Treatment</span>
-            <h1>Operations Command Center</h1>
-            <p class="brand__tagline">
-              Launch the tools that keep Northglenn's plant moving. Pick an
-              application to jump straight into your workflow.
+    <nav class="global-nav" aria-label="Global navigation">
+      <a class="global-nav__brand" href="../dashboard/dashboard.html">
+        <img
+          class="global-nav__logo"
+          src="../../assets/logos/logo-horizontal.png"
+          alt="City of Northglenn"
+        />
+        <div class="global-nav__brand-text">
+          <span class="global-nav__overline">Utilities</span>
+          <span class="global-nav__title">Treatment Operations &amp; Training Portal</span>
+        </div>
+      </a>
+      <ul class="global-nav__menu">
+        <li class="global-nav__item">
+          <a class="global-nav__link global-nav__link--active" href="../dashboard/dashboard.html">Home</a>
+        </li>
+        <li class="global-nav__item global-nav__item--dropdown">
+          <button class="global-nav__link global-nav__toggle" type="button" aria-expanded="false">
+            Water Treatment
+            <span class="global-nav__caret" aria-hidden="true"></span>
+          </button>
+          <div class="global-nav__dropdown" role="menu">
+            <a class="global-nav__dropdown-link" href="../robojar-analyzer/index.html" role="menuitem">
+              RoboJar Analyzer
+            </a>
+            <a
+              class="global-nav__dropdown-link"
+              href="../sodium-hypochlorite-calculator/index.html"
+              role="menuitem"
+            >
+              Sodium Hypochlorite Calculator
+            </a>
+            <a class="global-nav__dropdown-link" href="../dose-predictor/index.html" role="menuitem">
+              Sodium Permanganate Dose Predictor
+            </a>
+            <a class="global-nav__dropdown-link" href="../water-data-explorer/index.html" role="menuitem">
+              Water Data Explorer
+            </a>
+          </div>
+        </li>
+        <li class="global-nav__item global-nav__item--dropdown">
+          <button class="global-nav__link global-nav__toggle" type="button" aria-expanded="false">
+            Wastewater Treatment
+            <span class="global-nav__caret" aria-hidden="true"></span>
+          </button>
+          <div class="global-nav__dropdown" role="menu">
+            <a class="global-nav__dropdown-link" href="../mwat-calculator/index.html" role="menuitem">
+              MWAT &amp; DM Calculator
+            </a>
+          </div>
+        </li>
+        <li class="global-nav__item global-nav__item--dropdown global-nav__item--align-end">
+          <button class="global-nav__link global-nav__toggle" type="button" aria-expanded="false">
+            Training
+            <span class="global-nav__caret" aria-hidden="true"></span>
+          </button>
+          <div class="global-nav__dropdown" role="menu">
+            <a class="global-nav__dropdown-link" href="../regulation-100-study/index.html" role="menuitem">
+              Regulation 100 Study Guide
+            </a>
+            <a class="global-nav__dropdown-link" href="../video-tutorials/index.html" role="menuitem">
+              Water Treatment Class A Training Videos
+            </a>
+            <a class="global-nav__dropdown-link" href="../water-treatment-flashcards/index.html" role="menuitem">
+              Water Treatment Flashcards
+            </a>
+          </div>
+        </li>
+      </ul>
+    </nav>
+
+    <main class="page dashboard-page">
+      <header class="hero hero--dashboard">
+        <div class="hero__brand">
+          <div class="hero__brand-copy">
+            <span class="hero__overline">Utilities</span>
+            <h1>Treatment Operations &amp; Training Portal</h1>
+            <p>
+              Launch the tools that keep Northglenn's plant moving. Pick an application to jump straight into your
+              workflow.
             </p>
           </div>
         </div>
       </header>
 
-      <main class="dashboard__main">
-        <section class="apps" aria-labelledby="apps-title">
-          <div class="apps__intro">
-            <h2 id="apps-title">Launch applications</h2>
-          </div>
-          <div class="app-grid">
-            <a
-              class="app-button app-button--robojar"
-              href="../robojar-analyzer/index.html"
-            >
-              <div class="app-button__content">
-                <div class="app-button__text">
-                  <h3>RoboJar Analyzer</h3>
-                  <p>Upload jar tests, compare coagulants, and export the best run.</p>
+      <section class="card card--apps" aria-labelledby="apps-title">
+        <div class="card__header">
+          <h2 id="apps-title">Launch Applications</h2>
+          <p>Select a tool below to begin your task.</p>
+        </div>
+        <div class="app-categories">
+          <section class="app-category">
+            <h3 class="app-category__title">Water Treatment</h3>
+            <div class="app-grid">
+              <a class="app-button app-button--robojar" href="../robojar-analyzer/index.html">
+                <div class="app-button__content">
+                  <div class="app-button__text">
+                    <h3>RoboJar Analyzer</h3>
+                    <p>Upload jar tests, compare coagulants, and export the best run.</p>
+                  </div>
                 </div>
-              </div>
-              <span class="app-button__cta">Open</span>
-            </a>
+                <span class="app-button__cta">Open</span>
+              </a>
 
-            <a
-              class="app-button app-button--dose"
-              href="../dose-predictor/index.html"
-            >
-              <div class="app-button__content">
-                <div class="app-button__text">
-                  <h3>Dose Predictor</h3>
-                  <p>AI-guided permanganate dosing tuned to Northglenn datasets.</p>
+              <a class="app-button app-button--hypo" href="../sodium-hypochlorite-calculator/index.html">
+                <div class="app-button__content">
+                  <div class="app-button__text">
+                    <h3>Sodium Hypochlorite Calculator</h3>
+                    <p>Dial in residual targets with precise feed and contact time math.</p>
+                  </div>
                 </div>
-              </div>
-              <span class="app-button__cta">Open</span>
-            </a>
+                <span class="app-button__cta">Open</span>
+              </a>
 
-            <a
-              class="app-button app-button--regulation"
-              href="../regulation-100-study/index.html"
-            >
-              <div class="app-button__content">
-                <div class="app-button__text">
-                  <h3>Regulation 100 Guide</h3>
-                  <p>Chaptered study materials and checklists for certification.</p>
+              <a class="app-button app-button--dose" href="../dose-predictor/index.html">
+                <div class="app-button__content">
+                  <div class="app-button__text">
+                    <h3>Sodium Permanganate Dose Predictor</h3>
+                    <p>AI-guided permanganate dosing tuned to Northglenn datasets.</p>
+                  </div>
                 </div>
-              </div>
-              <span class="app-button__cta">Open</span>
-            </a>
+                <span class="app-button__cta">Open</span>
+              </a>
 
-            <a
-              class="app-button app-button--flashcards"
-              href="../water-treatment-flashcards/index.html"
-            >
-              <div class="app-button__content">
-                <div class="app-button__text">
-                  <h3>Water Treatment Flashcards</h3>
-                  <p>Drill crucial formulas and terms in rapid-fire study mode.</p>
+              <a class="app-button app-button--explorer" href="../water-data-explorer/index.html">
+                <div class="app-button__content">
+                  <div class="app-button__text">
+                    <h3>Water Data Explorer</h3>
+                    <p>View trending dashboards and correlations across plant data.</p>
+                  </div>
                 </div>
-              </div>
-              <span class="app-button__cta">Open</span>
-            </a>
+                <span class="app-button__cta">Open</span>
+              </a>
+            </div>
+          </section>
 
-            <a
-              class="app-button app-button--hypo"
-              href="../sodium-hypochlorite-calculator/index.html"
-            >
-              <div class="app-button__content">
-                <div class="app-button__text">
-                  <h3>Hypochlorite Dosing</h3>
-                  <p>Dial in residual targets with precise feed and contact time math.</p>
+          <section class="app-category">
+            <h3 class="app-category__title">Wastewater Treatment</h3>
+            <div class="app-grid">
+              <a class="app-button app-button--mwat" href="../mwat-calculator/index.html">
+                <div class="app-button__content">
+                  <div class="app-button__text">
+                    <h3>MWAT &amp; DM Calculator</h3>
+                    <p>Merge overlapping exports, validate sampling density, and report seven-day MWATs.</p>
+                  </div>
                 </div>
-              </div>
-              <span class="app-button__cta">Open</span>
-            </a>
+                <span class="app-button__cta">Open</span>
+              </a>
+            </div>
+          </section>
 
-            <a
-              class="app-button app-button--mwat"
-              href="../mwat-calculator/index.html"
-            >
-              <div class="app-button__content">
-                <div class="app-button__text">
-                  <h3>Stream MWAT Calculator</h3>
-                  <p>
-                    Merge overlapping exports, validate sampling density, and report
-                    seven-day MWATs.
-                  </p>
+          <section class="app-category">
+            <h3 class="app-category__title">Training</h3>
+            <div class="app-grid">
+              <a class="app-button app-button--regulation" href="../regulation-100-study/index.html">
+                <div class="app-button__content">
+                  <div class="app-button__text">
+                    <h3>Regulation 100 Study Guide</h3>
+                    <p>Chaptered study materials and checklists for certification.</p>
+                  </div>
                 </div>
-              </div>
-              <span class="app-button__cta">Open</span>
-            </a>
+                <span class="app-button__cta">Open</span>
+              </a>
 
-            <a
-              class="app-button app-button--explorer"
-              href="../water-data-explorer/index.html"
-            >
-              <div class="app-button__content">
-                <div class="app-button__text">
-                  <h3>Water Data Explorer</h3>
-                  <p>View trending dashboards and correlations across plant data.</p>
+              <a class="app-button app-button--videos" href="../video-tutorials/index.html">
+                <div class="app-button__content">
+                  <div class="app-button__text">
+                    <h3>Water Treatment Class A Training Videos</h3>
+                    <p>On-demand walkthroughs for new operators and refresher training.</p>
+                  </div>
                 </div>
-              </div>
-              <span class="app-button__cta">Open</span>
-            </a>
+                <span class="app-button__cta">Open</span>
+              </a>
 
-            <a class="app-button app-button--videos" href="../video-tutorials/index.html">
-              <div class="app-button__content">
-                <div class="app-button__text">
-                  <h3>Video Tutorials</h3>
-                  <p>On-demand walkthroughs for new operators and refresher training.</p>
+              <a class="app-button app-button--flashcards" href="../water-treatment-flashcards/index.html">
+                <div class="app-button__content">
+                  <div class="app-button__text">
+                    <h3>Water Treatment Flashcards</h3>
+                    <p>Drill crucial formulas and terms in rapid-fire study mode.</p>
+                  </div>
                 </div>
-              </div>
-              <span class="app-button__cta">Open</span>
-            </a>
+                <span class="app-button__cta">Open</span>
+              </a>
+            </div>
+          </section>
 
-            <a
-              class="app-button app-button--upcoming app-button--ghost"
-              href="#"
-              aria-disabled="true"
-            >
-              <div class="app-button__content">
-                <div class="app-button__text">
-                  <h3>Reserved for next release</h3>
-                  <p>Have an idea? Submit it to the water innovation queue.</p>
+          <section class="app-category">
+            <h3 class="app-category__title">Coming Soon</h3>
+            <div class="app-grid">
+              <a class="app-button app-button--upcoming app-button--ghost" href="#" aria-disabled="true">
+                <div class="app-button__content">
+                  <div class="app-button__text">
+                    <h3>Reserved for Next Release</h3>
+                    <p>Have an idea? Submit it to the innovation queue.</p>
+                  </div>
                 </div>
-              </div>
-              <span class="app-button__cta">Coming soon</span>
-            </a>
-          </div>
-        </section>
-      </main>
+                <span class="app-button__cta">Coming Soon</span>
+              </a>
+            </div>
+          </section>
+        </div>
+      </section>
 
-      <footer class="dashboard__footer">
+      <footer class="card dashboard__footer">
         <div class="footer__status">
           <span class="status-dot" aria-hidden="true"></span>
-          <span>All services operational • Updated 5 minutes ago</span>
+          <span>All services operational. Updated 5 minutes ago.</span>
         </div>
         <p class="footer__note">
-          Built for the City of Northglenn Water Treatment team. Feedback keeps
-          these tools sharp—reach out anytime.
+          Built for the City of Northglenn Utilities team.
         </p>
       </footer>
-    </div>
+    </main>
+
+    <script>
+      (function () {
+        const navToggles = Array.from(document.querySelectorAll(".global-nav__toggle"));
+        if (!navToggles.length) {
+          return;
+        }
+
+        const closeAllMenus = () => {
+          navToggles.forEach((toggle) => {
+            const item = toggle.closest(".global-nav__item--dropdown");
+            if (item) {
+              item.classList.remove("global-nav__item--open");
+            }
+            toggle.setAttribute("aria-expanded", "false");
+          });
+        };
+
+        navToggles.forEach((toggle) => {
+          toggle.addEventListener("click", (event) => {
+            event.stopPropagation();
+            const item = toggle.closest(".global-nav__item--dropdown");
+            if (!item) {
+              return;
+            }
+            const isOpen = item.classList.contains("global-nav__item--open");
+            closeAllMenus();
+            if (!isOpen) {
+              item.classList.add("global-nav__item--open");
+              toggle.setAttribute("aria-expanded", "true");
+            }
+          });
+        });
+
+        document.addEventListener("click", (event) => {
+          if (!(event.target instanceof Node)) {
+            return;
+          }
+          if (
+            !navToggles.some((toggle) => {
+              const item = toggle.closest(".global-nav__item--dropdown");
+              return item && item.contains(event.target);
+            })
+          ) {
+            closeAllMenus();
+          }
+        });
+
+        document.addEventListener("keydown", (event) => {
+          if (event.key === "Escape") {
+            closeAllMenus();
+          }
+        });
+      })();
+    </script>
   </body>
 </html>
