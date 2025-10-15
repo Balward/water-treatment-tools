@@ -22,6 +22,8 @@
   --success-strong: #bbf7d0;
   --error-soft: rgba(248, 113, 113, 0.2);
   --error-strong: #fecaca;
+  /* Shared gradient for hero + cards */
+  --card-gradient: linear-gradient(135deg, rgba(99, 102, 241, 0.35), rgba(34, 211, 238, 0.18));
 }
 
 *,
@@ -67,7 +69,7 @@ main {
 }
 
 .hero {
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.35), rgba(34, 211, 238, 0.18));
+  background: var(--card-gradient);
   border-radius: 28px;
   padding: 2.75rem clamp(1.5rem, 4vw, 3.25rem);
   box-shadow: 0 40px 70px rgba(3, 7, 18, 0.7);
@@ -92,7 +94,7 @@ main {
 }
 
 .card {
-  background: linear-gradient(160deg, rgba(8, 11, 28, 0.95), rgba(14, 18, 40, 0.88));
+  background: var(--card-gradient);
   border-radius: 22px;
   padding: 2rem clamp(1.25rem, 3vw, 2.5rem);
   margin-bottom: 2rem;
@@ -102,7 +104,7 @@ main {
 }
 
 .card--inputs {
-  background: linear-gradient(160deg, rgba(129, 140, 248, 0.32), rgba(8, 11, 28, 0.92));
+  background: var(--card-gradient);
   border-color: var(--border-strong);
   box-shadow: 0 32px 70px rgba(8, 12, 35, 0.7);
 }
@@ -135,6 +137,7 @@ main {
   justify-content: flex-end;
   align-items: center;
   margin-top: 1.25rem;
+  margin-bottom: 0.85rem;
 }
 
 .card__divider {
@@ -429,6 +432,17 @@ main {
   display: grid;
   gap: 1.5rem;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+/* Add spacing below Data snapshot header before summary cards */
+#summarySection .card__header {
+  margin-bottom: 0.75rem;
+}
+
+/* Add small space below table descriptions */
+#windowsSection .card__header,
+#dailySection .card__header {
+  margin-bottom: 0.75rem;
 }
 
 .metric {

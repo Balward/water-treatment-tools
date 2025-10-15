@@ -21,6 +21,7 @@ const processButton = document.getElementById("processButton");
 const messages = document.getElementById("messages");
 const summarySection = document.getElementById("summarySection");
 const resultsSection = document.getElementById("resultsSection");
+const windowsSection = document.getElementById("windowsSection");
 const dailySection = document.getElementById("dailySection");
 const recordCount = document.getElementById("recordCount");
 const dayCount = document.getElementById("dayCount");
@@ -268,6 +269,7 @@ function clearSections() {
   messages.className = "";
   summarySection.classList.add("hidden");
   resultsSection.classList.add("hidden");
+  if (windowsSection) windowsSection.classList.add("hidden");
   dailySection.classList.add("hidden");
   metricsPanel.classList.add("hidden");
   mwatValue.textContent = "—";
@@ -646,7 +648,8 @@ function appendFieldValueSection(doc, marginX, cursorY, config) {
     headingColor,
     rows,
     alternateRowFill,
-    afterSpacing = 12
+    afterSpacing = 18,
+    boldFirstValueCell = false
   } = config;
 
   doc.setFontSize(12);
@@ -656,14 +659,15 @@ function appendFieldValueSection(doc, marginX, cursorY, config) {
   doc.setTextColor(20);
 
   const tableConfig = {
-    startY: cursorY + 12,
+    startY: cursorY + 6,
     head: [["Field", "Value"]],
     body: rows,
     styles: {
       fontSize: 8,
       cellPadding: { top: 1.5, bottom: 1.5, left: 3, right: 3 },
       overflow: "linebreak",
-      lineWidth: 0.1
+      lineWidth: 0.1,
+      textColor: 0
     },
     headStyles: {
       fillColor: headingColor,
@@ -671,7 +675,7 @@ function appendFieldValueSection(doc, marginX, cursorY, config) {
       halign: "left",
       fontSize: 8
     },
-    bodyStyles: { valign: "top" },
+    bodyStyles: { valign: "top", textColor: 0 },
     margin: { left: marginX, right: marginX },
     columnStyles: {
       0: { cellWidth: 150 }
@@ -681,6 +685,21 @@ function appendFieldValueSection(doc, marginX, cursorY, config) {
   if (alternateRowFill) {
     tableConfig.alternateRowStyles = { fillColor: alternateRowFill };
   }
+
+  // Bold the primary value cell (second column, first body row) when requested
+  tableConfig.didParseCell = (data) => {
+    if (
+      data.section === "body" &&
+      boldFirstValueCell &&
+      data.row.index === 0 &&
+      data.column.index === 1
+    ) {
+      data.cell.styles.fontStyle = "bold";
+      // Slightly increase font size for emphasized value
+      const current = data.cell.styles.fontSize || 8;
+      data.cell.styles.fontSize = Math.min(current + 1, 12);
+    }
+  };
 
   doc.autoTable(tableConfig);
 
@@ -702,7 +721,7 @@ function appendRankedTableSection(doc, marginX, cursorY, config) {
     },
     headStyles = {},
     columnStyles,
-    afterSpacing = 12
+    afterSpacing = 18
   } = config;
 
   doc.setFontSize(12);
@@ -712,11 +731,12 @@ function appendRankedTableSection(doc, marginX, cursorY, config) {
   doc.setTextColor(20);
 
   const tableConfig = {
-    startY: cursorY + 12,
+    startY: cursorY + 6,
     head,
     body,
-    styles,
+    styles: { ...styles, textColor: 0 },
     headStyles: { fillColor: headingColor, textColor: 255, fontSize: 7.5, ...headStyles },
+    bodyStyles: { textColor: 0 },
     margin: { left: marginX, right: marginX }
   };
 
@@ -794,12 +814,16 @@ function exportResultsToPdf() {
   doc.text(`Generated ${generatedLabel}`, pageWidth - marginX, cursorY, { align: "right" });
   cursorY += 18;
 
-  doc.setFontSize(10);
+  // Emphasize location and month (left-aligned, no band)
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(12);
   doc.setTextColor(20);
-  doc.text(`Monitoring location: ${exportPayload.metadata.location}`, marginX, cursorY);
-  cursorY += 12;
-  doc.text(`Reporting month: ${exportPayload.metadata.monthLabel}`, marginX, cursorY);
-  cursorY += 24;
+  doc.text(`Location: ${exportPayload.metadata.location}`, marginX, cursorY);
+  cursorY += 14;
+  doc.text(`Month: ${exportPayload.metadata.monthLabel}`, marginX, cursorY);
+  cursorY += 20;
+  // Reset font to normal for following sections
+  doc.setFont("helvetica", "normal");
 
   const pdfSections = [
     (currentY) =>
@@ -811,7 +835,8 @@ function exportResultsToPdf() {
           ["Seven-day range", exportPayload.reported.mwat.range],
           ["Notes", exportPayload.reported.mwat.context]
         ],
-        alternateRowFill: [240, 242, 255]
+        alternateRowFill: [240, 242, 255],
+        boldFirstValueCell: true
       }),
     (currentY) =>
       appendFieldValueSection(doc, marginX, currentY, {
@@ -822,11 +847,12 @@ function exportResultsToPdf() {
           ["Two-hour Window", exportPayload.reported.dailyMax.range],
           ["Notes", exportPayload.reported.dailyMax.context]
         ],
-        alternateRowFill: [255, 245, 235]
+        alternateRowFill: [255, 245, 235],
+        boldFirstValueCell: true
       }),
     (currentY) =>
       appendRankedTableSection(doc, marginX, currentY, {
-        title: "Top 10 MWAT Values",
+        title: "Top 5 MWAT Values",
         headingColor: [129, 140, 248],
         head: [exportPayload.tables.mwatTop.columns],
         body: exportPayload.tables.mwatTop.rows,
@@ -834,7 +860,7 @@ function exportResultsToPdf() {
       }),
     (currentY) =>
       appendRankedTableSection(doc, marginX, currentY, {
-        title: "Top 10 Daily Maximum Values",
+        title: "Top 5 Daily Maximum Values",
         headingColor: [249, 115, 22],
         head: [exportPayload.tables.dailyMaxTop.columns],
         body: exportPayload.tables.dailyMaxTop.rows,
@@ -1044,6 +1070,7 @@ async function processFiles() {
 
     windowTableContainer.innerHTML = renderWindowTable(windowsForMonth, best);
     resultsSection.classList.remove("hidden");
+    if (windowsSection) windowsSection.classList.remove("hidden");
 
     const topWindowRowsForPdf = buildTopWindowRowsForPdf(windowsForMonth, best);
     const topDailyMaxRowsForPdf = buildTopDailyMaxRowsForPdf(

@@ -18,7 +18,7 @@
 
     <section class="card card--inputs">
       <div class="card__header">
-        <h2>Upload temperature records</h2>
+        <h2>Upload Temperature Records</h2>
         <p>Provide the overlapping CSV exports that cover the full month of interest.</p>
       </div>
       <div class="input-grid">
@@ -90,7 +90,7 @@
 
     <section id="summarySection" class="card hidden">
       <div class="card__header">
-        <h2>Data snapshot</h2>
+        <h2>Data Snapshot</h2>
         <p>A quick look at the merged records before reviewing results.</p>
       </div>
       <dl class="summary">
@@ -111,7 +111,7 @@
 
     <section id="resultsSection" class="card hidden">
       <div class="card__header">
-        <h2>Monthly highlights</h2>
+        <h2>Monthly Highlights</h2>
         <p>The MWAT highlights the highest seven-day rolling average with at least four days in the selected month, and
           the daily maximum follows the two-hour rolling average guidance.</p>
       </div>
@@ -128,20 +128,25 @@
           <p class="metric__note" id="mwatContext"></p>
         </article>
         <article class="metric metric--daily">
-          <h3 class="metric__title">Daily Maximum (2-hr mean)</h3>
+          <h3 class="metric__title">Daily Maximum (2-Hr Mean)</h3>
           <p class="metric__value" id="dailyMaxValue">&mdash;</p>
           <p class="metric__detail" id="dailyMaxRange"></p>
           <p class="metric__note" id="dailyMaxContext"></p>
         </article>
       </div>
-      <div class="card__divider"></div>
-      <h3 class="card__subtitle">Qualified seven-day windows</h3>
+    </section>
+
+    <section id="windowsSection" class="card hidden">
+      <div class="card__header">
+        <h2>Maximum Weekly Average Temperature</h2>
+        <p>Seven-day windows require consecutive daily averages and qualify when at least four days fall within the selected month. The top qualifying window is highlighted.</p>
+      </div>
       <div id="windowTableContainer" class="table-group table-group--mwat"></div>
     </section>
 
     <section id="dailySection" class="card hidden">
       <div class="card__header">
-        <h2>Daily temperature detail</h2>
+        <h2>Daily Temperature Detail</h2>
         <p>Daily averages require at least three readings per day. Only days in the selected month are displayed. Two-hour
           windows need eight consecutive 15-minute samples to contribute to the daily maximum.</p>
       </div>
