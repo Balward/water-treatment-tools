@@ -19,12 +19,8 @@ const monthSelect = document.getElementById("monthSelect");
 const locationSelect = document.getElementById("locationSelect");
 const processButton = document.getElementById("processButton");
 const messages = document.getElementById("messages");
-const summarySection = document.getElementById("summarySection");
 const resultsSection = document.getElementById("resultsSection");
 const dailySection = document.getElementById("dailySection");
-const recordCount = document.getElementById("recordCount");
-const dayCount = document.getElementById("dayCount");
-const dateRange = document.getElementById("dateRange");
 const metricsPanel = document.getElementById("metricsPanel");
 const mwatValue = document.getElementById("mwatValue");
 const mwatRange = document.getElementById("mwatRange");
@@ -263,7 +259,6 @@ function formatNumber(value, decimals = 2) {
 function clearSections() {
   messages.textContent = "";
   messages.className = "";
-  summarySection.classList.add("hidden");
   resultsSection.classList.add("hidden");
   dailySection.classList.add("hidden");
   metricsPanel.classList.add("hidden");
@@ -494,25 +489,6 @@ function computeSevenDayWindows(dailyAverages) {
   return windows;
 }
 
-function summarizeRecords(records) {
-  if (!records.length) {
-    return {
-      recordCount: 0,
-      dayCount: 0,
-      range: "—"
-    };
-  }
-
-  const sorted = [...records].sort((a, b) => a.date - b.date);
-  const uniqueDays = new Set(sorted.map((record) => toDateKey(record.date)));
-
-  return {
-    recordCount: records.length,
-    dayCount: uniqueDays.size,
-    range: formatDateRange(sorted[0].date, sorted[sorted.length - 1].date)
-  };
-}
-
 function renderDailyTable(daily, dailyMaxLookup, highlightKey) {
   if (!daily.length) {
     return "<p>No daily averages were recorded in the selected month.</p>";
@@ -676,12 +652,6 @@ async function processFiles() {
 
       workingRecords = filtered;
     }
-
-    const summary = summarizeRecords(workingRecords);
-    recordCount.textContent = summary.recordCount.toString();
-    dayCount.textContent = summary.dayCount.toString();
-    dateRange.textContent = summary.range;
-    summarySection.classList.remove("hidden");
 
     const daily = computeDailyAverages(workingRecords);
     const twoHourWindows = computeTwoHourWindows(workingRecords);
