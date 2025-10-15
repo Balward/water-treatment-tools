@@ -19,6 +19,7 @@ const monthSelect = document.getElementById("monthSelect");
 const locationSelect = document.getElementById("locationSelect");
 const processButton = document.getElementById("processButton");
 const messages = document.getElementById("messages");
+const summarySection = document.getElementById("summarySection");
 const resultsSection = document.getElementById("resultsSection");
 const dailySection = document.getElementById("dailySection");
 const metricsPanel = document.getElementById("metricsPanel");
@@ -45,6 +46,30 @@ const DISCHARGE_LOCATIONS = new Set(["001", "004", "007"]);
 let dischargePeriods = [];
 
 const FIFTEEN_MINUTES = 15 * 60 * 1000;
+
+function hideElement(element) {
+  if (element && "classList" in element) {
+    element.classList.add("hidden");
+  }
+}
+
+function showElement(element) {
+  if (element && "classList" in element) {
+    element.classList.remove("hidden");
+  }
+}
+
+function setText(element, text) {
+  if (element) {
+    element.textContent = text;
+  }
+}
+
+function setHTML(element, html) {
+  if (element) {
+    element.innerHTML = html;
+  }
+}
 
 function updatePeriodError(message = "") {
   if (!periodError) {
@@ -257,25 +282,30 @@ function formatNumber(value, decimals = 2) {
 }
 
 function clearSections() {
-  messages.textContent = "";
-  messages.className = "";
-  resultsSection.classList.add("hidden");
-  dailySection.classList.add("hidden");
-  metricsPanel.classList.add("hidden");
-  mwatValue.textContent = "—";
-  mwatRange.textContent = "";
-  mwatContext.textContent = "";
-  dailyMaxValue.textContent = "—";
-  dailyMaxRange.textContent = "";
-  dailyMaxContext.textContent = "";
-  windowTableContainer.innerHTML = "";
-  dailyTableContainer.innerHTML = "";
+  setText(messages, "");
+  if (messages) {
+    messages.className = "";
+  }
+  hideElement(summarySection);
+  hideElement(resultsSection);
+  hideElement(dailySection);
+  hideElement(metricsPanel);
+  setText(mwatValue, "—");
+  setText(mwatRange, "");
+  setText(mwatContext, "");
+  setText(dailyMaxValue, "—");
+  setText(dailyMaxRange, "");
+  setText(dailyMaxContext, "");
+  setHTML(windowTableContainer, "");
+  setHTML(dailyTableContainer, "");
   updatePeriodError("");
 }
 
 function showMessage(text, type = "success") {
-  messages.textContent = text;
-  messages.className = type;
+  setText(messages, text);
+  if (messages) {
+    messages.className = type;
+  }
 }
 
 function buildTable(columns, rows) {
@@ -687,8 +717,10 @@ async function processFiles() {
 
     const monthlyDaily = daily.filter((day) => day.date.getMonth() === monthIndex);
     const highlightKey = toDateKey(monthlyDailyMax.date);
-    dailyTableContainer.innerHTML = renderDailyTable(monthlyDaily, dailyMaxLookup, highlightKey);
-    dailySection.classList.remove("hidden");
+    if (dailyTableContainer) {
+      dailyTableContainer.innerHTML = renderDailyTable(monthlyDaily, dailyMaxLookup, highlightKey);
+    }
+    showElement(dailySection);
 
     const targetYear = monthlyDailyMax.date.getFullYear();
     const windowsForMonth = windows.filter((window) => window.monthIndex === monthIndex);
@@ -707,19 +739,28 @@ async function processFiles() {
     const rangeLabel = formatDateRange(best.start, best.end);
     const mwatYear = best.end.getFullYear();
 
-    mwatValue.textContent = `${formatNumber(best.mean, 3)} °C`;
-    mwatRange.textContent = `${rangeLabel}`;
-    mwatContext.textContent = `Highest seven-day rolling average with at least four days in ${monthNames[monthIndex]} ${mwatYear}.`;
+    setText(mwatValue, `${formatNumber(best.mean, 3)} °C`);
+    setText(mwatRange, `${rangeLabel}`);
+    setText(
+      mwatContext,
+      `Highest seven-day rolling average with at least four days in ${monthNames[monthIndex]} ${mwatYear}.`
+    );
 
     const windowDetails = monthlyDailyMax.window;
-    dailyMaxValue.textContent = `${formatNumber(monthlyDailyMax.value, 3)} °C`;
-    dailyMaxRange.textContent = `${formatDateTime(windowDetails.start)} – ${formatDateTime(windowDetails.end)}`;
-    dailyMaxContext.textContent = `Peak two-hour mean recorded for ${monthNames[monthIndex]} ${targetYear}.`;
+    setText(dailyMaxValue, `${formatNumber(monthlyDailyMax.value, 3)} °C`);
+    setText(
+      dailyMaxRange,
+      `${formatDateTime(windowDetails.start)} – ${formatDateTime(windowDetails.end)}`
+    );
+    setText(
+      dailyMaxContext,
+      `Peak two-hour mean recorded for ${monthNames[monthIndex]} ${targetYear}.`
+    );
 
-    metricsPanel.classList.remove("hidden");
+    showElement(metricsPanel);
 
-    windowTableContainer.innerHTML = renderWindowTable(windowsForMonth, best);
-    resultsSection.classList.remove("hidden");
+    setHTML(windowTableContainer, renderWindowTable(windowsForMonth, best));
+    showElement(resultsSection);
     showMessage("MWAT calculations complete.", "success");
   } catch (error) {
     console.error(error);
