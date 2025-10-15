@@ -640,6 +640,43 @@ function slugify(parts) {
     .replace(/^-+|-+$/g, "");
 }
 
+function appendDischargeDetailsSection(doc, marginX, cursorY, dischargeMetadata) {
+  if (!dischargeMetadata) {
+    return cursorY;
+  }
+
+  const dischargeRows = [["Discharge type", dischargeMetadata.typeLabel]];
+
+  if (Array.isArray(dischargeMetadata.periods) && dischargeMetadata.periods.length) {
+    dischargeRows.push([
+      "Discharge periods",
+      dischargeMetadata.periods.join("\n")
+    ]);
+  }
+
+  doc.setFontSize(13);
+  doc.setTextColor(79, 70, 229);
+  doc.text("Discharge details", marginX, cursorY);
+  doc.setFontSize(10);
+  doc.setTextColor(20);
+
+  doc.autoTable({
+    startY: cursorY + 12,
+    head: [["Field", "Value"]],
+    body: dischargeRows,
+    styles: { fontSize: 10, cellPadding: 6, overflow: "linebreak" },
+    headStyles: { fillColor: [79, 70, 229], textColor: 255, halign: "left" },
+    bodyStyles: { valign: "top" },
+    alternateRowStyles: { fillColor: [236, 233, 254] },
+    margin: { left: marginX, right: marginX },
+    columnStyles: {
+      0: { cellWidth: 160 }
+    }
+  });
+
+  return doc.lastAutoTable.finalY + 24;
+}
+
 function exportResultsToPdf() {
   if (!exportPayload) {
     return;
@@ -770,40 +807,12 @@ function exportResultsToPdf() {
 
   cursorY = doc.lastAutoTable.finalY + 24;
 
-  if (exportPayload.metadata.discharge) {
-    const dischargeRows = [
-      ["Discharge type", exportPayload.metadata.discharge.typeLabel]
-    ];
-
-    if (exportPayload.metadata.discharge.periods.length) {
-      dischargeRows.push([
-        "Discharge periods",
-        exportPayload.metadata.discharge.periods.join("\n")
-      ]);
-    }
-
-    doc.setFontSize(13);
-    doc.setTextColor(79, 70, 229);
-    doc.text("Discharge details", marginX, cursorY);
-    doc.setFontSize(10);
-    doc.setTextColor(20);
-
-    doc.autoTable({
-      startY: cursorY + 12,
-      head: [["Field", "Value"]],
-      body: dischargeRows,
-      styles: { fontSize: 10, cellPadding: 6, overflow: "linebreak" },
-      headStyles: { fillColor: [79, 70, 229], textColor: 255, halign: "left" },
-      bodyStyles: { valign: "top" },
-      alternateRowStyles: { fillColor: [236, 233, 254] },
-      margin: { left: marginX, right: marginX },
-      columnStyles: {
-        0: { cellWidth: 160 }
-      }
-    });
-
-    cursorY = doc.lastAutoTable.finalY + 24;
-  }
+  cursorY = appendDischargeDetailsSection(
+    doc,
+    marginX,
+    cursorY,
+    exportPayload.metadata.discharge
+  );
 
   const fileName = exportPayload.fileSlug ? `${exportPayload.fileSlug}.pdf` : "mwat-report.pdf";
   doc.save(fileName);
