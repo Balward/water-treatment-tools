@@ -77,6 +77,21 @@ function closeMobileMenu() {
   setMobileMenuOpen(false);
 }
 
+if (globalNav) {
+  const shouldUseFallbackLinks =
+    window.location.protocol === "file:" || window.location.pathname.includes("/apps/");
+
+  if (shouldUseFallbackLinks) {
+    const fallbackLinks = globalNav.querySelectorAll("[data-rel-href]");
+    fallbackLinks.forEach((link) => {
+      const relHref = link.getAttribute("data-rel-href");
+      if (relHref) {
+        link.setAttribute("href", relHref);
+      }
+    });
+  }
+}
+
 const DISCHARGE_LOCATIONS = new Set(["001", "004", "007"]);
 let dischargePeriods = [];
 let exportPayload = null;

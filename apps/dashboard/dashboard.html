@@ -4,12 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Water Treatment Tools - Dashboard</title>
-    <link rel="icon" type="image/png" href="../../assets/logos/favicon.png" />
+    <link rel="icon" type="image/png" href="/assets/logos/favicon.png" />
     <link rel="stylesheet" href="./dashboard.css" />
   </head>
   <body>
     <nav class="global-nav" aria-label="Global navigation">
-      <a class="global-nav__brand" href="../dashboard/dashboard.html">
+      <a class="global-nav__brand" href="/" data-rel-href="dashboard.html">
         <img
           class="global-nav__logo"
           src="../../assets/logos/logo-horizontal-dark.png"
@@ -26,7 +26,7 @@
       </button>
       <ul class="global-nav__menu" id="globalNavMenu">
         <li class="global-nav__item">
-          <a class="global-nav__link global-nav__link--active" href="../dashboard/dashboard.html">Home</a>
+          <a class="global-nav__link global-nav__link--active" href="/" data-rel-href="dashboard.html">Home</a>
         </li>
         <li class="global-nav__item global-nav__item--dropdown">
           <button class="global-nav__link global-nav__toggle" type="button" aria-expanded="false">
@@ -34,20 +34,21 @@
             <span class="global-nav__caret" aria-hidden="true"></span>
           </button>
           <div class="global-nav__dropdown" role="menu">
-            <a class="global-nav__dropdown-link" href="../robojar-analyzer/index.html" role="menuitem">
+            <a class="global-nav__dropdown-link" href="/robojar-analyzer/" data-rel-href="../robojar-analyzer/index.html" role="menuitem">
               RoboJar Analyzer
             </a>
             <a
               class="global-nav__dropdown-link"
-              href="../sodium-hypochlorite-calculator/index.html"
+              href="/sodium-hypochlorite-calculator/"
+              data-rel-href="../sodium-hypochlorite-calculator/index.html"
               role="menuitem"
             >
               Sodium Hypochlorite Calculator
             </a>
-            <a class="global-nav__dropdown-link" href="../dose-predictor/index.html" role="menuitem">
+            <a class="global-nav__dropdown-link" href="/dose-predictor/" data-rel-href="../dose-predictor/index.html" role="menuitem">
               Sodium Permanganate Dose Predictor
             </a>
-            <a class="global-nav__dropdown-link" href="../water-data-explorer/index.html" role="menuitem">
+            <a class="global-nav__dropdown-link" href="/water-data-explorer/" data-rel-href="../water-data-explorer/index.html" role="menuitem">
               Water Data Explorer
             </a>
           </div>
@@ -58,7 +59,7 @@
             <span class="global-nav__caret" aria-hidden="true"></span>
           </button>
           <div class="global-nav__dropdown" role="menu">
-            <a class="global-nav__dropdown-link" href="../mwat-calculator/index.html" role="menuitem">
+            <a class="global-nav__dropdown-link" href="/mwat-calculator/" data-rel-href="../mwat-calculator/index.html" role="menuitem">
               MWAT &amp; DM Calculator
             </a>
           </div>
@@ -69,13 +70,13 @@
             <span class="global-nav__caret" aria-hidden="true"></span>
           </button>
           <div class="global-nav__dropdown" role="menu">
-            <a class="global-nav__dropdown-link" href="../regulation-100-study/index.html" role="menuitem">
+            <a class="global-nav__dropdown-link" href="/regulation-100-study/" data-rel-href="../regulation-100-study/index.html" role="menuitem">
               Regulation 100 Study Guide
             </a>
-            <a class="global-nav__dropdown-link" href="../video-tutorials/index.html" role="menuitem">
+            <a class="global-nav__dropdown-link" href="/video-tutorials/" data-rel-href="../video-tutorials/index.html" role="menuitem">
               Water Treatment Class A Training Videos
             </a>
-            <a class="global-nav__dropdown-link" href="../water-treatment-flashcards/index.html" role="menuitem">
+            <a class="global-nav__dropdown-link" href="/water-treatment-flashcards/" data-rel-href="../water-treatment-flashcards/index.html" role="menuitem">
               Water Treatment Flashcards
             </a>
           </div>
@@ -106,7 +107,7 @@
           <section class="app-category">
             <h3 class="app-category__title">Water Treatment</h3>
             <div class="app-grid">
-              <a class="app-button app-button--robojar" href="../robojar-analyzer/index.html">
+              <a class="app-button app-button--robojar" href="/robojar-analyzer/" data-rel-href="../robojar-analyzer/index.html">
                 <div class="app-button__content">
                   <div class="app-button__text">
                     <h3>RoboJar Analyzer</h3>
@@ -116,7 +117,7 @@
                 <span class="app-button__cta">Open</span>
               </a>
 
-              <a class="app-button app-button--hypo" href="../sodium-hypochlorite-calculator/index.html">
+              <a class="app-button app-button--hypo" href="/sodium-hypochlorite-calculator/" data-rel-href="../sodium-hypochlorite-calculator/index.html">
                 <div class="app-button__content">
                   <div class="app-button__text">
                     <h3>Sodium Hypochlorite Calculator</h3>
@@ -126,7 +127,7 @@
                 <span class="app-button__cta">Open</span>
               </a>
 
-              <a class="app-button app-button--dose" href="../dose-predictor/index.html">
+              <a class="app-button app-button--dose" href="/dose-predictor/" data-rel-href="../dose-predictor/index.html">
                 <div class="app-button__content">
                   <div class="app-button__text">
                     <h3>Sodium Permanganate Dose Predictor</h3>
@@ -136,7 +137,7 @@
                 <span class="app-button__cta">Open</span>
               </a>
 
-              <a class="app-button app-button--explorer" href="../water-data-explorer/index.html">
+              <a class="app-button app-button--explorer" href="/water-data-explorer/" data-rel-href="../water-data-explorer/index.html">
                 <div class="app-button__content">
                   <div class="app-button__text">
                     <h3>Water Data Explorer</h3>
@@ -151,7 +152,7 @@
           <section class="app-category">
             <h3 class="app-category__title">Wastewater Treatment</h3>
             <div class="app-grid">
-              <a class="app-button app-button--mwat" href="../mwat-calculator/index.html">
+              <a class="app-button app-button--mwat" href="/mwat-calculator/" data-rel-href="../mwat-calculator/index.html">
                 <div class="app-button__content">
                   <div class="app-button__text">
                     <h3>MWAT &amp; DM Calculator</h3>
@@ -166,7 +167,7 @@
           <section class="app-category">
             <h3 class="app-category__title">Training</h3>
             <div class="app-grid">
-              <a class="app-button app-button--regulation" href="../regulation-100-study/index.html">
+              <a class="app-button app-button--regulation" href="/regulation-100-study/" data-rel-href="../regulation-100-study/index.html">
                 <div class="app-button__content">
                   <div class="app-button__text">
                     <h3>Regulation 100 Study Guide</h3>
@@ -176,7 +177,7 @@
                 <span class="app-button__cta">Open</span>
               </a>
 
-              <a class="app-button app-button--videos" href="../video-tutorials/index.html">
+              <a class="app-button app-button--videos" href="/video-tutorials/" data-rel-href="../video-tutorials/index.html">
                 <div class="app-button__content">
                   <div class="app-button__text">
                     <h3>Water Treatment Class A Training Videos</h3>
@@ -186,7 +187,7 @@
                 <span class="app-button__cta">Open</span>
               </a>
 
-              <a class="app-button app-button--flashcards" href="../water-treatment-flashcards/index.html">
+              <a class="app-button app-button--flashcards" href="/water-treatment-flashcards/" data-rel-href="../water-treatment-flashcards/index.html">
                 <div class="app-button__content">
                   <div class="app-button__text">
                     <h3>Water Treatment Flashcards</h3>
@@ -232,6 +233,21 @@
         const globalNavMenu = globalNav ? globalNav.querySelector(".global-nav__menu") : null;
         const globalNavMenuToggle = globalNav ? globalNav.querySelector(".global-nav__menu-toggle") : null;
         const navToggles = Array.from(document.querySelectorAll(".global-nav__toggle"));
+
+        if (globalNav) {
+          const shouldUseFallbackLinks =
+            window.location.protocol === "file:" || window.location.pathname.includes("/apps/");
+
+          if (shouldUseFallbackLinks) {
+            const fallbackLinks = document.querySelectorAll("[data-rel-href]");
+            fallbackLinks.forEach((link) => {
+              const relHref = link.getAttribute("data-rel-href");
+              if (relHref) {
+                link.setAttribute("href", relHref);
+              }
+            });
+          }
+        }
 
         function closeDropdownMenus() {
           navToggles.forEach((toggle) => {
