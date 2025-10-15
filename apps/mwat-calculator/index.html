@@ -115,6 +115,11 @@
         <p>The MWAT highlights the highest seven-day rolling average with at least four days in the selected month, and
           the daily maximum follows the two-hour rolling average guidance.</p>
       </div>
+      <div class="card__actions card__actions--inline">
+        <button id="exportPdfButton" class="button button--subtle hidden" type="button" disabled>
+          Export results as PDF
+        </button>
+      </div>
       <div id="metricsPanel" class="metric-grid hidden">
         <article class="metric metric--mwat">
           <h3 class="metric__title">Maximum Weekly Average Temperature</h3>
@@ -144,6 +149,8 @@
     </section>
   </main>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
