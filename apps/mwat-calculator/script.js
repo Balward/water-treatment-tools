@@ -780,7 +780,7 @@ function exportResultsToPdf() {
   doc.text(`Monitoring location: ${exportPayload.metadata.location}`, marginX, cursorY);
   cursorY += 16;
   doc.text(`Reporting month: ${exportPayload.metadata.monthLabel}`, marginX, cursorY);
-  cursorY += 18;
+  cursorY += 48;
 
   const pdfSections = [
     (currentY) =>
