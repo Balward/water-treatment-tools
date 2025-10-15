@@ -9,13 +9,17 @@
 <body>
   <nav class="global-nav" aria-label="Global navigation">
     <a class="global-nav__brand" href="../dashboard/dashboard.html">
-      <img class="global-nav__logo" src="../../assets/logos/logo-horizontal.png" alt="City of Northglenn" />
+      <img class="global-nav__logo" src="../../assets/logos/logo-horizontal-dark.png" alt="City of Northglenn" />
       <div class="global-nav__brand-text">
-          <span class="global-nav__overline">Utilities</span>
-          <span class="global-nav__title">Treatment Operations &amp; Training Portal</span>
+        <span class="global-nav__overline">Utilities</span>
+        <span class="global-nav__title">Treatment Operations &amp; Training Portal</span>
       </div>
     </a>
-    <ul class="global-nav__menu">
+    <button class="global-nav__menu-toggle" type="button" aria-expanded="false" aria-controls="globalNavMenu">
+      <span class="global-nav__menu-toggle-label">Menu</span>
+      <span class="global-nav__menu-toggle-icon" aria-hidden="true"></span>
+    </button>
+    <ul class="global-nav__menu" id="globalNavMenu">
       <li class="global-nav__item">
         <a class="global-nav__link" href="../dashboard/dashboard.html">Home</a>
       </li>
