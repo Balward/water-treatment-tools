@@ -587,17 +587,18 @@ function renderWindowTable(windows, highlightedWindow) {
   return buildTable(["MWAT #", "7-Day Range", "Ending Day", "Rolling Average"], rows);
 }
 
-function prepareWindowRowsForPdf(windows, highlightedWindow) {
+function buildTopWindowRowsForPdf(windows, reportedWindow) {
   return windows
     .slice()
-    .sort((a, b) => a.end - b.end)
+    .sort((a, b) => b.mean - a.mean)
+    .slice(0, 10)
     .map((window, index) => {
-      const isHighlighted =
-        highlightedWindow &&
-        window.start.getTime() === highlightedWindow.start.getTime() &&
-        window.end.getTime() === highlightedWindow.end.getTime();
+      const isReported =
+        reportedWindow &&
+        window.start.getTime() === reportedWindow.start.getTime() &&
+        window.end.getTime() === reportedWindow.end.getTime();
 
-      const valueLabel = `${formatNumber(window.mean, 3)} °C${isHighlighted ? " (Reported)" : ""}`;
+      const valueLabel = `${formatNumber(window.mean, 3)} °C${isReported ? " (Reported)" : ""}`;
 
       return [
         (index + 1).toString(),
@@ -608,26 +609,26 @@ function prepareWindowRowsForPdf(windows, highlightedWindow) {
     });
 }
 
-function prepareDailyRowsForPdf(daily, dailyMaxLookup, highlightKey) {
-  return daily.map((day) => {
-    const key = toDateKey(day.date);
-    const dailyMax = dailyMaxLookup.get(key);
-    let maxCell = "—";
+function buildTopDailyMaxRowsForPdf(dailyMaxima, reportedEntry) {
+  return dailyMaxima
+    .slice()
+    .sort((a, b) => b.value - a.value)
+    .slice(0, 10)
+    .map((entry, index) => {
+      const isReported =
+        reportedEntry &&
+        entry.window.start.getTime() === reportedEntry.window.start.getTime() &&
+        entry.window.end.getTime() === reportedEntry.window.end.getTime();
 
-    if (dailyMax) {
-      const isReported = highlightKey && key === highlightKey;
-      const valueLabel = `${formatNumber(dailyMax.value, 3)} °C${isReported ? " (Reported)" : ""}`;
-      const rangeLabel = formatTimeRange(dailyMax.window.start, dailyMax.window.end);
-      maxCell = `${valueLabel}\n${rangeLabel}`;
-    }
+      const valueLabel = `${formatNumber(entry.value, 3)} °C${isReported ? " (Reported)" : ""}`;
 
-    return [
-      formatSingleDate(day.date),
-      day.count.toString(),
-      `${formatNumber(day.average, 3)} °C`,
-      maxCell
-    ];
-  });
+      return [
+        (index + 1).toString(),
+        formatSingleDate(entry.date),
+        formatTimeRange(entry.window.start, entry.window.end),
+        valueLabel
+      ];
+    });
 }
 
 function slugify(parts) {
@@ -681,76 +682,104 @@ function exportResultsToPdf() {
   doc.text(`Reporting month: ${exportPayload.metadata.monthLabel}`, marginX, cursorY);
   cursorY += 18;
 
-  const summaryRows = [
-    ["Total records processed", exportPayload.summary.recordCount.toString()],
-    ["Unique days with data", exportPayload.summary.dayCount.toString()],
-    ["Data range", exportPayload.summary.range]
-  ];
-
   if (exportPayload.metadata.discharge) {
-    summaryRows.push([
-      "Discharge type",
-      exportPayload.metadata.discharge.typeLabel
-    ]);
+    const dischargeRows = [
+      ["Discharge type", exportPayload.metadata.discharge.typeLabel]
+    ];
 
     if (exportPayload.metadata.discharge.periods.length) {
-      summaryRows.push([
+      dischargeRows.push([
         "Discharge periods",
         exportPayload.metadata.discharge.periods.join("\n")
       ]);
     }
+
+    doc.setFontSize(13);
+    doc.setTextColor(79, 70, 229);
+    doc.text("Discharge details", marginX, cursorY);
+    doc.setFontSize(10);
+    doc.setTextColor(20);
+
+    doc.autoTable({
+      startY: cursorY + 12,
+      head: [["Field", "Value"]],
+      body: dischargeRows,
+      styles: { fontSize: 10, cellPadding: 6, overflow: "linebreak" },
+      headStyles: { fillColor: [79, 70, 229], textColor: 255, halign: "left" },
+      bodyStyles: { valign: "top" },
+      alternateRowStyles: { fillColor: [236, 233, 254] },
+      margin: { left: marginX, right: marginX },
+      columnStyles: {
+        0: { cellWidth: 160 }
+      }
+    });
+
+    cursorY = doc.lastAutoTable.finalY + 24;
   }
 
+  doc.setFontSize(13);
+  doc.setTextColor(129, 140, 248);
+  doc.text("Reported MWAT", marginX, cursorY);
+  doc.setFontSize(10);
+  doc.setTextColor(20);
+
   doc.autoTable({
-    startY: cursorY,
+    startY: cursorY + 12,
     head: [["Field", "Value"]],
-    body: summaryRows,
-    styles: { fontSize: 10, cellPadding: 6 },
-    headStyles: { fillColor: [99, 102, 241], textColor: 255, halign: "left" },
+    body: [
+      ["Value", exportPayload.reported.mwat.value],
+      ["Seven-day range", exportPayload.reported.mwat.range],
+      ["Notes", exportPayload.reported.mwat.context]
+    ],
+    styles: { fontSize: 10, cellPadding: 6, overflow: "linebreak" },
+    headStyles: { fillColor: [129, 140, 248], textColor: 255, halign: "left" },
+    bodyStyles: { valign: "top" },
     alternateRowStyles: { fillColor: [240, 242, 255] },
     margin: { left: marginX, right: marginX },
     columnStyles: {
-      0: { cellWidth: 180 }
+      0: { cellWidth: 160 }
     }
   });
 
   cursorY = doc.lastAutoTable.finalY + 24;
 
+  doc.setFontSize(13);
+  doc.setTextColor(249, 115, 22);
+  doc.text("Reported Daily Maximum", marginX, cursorY);
+  doc.setFontSize(10);
+  doc.setTextColor(20);
+
   doc.autoTable({
-    startY: cursorY,
-    head: [["Metric", "Value", "Window", "Notes"]],
+    startY: cursorY + 12,
+    head: [["Field", "Value"]],
     body: [
-      [
-        "Maximum Weekly Average Temperature",
-        exportPayload.metrics.mwat.value,
-        exportPayload.metrics.mwat.range,
-        exportPayload.metrics.mwat.context
-      ],
-      [
-        "Daily Maximum (2-hr mean)",
-        exportPayload.metrics.dailyMax.value,
-        exportPayload.metrics.dailyMax.range,
-        exportPayload.metrics.dailyMax.context
-      ]
+      ["Value", exportPayload.reported.dailyMax.value],
+      ["Two-hour Window", exportPayload.reported.dailyMax.range],
+      ["Notes", exportPayload.reported.dailyMax.context]
     ],
-    styles: { fontSize: 10, cellPadding: 6 },
-    headStyles: { fillColor: [99, 102, 241], textColor: 255 },
-    alternateRowStyles: { fillColor: [243, 243, 255] },
+    styles: { fontSize: 10, cellPadding: 6, overflow: "linebreak" },
+    headStyles: { fillColor: [249, 115, 22], textColor: 255, halign: "left" },
+    bodyStyles: { valign: "top" },
+    alternateRowStyles: { fillColor: [255, 245, 235] },
     margin: { left: marginX, right: marginX },
     columnStyles: {
-      0: { cellWidth: 200 },
-      1: { cellWidth: 120 },
-      2: { cellWidth: 150 }
+      0: { cellWidth: 160 }
     }
   });
 
   cursorY = doc.lastAutoTable.finalY + 24;
 
+  doc.setFontSize(13);
+  doc.setTextColor(129, 140, 248);
+  doc.text("Top 10 MWAT Values", marginX, cursorY);
+  doc.setFontSize(10);
+  doc.setTextColor(20);
+
   doc.autoTable({
-    startY: cursorY,
-    head: [exportPayload.windowTable.columns],
-    body: exportPayload.windowTable.rows,
-    styles: { fontSize: 9, cellPadding: 5 },
+    startY: cursorY + 12,
+    head: [exportPayload.tables.mwatTop.columns],
+    body: exportPayload.tables.mwatTop.rows,
+    styles: { fontSize: 9, cellPadding: 5, overflow: "linebreak" },
     headStyles: { fillColor: [129, 140, 248], textColor: 255 },
     alternateRowStyles: { fillColor: [245, 246, 255] },
     margin: { left: marginX, right: marginX }
@@ -758,11 +787,17 @@ function exportResultsToPdf() {
 
   cursorY = doc.lastAutoTable.finalY + 24;
 
+  doc.setFontSize(13);
+  doc.setTextColor(249, 115, 22);
+  doc.text("Top 10 Daily Maximum Values", marginX, cursorY);
+  doc.setFontSize(10);
+  doc.setTextColor(20);
+
   doc.autoTable({
-    startY: cursorY,
-    head: [exportPayload.dailyTable.columns],
-    body: exportPayload.dailyTable.rows,
-    styles: { fontSize: 9, cellPadding: 5 },
+    startY: cursorY + 12,
+    head: [exportPayload.tables.dailyMaxTop.columns],
+    body: exportPayload.tables.dailyMaxTop.rows,
+    styles: { fontSize: 9, cellPadding: 5, overflow: "linebreak" },
     headStyles: { fillColor: [249, 115, 22], textColor: 255 },
     alternateRowStyles: { fillColor: [255, 245, 235] },
     margin: { left: marginX, right: marginX }
@@ -962,8 +997,11 @@ async function processFiles() {
     windowTableContainer.innerHTML = renderWindowTable(windowsForMonth, best);
     resultsSection.classList.remove("hidden");
 
-    const windowTableRowsForPdf = prepareWindowRowsForPdf(windowsForMonth, best);
-    const dailyRowsForPdf = prepareDailyRowsForPdf(monthlyDaily, dailyMaxLookup, highlightKey);
+    const topWindowRowsForPdf = buildTopWindowRowsForPdf(windowsForMonth, best);
+    const topDailyMaxRowsForPdf = buildTopDailyMaxRowsForPdf(
+      monthlyDailyMaxima,
+      monthlyDailyMax
+    );
     const monthLabel = `${monthNames[monthIndex]} ${targetYear}`;
     const dischargeSummary = requiresDischargeChoice
       ? {
@@ -982,12 +1020,7 @@ async function processFiles() {
         location: locationValue,
         discharge: dischargeSummary
       },
-      summary: {
-        recordCount: summary.recordCount,
-        dayCount: summary.dayCount,
-        range: summary.range
-      },
-      metrics: {
+      reported: {
         mwat: {
           value: mwatValueLabel,
           range: mwatRangeLabel,
@@ -999,13 +1032,15 @@ async function processFiles() {
           context: dailyMaxContextLabel
         }
       },
-      windowTable: {
-        columns: ["MWAT #", "7-Day Range", "Ending Day", "Rolling Average"],
-        rows: windowTableRowsForPdf
-      },
-      dailyTable: {
-        columns: ["Date", "Readings", "Daily Average", "2-hr Maximum"],
-        rows: dailyRowsForPdf
+      tables: {
+        mwatTop: {
+          columns: ["Rank", "7-Day Range", "Ending Day", "Rolling Average"],
+          rows: topWindowRowsForPdf
+        },
+        dailyMaxTop: {
+          columns: ["Rank", "Date", "Two-hour Window", "2-hr Maximum"],
+          rows: topDailyMaxRowsForPdf
+        }
       },
       fileSlug: slugify(["mwat", monthNames[monthIndex], targetYear.toString(), locationValue])
     };
