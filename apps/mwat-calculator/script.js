@@ -640,6 +640,84 @@ function slugify(parts) {
     .replace(/^-+|-+$/g, "");
 }
 
+function appendFieldValueSection(doc, marginX, cursorY, config) {
+  const {
+    title,
+    headingColor,
+    rows,
+    alternateRowFill,
+    afterSpacing = 24
+  } = config;
+
+  doc.setFontSize(13);
+  doc.setTextColor(...headingColor);
+  doc.text(title, marginX, cursorY);
+  doc.setFontSize(10);
+  doc.setTextColor(20);
+
+  const tableConfig = {
+    startY: cursorY + 12,
+    head: [["Field", "Value"]],
+    body: rows,
+    styles: { fontSize: 10, cellPadding: 6, overflow: "linebreak" },
+    headStyles: { fillColor: headingColor, textColor: 255, halign: "left" },
+    bodyStyles: { valign: "top" },
+    margin: { left: marginX, right: marginX },
+    columnStyles: {
+      0: { cellWidth: 160 }
+    }
+  };
+
+  if (alternateRowFill) {
+    tableConfig.alternateRowStyles = { fillColor: alternateRowFill };
+  }
+
+  doc.autoTable(tableConfig);
+
+  return doc.lastAutoTable.finalY + afterSpacing;
+}
+
+function appendRankedTableSection(doc, marginX, cursorY, config) {
+  const {
+    title,
+    headingColor,
+    head,
+    body,
+    alternateRowFill,
+    styles = { fontSize: 9, cellPadding: 5, overflow: "linebreak" },
+    headStyles = {},
+    columnStyles,
+    afterSpacing = 24
+  } = config;
+
+  doc.setFontSize(13);
+  doc.setTextColor(...headingColor);
+  doc.text(title, marginX, cursorY);
+  doc.setFontSize(10);
+  doc.setTextColor(20);
+
+  const tableConfig = {
+    startY: cursorY + 12,
+    head,
+    body,
+    styles,
+    headStyles: { fillColor: headingColor, textColor: 255, ...headStyles },
+    margin: { left: marginX, right: marginX }
+  };
+
+  if (alternateRowFill) {
+    tableConfig.alternateRowStyles = { fillColor: alternateRowFill };
+  }
+
+  if (columnStyles) {
+    tableConfig.columnStyles = columnStyles;
+  }
+
+  doc.autoTable(tableConfig);
+
+  return doc.lastAutoTable.finalY + afterSpacing;
+}
+
 function appendDischargeDetailsSection(doc, marginX, cursorY, dischargeMetadata) {
   if (!dischargeMetadata) {
     return cursorY;
@@ -654,27 +732,12 @@ function appendDischargeDetailsSection(doc, marginX, cursorY, dischargeMetadata)
     ]);
   }
 
-  doc.setFontSize(13);
-  doc.setTextColor(79, 70, 229);
-  doc.text("Discharge details", marginX, cursorY);
-  doc.setFontSize(10);
-  doc.setTextColor(20);
-
-  doc.autoTable({
-    startY: cursorY + 12,
-    head: [["Field", "Value"]],
-    body: dischargeRows,
-    styles: { fontSize: 10, cellPadding: 6, overflow: "linebreak" },
-    headStyles: { fillColor: [79, 70, 229], textColor: 255, halign: "left" },
-    bodyStyles: { valign: "top" },
-    alternateRowStyles: { fillColor: [236, 233, 254] },
-    margin: { left: marginX, right: marginX },
-    columnStyles: {
-      0: { cellWidth: 160 }
-    }
+  return appendFieldValueSection(doc, marginX, cursorY, {
+    title: "Discharge details",
+    headingColor: [79, 70, 229],
+    rows: dischargeRows,
+    alternateRowFill: [236, 233, 254]
   });
-
-  return doc.lastAutoTable.finalY + 24;
 }
 
 function exportResultsToPdf() {
@@ -719,100 +782,55 @@ function exportResultsToPdf() {
   doc.text(`Reporting month: ${exportPayload.metadata.monthLabel}`, marginX, cursorY);
   cursorY += 18;
 
-  doc.setFontSize(13);
-  doc.setTextColor(129, 140, 248);
-  doc.text("Reported MWAT", marginX, cursorY);
-  doc.setFontSize(10);
-  doc.setTextColor(20);
+  const pdfSections = [
+    (currentY) =>
+      appendFieldValueSection(doc, marginX, currentY, {
+        title: "Reported MWAT",
+        headingColor: [129, 140, 248],
+        rows: [
+          ["Value", exportPayload.reported.mwat.value],
+          ["Seven-day range", exportPayload.reported.mwat.range],
+          ["Notes", exportPayload.reported.mwat.context]
+        ],
+        alternateRowFill: [240, 242, 255]
+      }),
+    (currentY) =>
+      appendFieldValueSection(doc, marginX, currentY, {
+        title: "Reported Daily Maximum",
+        headingColor: [249, 115, 22],
+        rows: [
+          ["Value", exportPayload.reported.dailyMax.value],
+          ["Two-hour Window", exportPayload.reported.dailyMax.range],
+          ["Notes", exportPayload.reported.dailyMax.context]
+        ],
+        alternateRowFill: [255, 245, 235]
+      }),
+    (currentY) =>
+      appendRankedTableSection(doc, marginX, currentY, {
+        title: "Top 10 MWAT Values",
+        headingColor: [129, 140, 248],
+        head: [exportPayload.tables.mwatTop.columns],
+        body: exportPayload.tables.mwatTop.rows,
+        alternateRowFill: [245, 246, 255]
+      }),
+    (currentY) =>
+      appendRankedTableSection(doc, marginX, currentY, {
+        title: "Top 10 Daily Maximum Values",
+        headingColor: [249, 115, 22],
+        head: [exportPayload.tables.dailyMaxTop.columns],
+        body: exportPayload.tables.dailyMaxTop.rows,
+        alternateRowFill: [255, 245, 235]
+      }),
+    (currentY) =>
+      appendDischargeDetailsSection(
+        doc,
+        marginX,
+        currentY,
+        exportPayload.metadata.discharge
+      )
+  ];
 
-  doc.autoTable({
-    startY: cursorY + 12,
-    head: [["Field", "Value"]],
-    body: [
-      ["Value", exportPayload.reported.mwat.value],
-      ["Seven-day range", exportPayload.reported.mwat.range],
-      ["Notes", exportPayload.reported.mwat.context]
-    ],
-    styles: { fontSize: 10, cellPadding: 6, overflow: "linebreak" },
-    headStyles: { fillColor: [129, 140, 248], textColor: 255, halign: "left" },
-    bodyStyles: { valign: "top" },
-    alternateRowStyles: { fillColor: [240, 242, 255] },
-    margin: { left: marginX, right: marginX },
-    columnStyles: {
-      0: { cellWidth: 160 }
-    }
-  });
-
-  cursorY = doc.lastAutoTable.finalY + 24;
-
-  doc.setFontSize(13);
-  doc.setTextColor(249, 115, 22);
-  doc.text("Reported Daily Maximum", marginX, cursorY);
-  doc.setFontSize(10);
-  doc.setTextColor(20);
-
-  doc.autoTable({
-    startY: cursorY + 12,
-    head: [["Field", "Value"]],
-    body: [
-      ["Value", exportPayload.reported.dailyMax.value],
-      ["Two-hour Window", exportPayload.reported.dailyMax.range],
-      ["Notes", exportPayload.reported.dailyMax.context]
-    ],
-    styles: { fontSize: 10, cellPadding: 6, overflow: "linebreak" },
-    headStyles: { fillColor: [249, 115, 22], textColor: 255, halign: "left" },
-    bodyStyles: { valign: "top" },
-    alternateRowStyles: { fillColor: [255, 245, 235] },
-    margin: { left: marginX, right: marginX },
-    columnStyles: {
-      0: { cellWidth: 160 }
-    }
-  });
-
-  cursorY = doc.lastAutoTable.finalY + 24;
-
-  doc.setFontSize(13);
-  doc.setTextColor(129, 140, 248);
-  doc.text("Top 10 MWAT Values", marginX, cursorY);
-  doc.setFontSize(10);
-  doc.setTextColor(20);
-
-  doc.autoTable({
-    startY: cursorY + 12,
-    head: [exportPayload.tables.mwatTop.columns],
-    body: exportPayload.tables.mwatTop.rows,
-    styles: { fontSize: 9, cellPadding: 5, overflow: "linebreak" },
-    headStyles: { fillColor: [129, 140, 248], textColor: 255 },
-    alternateRowStyles: { fillColor: [245, 246, 255] },
-    margin: { left: marginX, right: marginX }
-  });
-
-  cursorY = doc.lastAutoTable.finalY + 24;
-
-  doc.setFontSize(13);
-  doc.setTextColor(249, 115, 22);
-  doc.text("Top 10 Daily Maximum Values", marginX, cursorY);
-  doc.setFontSize(10);
-  doc.setTextColor(20);
-
-  doc.autoTable({
-    startY: cursorY + 12,
-    head: [exportPayload.tables.dailyMaxTop.columns],
-    body: exportPayload.tables.dailyMaxTop.rows,
-    styles: { fontSize: 9, cellPadding: 5, overflow: "linebreak" },
-    headStyles: { fillColor: [249, 115, 22], textColor: 255 },
-    alternateRowStyles: { fillColor: [255, 245, 235] },
-    margin: { left: marginX, right: marginX }
-  });
-
-  cursorY = doc.lastAutoTable.finalY + 24;
-
-  cursorY = appendDischargeDetailsSection(
-    doc,
-    marginX,
-    cursorY,
-    exportPayload.metadata.discharge
-  );
+  cursorY = pdfSections.reduce((currentY, appendSection) => appendSection(currentY), cursorY);
 
   const fileName = exportPayload.fileSlug ? `${exportPayload.fileSlug}.pdf` : "mwat-report.pdf";
   doc.save(fileName);
