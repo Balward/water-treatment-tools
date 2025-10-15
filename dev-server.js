@@ -45,7 +45,6 @@ const ROUTES = {
     // App routes
     '/robojar-analyzer/': '/apps/robojar-analyzer/index.html',
     '/dose-predictor/': '/apps/dose-predictor/index.html',
-    '/data-parser/': '/apps/data-parser/index.html',
     '/regulation-100-study/': '/apps/regulation-100-study/index.html',
     '/water-treatment-flashcards/': '/apps/water-treatment-flashcards/index.html',
     '/sodium-hypochlorite-calculator/': '/apps/sodium-hypochlorite-calculator/index.html',
