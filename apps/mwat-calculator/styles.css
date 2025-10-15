@@ -130,6 +130,13 @@ main {
   margin-top: 1.5rem;
 }
 
+.card__actions--inline {
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 1.25rem;
+}
+
 .card__divider {
   height: 1px;
   background: linear-gradient(90deg, rgba(129, 140, 248, 0), rgba(129, 140, 248, 0.35), rgba(129, 140, 248, 0));

@@ -44,9 +44,11 @@ const periodEndInput = document.getElementById("periodEnd");
 const addPeriodButton = document.getElementById("addPeriodButton");
 const periodError = document.getElementById("periodError");
 const periodList = document.getElementById("periodList");
+const exportPdfButton = document.getElementById("exportPdfButton");
 
 const DISCHARGE_LOCATIONS = new Set(["001", "004", "007"]);
 let dischargePeriods = [];
+let exportPayload = null;
 
 const FIFTEEN_MINUTES = 15 * 60 * 1000;
 
@@ -171,6 +173,7 @@ function initMonthOptions() {
 }
 
 initMonthOptions();
+setExportAvailability(false);
 
 function readFile(file) {
   return new Promise((resolve, reject) => {
@@ -276,11 +279,27 @@ function clearSections() {
   windowTableContainer.innerHTML = "";
   dailyTableContainer.innerHTML = "";
   updatePeriodError("");
+  exportPayload = null;
+  setExportAvailability(false);
 }
 
 function showMessage(text, type = "success") {
   messages.textContent = text;
   messages.className = type;
+}
+
+function setExportAvailability(isReady) {
+  if (!exportPdfButton) {
+    return;
+  }
+
+  if (isReady) {
+    exportPdfButton.disabled = false;
+    exportPdfButton.classList.remove("hidden");
+  } else {
+    exportPdfButton.disabled = true;
+    exportPdfButton.classList.add("hidden");
+  }
 }
 
 function buildTable(columns, rows) {
@@ -568,6 +587,191 @@ function renderWindowTable(windows, highlightedWindow) {
   return buildTable(["MWAT #", "7-Day Range", "Ending Day", "Rolling Average"], rows);
 }
 
+function prepareWindowRowsForPdf(windows, highlightedWindow) {
+  return windows
+    .slice()
+    .sort((a, b) => a.end - b.end)
+    .map((window, index) => {
+      const isHighlighted =
+        highlightedWindow &&
+        window.start.getTime() === highlightedWindow.start.getTime() &&
+        window.end.getTime() === highlightedWindow.end.getTime();
+
+      const valueLabel = `${formatNumber(window.mean, 3)} °C${isHighlighted ? " (Reported)" : ""}`;
+
+      return [
+        (index + 1).toString(),
+        formatDateRange(window.start, window.end),
+        formatSingleDate(window.end),
+        valueLabel
+      ];
+    });
+}
+
+function prepareDailyRowsForPdf(daily, dailyMaxLookup, highlightKey) {
+  return daily.map((day) => {
+    const key = toDateKey(day.date);
+    const dailyMax = dailyMaxLookup.get(key);
+    let maxCell = "—";
+
+    if (dailyMax) {
+      const isReported = highlightKey && key === highlightKey;
+      const valueLabel = `${formatNumber(dailyMax.value, 3)} °C${isReported ? " (Reported)" : ""}`;
+      const rangeLabel = formatTimeRange(dailyMax.window.start, dailyMax.window.end);
+      maxCell = `${valueLabel}\n${rangeLabel}`;
+    }
+
+    return [
+      formatSingleDate(day.date),
+      day.count.toString(),
+      `${formatNumber(day.average, 3)} °C`,
+      maxCell
+    ];
+  });
+}
+
+function slugify(parts) {
+  return parts
+    .filter(Boolean)
+    .join("-")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function exportResultsToPdf() {
+  if (!exportPayload) {
+    return;
+  }
+
+  const jspdfGlobal = window.jspdf;
+  if (!jspdfGlobal || typeof jspdfGlobal.jsPDF !== "function") {
+    window.alert("PDF export is unavailable because the jsPDF library did not load.");
+    return;
+  }
+
+  if (!jspdfGlobal.jsPDF.API || typeof jspdfGlobal.jsPDF.API.autoTable !== "function") {
+    window.alert("PDF export is unavailable because the jsPDF autoTable plugin did not load.");
+    return;
+  }
+
+  const doc = new jspdfGlobal.jsPDF({ unit: "pt", format: "letter" });
+  const marginX = 48;
+  let cursorY = marginX;
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const generatedAt = exportPayload.generatedAt
+    ? new Date(exportPayload.generatedAt)
+    : new Date();
+  const generatedLabel = new Intl.DateTimeFormat("en", {
+    dateStyle: "medium",
+    timeStyle: "short"
+  }).format(generatedAt);
+
+  doc.setFontSize(18);
+  doc.text("MWAT & Daily Maximum Report", marginX, cursorY);
+  doc.setFontSize(10);
+  doc.setTextColor(90);
+  doc.text(`Generated ${generatedLabel}`, pageWidth - marginX, cursorY, { align: "right" });
+  cursorY += 24;
+
+  doc.setFontSize(12);
+  doc.setTextColor(20);
+  doc.text(`Monitoring location: ${exportPayload.metadata.location}`, marginX, cursorY);
+  cursorY += 16;
+  doc.text(`Reporting month: ${exportPayload.metadata.monthLabel}`, marginX, cursorY);
+  cursorY += 18;
+
+  const summaryRows = [
+    ["Total records processed", exportPayload.summary.recordCount.toString()],
+    ["Unique days with data", exportPayload.summary.dayCount.toString()],
+    ["Data range", exportPayload.summary.range]
+  ];
+
+  if (exportPayload.metadata.discharge) {
+    summaryRows.push([
+      "Discharge type",
+      exportPayload.metadata.discharge.typeLabel
+    ]);
+
+    if (exportPayload.metadata.discharge.periods.length) {
+      summaryRows.push([
+        "Discharge periods",
+        exportPayload.metadata.discharge.periods.join("\n")
+      ]);
+    }
+  }
+
+  doc.autoTable({
+    startY: cursorY,
+    head: [["Field", "Value"]],
+    body: summaryRows,
+    styles: { fontSize: 10, cellPadding: 6 },
+    headStyles: { fillColor: [99, 102, 241], textColor: 255, halign: "left" },
+    alternateRowStyles: { fillColor: [240, 242, 255] },
+    margin: { left: marginX, right: marginX },
+    columnStyles: {
+      0: { cellWidth: 180 }
+    }
+  });
+
+  cursorY = doc.lastAutoTable.finalY + 24;
+
+  doc.autoTable({
+    startY: cursorY,
+    head: [["Metric", "Value", "Window", "Notes"]],
+    body: [
+      [
+        "Maximum Weekly Average Temperature",
+        exportPayload.metrics.mwat.value,
+        exportPayload.metrics.mwat.range,
+        exportPayload.metrics.mwat.context
+      ],
+      [
+        "Daily Maximum (2-hr mean)",
+        exportPayload.metrics.dailyMax.value,
+        exportPayload.metrics.dailyMax.range,
+        exportPayload.metrics.dailyMax.context
+      ]
+    ],
+    styles: { fontSize: 10, cellPadding: 6 },
+    headStyles: { fillColor: [99, 102, 241], textColor: 255 },
+    alternateRowStyles: { fillColor: [243, 243, 255] },
+    margin: { left: marginX, right: marginX },
+    columnStyles: {
+      0: { cellWidth: 200 },
+      1: { cellWidth: 120 },
+      2: { cellWidth: 150 }
+    }
+  });
+
+  cursorY = doc.lastAutoTable.finalY + 24;
+
+  doc.autoTable({
+    startY: cursorY,
+    head: [exportPayload.windowTable.columns],
+    body: exportPayload.windowTable.rows,
+    styles: { fontSize: 9, cellPadding: 5 },
+    headStyles: { fillColor: [129, 140, 248], textColor: 255 },
+    alternateRowStyles: { fillColor: [245, 246, 255] },
+    margin: { left: marginX, right: marginX }
+  });
+
+  cursorY = doc.lastAutoTable.finalY + 24;
+
+  doc.autoTable({
+    startY: cursorY,
+    head: [exportPayload.dailyTable.columns],
+    body: exportPayload.dailyTable.rows,
+    styles: { fontSize: 9, cellPadding: 5 },
+    headStyles: { fillColor: [249, 115, 22], textColor: 255 },
+    alternateRowStyles: { fillColor: [255, 245, 235] },
+    margin: { left: marginX, right: marginX }
+  });
+
+  const fileName = exportPayload.fileSlug ? `${exportPayload.fileSlug}.pdf` : "mwat-report.pdf";
+  doc.save(fileName);
+}
+
 async function processFiles() {
   clearSections();
 
@@ -736,20 +940,77 @@ async function processFiles() {
     );
     const rangeLabel = formatDateRange(best.start, best.end);
     const mwatYear = best.end.getFullYear();
+    const mwatValueLabel = `${formatNumber(best.mean, 3)} °C`;
+    const mwatRangeLabel = `${rangeLabel}`;
+    const mwatContextLabel = `Highest seven-day rolling average with at least four days in ${monthNames[monthIndex]} ${mwatYear}.`;
 
-    mwatValue.textContent = `${formatNumber(best.mean, 3)} °C`;
-    mwatRange.textContent = `${rangeLabel}`;
-    mwatContext.textContent = `Highest seven-day rolling average with at least four days in ${monthNames[monthIndex]} ${mwatYear}.`;
+    mwatValue.textContent = mwatValueLabel;
+    mwatRange.textContent = mwatRangeLabel;
+    mwatContext.textContent = mwatContextLabel;
 
     const windowDetails = monthlyDailyMax.window;
-    dailyMaxValue.textContent = `${formatNumber(monthlyDailyMax.value, 3)} °C`;
-    dailyMaxRange.textContent = `${formatDateTime(windowDetails.start)} – ${formatDateTime(windowDetails.end)}`;
-    dailyMaxContext.textContent = `Peak two-hour mean recorded for ${monthNames[monthIndex]} ${targetYear}.`;
+    const dailyMaxValueLabel = `${formatNumber(monthlyDailyMax.value, 3)} °C`;
+    const dailyMaxRangeLabel = `${formatDateTime(windowDetails.start)} – ${formatDateTime(windowDetails.end)}`;
+    const dailyMaxContextLabel = `Peak two-hour mean recorded for ${monthNames[monthIndex]} ${targetYear}.`;
+
+    dailyMaxValue.textContent = dailyMaxValueLabel;
+    dailyMaxRange.textContent = dailyMaxRangeLabel;
+    dailyMaxContext.textContent = dailyMaxContextLabel;
 
     metricsPanel.classList.remove("hidden");
 
     windowTableContainer.innerHTML = renderWindowTable(windowsForMonth, best);
     resultsSection.classList.remove("hidden");
+
+    const windowTableRowsForPdf = prepareWindowRowsForPdf(windowsForMonth, best);
+    const dailyRowsForPdf = prepareDailyRowsForPdf(monthlyDaily, dailyMaxLookup, highlightKey);
+    const monthLabel = `${monthNames[monthIndex]} ${targetYear}`;
+    const dischargeSummary = requiresDischargeChoice
+      ? {
+          typeLabel: dischargeType === "intermittent" ? "Intermittent discharge" : "Continuous discharge",
+          periods:
+            dischargeType === "intermittent"
+              ? dischargePeriods.map((period) => `${formatDateTime(period.start)} – ${formatDateTime(period.end)}`)
+              : []
+        }
+      : null;
+
+    exportPayload = {
+      generatedAt: new Date().toISOString(),
+      metadata: {
+        monthLabel,
+        location: locationValue,
+        discharge: dischargeSummary
+      },
+      summary: {
+        recordCount: summary.recordCount,
+        dayCount: summary.dayCount,
+        range: summary.range
+      },
+      metrics: {
+        mwat: {
+          value: mwatValueLabel,
+          range: mwatRangeLabel,
+          context: mwatContextLabel
+        },
+        dailyMax: {
+          value: dailyMaxValueLabel,
+          range: dailyMaxRangeLabel,
+          context: dailyMaxContextLabel
+        }
+      },
+      windowTable: {
+        columns: ["MWAT #", "7-Day Range", "Ending Day", "Rolling Average"],
+        rows: windowTableRowsForPdf
+      },
+      dailyTable: {
+        columns: ["Date", "Readings", "Daily Average", "2-hr Maximum"],
+        rows: dailyRowsForPdf
+      },
+      fileSlug: slugify(["mwat", monthNames[monthIndex], targetYear.toString(), locationValue])
+    };
+
+    setExportAvailability(true);
     showMessage("MWAT calculations complete.", "success");
   } catch (error) {
     console.error(error);
@@ -829,3 +1090,7 @@ updateDischargeVisibility();
 updateProcessButtonState();
 
 processButton.addEventListener("click", processFiles);
+
+if (exportPdfButton) {
+  exportPdfButton.addEventListener("click", exportResultsToPdf);
+}
