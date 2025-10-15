@@ -646,25 +646,29 @@ function appendFieldValueSection(doc, marginX, cursorY, config) {
     headingColor,
     rows,
     alternateRowFill,
-    afterSpacing = 24
+    afterSpacing = 16
   } = config;
 
-  doc.setFontSize(13);
+  doc.setFontSize(12);
   doc.setTextColor(...headingColor);
   doc.text(title, marginX, cursorY);
-  doc.setFontSize(10);
+  doc.setFontSize(9);
   doc.setTextColor(20);
 
   const tableConfig = {
     startY: cursorY + 12,
     head: [["Field", "Value"]],
     body: rows,
-    styles: { fontSize: 10, cellPadding: 6, overflow: "linebreak" },
+    styles: {
+      fontSize: 9,
+      cellPadding: { top: 2, bottom: 2, left: 4, right: 4 },
+      overflow: "linebreak"
+    },
     headStyles: { fillColor: headingColor, textColor: 255, halign: "left" },
     bodyStyles: { valign: "top" },
     margin: { left: marginX, right: marginX },
     columnStyles: {
-      0: { cellWidth: 160 }
+      0: { cellWidth: 150 }
     }
   };
 
@@ -684,16 +688,20 @@ function appendRankedTableSection(doc, marginX, cursorY, config) {
     head,
     body,
     alternateRowFill,
-    styles = { fontSize: 9, cellPadding: 5, overflow: "linebreak" },
+    styles = {
+      fontSize: 8,
+      cellPadding: { top: 2, bottom: 2, left: 3, right: 3 },
+      overflow: "linebreak"
+    },
     headStyles = {},
     columnStyles,
-    afterSpacing = 24
+    afterSpacing = 16
   } = config;
 
-  doc.setFontSize(13);
+  doc.setFontSize(12);
   doc.setTextColor(...headingColor);
   doc.text(title, marginX, cursorY);
-  doc.setFontSize(10);
+  doc.setFontSize(9);
   doc.setTextColor(20);
 
   const tableConfig = {
@@ -756,8 +764,12 @@ function exportResultsToPdf() {
     return;
   }
 
-  const doc = new jspdfGlobal.jsPDF({ unit: "pt", format: "letter" });
-  const marginX = 48;
+  const doc = new jspdfGlobal.jsPDF({
+    unit: "pt",
+    format: "letter",
+    orientation: "landscape"
+  });
+  const marginX = 36;
   let cursorY = marginX;
   const pageWidth = doc.internal.pageSize.getWidth();
   const generatedAt = exportPayload.generatedAt
@@ -768,19 +780,19 @@ function exportResultsToPdf() {
     timeStyle: "short"
   }).format(generatedAt);
 
-  doc.setFontSize(18);
+  doc.setFontSize(16);
   doc.text("MWAT & Daily Maximum Report", marginX, cursorY);
-  doc.setFontSize(10);
+  doc.setFontSize(9);
   doc.setTextColor(90);
   doc.text(`Generated ${generatedLabel}`, pageWidth - marginX, cursorY, { align: "right" });
-  cursorY += 24;
+  cursorY += 20;
 
-  doc.setFontSize(12);
+  doc.setFontSize(10);
   doc.setTextColor(20);
   doc.text(`Monitoring location: ${exportPayload.metadata.location}`, marginX, cursorY);
-  cursorY += 16;
+  cursorY += 14;
   doc.text(`Reporting month: ${exportPayload.metadata.monthLabel}`, marginX, cursorY);
-  cursorY += 48;
+  cursorY += 32;
 
   const pdfSections = [
     (currentY) =>
