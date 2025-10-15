@@ -591,7 +591,7 @@ function buildTopWindowRowsForPdf(windows, reportedWindow) {
   return windows
     .slice()
     .sort((a, b) => b.mean - a.mean)
-    .slice(0, 10)
+    .slice(0, 5)
     .map((window, index) => {
       const isReported =
         reportedWindow &&
@@ -613,7 +613,7 @@ function buildTopDailyMaxRowsForPdf(dailyMaxima, reportedEntry) {
   return dailyMaxima
     .slice()
     .sort((a, b) => b.value - a.value)
-    .slice(0, 10)
+    .slice(0, 5)
     .map((entry, index) => {
       const isReported =
         reportedEntry &&
