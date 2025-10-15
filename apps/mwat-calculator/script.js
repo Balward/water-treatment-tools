@@ -48,13 +48,13 @@ let dischargePeriods = [];
 const FIFTEEN_MINUTES = 15 * 60 * 1000;
 
 function hideElement(element) {
-  if (element && "classList" in element) {
+  if (element && element.classList) {
     element.classList.add("hidden");
   }
 }
 
 function showElement(element) {
-  if (element && "classList" in element) {
+  if (element && element.classList) {
     element.classList.remove("hidden");
   }
 }
