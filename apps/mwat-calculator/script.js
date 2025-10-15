@@ -13,7 +13,10 @@ const monthNames = [
   "December"
 ];
 
+const csvFile1Input = document.getElementById("csvFile1");
+const csvFile2Input = document.getElementById("csvFile2");
 const monthSelect = document.getElementById("monthSelect");
+const locationSelect = document.getElementById("locationSelect");
 const processButton = document.getElementById("processButton");
 const messages = document.getElementById("messages");
 const summarySection = document.getElementById("summarySection");
@@ -31,8 +34,132 @@ const dailyMaxRange = document.getElementById("dailyMaxRange");
 const dailyMaxContext = document.getElementById("dailyMaxContext");
 const windowTableContainer = document.getElementById("windowTableContainer");
 const dailyTableContainer = document.getElementById("dailyTableContainer");
+const dischargeTypeContainer = document.getElementById("dischargeTypeContainer");
+const intermittentContainer = document.getElementById("intermittentContainer");
+const dischargeTypeInputs = Array.from(
+  document.querySelectorAll('input[name="dischargeType"]')
+);
+const periodStartInput = document.getElementById("periodStart");
+const periodEndInput = document.getElementById("periodEnd");
+const addPeriodButton = document.getElementById("addPeriodButton");
+const periodError = document.getElementById("periodError");
+const periodList = document.getElementById("periodList");
+
+const DISCHARGE_LOCATIONS = new Set(["001", "004", "007"]);
+let dischargePeriods = [];
 
 const FIFTEEN_MINUTES = 15 * 60 * 1000;
+
+function updatePeriodError(message = "") {
+  if (!periodError) {
+    return;
+  }
+  periodError.textContent = message;
+  if (message) {
+    periodError.classList.remove("hidden");
+  } else {
+    periodError.classList.add("hidden");
+  }
+}
+
+function getSelectedDischargeType() {
+  const selected = dischargeTypeInputs.find((input) => input.checked);
+  return selected ? selected.value : null;
+}
+
+function clearDischargeRadios() {
+  dischargeTypeInputs.forEach((input) => {
+    input.checked = false;
+  });
+  syncRadioStates();
+}
+
+function syncRadioStates() {
+  dischargeTypeInputs.forEach((input) => {
+    const parent = input.parentElement;
+    if (parent && parent.classList) {
+      parent.classList.toggle("radio--checked", input.checked);
+    }
+  });
+}
+
+function renderPeriods() {
+  if (!periodList) {
+    return;
+  }
+
+  if (!dischargePeriods.length) {
+    periodList.innerHTML = "";
+    periodList.classList.add("hidden");
+    return;
+  }
+
+  const formatter = new Intl.DateTimeFormat("en", {
+    month: "short",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+
+  periodList.innerHTML = dischargePeriods
+    .slice()
+    .sort((a, b) => a.start - b.start)
+    .map((period) => {
+      const startLabel = formatter.format(period.start);
+      const endLabel = formatter.format(period.end);
+      return `<li class="period-list__item"><span class="period-list__label">${startLabel} – ${endLabel}</span><button type="button" class="period-list__remove" data-id="${period.id}">Remove</button></li>`;
+    })
+    .join("");
+
+  periodList.classList.remove("hidden");
+}
+
+function resetDischargeOptions() {
+  dischargePeriods = [];
+  renderPeriods();
+  clearDischargeRadios();
+  updatePeriodError("");
+}
+
+function updateDischargeVisibility() {
+  const location = locationSelect.value;
+  const requiresDischarge = DISCHARGE_LOCATIONS.has(location);
+  if (requiresDischarge) {
+    dischargeTypeContainer.classList.remove("hidden");
+  } else {
+    dischargeTypeContainer.classList.add("hidden");
+    intermittentContainer.classList.add("hidden");
+    resetDischargeOptions();
+  }
+
+  const dischargeType = getSelectedDischargeType();
+  if (requiresDischarge && dischargeType === "intermittent") {
+    intermittentContainer.classList.remove("hidden");
+  } else {
+    intermittentContainer.classList.add("hidden");
+    updatePeriodError("");
+  }
+
+  syncRadioStates();
+}
+
+function updateProcessButtonState() {
+  const monthSelected = monthSelect.value !== "";
+  const locationSelected = locationSelect.value !== "";
+  const requiresDischarge = DISCHARGE_LOCATIONS.has(locationSelect.value);
+  const dischargeType = getSelectedDischargeType();
+
+  let dischargeReady = true;
+  if (requiresDischarge) {
+    if (!dischargeType) {
+      dischargeReady = false;
+    } else if (dischargeType === "intermittent" && dischargePeriods.length === 0) {
+      dischargeReady = false;
+    }
+  }
+
+  processButton.disabled = !(monthSelected && locationSelected && dischargeReady);
+}
 
 function initMonthOptions() {
   monthNames.forEach((name, index) => {
@@ -110,13 +237,23 @@ function toDateKey(date) {
   return `${year}-${month}-${day}`;
 }
 
-function formatDateRange(start, end) {
-  const formatter = new Intl.DateTimeFormat("en", {
+function createDateFormatter(options = {}) {
+  return new Intl.DateTimeFormat("en", {
     year: "numeric",
     month: "short",
-    day: "2-digit"
+    day: "2-digit",
+    ...options
   });
-  return `${formatter.format(start)} – ${formatter.format(end)}`;
+}
+
+const dateFormatter = createDateFormatter();
+
+function formatDateRange(start, end) {
+  return `${dateFormatter.format(start)} – ${dateFormatter.format(end)}`;
+}
+
+function formatSingleDate(date) {
+  return dateFormatter.format(date);
 }
 
 function formatNumber(value, decimals = 2) {
@@ -138,6 +275,7 @@ function clearSections() {
   dailyMaxContext.textContent = "";
   windowTableContainer.innerHTML = "";
   dailyTableContainer.innerHTML = "";
+  updatePeriodError("");
 }
 
 function showMessage(text, type = "success") {
@@ -154,9 +292,31 @@ function buildTable(columns, rows) {
     .map((col) => `<th scope="col">${col}</th>`)
     .join("")}</tr></thead>`;
 
-  const tbody = `<tbody>${rows
-    .map((row) => `<tr>${row.map((cell) => `<td>${cell}</td>`).join("")}</tr>`)
-    .join("")}</tbody>`;
+  const tbodyRows = rows
+    .map((row) => {
+      const cells = Array.isArray(row) ? row : row.cells;
+      const highlightIndices = new Set(
+        Array.isArray(row.highlightIndices) ? row.highlightIndices : []
+      );
+      const rowClass = !Array.isArray(row) && row.rowClass ? ` class="${row.rowClass}"` : "";
+      const cellMarkup = cells
+        .map((cell, index) => {
+          const isHighlighted = highlightIndices.has(index);
+          const cellClass = isHighlighted ? " class=\"table__cell--highlight\"" : "";
+          const badge = isHighlighted
+            ? '<span class="table__badge" aria-label="Reported value" title="Reported value">Reported</span>'
+            : "";
+          const content = isHighlighted
+            ? `<span class="table__cell-inner">${cell}</span>${badge}`
+            : cell;
+          return `<td${cellClass}>${content}</td>`;
+        })
+        .join("");
+      return `<tr${rowClass}>${cellMarkup}</tr>`;
+    })
+    .join("");
+
+  const tbody = `<tbody>${tbodyRows}</tbody>`;
 
   return `<div class="table-wrapper"><table class="table">${thead}${tbody}</table></div>`;
 }
@@ -248,32 +408,6 @@ function computeDailyMaxLookup(twoHourWindows) {
   return lookup;
 }
 
-function isWithinReportingWindow(window, monthIndex, year) {
-  const monthDay = window.days.find(
-    (day) => day.date.getMonth() === monthIndex && (year === undefined || day.date.getFullYear() === year)
-  );
-
-  if (!monthDay) {
-    return false;
-  }
-
-  const referenceYear = monthDay.date.getFullYear();
-  const startBoundary = new Date(referenceYear, monthIndex, 4);
-  const nextMonth = monthIndex === 11 ? 0 : monthIndex + 1;
-  const endYear = monthIndex === 11 ? referenceYear + 1 : referenceYear;
-  const endBoundary = new Date(endYear, nextMonth, 3, 23, 59, 59, 999);
-
-  return window.start >= startBoundary && window.end <= endBoundary;
-}
-
-function describeReportingWindow(monthIndex, year) {
-  const start = new Date(year, monthIndex, 4);
-  const nextMonth = monthIndex === 11 ? 0 : monthIndex + 1;
-  const endYear = monthIndex === 11 ? year + 1 : year;
-  const end = new Date(endYear, nextMonth, 3);
-  return formatDateRange(start, end);
-}
-
 function formatDateTime(date) {
   const formatter = new Intl.DateTimeFormat("en", {
     year: "numeric",
@@ -327,24 +461,24 @@ function computeSevenDayWindows(dailyAverages) {
       continue;
     }
 
-    const total = segment.reduce((sum, day) => sum + day.average, 0);
-    const mean = total / segment.length;
-    const monthCounts = segment.reduce((counts, day) => {
+    const mean = segment.reduce((sum, day) => sum + day.average, 0) / segment.length;
+
+    const monthCounts = new Map();
+    for (const day of segment) {
       const month = day.date.getMonth();
-      counts[month] = (counts[month] || 0) + 1;
-      return counts;
-    }, {});
+      monthCounts.set(month, (monthCounts.get(month) ?? 0) + 1);
+    }
 
-    const monthIndex = Object.entries(monthCounts).reduce((best, current) => {
-      const [month, count] = current.map(Number);
-      if (best === null) {
-        return month;
+    let monthIndex = null;
+    let maxCount = 0;
+    for (const [month, count] of monthCounts.entries()) {
+      if (count > maxCount) {
+        monthIndex = month;
+        maxCount = count;
       }
-      const bestCount = monthCounts[best];
-      return count > bestCount ? month : best;
-    }, null);
+    }
 
-    if (monthIndex === null || monthCounts[monthIndex] < 4) {
+    if (monthIndex === null || maxCount < 4) {
       continue;
     }
 
@@ -352,8 +486,8 @@ function computeSevenDayWindows(dailyAverages) {
       start: segment[0].date,
       end: segment[segment.length - 1].date,
       mean,
-      monthIndex: Number(monthIndex),
-      days: segment
+      days: segment,
+      monthIndex
     });
   }
 
@@ -379,12 +513,10 @@ function summarizeRecords(records) {
   };
 }
 
-function renderDailyTable(daily, dailyMaxLookup) {
-  const dateFormatter = new Intl.DateTimeFormat("en", {
-    year: "numeric",
-    month: "short",
-    day: "2-digit"
-  });
+function renderDailyTable(daily, dailyMaxLookup, highlightKey) {
+  if (!daily.length) {
+    return "<p>No daily averages were recorded in the selected month.</p>";
+  }
 
   const rows = daily.map((day) => {
     const key = toDateKey(day.date);
@@ -397,31 +529,52 @@ function renderDailyTable(daily, dailyMaxLookup) {
       maxCell = `${valueLabel}<div class="table__subtext">${windowLabel}</div>`;
     }
 
-    return [
-      dateFormatter.format(day.date),
-      day.count.toString(),
-      `${formatNumber(day.average, 3)} °C`,
-      maxCell
-    ];
+    const highlight = highlightKey && key === highlightKey;
+
+    return {
+      cells: [
+        formatSingleDate(day.date),
+        day.count.toString(),
+        `${formatNumber(day.average, 3)} °C`,
+        maxCell
+      ],
+      highlightIndices: highlight ? [3] : [],
+      rowClass: highlight ? "table__row--highlight" : ""
+    };
   });
 
   return buildTable(["Date", "Readings", "Daily Average", "2-hr Maximum"], rows);
 }
 
-function renderWindowTable(windows) {
-  const rows = windows.map((window) => [
-    formatDateRange(window.start, window.end),
-    `${formatNumber(window.mean, 3)} °C`
-  ]);
-  return buildTable(["7-Day Range", "Rolling Average"], rows);
+function renderWindowTable(windows, highlightedWindow) {
+  const sorted = windows.slice().sort((a, b) => a.end - b.end);
+  const rows = sorted.map((window, index) => {
+    const isHighlighted =
+      highlightedWindow &&
+      window.start.getTime() === highlightedWindow.start.getTime() &&
+      window.end.getTime() === highlightedWindow.end.getTime();
+
+    return {
+      cells: [
+        (index + 1).toString(),
+        formatDateRange(window.start, window.end),
+        formatSingleDate(window.end),
+        `${formatNumber(window.mean, 3)} °C`
+      ],
+      highlightIndices: isHighlighted ? [3] : [],
+      rowClass: isHighlighted ? "table__row--highlight" : ""
+    };
+  });
+  return buildTable(["MWAT #", "7-Day Range", "Ending Day", "Rolling Average"], rows);
 }
 
 async function processFiles() {
   clearSections();
 
-  const file1 = document.getElementById("csvFile1").files[0];
-  const file2 = document.getElementById("csvFile2").files[0];
+  const file1 = csvFile1Input.files[0];
+  const file2 = csvFile2Input.files[0];
   const monthValue = monthSelect.value;
+  const locationValue = locationSelect.value;
 
   if (!file1 || !file2) {
     showMessage("Please select two CSV files before calculating.", "error");
@@ -432,6 +585,26 @@ async function processFiles() {
     showMessage("Select a month to report before calculating.", "error");
     return;
   }
+
+  if (!locationValue) {
+    showMessage("Select a monitoring location before calculating.", "error");
+    return;
+  }
+
+  const requiresDischargeChoice = DISCHARGE_LOCATIONS.has(locationValue);
+  const dischargeType = getSelectedDischargeType();
+
+  if (requiresDischargeChoice && !dischargeType) {
+    showMessage("Choose a discharge type for the selected location before calculating.", "error");
+    return;
+  }
+
+  if (requiresDischargeChoice && dischargeType === "intermittent" && dischargePeriods.length === 0) {
+    showMessage("Add at least one discharge period for intermittent discharge locations before calculating.", "error");
+    return;
+  }
+
+  const monthIndex = Number.parseInt(monthValue, 10);
 
   try {
     const [text1, text2] = await Promise.all([readFile(file1), readFile(file2)]);
@@ -486,23 +659,38 @@ async function processFiles() {
     const uniqueRecords = Array.from(dedupedMap.values());
     uniqueRecords.sort((a, b) => a.date - b.date);
 
-    const summary = summarizeRecords(uniqueRecords);
+    let workingRecords = uniqueRecords;
+
+    if (requiresDischargeChoice && dischargeType === "intermittent") {
+      const filtered = workingRecords.filter((record) =>
+        dischargePeriods.some((period) => record.date >= period.start && record.date <= period.end)
+      );
+
+      if (!filtered.length) {
+        showMessage(
+          "No readings fall within the provided discharge periods. Adjust the periods and try again.",
+          "error"
+        );
+        return;
+      }
+
+      workingRecords = filtered;
+    }
+
+    const summary = summarizeRecords(workingRecords);
     recordCount.textContent = summary.recordCount.toString();
     dayCount.textContent = summary.dayCount.toString();
     dateRange.textContent = summary.range;
     summarySection.classList.remove("hidden");
 
-    const daily = computeDailyAverages(uniqueRecords);
-    const twoHourWindows = computeTwoHourWindows(uniqueRecords);
+    const daily = computeDailyAverages(workingRecords);
+    const twoHourWindows = computeTwoHourWindows(workingRecords);
     const dailyMaxLookup = computeDailyMaxLookup(twoHourWindows);
 
     if (daily.length < 7) {
       showMessage("At least seven consecutive days of data are required to compute MWAT.", "error");
       return;
     }
-
-    dailyTableContainer.innerHTML = renderDailyTable(daily, dailyMaxLookup);
-    dailySection.classList.remove("hidden");
 
     const windows = computeSevenDayWindows(daily);
 
@@ -511,7 +699,6 @@ async function processFiles() {
       return;
     }
 
-    const monthIndex = Number.parseInt(monthValue, 10);
     const monthlyDailyMaxima = Array.from(dailyMaxLookup.values()).filter(
       (entry) => entry.date.getMonth() === monthIndex
     );
@@ -528,28 +715,31 @@ async function processFiles() {
       current.value > best.value ? current : best
     );
 
+    const monthlyDaily = daily.filter((day) => day.date.getMonth() === monthIndex);
+    const highlightKey = toDateKey(monthlyDailyMax.date);
+    dailyTableContainer.innerHTML = renderDailyTable(monthlyDaily, dailyMaxLookup, highlightKey);
+    dailySection.classList.remove("hidden");
+
     const targetYear = monthlyDailyMax.date.getFullYear();
-    const windowsForMonth = windows
-      .filter(
-        (window) => window.monthIndex === monthIndex && isWithinReportingWindow(window, monthIndex, targetYear)
-      )
-      .sort((a, b) => b.mean - a.mean);
+    const windowsForMonth = windows.filter((window) => window.monthIndex === monthIndex);
 
     if (!windowsForMonth.length) {
       showMessage(
-        "No qualifying seven-day windows fell within the reporting window (4th through 3rd) for the selected month.",
+        "No qualifying seven-day windows with at least four days in the selected month were found.",
         "error"
       );
       return;
     }
 
-    const best = windowsForMonth[0];
+    const best = windowsForMonth.reduce((currentBest, candidate) =>
+      candidate.mean > currentBest.mean ? candidate : currentBest
+    );
     const rangeLabel = formatDateRange(best.start, best.end);
-    const reportingWindowLabel = describeReportingWindow(monthIndex, targetYear);
+    const mwatYear = best.end.getFullYear();
 
     mwatValue.textContent = `${formatNumber(best.mean, 3)} °C`;
     mwatRange.textContent = `${rangeLabel}`;
-    mwatContext.textContent = `Highest seven-day rolling average within ${reportingWindowLabel}.`;
+    mwatContext.textContent = `Highest seven-day rolling average with at least four days in ${monthNames[monthIndex]} ${mwatYear}.`;
 
     const windowDetails = monthlyDailyMax.window;
     dailyMaxValue.textContent = `${formatNumber(monthlyDailyMax.value, 3)} °C`;
@@ -558,7 +748,7 @@ async function processFiles() {
 
     metricsPanel.classList.remove("hidden");
 
-    windowTableContainer.innerHTML = renderWindowTable(windowsForMonth);
+    windowTableContainer.innerHTML = renderWindowTable(windowsForMonth, best);
     resultsSection.classList.remove("hidden");
     showMessage("MWAT calculations complete.", "success");
   } catch (error) {
@@ -566,5 +756,76 @@ async function processFiles() {
     showMessage("An error occurred while processing the files. Please try again.", "error");
   }
 }
+
+locationSelect.addEventListener("change", () => {
+  updateDischargeVisibility();
+  updateProcessButtonState();
+});
+
+monthSelect.addEventListener("change", updateProcessButtonState);
+
+dischargeTypeInputs.forEach((input) => {
+  input.addEventListener("change", () => {
+    updateDischargeVisibility();
+    updateProcessButtonState();
+  });
+});
+
+addPeriodButton.addEventListener("click", () => {
+  updatePeriodError("");
+  const startValue = periodStartInput.value;
+  const endValue = periodEndInput.value;
+
+  if (!startValue || !endValue) {
+    updatePeriodError("Enter both a start and stop date/time before adding the discharge period.");
+    return;
+  }
+
+  const start = new Date(startValue);
+  const end = new Date(endValue);
+
+  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
+    updatePeriodError("The provided start or stop time is invalid. Please adjust the values.");
+    return;
+  }
+
+  if (end <= start) {
+    updatePeriodError("The stop time must be after the start time for a discharge period.");
+    return;
+  }
+
+  const id = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  dischargePeriods.push({ id, start, end });
+  dischargePeriods.sort((a, b) => a.start - b.start);
+  renderPeriods();
+  updateProcessButtonState();
+  periodStartInput.value = "";
+  periodEndInput.value = "";
+});
+
+periodList.addEventListener("click", (event) => {
+  const target = event.target;
+  if (!(target instanceof HTMLElement)) {
+    return;
+  }
+
+  if (target.matches(".period-list__remove")) {
+    const id = target.getAttribute("data-id");
+    if (!id) {
+      return;
+    }
+
+    dischargePeriods = dischargePeriods.filter((period) => period.id !== id);
+    renderPeriods();
+    updateProcessButtonState();
+  }
+});
+
+csvFile1Input.addEventListener("change", updateProcessButtonState);
+csvFile2Input.addEventListener("change", updateProcessButtonState);
+
+syncRadioStates();
+updateDischargeVisibility();
+updateProcessButtonState();
 
 processButton.addEventListener("click", processFiles);
