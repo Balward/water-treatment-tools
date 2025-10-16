@@ -1,15 +1,29 @@
 :root {
   --transition: 180ms ease;
-  /* Dark theme overlay for this app */
+  color-scheme: dark;
   --bg-page: #040510;
   --bg-surface: #080b1c;
+  --bg-surface-strong: #0b1026;
   --bg-elevated: rgba(13, 18, 42, 0.92);
+  --bg-muted: rgba(20, 26, 54, 0.78);
+  --surface-highlight: rgba(34, 40, 80, 0.75);
   --border-soft: rgba(129, 140, 248, 0.22);
   --border-strong: rgba(99, 102, 241, 0.48);
   --text-primary: #e8ebff;
   --text-secondary: rgba(232, 235, 255, 0.7);
   --accent-primary: #6366f1;
+  --accent-primary-soft: rgba(99, 102, 241, 0.18);
+  --accent-secondary: #f97316;
+  --accent-secondary-soft: rgba(249, 115, 22, 0.2);
+  --accent-tertiary: #22d3ee;
+  --mwat-accent: #818cf8;
+  --daily-accent: #fb923c;
   --focus-ring: rgba(129, 140, 248, 0.38);
+  --success-soft: rgba(34, 197, 94, 0.22);
+  --success-strong: #bbf7d0;
+  --error-soft: rgba(248, 113, 113, 0.2);
+  --error-strong: #fecaca;
+  /* Shared gradient for hero + cards */
   --card-gradient: linear-gradient(135deg, rgba(99, 102, 241, 0.35), rgba(34, 211, 238, 0.18));
 }
 
@@ -75,10 +89,12 @@ body {
 
 /* Dark card look to match MWAT cards */
 .wt-card {
-  background: rgba(10, 14, 32, 0.85) !important;
-  border: 1px solid var(--border-soft) !important;
+  background: var(--card-gradient) !important;
   border-radius: 22px !important;
-  box-shadow: inset 0 0 0 1px rgba(3, 7, 18, 0.45), 0 22px 45px rgba(12, 16, 36, 0.45) !important;
+  padding: 2rem clamp(1.25rem, 3vw, 2.5rem);
+  box-shadow: 0 28px 60px rgba(3, 7, 18, 0.65) !important;
+  border: 1px solid var(--border-soft) !important;
+  backdrop-filter: blur(12px);
   color: var(--text-primary) !important;
 }
 
@@ -87,7 +103,17 @@ body {
   color: #f8faff !important;
 }
 
-.wt-card.bg-gray-50 { background: rgba(12, 16, 36, 0.75) !important; }
+.wt-card--success {
+  border-left: 5px solid var(--success-strong);
+}
+
+.wt-card--warning {
+  border-left: 4px solid var(--accent-secondary);
+}
+
+.wt-card--error {
+  border-left: 5px solid var(--error-strong);
+}
 
 /* Inputs and labels legibility on dark */
 .wt-label { color: var(--text-primary) !important; }
@@ -109,9 +135,87 @@ body {
 .wt-btn-primary { background: rgba(129,140,248,0.28); border: 1px solid rgba(129,140,248,0.55); }
 .wt-btn-primary:hover:not(:disabled) { background: rgba(129,140,248,0.4); }
 
-/* Notification banners readable on dark */
-.wt-notification.error { color: #fee2e2; }
-.wt-notification.warning { color: #fff7ed; }
+.result-highlight {
+  font-size: 2.5rem;
+  font-weight: var(--font-weight-black);
+  color: var(--success-strong);
+  margin-bottom: var(--space-3);
+  text-align: center;
+}
+
+.result-secondary {
+  font-size: 2rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--accent-tertiary);
+  margin-bottom: var(--space-4);
+  text-align: center;
+}
+
+.result-context {
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+/* Notification banners */
+.wt-notification {
+  background: var(--bg-elevated);
+  border-left: 4px solid var(--accent-primary);
+  box-shadow: 0 28px 60px rgba(3, 7, 18, 0.6);
+  color: var(--text-primary);
+  transform: translateX(140%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.wt-notification.show {
+  transform: translateX(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.wt-notification.warning {
+  border-left-color: var(--accent-secondary);
+  background: var(--accent-secondary-soft);
+}
+
+.wt-notification.error {
+  border-left-color: var(--error-strong);
+  background: var(--error-soft);
+  color: var(--error-strong);
+}
+
+/* Calculation and detail panels */
+.calculation-step {
+  margin: var(--space-4) 0;
+  padding: var(--space-4);
+  background: var(--surface-highlight);
+  border-radius: var(--radius-md);
+  border-left: 3px solid var(--accent-primary);
+  color: var(--text-primary);
+}
+
+.formula-display {
+  background: rgba(34, 40, 80, 0.65);
+  padding: var(--space-3);
+  border-radius: var(--radius-sm);
+  margin: var(--space-3) 0;
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+}
+
+.constants-info {
+  margin-top: var(--space-4);
+  padding: var(--space-3);
+  background: var(--accent-primary-soft);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+}
+
+.step-note {
+  color: rgba(232, 235, 255, 0.65);
+  margin-top: 0.5rem;
+  display: block;
+}
 
 .global-nav {
   position: sticky;
