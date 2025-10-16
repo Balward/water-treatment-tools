@@ -933,13 +933,14 @@ class FlashcardApp {
 // Add additional modal styles for options
 const additionalStyles = `
   .option-group {
-    margin-bottom: 2rem;
+    margin-bottom: 1.75rem;
   }
 
   .option-group h4 {
-    color: #00677f;
+    color: #f8faff;
     margin-bottom: 1rem;
     font-size: 1.1rem;
+    letter-spacing: 0.04em;
   }
 
   .option-group .modal-btn {
@@ -948,19 +949,20 @@ const additionalStyles = `
   }
 
   .shortcuts-info {
-    background: rgba(0, 103, 127, 0.05);
+    background: rgba(12, 16, 36, 0.82);
     padding: 1rem;
-    border-radius: 8px;
-    border: 1px solid rgba(0, 103, 127, 0.1);
+    border-radius: 16px;
+    border: 1px solid rgba(129, 140, 248, 0.28);
+    color: rgba(232, 235, 255, 0.75);
   }
 
   .shortcuts-info p {
     margin-bottom: 0.5rem;
-    font-size: 0.9rem;
+    font-size: 0.92rem;
   }
 
   .shortcuts-info strong {
-    color: #00677f;
+    color: #f8faff;
   }
 
   @media (max-width: 768px) {
@@ -970,7 +972,7 @@ const additionalStyles = `
     
     .modal-btn {
       flex: 1;
-      min-width: 120px;
+      min-width: 140px;
     }
   }
 `;

@@ -3,59 +3,104 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Water Treatment Flashcards - Study Tool</title>
+    <title>Water Treatment Flashcards</title>
     <link rel="icon" type="image/png" href="../../assets/logos/favicon.png" />
-    <link rel="stylesheet" href="styles.css?v=1757369234" />
+    <link rel="stylesheet" href="../../global-styles.css?v=1757369234" />
+    <link rel="stylesheet" href="styles.css" />
   </head>
-
   <body>
-    <div class="container">
-      <header class="header">
-        <div class="brand">
-          <div class="header-top">
-            <div class="logo-container">
-              <img
-                src="../../assets/logos/logo-horizontal.png"
-                alt="City Logo"
-                class="logo-image"
-              />
-            </div>
-          </div>
-          <div class="brand-text">
-            <h1>Water Treatment Flashcards</h1>
-            <p class="tagline" id="headerTagline">
-              Master water treatment terminology with interactive study cards
-            </p>
-          </div>
-          <div class="header-bottom">
-            <a href="../../" class="back-to-dashboard-btn">
-              ← Back to Dashboard
+    <nav class="global-nav" aria-label="Global navigation">
+      <a class="global-nav__brand" href="/" data-rel-href="../dashboard/dashboard.html">
+        <img class="global-nav__logo" src="../../assets/logos/logo-horizontal-dark.png" alt="City of Northglenn" />
+        <div class="global-nav__brand-text">
+          <span class="global-nav__overline">Utilities</span>
+          <span class="global-nav__title">Treatment Operations &amp; Training Portal</span>
+        </div>
+      </a>
+      <button class="global-nav__menu-toggle" type="button" aria-expanded="false" aria-controls="globalNavMenu">
+        <span class="global-nav__menu-toggle-label">Menu</span>
+        <span class="global-nav__menu-toggle-icon" aria-hidden="true"></span>
+      </button>
+      <ul class="global-nav__menu" id="globalNavMenu">
+        <li class="global-nav__item">
+          <a class="global-nav__link" href="/" data-rel-href="../dashboard/dashboard.html">Home</a>
+        </li>
+        <li class="global-nav__item global-nav__item--dropdown">
+          <button class="global-nav__link global-nav__toggle" type="button" aria-expanded="false">
+            Water Treatment
+            <span class="global-nav__caret" aria-hidden="true"></span>
+          </button>
+          <div class="global-nav__dropdown" role="menu">
+            <a class="global-nav__dropdown-link" href="/robojar-analyzer/" data-rel-href="../robojar-analyzer/index.html" role="menuitem">
+              RoboJar Analyzer
+            </a>
+            <a class="global-nav__dropdown-link" href="/sodium-hypochlorite-calculator/" data-rel-href="../sodium-hypochlorite-calculator/index.html" role="menuitem">
+              Sodium Hypochlorite Calculator
+            </a>
+            <a class="global-nav__dropdown-link" href="/dose-predictor/" data-rel-href="../dose-predictor/index.html" role="menuitem">
+              Sodium Permanganate Dose Predictor
+            </a>
+            <a class="global-nav__dropdown-link" href="/water-data-explorer/" data-rel-href="../water-data-explorer/index.html" role="menuitem">
+              Water Data Explorer
             </a>
           </div>
-        </div>
+        </li>
+        <li class="global-nav__item global-nav__item--dropdown">
+          <button class="global-nav__link global-nav__toggle" type="button" aria-expanded="false">
+            Wastewater Treatment
+            <span class="global-nav__caret" aria-hidden="true"></span>
+          </button>
+          <div class="global-nav__dropdown" role="menu">
+            <a class="global-nav__dropdown-link" href="/mwat-calculator/" data-rel-href="../mwat-calculator/index.html" role="menuitem">
+              MWAT &amp; DM Calculator
+            </a>
+          </div>
+        </li>
+        <li class="global-nav__item global-nav__item--dropdown global-nav__item--align-end">
+          <button class="global-nav__link global-nav__toggle" type="button" aria-expanded="false">
+            Training
+            <span class="global-nav__caret" aria-hidden="true"></span>
+          </button>
+          <div class="global-nav__dropdown" role="menu">
+            <a class="global-nav__dropdown-link" href="/regulation-100-study/" data-rel-href="../regulation-100-study/index.html" role="menuitem">
+              Regulation 100 Study Guide
+            </a>
+            <a class="global-nav__dropdown-link" href="/video-tutorials/" data-rel-href="../video-tutorials/index.html" role="menuitem">
+              Water Treatment Class A Training Videos
+            </a>
+            <a class="global-nav__dropdown-link global-nav__link--active" href="/water-treatment-flashcards/" data-rel-href="../water-treatment-flashcards/index.html" role="menuitem" aria-current="page">
+              Water Treatment Flashcards
+            </a>
+          </div>
+        </li>
+      </ul>
+    </nav>
+
+    <main class="page flashcards-page">
+      <header class="hero">
+        <span class="hero__overline">Training</span>
+        <h1>Water Treatment Flashcards</h1>
+        <p class="hero__lede" id="headerTagline">
+          Master water treatment terminology with interactive study cards.
+        </p>
       </header>
 
-      <!-- Study Info Card - Hidden initially -->
-      <div class="study-info-card hidden" id="studyInfo">
-        <div class="current-study">
-          <h2 id="currentBookHeader">Water Treatment Grades 3 & 4</h2>
-          <div class="study-navigation">
-            <button class="change-book-btn" id="backToBooksHeader">
-              ← Choose Different Book
-            </button>
-            <button class="change-chapter-btn hidden" id="backToChaptersHeader">
-              ← Choose Different Chapter
-            </button>
+      <section class="card card--info hidden" id="studyInfo">
+        <div class="study-info">
+          <div class="study-info__main">
+            <h2 id="currentBookHeader">Water Treatment Grades 3 &amp; 4</h2>
+            <div class="study-navigation">
+              <button class="btn btn-text" id="backToBooksHeader">← Choose Different Book</button>
+              <button class="btn btn-text hidden" id="backToChaptersHeader">← Choose Different Chapter</button>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      <!-- Book Selection Screen -->
-      <div id="bookSelection" class="book-selection">
+      <section class="card card--selection" id="bookSelection">
         <div class="selection-content">
           <h2>Choose Your Study Level</h2>
-          <p class="selection-subtitle">Select the water treatment grade book you want to study from</p>
-          
+          <p class="selection-subtitle">Select the water treatment grade you want to study from.</p>
           <div class="books-grid">
             <div class="book-card" data-book="grade1">
               <div class="book-icon">
@@ -64,7 +109,7 @@
               </div>
               <div class="book-info">
                 <h3>Water Treatment Grade 1</h3>
-                <p>Fundamental concepts and basic terminology for entry-level operators</p>
+                <p>Fundamental concepts and basic terminology for entry-level operators.</p>
                 <div class="book-stats">
                   <span class="stat">Coming Soon</span>
                 </div>
@@ -78,7 +123,7 @@
               </div>
               <div class="book-info">
                 <h3>Water Treatment Grade 2</h3>
-                <p>Intermediate processes and advanced operational terminology</p>
+                <p>Intermediate processes and advanced operational terminology.</p>
                 <div class="book-stats">
                   <span class="stat">Coming Soon</span>
                 </div>
@@ -88,38 +133,30 @@
             <div class="book-card available" data-book="grade3-4">
               <div class="book-icon">
                 <span>📑</span>
-                <div class="book-level">3&4</div>
+                <div class="book-level">3&amp;4</div>
               </div>
               <div class="book-info">
-                <h3>Water Treatment Grades 3 & 4</h3>
-                <p>Advanced treatment processes and complex operational concepts</p>
+                <h3>Water Treatment Grades 3 &amp; 4</h3>
+                <p>Advanced treatment processes and complex operational concepts.</p>
                 <div class="book-stats">
                   <span class="stat">118 Terms Available</span>
                 </div>
               </div>
             </div>
           </div>
-
-          <div class="selection-actions">
-            <!-- Back button moved to header -->
-          </div>
         </div>
-      </div>
+      </section>
 
-      <!-- Chapter Selection Screen -->
-      <div id="chapterSelection" class="chapter-selection hidden">
+      <section class="card card--selection hidden" id="chapterSelection">
         <div class="selection-content">
           <h2>Choose Your Chapter</h2>
-          <p class="selection-subtitle">Select which chapter to study or study all cards together</p>
-          
+          <p class="selection-subtitle">Select which chapter to study or review all cards together.</p>
           <div class="chapters-grid">
             <div class="chapter-card" data-chapter="all">
-              <div class="chapter-icon">
-                <span>📚</span>
-              </div>
+              <div class="chapter-icon"><span>📚</span></div>
               <div class="chapter-info">
                 <h3>All Chapters</h3>
-                <p>Study all available terms from all chapters combined</p>
+                <p>Study all available terms combined in a single deck.</p>
                 <div class="chapter-stats">
                   <span class="stat" id="allChaptersCount">118 Terms</span>
                 </div>
@@ -127,119 +164,86 @@
             </div>
 
             <div class="chapter-card" data-chapter="basic-microbiology-chemistry">
-              <div class="chapter-icon">
-                <span>🧪</span>
-              </div>
+              <div class="chapter-icon"><span>🧪</span></div>
               <div class="chapter-info">
                 <h3>Basic Microbiology and Chemistry</h3>
-                <p>Fundamental concepts in water chemistry and biological processes</p>
-                <div class="chapter-stats">
-                  <span class="stat">13 Terms</span>
-                </div>
+                <p>Fundamental water chemistry and biological processes.</p>
+                <div class="chapter-stats"><span class="stat">13 Terms</span></div>
               </div>
             </div>
 
             <div class="chapter-card" data-chapter="advanced-math-operators">
-              <div class="chapter-icon">
-                <span>📐</span>
-              </div>
+              <div class="chapter-icon"><span>📐</span></div>
               <div class="chapter-info">
                 <h3>Advanced Math for Operators</h3>
-                <p>Complex hydraulic calculations and operational mathematics</p>
-                <div class="chapter-stats">
-                  <span class="stat">30 Terms</span>
-                </div>
+                <p>Hydraulic calculations and operational mathematics.</p>
+                <div class="chapter-stats"><span class="stat">30 Terms</span></div>
               </div>
             </div>
 
             <div class="chapter-card" data-chapter="usepa-water-regulations">
-              <div class="chapter-icon">
-                <span>⚖️</span>
-              </div>
+              <div class="chapter-icon"><span>⚖️</span></div>
               <div class="chapter-info">
                 <h3>USEPA Water Regulations</h3>
-                <p>Federal regulations and compliance standards for water treatment</p>
-                <div class="chapter-stats">
-                  <span class="stat">6 Terms</span>
-                </div>
+                <p>Federal regulations and compliance standards.</p>
+                <div class="chapter-stats"><span class="stat">6 Terms</span></div>
               </div>
             </div>
 
             <div class="chapter-card" data-chapter="water-quality-testing">
-              <div class="chapter-icon">
-                <span>🧬</span>
-              </div>
+              <div class="chapter-icon"><span>🧬</span></div>
               <div class="chapter-info">
                 <h3>Water Quality Testing</h3>
-                <p>Laboratory methods, sampling procedures, and analytical techniques</p>
-                <div class="chapter-stats">
-                  <span class="stat">42 Terms</span>
-                </div>
+                <p>Laboratory methods, sampling procedures, and analysis.</p>
+                <div class="chapter-stats"><span class="stat">42 Terms</span></div>
               </div>
             </div>
 
             <div class="chapter-card" data-chapter="corrosion-control">
-              <div class="chapter-icon">
-                <span>🔧</span>
-              </div>
+              <div class="chapter-icon"><span>🔧</span></div>
               <div class="chapter-info">
                 <h3>Corrosion Control</h3>
-                <p>Water stabilization, pipe protection, and corrosion prevention methods</p>
-                <div class="chapter-stats">
-                  <span class="stat">15 Terms</span>
-                </div>
+                <p>Water stabilization and corrosion prevention techniques.</p>
+                <div class="chapter-stats"><span class="stat">15 Terms</span></div>
               </div>
             </div>
 
             <div class="chapter-card" data-chapter="lime-softening">
-              <div class="chapter-icon">
-                <span>🧂</span>
-              </div>
+              <div class="chapter-icon"><span>🧂</span></div>
               <div class="chapter-info">
                 <h3>Lime Softening</h3>
-                <p>Chemical precipitation processes for hardness removal and water conditioning</p>
-                <div class="chapter-stats">
-                  <span class="stat">12 Terms</span>
-                </div>
+                <p>Chemical precipitation processes for hardness removal.</p>
+                <div class="chapter-stats"><span class="stat">12 Terms</span></div>
               </div>
             </div>
           </div>
-
           <div class="selection-actions">
-            <button class="back-btn" id="backToBooks">
-              ← Back to Book Selection
-            </button>
+            <button class="btn btn-text" id="backToBooks">← Back to Book Selection</button>
           </div>
         </div>
-      </div>
+      </section>
 
-      <!-- Flashcard Study Interface -->
-      <div id="studyInterface" class="study-interface hidden">
+      <section class="card card--study hidden" id="studyInterface">
         <div class="card-progress">
-          <div class="progress-indicator">
-            Card <span id="currentCard">1</span> of <span id="totalCards">14</span>
-          </div>
+          <div class="progress-indicator">Card <span id="currentCard">1</span> of <span id="totalCards">14</span></div>
         </div>
-
-        <main class="flashcard-container">
-          <!-- Navigation Controls on sides -->
-          <button class="side-nav-btn left" id="prevCard">←</button>
-          
+        <div class="flashcard-stage">
+          <button class="side-nav-btn" id="prevCard" aria-label="Previous card">←</button>
           <div class="flashcard" id="flashcard">
             <div class="card-inner">
-              <div class="card-front">
+              <div class="card-face card-front">
                 <div class="card-header">
                   <span class="card-type">Term</span>
-                  <button class="flip-hint">Click to reveal definition</button>
+                  <button class="flip-hint" type="button">Click to reveal definition</button>
                 </div>
                 <div class="card-content">
                   <h2 id="cardTerm">Loading...</h2>
                 </div>
               </div>
-              <div class="card-back">
+              <div class="card-face card-back">
                 <div class="card-header">
                   <span class="card-type">Definition</span>
-                  <button class="flip-hint">Click to see term</button>
+                  <button class="flip-hint" type="button">Click to see term</button>
                 </div>
                 <div class="card-content">
                   <p id="cardDefinition">Loading...</p>
@@ -247,30 +251,129 @@
               </div>
             </div>
           </div>
-
-          <button class="side-nav-btn right" id="nextCard">→</button>
-        </main>
-
-        <!-- Simple Controls -->
+          <button class="side-nav-btn" id="nextCard" aria-label="Next card">→</button>
+        </div>
         <div class="simple-controls">
           <button class="control-btn" id="shuffleBtn">🔀 Shuffle</button>
           <button class="control-btn" id="resetBtn">🔄 Reset</button>
         </div>
-      </div>
+      </section>
+    </main>
 
-      <footer class="footer">
-        <div class="footer-content">
-          <p>&copy; 2025 Water Treatment Flashcards | Enhance your water treatment knowledge</p>
-          <div class="footer-links">
-            <span class="footer-status">
-              <span class="status-dot"></span>
-              Study materials ready
-            </span>
-          </div>
-        </div>
-      </footer>
-    </div>
+    <script>
+      (function () {
+        const globalNav = document.querySelector(".global-nav");
+        const globalNavMenu = globalNav ? globalNav.querySelector(".global-nav__menu") : null;
+        const globalNavMenuToggle = globalNav ? globalNav.querySelector(".global-nav__menu-toggle") : null;
+        const navToggles = Array.from(document.querySelectorAll(".global-nav__toggle"));
 
+        if (globalNav) {
+          const shouldUseFallbackLinks =
+            window.location.protocol === "file:" || window.location.pathname.includes("/apps/");
+
+          if (shouldUseFallbackLinks) {
+            const fallbackLinks = document.querySelectorAll("[data-rel-href]");
+            fallbackLinks.forEach((link) => {
+              const relHref = link.getAttribute("data-rel-href");
+              if (relHref) {
+                link.setAttribute("href", relHref);
+              }
+            });
+          }
+        }
+
+        function closeDropdownMenus() {
+          navToggles.forEach((toggle) => {
+            const item = toggle.closest(".global-nav__item--dropdown");
+            if (item) {
+              item.classList.remove("global-nav__item--open");
+            }
+            toggle.setAttribute("aria-expanded", "false");
+          });
+        }
+
+        function setMobileMenuOpen(isOpen) {
+          if (!globalNav || !globalNavMenu || !globalNavMenuToggle) {
+            return;
+          }
+          globalNav.classList.toggle("global-nav--menu-open", isOpen);
+          globalNavMenuToggle.setAttribute("aria-expanded", String(isOpen));
+          document.body.classList.toggle("has-mobile-nav-open", isOpen);
+          if (!isOpen) {
+            closeDropdownMenus();
+          }
+        }
+
+        function closeMobileMenu() {
+          setMobileMenuOpen(false);
+        }
+
+        if (globalNav && globalNavMenu && globalNavMenuToggle) {
+          globalNavMenuToggle.addEventListener("click", (event) => {
+            event.stopPropagation();
+            const shouldOpen = !globalNav.classList.contains("global-nav--menu-open");
+            setMobileMenuOpen(shouldOpen);
+          });
+
+          globalNavMenu.addEventListener("click", (event) => {
+            const target = event.target;
+            if (target instanceof HTMLAnchorElement) {
+              closeMobileMenu();
+            }
+          });
+
+          window.addEventListener("resize", () => {
+            if (window.innerWidth > 720) {
+              closeMobileMenu();
+            }
+          });
+        }
+
+        navToggles.forEach((toggle) => {
+          toggle.setAttribute("aria-expanded", "false");
+          toggle.addEventListener("click", (event) => {
+            event.stopPropagation();
+            const item = toggle.closest(".global-nav__item--dropdown");
+            if (!item) {
+              return;
+            }
+
+            const isOpen = item.classList.contains("global-nav__item--open");
+            closeDropdownMenus();
+            if (!isOpen) {
+              item.classList.add("global-nav__item--open");
+              toggle.setAttribute("aria-expanded", "true");
+            }
+          });
+        });
+
+        document.addEventListener("click", (event) => {
+          if (!(event.target instanceof Node)) {
+            return;
+          }
+
+          const clickedWithinDropdown = navToggles.some((toggle) => {
+            const item = toggle.closest(".global-nav__item--dropdown");
+            return item && item.contains(event.target);
+          });
+
+          if (!clickedWithinDropdown) {
+            closeDropdownMenus();
+          }
+
+          if (globalNav && !globalNav.contains(event.target)) {
+            closeMobileMenu();
+          }
+        });
+
+        document.addEventListener("keydown", (event) => {
+          if (event.key === "Escape") {
+            closeDropdownMenus();
+            closeMobileMenu();
+          }
+        });
+      })();
+    </script>
     <script src="script.js?v=1757369234"></script>
   </body>
 </html>
