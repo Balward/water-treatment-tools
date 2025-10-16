@@ -5,315 +5,348 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sodium Permanganate Dose Predictor</title>
     <link rel="icon" type="image/png" href="../../assets/logos/favicon.png" />
-
-    <!-- Local Stylesheets -->
-    <link rel="stylesheet" href="styles.css?v=1757369234" />
+    <link rel="stylesheet" href="../../global-styles.css?v=1757369234" />
+    <link rel="stylesheet" href="styles.css" />
   </head>
-
   <body>
-    <div class="container">
-      <div class="header">
-        <div class="header-content">
-          <div class="header-main">
-            <h1>🧪 Sodium Permanganate Dose Predictor</h1>
-            <p>AI-powered dosing optimization for water treatment facilities</p>
-            <div class="header-nav">
-              <a href="../../" class="nav-btn" title="Return to Dashboard">
-                <span class="nav-icon">🏠</span>
-                <span class="nav-text">Dashboard</span>
-              </a>
-            </div>
-          </div>
+    <nav class="global-nav" aria-label="Global navigation">
+      <a class="global-nav__brand" href="/" data-rel-href="../dashboard/dashboard.html">
+        <img class="global-nav__logo" src="../../assets/logos/logo-horizontal-dark.png" alt="City of Northglenn" />
+        <div class="global-nav__brand-text">
+          <span class="global-nav__overline">Utilities</span>
+          <span class="global-nav__title">Treatment Operations &amp; Training Portal</span>
         </div>
-      </div>
-
-      <div class="instructions-section">
-        <div class="instructions-card">
-          <h3>📝 Quick Instructions</h3>
-          <ol class="instructions-list">
-            <li>
-              <strong>Seasonal Presets:</strong> Choose a preset that matches
-              current conditions
-            </li>
-            <li>
-              <strong>Input Parameters:</strong> Enter your raw water quality
-              measurements
-            </li>
-            <li>
-              <strong>Get Prediction:</strong> Click "Predict Optimal Dose" for
-              AI recommendation
-            </li>
-            <li>
-              <strong>Apply Dosing:</strong> Use the predicted dose in your
-              treatment system
-            </li>
-            <li>
-              <strong>Documentation:</strong> Copy results for record keeping
-            </li>
-          </ol>
-          <p class="instructions-tip">
-            💡 <strong>Tip:</strong> The AI model is trained on 3.5 years of
-            operational data with ±0.08 mg/L accuracy.
-          </p>
-        </div>
-      </div>
-
-      <!-- Seasonal Presets Section -->
-      <div class="presets-section">
-        <div class="control-card">
-          <h3>🌟 Seasonal Presets</h3>
-          <div class="presets-grid">
-            <button class="preset-btn" data-season="spring">
-              <span class="preset-icon">🌱</span>
-              <span class="preset-name">Spring</span>
-              <span class="preset-desc">Higher organics from runoff</span>
-            </button>
-            <button class="preset-btn" data-season="summer">
-              <span class="preset-icon">☀️</span>
-              <span class="preset-name">Summer</span>
-              <span class="preset-desc">Stable conditions</span>
-            </button>
-            <button class="preset-btn" data-season="fall">
-              <span class="preset-icon">🍂</span>
-              <span class="preset-name">Fall</span>
-              <span class="preset-desc">Elevated leaf matter</span>
-            </button>
-            <button class="preset-btn" data-season="winter">
-              <span class="preset-icon">❄️</span>
-              <span class="preset-name">Winter</span>
-              <span class="preset-desc">Reduced biological activity</span>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Parameters Input Section -->
-      <div class="parameters-section">
-        <div class="control-card">
-          <h3>📊 Water Quality Parameters</h3>
-          <form id="parametersForm" class="parameters-form">
-            <div class="parameters-grid">
-              <div class="parameter-group">
-                <label for="rawMn">⚗️ Raw Manganese (mg/L)</label>
-                <input
-                  type="number"
-                  id="rawMn"
-                  step="0.001"
-                  min="0.001"
-                  max="0.500"
-                  placeholder="0.040"
-                  required
-                />
-                <small>Primary driver of permanganate demand</small>
-              </div>
-
-              <div class="parameter-group">
-                <label for="rawFe">🔬 Raw Iron (mg/L)</label>
-                <input
-                  type="number"
-                  id="rawFe"
-                  step="0.001"
-                  min="0.001"
-                  max="0.300"
-                  placeholder="0.015"
-                  required
-                />
-                <small>Competes with manganese for permanganate</small>
-              </div>
-
-              <div class="parameter-group">
-                <label for="rawToc">🌿 Total Organic Carbon (mg/L)</label>
-                <input
-                  type="number"
-                  id="rawToc"
-                  step="0.1"
-                  min="0.1"
-                  max="10.0"
-                  placeholder="2.30"
-                  required
-                />
-                <small>Organic matter consuming permanganate</small>
-              </div>
-
-              <div class="parameter-group">
-                <label for="rawPh">🧪 pH Level</label>
-                <input
-                  type="number"
-                  id="rawPh"
-                  step="0.1"
-                  min="6.0"
-                  max="9.0"
-                  placeholder="7.45"
-                  required
-                />
-                <small>Affects permanganate reaction kinetics</small>
-              </div>
-
-              <div class="parameter-group">
-                <label for="rawTemp">🌡️ Temperature (°C)</label>
-                <input
-                  type="number"
-                  id="rawTemp"
-                  step="0.1"
-                  min="-5"
-                  max="35"
-                  placeholder="6.0"
-                  required
-                />
-                <small>Higher temps increase reaction rates</small>
-              </div>
-
-              <div class="parameter-group">
-                <label for="rainfall">🌧️ Previous Day Rainfall (inches)</label>
-                <input
-                  type="number"
-                  id="rainfall"
-                  step="0.01"
-                  min="0.0"
-                  max="5.0"
-                  placeholder="0.1"
-                  required
-                />
-                <small>Affects raw water turbidity and organics</small>
-              </div>
-            </div>
-
-            <div class="predict-section">
-              <button
-                type="submit"
-                class="btn btn-large btn-gold"
-                id="predictBtn"
-              >
-                <span>🧠</span>
-                <span>Predict Optimal Dose</span>
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-
-      <!-- Results Section -->
-      <div class="results-section" id="resultsSection" style="display: none">
-        <div class="control-card">
-          <h3>🎯 AI Prediction Results</h3>
-          <div class="results-display">
-            <div class="prediction-main">
-              <div class="prediction-value" id="predictionValue">---.---</div>
-              <div class="prediction-unit">mg/L Sodium Permanganate</div>
-            </div>
-            <div class="prediction-meta">
-              <div class="meta-item">
-                <span class="meta-label">🕐 Generated:</span>
-                <span class="meta-value" id="predictionTime">--</span>
-              </div>
-              <div class="meta-item">
-                <span class="meta-label">🎯 Accuracy:</span>
-                <span class="meta-value">±0.08 mg/L</span>
-              </div>
-              <div class="meta-item">
-                <span class="meta-label">🤖 Model:</span>
-                <span class="meta-value">Random Forest</span>
-              </div>
-            </div>
-            <div class="results-actions">
-              <button class="btn btn-green" id="copyBtn">
-                <span>📋</span>
-                <span>Copy Result</span>
-              </button>
-              <button class="btn btn-gray" id="resetBtn">
-                <span>🔄</span>
-                <span>Reset Form</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Help Modal -->
-      <div id="helpModal" class="help-modal" style="display: none">
-        <div class="help-modal-content">
-          <button class="modal-close-x" onclick="closeHelp()" title="Close">
-            &times;
-          </button>
-          <h3>🧪 Sodium Permanganate Dose Predictor Help</h3>
-
-          <div class="help-section">
-            <h4>🎯 System Overview</h4>
-            <p>
-              This AI-powered system predicts optimal sodium permanganate dosing
-              for water treatment facilities. Using machine learning trained on
-              3.5 years of historical data, it analyzes water quality parameters
-              to recommend precise chemical dosing amounts.
-            </p>
-          </div>
-
-          <div class="help-section">
-            <h4>🧠 Machine Learning Model</h4>
-            <ul>
-              <li><strong>Algorithm:</strong> Random Forest Regressor</li>
-              <li>
-                <strong>Training Data:</strong> 3.5 years of operational data
-              </li>
-              <li><strong>Accuracy:</strong> ±0.08 mg/L mean absolute error</li>
-              <li><strong>R² Score:</strong> 0.92 (92% variance explained)</li>
-            </ul>
-          </div>
-
-          <div class="help-section">
-            <h4>📋 Parameter Guidelines</h4>
-            <div class="param-guide">
-              <div class="param-item">
-                <strong>Raw Manganese:</strong> 0.001-0.500 mg/L (High impact -
-                85% influence)
-              </div>
-              <div class="param-item">
-                <strong>Raw Iron:</strong> 0.001-0.300 mg/L (Medium impact - 65%
-                influence)
-              </div>
-              <div class="param-item">
-                <strong>Total Organic Carbon:</strong> 0.1-10.0 mg/L (High
-                impact - 72% influence)
-              </div>
-              <div class="param-item">
-                <strong>pH Level:</strong> 6.0-9.0 (Medium impact - 35%
-                influence)
-              </div>
-              <div class="param-item">
-                <strong>Temperature:</strong> -5 to 35°C (Medium impact - 45%
-                influence)
-              </div>
-              <div class="param-item">
-                <strong>Rainfall:</strong> 0.0-5.0 inches (Low impact - 28%
-                influence)
-              </div>
-            </div>
-          </div>
-
-          <div class="help-section">
-            <h4>💡 Best Practices</h4>
-            <ul>
-              <li>Use fresh, representative water samples</li>
-              <li>Calibrate instruments regularly for accurate readings</li>
-              <li>Consider seasonal variations in raw water quality</li>
-              <li>Monitor treated water quality to validate predictions</li>
-              <li>Document unusual conditions for future reference</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Floating Action Bar -->
-    <div class="floating-action-bar">
-      <button class="btn btn-gray" onclick="openHelp()">
-        ℹ️ Help & Documentation
+      </a>
+      <button class="global-nav__menu-toggle" type="button" aria-expanded="false" aria-controls="globalNavMenu">
+        <span class="global-nav__menu-toggle-label">Menu</span>
+        <span class="global-nav__menu-toggle-icon" aria-hidden="true"></span>
       </button>
-    </div>
+      <ul class="global-nav__menu" id="globalNavMenu">
+        <li class="global-nav__item">
+          <a class="global-nav__link" href="/" data-rel-href="../dashboard/dashboard.html">Home</a>
+        </li>
+        <li class="global-nav__item global-nav__item--dropdown">
+          <button class="global-nav__link global-nav__toggle" type="button" aria-expanded="false">
+            Water Treatment
+            <span class="global-nav__caret" aria-hidden="true"></span>
+          </button>
+          <div class="global-nav__dropdown" role="menu">
+            <a class="global-nav__dropdown-link" href="/robojar-analyzer/" data-rel-href="../robojar-analyzer/index.html" role="menuitem">
+              RoboJar Analyzer
+            </a>
+            <a class="global-nav__dropdown-link" href="/sodium-hypochlorite-calculator/" data-rel-href="../sodium-hypochlorite-calculator/index.html" role="menuitem">
+              Sodium Hypochlorite Calculator
+            </a>
+            <a
+              class="global-nav__dropdown-link global-nav__link--active"
+              href="/dose-predictor/"
+              data-rel-href="../dose-predictor/index.html"
+              role="menuitem"
+              aria-current="page"
+            >
+              Sodium Permanganate Dose Predictor
+            </a>
+            <a class="global-nav__dropdown-link" href="/water-data-explorer/" data-rel-href="../water-data-explorer/index.html" role="menuitem">
+              Water Data Explorer
+            </a>
+          </div>
+        </li>
+        <li class="global-nav__item global-nav__item--dropdown">
+          <button class="global-nav__link global-nav__toggle" type="button" aria-expanded="false">
+            Wastewater Treatment
+            <span class="global-nav__caret" aria-hidden="true"></span>
+          </button>
+          <div class="global-nav__dropdown" role="menu">
+            <a class="global-nav__dropdown-link" href="/mwat-calculator/" data-rel-href="../mwat-calculator/index.html" role="menuitem">
+              MWAT &amp; DM Calculator
+            </a>
+          </div>
+        </li>
+        <li class="global-nav__item global-nav__item--dropdown global-nav__item--align-end">
+          <button class="global-nav__link global-nav__toggle" type="button" aria-expanded="false">
+            Training
+            <span class="global-nav__caret" aria-hidden="true"></span>
+          </button>
+          <div class="global-nav__dropdown" role="menu">
+            <a class="global-nav__dropdown-link" href="/regulation-100-study/" data-rel-href="../regulation-100-study/index.html" role="menuitem">
+              Regulation 100 Study Guide
+            </a>
+            <a class="global-nav__dropdown-link" href="/video-tutorials/" data-rel-href="../video-tutorials/index.html" role="menuitem">
+              Water Treatment Class A Training Videos
+            </a>
+            <a class="global-nav__dropdown-link" href="/water-treatment-flashcards/" data-rel-href="../water-treatment-flashcards/index.html" role="menuitem">
+              Water Treatment Flashcards
+            </a>
+          </div>
+        </li>
+      </ul>
+    </nav>
 
-    <!-- Notification System -->
+    <main class="page dose-page">
+      <header class="hero">
+        <span class="hero__overline">Water Treatment</span>
+        <h1>Sodium Permanganate Dose Predictor</h1>
+        <p class="hero__lede">
+          Generate AI-backed permanganate feed targets by combining Northglenn’s seasonal intelligence with your current raw water
+          readings.
+        </p>
+      </header>
+
+      <section class="card card--instructions">
+        <div class="card__header">
+          <h2>Quick Start Checklist</h2>
+          <p>Follow these steps so the model can return a confident recommendation.</p>
+        </div>
+        <ol class="instructions-list">
+          <li><strong>Seasonal preset:</strong> Choose the profile that best reflects today’s source water conditions.</li>
+          <li><strong>Input parameters:</strong> Enter raw water quality data from the most recent grab or online instruments.</li>
+          <li><strong>Request prediction:</strong> Select <em>Predict Optimal Dose</em> to run the AI model against your inputs.</li>
+          <li><strong>Apply &amp; verify:</strong> Use the suggested dose, then confirm plant response with routine monitoring.</li>
+          <li><strong>Document:</strong> Capture the output for compliance records and future model refinements.</li>
+        </ol>
+        <div class="callout callout--tip">
+          💡 <strong>Model insight:</strong> Trained on 3.5 years of plant history, the model averages ±0.08 mg/L accuracy when source data
+          is within range.
+        </div>
+      </section>
+
+      <section class="card card--presets">
+        <div class="card__header">
+          <h2>Seasonal Presets</h2>
+          <p>Start with Northglenn’s typical seasonal conditions, then fine-tune with your latest lab results.</p>
+        </div>
+        <div class="preset-grid">
+          <button class="preset-btn" data-season="spring">
+            <span class="preset-icon">🌱</span>
+            <span class="preset-name">Spring</span>
+            <span class="preset-desc">Higher organics from runoff</span>
+          </button>
+          <button class="preset-btn" data-season="summer">
+            <span class="preset-icon">☀️</span>
+            <span class="preset-name">Summer</span>
+            <span class="preset-desc">Stable conditions</span>
+          </button>
+          <button class="preset-btn" data-season="fall">
+            <span class="preset-icon">🍂</span>
+            <span class="preset-name">Fall</span>
+            <span class="preset-desc">Elevated leaf matter</span>
+          </button>
+          <button class="preset-btn" data-season="winter">
+            <span class="preset-icon">❄️</span>
+            <span class="preset-name">Winter</span>
+            <span class="preset-desc">Reduced biological activity</span>
+          </button>
+        </div>
+      </section>
+
+      <section class="card card--parameters">
+        <div class="card__header">
+          <h2>Water Quality Inputs</h2>
+          <p>Provide the latest lab values and observations to tailor the prediction to today’s conditions.</p>
+        </div>
+        <form id="parametersForm" class="parameters-form">
+          <div class="parameters-grid">
+            <div class="parameter-group">
+              <label for="rawMn">⚗️ Raw Manganese (mg/L)</label>
+              <input type="number" id="rawMn" step="0.001" min="0.001" max="0.500" placeholder="0.040" required />
+              <small>Primary driver of permanganate demand</small>
+            </div>
+
+            <div class="parameter-group">
+              <label for="rawFe">🔬 Raw Iron (mg/L)</label>
+              <input type="number" id="rawFe" step="0.001" min="0.001" max="0.300" placeholder="0.015" required />
+              <small>Competes with manganese for permanganate</small>
+            </div>
+
+            <div class="parameter-group">
+              <label for="rawToc">🌿 Total Organic Carbon (mg/L)</label>
+              <input type="number" id="rawToc" step="0.1" min="0.1" max="10.0" placeholder="2.30" required />
+              <small>Organic matter consuming permanganate</small>
+            </div>
+
+            <div class="parameter-group">
+              <label for="rawPh">🧪 pH Level</label>
+              <input type="number" id="rawPh" step="0.1" min="6.0" max="9.0" placeholder="7.45" required />
+              <small>Affects permanganate reaction kinetics</small>
+            </div>
+
+            <div class="parameter-group">
+              <label for="rawTemp">🌡️ Temperature (°C)</label>
+              <input type="number" id="rawTemp" step="0.1" min="-5" max="35" placeholder="6.0" required />
+              <small>Higher temperatures increase reaction rates</small>
+            </div>
+
+            <div class="parameter-group">
+              <label for="rainfall">🌧️ Previous Day Rainfall (inches)</label>
+              <input type="number" id="rainfall" step="0.01" min="0.0" max="5.0" placeholder="0.1" required />
+              <small>Influences raw water turbidity and organics</small>
+            </div>
+          </div>
+
+          <div class="predict-section">
+            <button type="submit" class="btn btn-large btn-accent" id="predictBtn">
+              <span>🧠</span>
+              <span>Predict Optimal Dose</span>
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <section class="card card--results" id="resultsSection" style="display: none">
+        <div class="card__header">
+          <h2>AI Prediction</h2>
+          <p>The values below refresh each time you submit new plant data.</p>
+        </div>
+        <div class="results-display">
+          <div class="prediction-main">
+            <div class="prediction-value" id="predictionValue">---.---</div>
+            <div class="prediction-unit">mg/L Sodium Permanganate</div>
+          </div>
+          <div class="prediction-meta">
+            <div class="meta-item">
+              <span class="meta-label">🕐 Generated:</span>
+              <span class="meta-value" id="predictionTime">--</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">🎯 Accuracy:</span>
+              <span class="meta-value">±0.08 mg/L</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">🤖 Model:</span>
+              <span class="meta-value">Random Forest</span>
+            </div>
+          </div>
+          <div class="results-actions">
+            <button class="btn btn-success" id="copyBtn">
+              <span>📋</span>
+              <span>Copy Result</span>
+            </button>
+            <button class="btn btn-slate" id="resetBtn">
+              <span>🔄</span>
+              <span>Reset Form</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
     <div id="notificationContainer" class="notification-container"></div>
 
-    <!-- Local JavaScript -->
+    <script>
+      (function () {
+        const globalNav = document.querySelector(".global-nav");
+        const globalNavMenu = globalNav ? globalNav.querySelector(".global-nav__menu") : null;
+        const globalNavMenuToggle = globalNav ? globalNav.querySelector(".global-nav__menu-toggle") : null;
+        const navToggles = Array.from(document.querySelectorAll(".global-nav__toggle"));
+
+        if (globalNav) {
+          const shouldUseFallbackLinks =
+            window.location.protocol === "file:" || window.location.pathname.includes("/apps/");
+
+          if (shouldUseFallbackLinks) {
+            const fallbackLinks = document.querySelectorAll("[data-rel-href]");
+            fallbackLinks.forEach((link) => {
+              const relHref = link.getAttribute("data-rel-href");
+              if (relHref) {
+                link.setAttribute("href", relHref);
+              }
+            });
+          }
+        }
+
+        function closeDropdownMenus() {
+          navToggles.forEach((toggle) => {
+            const item = toggle.closest(".global-nav__item--dropdown");
+            if (item) {
+              item.classList.remove("global-nav__item--open");
+            }
+            toggle.setAttribute("aria-expanded", "false");
+          });
+        }
+
+        function setMobileMenuOpen(isOpen) {
+          if (!globalNav || !globalNavMenu || !globalNavMenuToggle) {
+            return;
+          }
+          globalNav.classList.toggle("global-nav--menu-open", isOpen);
+          globalNavMenuToggle.setAttribute("aria-expanded", String(isOpen));
+          document.body.classList.toggle("has-mobile-nav-open", isOpen);
+          if (!isOpen) {
+            closeDropdownMenus();
+          }
+        }
+
+        function closeMobileMenu() {
+          setMobileMenuOpen(false);
+        }
+
+        if (globalNav && globalNavMenu && globalNavMenuToggle) {
+          globalNavMenuToggle.addEventListener("click", (event) => {
+            event.stopPropagation();
+            const shouldOpen = !globalNav.classList.contains("global-nav--menu-open");
+            setMobileMenuOpen(shouldOpen);
+          });
+
+          globalNavMenu.addEventListener("click", (event) => {
+            const target = event.target;
+            if (target instanceof HTMLAnchorElement) {
+              closeMobileMenu();
+            }
+          });
+
+          window.addEventListener("resize", () => {
+            if (window.innerWidth > 720) {
+              closeMobileMenu();
+            }
+          });
+        }
+
+        navToggles.forEach((toggle) => {
+          toggle.setAttribute("aria-expanded", "false");
+          toggle.addEventListener("click", (event) => {
+            event.stopPropagation();
+            const item = toggle.closest(".global-nav__item--dropdown");
+            if (!item) {
+              return;
+            }
+
+            const isOpen = item.classList.contains("global-nav__item--open");
+            closeDropdownMenus();
+            if (!isOpen) {
+              item.classList.add("global-nav__item--open");
+              toggle.setAttribute("aria-expanded", "true");
+            }
+          });
+        });
+
+        document.addEventListener("click", (event) => {
+          if (!(event.target instanceof Node)) {
+            return;
+          }
+
+          const clickedWithinDropdown = navToggles.some((toggle) => {
+            const item = toggle.closest(".global-nav__item--dropdown");
+            return item && item.contains(event.target);
+          });
+
+          if (!clickedWithinDropdown) {
+            closeDropdownMenus();
+          }
+
+          if (globalNav && !globalNav.contains(event.target)) {
+            closeMobileMenu();
+          }
+        });
+
+        document.addEventListener("keydown", (event) => {
+          if (event.key === "Escape") {
+            closeDropdownMenus();
+            closeMobileMenu();
+          }
+        });
+      })();
+    </script>
     <script src="script.js?v=1757369234"></script>
   </body>
 </html>

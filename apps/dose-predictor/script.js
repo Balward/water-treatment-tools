@@ -371,27 +371,3 @@ function resetForm() {
 
   showNotification("Form reset successfully", "info");
 }
-
-// Help modal functions
-function openHelp() {
-  document.getElementById("helpModal").style.display = "flex";
-}
-
-function closeHelp() {
-  document.getElementById("helpModal").style.display = "none";
-}
-
-// Close modal when clicking outside
-document.addEventListener("click", function (e) {
-  const modal = document.getElementById("helpModal");
-  if (e.target === modal) {
-    closeHelp();
-  }
-});
-
-// Handle escape key
-document.addEventListener("keydown", function (e) {
-  if (e.key === "Escape") {
-    closeHelp();
-  }
-});
