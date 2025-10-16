@@ -5,12 +5,7 @@ let fileName = "";
 let savedCharts = {};
 let currentForecastMetrics = null;
 let currentStatistics = null;
-let selectedParametersForPdf = new Set([
-  "mean volume",
-  "mean diameter",
-  "concentration",
-  "particle",
-]);
+const selectedParametersForPdf = new Set();
 
 // Notification System
 function showNotification(message, type = "info", duration = 5000) {
@@ -90,6 +85,21 @@ function clearRegenerationNotification() {
   if (generateBtn) {
     generateBtn.style.animation = "";
   }
+}
+
+function toggleGenerateActionBar(hasData, isDisabled) {
+  const actionBar = document.getElementById("generateActionBar");
+  if (!actionBar) {
+    return;
+  }
+
+  if (hasData) {
+    actionBar.classList.add("floating-generate--visible");
+  } else {
+    actionBar.classList.remove("floating-generate--visible");
+  }
+
+  actionBar.classList.toggle("floating-generate--inactive", isDisabled);
 }
 
 // Add event listeners for chart configuration changes
@@ -181,51 +191,15 @@ window.closeStatsHelp = function () {
   document.getElementById("statsHelpModal").style.display = "none";
 };
 
-// PDF Export Modal Functions
-window.openPdfExportModal = function () {
-  const modal = document.getElementById("pdfExportModal");
-  modal.style.display = "flex";
-  modal.scrollTop = 0;
-  updateParameterCheckboxes();
-};
-
-window.closePdfExportModal = function () {
-  document.getElementById("pdfExportModal").style.display = "none";
-};
-
-function updateParameterCheckboxes() {
-  // Update checkboxes based on current selection
-  document.getElementById("includeMeanVolume").checked =
-    selectedParametersForPdf.has("Mean Volume");
-  document.getElementById("includeMeanDiameter").checked =
-    selectedParametersForPdf.has("Mean Diameter");
-  document.getElementById("includeConcentration").checked =
-    selectedParametersForPdf.has("Concentration");
-  document.getElementById("includeParticleCount").checked =
-    selectedParametersForPdf.has("Particle Count");
-
-  // Add event listeners for parameter checkboxes
-  const parameterCheckboxes = [
-    "includeMeanVolume",
-    "includeMeanDiameter",
-    "includeConcentration",
-    "includeParticleCount",
-  ];
-  parameterCheckboxes.forEach((id) => {
-    const checkbox = document.getElementById(id);
-    checkbox.onchange = function () {
-      const parameterValue = this.value;
-      if (this.checked) {
-        selectedParametersForPdf.add(parameterValue);
-      } else {
-        selectedParametersForPdf.delete(parameterValue);
-      }
-    };
-  });
-}
+// PDF Export helper replaced by direct default selection
 
 // PDF Generation Function
 window.generatePdfReport = function () {
+  if (selectedParametersForPdf.size === 0) {
+    selectedParametersForPdf.add("Mean Diameter");
+    selectedParametersForPdf.add("Mean Volume");
+  }
+
   if (selectedParametersForPdf.size === 0) {
     showNotification(
       "Please select at least one parameter to include in the PDF report.",
@@ -234,15 +208,8 @@ window.generatePdfReport = function () {
     return;
   }
 
-  const reportTitle =
-    document.getElementById("reportTitle").value ||
-    "RoboJar Data Analysis Report";
-  const includeStatistics =
-    document.getElementById("includeStatistics").checked;
-
-
-  // Close modal and generate PDF
-  closePdfExportModal();
+  const reportTitle = "RoboJar Data Analysis Report";
+  const includeStatistics = true;
 
   setTimeout(async () => {
     await createStyledPdfReport(reportTitle, includeStatistics);
@@ -2016,19 +1983,15 @@ function displayForecastMetrics(metrics) {
 }
 
 function updateHeaderActions() {
-  const hasPng = currentChart !== null;
   const hasData = Object.keys(processedData).length > 0;
 
   // Update header buttons
   const generateBtn = document.getElementById("generateChartsHeader");
-  const pdfBtn = document.getElementById("exportPdfHeader");
 
   if (generateBtn) {
     generateBtn.disabled = !hasData;
   }
-  if (pdfBtn) {
-    pdfBtn.disabled = !hasPng;
-  }
+  toggleGenerateActionBar(hasData, generateBtn ? generateBtn.disabled : true);
 }
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -2104,6 +2067,7 @@ async function generateAllCharts() {
   if (generateButton) {
     generateButton.disabled = true;
     generateButton.innerHTML = "<span>⏳</span><span>Generating...</span>";
+    toggleGenerateActionBar(true, true);
   }
 
   try {
@@ -2191,6 +2155,7 @@ async function generateAllCharts() {
     if (generateButton) {
       generateButton.disabled = false;
       generateButton.innerHTML = "<span>📊</span><span>Generate Charts</span>";
+      toggleGenerateActionBar(true, false);
     }
 
     // Mark charts as generated and clear regeneration notification
@@ -2202,9 +2167,12 @@ async function generateAllCharts() {
     console.error("Error generating charts:", error);
 
     // Re-enable button even on error
-    generateButton.disabled = false;
-    generateButton.innerHTML =
-      "<span>📊</span><span>Generate All Charts</span>";
+    if (generateButton) {
+      generateButton.disabled = false;
+      generateButton.innerHTML =
+        "<span>📊</span><span>Generate Charts</span>";
+      toggleGenerateActionBar(true, false);
+    }
 
     showNotification("Error generating charts. Please try again.", "error");
   }

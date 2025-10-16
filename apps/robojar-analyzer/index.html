@@ -3,295 +3,232 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>RoboJar Data Analyzer - Enhanced with Statistics</title>
+    <title>RoboJar Data Analyzer</title>
     <link rel="icon" type="image/png" href="../../assets/logos/favicon.png" />
-
-    <!-- External Library Dependencies -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
-    <!-- Local Stylesheets -->
-    <link rel="stylesheet" href="styles.css?v=1" />
+    <link rel="stylesheet" href="../../global-styles.css?v=1757369234" />
+    <link rel="stylesheet" href="styles.css" />
   </head>
-
   <body>
-    <div class="header">
-      <div class="header-content">
-        <div class="header-main">
-          <h1>🤖 RoboJar Data Analyzer</h1>
-          <p>
-            Upload your RoboJar Excel report to visualize and analyze the data
-          </p>
+    <nav class="global-nav" aria-label="Global navigation">
+      <a class="global-nav__brand" href="/" data-rel-href="../dashboard/dashboard.html">
+        <img class="global-nav__logo" src="../../assets/logos/logo-horizontal-dark.png" alt="City of Northglenn" />
+        <div class="global-nav__brand-text">
+          <span class="global-nav__overline">Utilities</span>
+          <span class="global-nav__title">Treatment Operations &amp; Training Portal</span>
         </div>
-        <div class="header-actions">
-          <button
-            class="action-btn"
-            id="generateChartsHeader"
-            onclick="generateAllCharts()"
-            disabled
-          >
-            <span>📊</span>
-            <span>Generate Charts</span>
+      </a>
+      <button class="global-nav__menu-toggle" type="button" aria-expanded="false" aria-controls="globalNavMenu">
+        <span class="global-nav__menu-toggle-label">Menu</span>
+        <span class="global-nav__menu-toggle-icon" aria-hidden="true"></span>
+      </button>
+      <ul class="global-nav__menu" id="globalNavMenu">
+        <li class="global-nav__item">
+          <a class="global-nav__link" href="/" data-rel-href="../dashboard/dashboard.html">Home</a>
+        </li>
+        <li class="global-nav__item global-nav__item--dropdown">
+          <button class="global-nav__link global-nav__toggle" type="button" aria-expanded="false">
+            Water Treatment
+            <span class="global-nav__caret" aria-hidden="true"></span>
           </button>
-          <button
-            class="action-btn"
-            id="exportPdfHeader"
-            onclick="generatePdfReport()"
-            disabled
-          >
-            <span>📄</span>
-            <span>Export PDF</span>
+          <div class="global-nav__dropdown" role="menu">
+            <a class="global-nav__dropdown-link global-nav__link--active" href="/robojar-analyzer/" data-rel-href="../robojar-analyzer/index.html" role="menuitem" aria-current="page">
+              RoboJar Analyzer
+            </a>
+            <a class="global-nav__dropdown-link" href="/sodium-hypochlorite-calculator/" data-rel-href="../sodium-hypochlorite-calculator/index.html" role="menuitem">
+              Sodium Hypochlorite Calculator
+            </a>
+            <a class="global-nav__dropdown-link" href="/dose-predictor/" data-rel-href="../dose-predictor/index.html" role="menuitem">
+              Sodium Permanganate Dose Predictor
+            </a>
+            <a class="global-nav__dropdown-link" href="/water-data-explorer/" data-rel-href="../water-data-explorer/index.html" role="menuitem">
+              Water Data Explorer
+            </a>
+          </div>
+        </li>
+        <li class="global-nav__item global-nav__item--dropdown">
+          <button class="global-nav__link global-nav__toggle" type="button" aria-expanded="false">
+            Wastewater Treatment
+            <span class="global-nav__caret" aria-hidden="true"></span>
           </button>
-          <button
-            class="action-btn btn-help"
-            onclick="openStatsHelp()"
-            title="View Help Documentation"
-          >
-            <span>ℹ️</span>
-            <span>Help</span>
+          <div class="global-nav__dropdown" role="menu">
+            <a class="global-nav__dropdown-link" href="/mwat-calculator/" data-rel-href="../mwat-calculator/index.html" role="menuitem">
+              MWAT &amp; DM Calculator
+            </a>
+          </div>
+        </li>
+        <li class="global-nav__item global-nav__item--dropdown global-nav__item--align-end">
+          <button class="global-nav__link global-nav__toggle" type="button" aria-expanded="false">
+            Training
+            <span class="global-nav__caret" aria-hidden="true"></span>
           </button>
+          <div class="global-nav__dropdown" role="menu">
+            <a class="global-nav__dropdown-link" href="/regulation-100-study/" data-rel-href="../regulation-100-study/index.html" role="menuitem">
+              Regulation 100 Study Guide
+            </a>
+            <a class="global-nav__dropdown-link" href="/video-tutorials/" data-rel-href="../video-tutorials/index.html" role="menuitem">
+              Water Treatment Class A Training Videos
+            </a>
+            <a class="global-nav__dropdown-link" href="/water-treatment-flashcards/" data-rel-href="../water-treatment-flashcards/index.html" role="menuitem">
+              Water Treatment Flashcards
+            </a>
+          </div>
+        </li>
+      </ul>
+    </nav>
+
+    <main class="page robojar-page">
+      <header class="hero">
+        <span class="hero__overline">Water Treatment</span>
+        <h1>RoboJar Data Analyzer</h1>
+        <p class="hero__lede">
+          Import RoboJar jar-test reports, visualize particle trends, and benchmark coagulation performance with automated statistics and forecasts.
+        </p>
+      </header>
+
+      <section class="card card--instructions">
+        <div class="card__header">
+          <h2>Quick Instructions</h2>
+          <p>Follow this workflow to generate charts, statistics, and report-ready insights.</p>
         </div>
-      </div>
-    </div>
-
-    <div class="container">
-      <div class="instructions-section">
-        <div class="instructions-card">
-          <h3>📝 Quick Instructions</h3>
-          <ol class="instructions-list">
-            <li>
-              <strong>Upload:</strong> Choose a RoboJar Excel report file
-              (.xlsx/.xls) or load test file for demo
-            </li>
-            <li>
-              <strong>Generate:</strong> Click "Generate Charts" to create
-              visualizations for all parameters automatically
-            </li>
-            <li>
-              <strong>Navigate:</strong> Use the tabs (Mean Diameter, Mean
-              Volume, Particle Count, Concentration) to view different analyses
-            </li>
-            <li>
-              <strong>Configure:</strong> Adjust forecasting methods, time
-              windows, and data filtering options as needed
-            </li>
-            <li>
-              <strong>Export:</strong> Generate comprehensive PDF reports with
-              all data
-            </li>
-          </ol>
-          <p class="instructions-tip">
-            💡 <strong>Tip:</strong> Use the "ℹ️" Help button in the header for
-            detailed explanations of statistics and forecast metrics.
-          </p>
-
-          <div class="instructions-actions">
-            <div class="file-input-wrapper">
-              <input
-                type="file"
-                id="fileInput"
-                class="file-input"
-                accept=".xls,.xlsx"
-              />
-              <button type="button" class="btn btn-large" onclick="document.getElementById('fileInput').click()">
-                📁 Import RoboJar Excel File
-              </button>
-            </div>
-            <button
-              id="loadTestFile"
-              class="btn btn-large"
-              onclick="loadTestFile()"
-            >
-              🧪 Load Test File
+        <ol class="instructions-list">
+          <li><strong>Upload:</strong> Choose a RoboJar Excel report (.xlsx/.xls) or load demo data.</li>
+          <li><strong>Generate:</strong> Run <em>Generate Charts</em> to build visuals for all parameters.</li>
+          <li><strong>Navigate:</strong> Switch tabs for Mean Diameter, Mean Volume, Particle Count, and Concentration.</li>
+          <li><strong>Configure:</strong> Adjust chart, forecast, and analytics settings to fit today’s run.</li>
+        </ol>
+        <div class="callout callout--tip">
+          💡 <strong>Tip:</strong> Reference the guide below for definitions, forecasting options, and best practices.
+        </div>
+        <div class="instructions-actions">
+          <div class="file-input-wrapper">
+            <input type="file" id="fileInput" class="file-input" accept=".xls,.xlsx" />
+            <button type="button" class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
+              📁 Import RoboJar Excel File
             </button>
-            <button
-              id="loadStreamingCurrentDemo"
-              class="btn btn-large"
-              onclick="loadStreamingCurrentDemo()"
-            >
+          </div>
+          <div class="instructions-action-buttons">
+            <button id="loadTestFile" class="btn btn-secondary" onclick="loadTestFile()">🧪 Load Test File</button>
+            <button id="loadStreamingCurrentDemo" class="btn btn-secondary" onclick="loadStreamingCurrentDemo()">
               ⚡ Load Streaming Current Demo Data
             </button>
           </div>
-          <p class="test-file-hint">
-            Load Test File uses RoboJarReport from data folder for quick testing<br>
-            Streaming Current Demo uses streaming current data with zeta potential measurements
+          <p class="instructions-footnote">
+            Test file uses <em>RoboJarReport.xlsx</em> for quick validation. Streaming current demo combines zeta potential with particle monitoring.
           </p>
         </div>
-      </div>
+      </section>
 
-      <!-- Data Summary Section - Moved up for better UX flow -->
-      <div class="info-panel" id="infoPanel" style="display: none">
+      <section class="card card--info" id="infoPanel" style="display: none">
+        <div class="card__header">
+          <h2>Workbook Summary</h2>
+          <p>Key details from the uploaded RoboJar report.</p>
+        </div>
         <div class="sheet-info-card" id="sheetInfo"></div>
-      </div>
+      </section>
 
-      <!-- Basic Chart Configuration -->
-      <div class="basic-config" id="basicConfig" style="display: none">
-        <div class="control-card">
-          <h3>📊 Chart Configuration</h3>
-          <div class="control-card-controls">
-            <div class="control-group">
-              <label for="chartType">Chart Type:</label>
-              <select id="chartType">
-                <option value="line">Line Chart</option>
-                <option value="scatter">Scatter Plot</option>
-              </select>
-            </div>
-
-            <div class="control-group">
-              <label for="includeRPM"
-                >Include Paddle RPM (Secondary Axis):</label
-              >
-              <select id="includeRPM">
-                <option value="false">No</option>
-                <option value="true" selected>Yes</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="forecast-section">
-            <h3>🔮 Forecasting Options</h3>
-
-            <div class="forecast-controls">
-              <div class="control-group">
-                <label for="enableForecast">Forecasting Method:</label>
-                <select id="enableForecast">
-                  <option value="false" selected>Disabled</option>
-                  <option value="adaptive">Adaptive (Recommended)</option>
-                  <option value="windowed">Windowed</option>
-                  <option value="weighted">Weighted</option>
-                  <option value="simple">Simple</option>
-                </select>
-              </div>
-
-              <div
-                class="control-group"
-                id="polynomialOrderGroup"
-                style="display: none"
-              >
-                <label for="polynomialOrder">Polynomial Order:</label>
-                <select id="polynomialOrder">
-                  <option value="1">1st Order (Linear)</option>
-                  <option value="2" selected>2nd Order (Quadratic)</option>
-                  <option value="3">3rd Order (Cubic)</option>
-                </select>
-              </div>
-
-              <div
-                class="control-group"
-                id="forecastStartGroup"
-                style="display: none"
-              >
-                <label for="forecastStart">Forecast Start Time:</label>
-                <select id="forecastStart">
-                  <option value="600">600s (10 min)</option>
-                  <option value="900">900s (15 min)</option>
-                  <option value="1200" selected>1200s (20 min)</option>
-                  <option value="1500">1500s (25 min)</option>
-                  <option value="1800">1800s (30 min)</option>
-                </select>
-              </div>
-
-              <div
-                class="control-group"
-                id="forecastWindowGroup"
-                style="display: none"
-              >
-                <label for="forecastWindow">Forecast Window:</label>
-                <select id="forecastWindow">
-                  <option value="50">50 points (250 seconds)</option>
-                  <option value="100" selected>100 points (500 seconds)</option>
-                  <option value="150">150 points (750 seconds)</option>
-                  <option value="200">200 points (1000 seconds)</option>
-                  <option value="all">All data</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <div
-            id="forecastInfo"
-            class="forecast-info"
-            style="display: none"
-          ></div>
+      <section class="card card--config" id="basicConfig" style="display: none">
+        <div class="card__header">
+          <h2>Chart &amp; Forecast Settings</h2>
+          <p>Adjust visualization defaults before regenerating charts.</p>
         </div>
-      </div>
+        <div class="config-grid">
+          <div class="control-group">
+            <label for="chartType">Chart Type</label>
+            <select id="chartType">
+              <option value="line">Line Chart</option>
+              <option value="scatter">Scatter Plot</option>
+            </select>
+          </div>
+          <div class="control-group">
+            <label for="includeRPM">Include Paddle RPM (Secondary Axis)</label>
+            <select id="includeRPM">
+              <option value="false">No</option>
+              <option value="true" selected>Yes</option>
+            </select>
+          </div>
+        </div>
+        <div class="forecast-section">
+          <h3>Forecasting Options</h3>
+          <div class="forecast-grid">
+            <div class="control-group">
+              <label for="enableForecast">Forecasting Method</label>
+              <select id="enableForecast">
+                <option value="false" selected>Disabled</option>
+                <option value="adaptive">Adaptive (Recommended)</option>
+                <option value="windowed">Windowed</option>
+                <option value="weighted">Weighted</option>
+                <option value="simple">Simple</option>
+              </select>
+            </div>
+            <div class="control-group" id="polynomialOrderGroup" style="display: none">
+              <label for="polynomialOrder">Polynomial Order</label>
+              <select id="polynomialOrder">
+                <option value="1">1st Order (Linear)</option>
+                <option value="2" selected>2nd Order (Quadratic)</option>
+                <option value="3">3rd Order (Cubic)</option>
+              </select>
+            </div>
+            <div class="control-group" id="forecastStartGroup" style="display: none">
+              <label for="forecastStart">Forecast Start Time</label>
+              <select id="forecastStart">
+                <option value="600">600s (10 min)</option>
+                <option value="900">900s (15 min)</option>
+                <option value="1200" selected>1200s (20 min)</option>
+                <option value="1500">1500s (25 min)</option>
+                <option value="1800">1800s (30 min)</option>
+              </select>
+            </div>
+            <div class="control-group" id="forecastWindowGroup" style="display: none">
+              <label for="forecastWindow">Forecast Window</label>
+              <select id="forecastWindow">
+                <option value="50">50 points (250 seconds)</option>
+                <option value="100" selected>100 points (500 seconds)</option>
+                <option value="150">150 points (750 seconds)</option>
+                <option value="200">200 points (1000 seconds)</option>
+                <option value="all">All data</option>
+              </select>
+            </div>
+          </div>
+          <div id="forecastInfo" class="forecast-info" style="display: none"></div>
+        </div>
+      </section>
 
-      <!-- Tabbed Charts Container -->
-      <div
-        class="tabbed-charts-container"
-        id="tabbedChartsContainer"
-        style="display: none"
-      >
+      <section class="card card--charts" id="tabbedChartsContainer" style="display: none">
         <div class="tabs-header">
-          <button
-            class="tab-button active"
-            onclick="switchTab('mean-diameter')"
-            data-tab="mean-diameter"
-          >
-            📏 Mean Diameter
-          </button>
-          <button
-            class="tab-button"
-            onclick="switchTab('mean-volume')"
-            data-tab="mean-volume"
-          >
-            📦 Mean Volume
-          </button>
-          <button
-            class="tab-button"
-            onclick="switchTab('particle-count')"
-            data-tab="particle-count"
-          >
-            🧮 Particle Count
-          </button>
-          <button
-            class="tab-button"
-            onclick="switchTab('concentration')"
-            data-tab="concentration"
-          >
-            🧪 Concentration
-          </button>
+          <button class="tab-button active" onclick="switchTab('mean-diameter')" data-tab="mean-diameter">📏 Mean Diameter</button>
+          <button class="tab-button" onclick="switchTab('mean-volume')" data-tab="mean-volume">📦 Mean Volume</button>
+          <button class="tab-button" onclick="switchTab('particle-count')" data-tab="particle-count">🧮 Particle Count</button>
+          <button class="tab-button" onclick="switchTab('concentration')" data-tab="concentration">🧪 Concentration</button>
         </div>
 
-        <!-- Mean Diameter Tab -->
         <div class="tab-content active" id="mean-diameter-tab">
-          <div class="chart-container">
+          <div class="chart-card">
             <div id="meanDiameterTitle" class="chart-title"></div>
             <div id="meanDiameterLegend" class="custom-legend"></div>
             <div class="chart-canvas-container">
               <canvas id="meanDiameterChart"></canvas>
             </div>
           </div>
-
-          <div class="statistics-section">
+          <div class="analytics-grid">
             <div class="statistics-card">
               <h3>📊 Mean Diameter Statistics</h3>
-              <div class="stats-controls">
+              <div class="statistics-controls">
                 <div class="control-group">
-                  <label for="timeWindow">Analysis Time Window:</label>
+                  <label for="timeWindow">Analysis Time Window</label>
                   <select id="timeWindow">
                     <option value="all">Full Duration</option>
-                    <option value="steady">
-                      Steady State Only (After 5 min)
-                    </option>
+                    <option value="steady">Steady State Only (After 5 min)</option>
                     <option value="final">Final 10 Minutes</option>
                     <option value="custom">Custom Range</option>
                   </select>
                 </div>
-                <div
-                  class="control-group"
-                  id="customRangeGroup"
-                  style="
-                    display: none;
-                    flex-direction: row;
-                    gap: 20px;
-                    align-items: center;
-                  "
-                >
-                  <div style="display: flex; flex-direction: column; gap: 5px">
-                    <label for="startTime">Start Time (seconds):</label>
-                    <select id="startTime" style="width: 120px">
+                <div class="custom-range" id="customRangeGroup" style="display: none">
+                  <div class="control-group">
+                    <label for="startTime">Start Time (seconds)</label>
+                    <select id="startTime">
                       <option value="0">0 (Start)</option>
                       <option value="300">300 (5 min)</option>
                       <option value="600">600 (10 min)</option>
@@ -299,9 +236,9 @@
                       <option value="1200">1200 (20 min)</option>
                     </select>
                   </div>
-                  <div style="display: flex; flex-direction: column; gap: 5px">
-                    <label for="endTime">End Time (seconds):</label>
-                    <select id="endTime" style="width: 120px">
+                  <div class="control-group">
+                    <label for="endTime">End Time (seconds)</label>
+                    <select id="endTime">
                       <option value="600">600 (10 min)</option>
                       <option value="900">900 (15 min)</option>
                       <option value="1200">1200 (20 min)</option>
@@ -313,29 +250,23 @@
               </div>
               <div id="meanDiameterStats"></div>
             </div>
-
             <div class="metrics-card">
               <h3>📈 Forecast Quality Metrics</h3>
               <div class="metrics-grid" id="meanDiameterMetrics"></div>
-              <div
-                class="metrics-summary"
-                id="meanDiameterMetricsSummary"
-              ></div>
+              <div class="metrics-summary" id="meanDiameterMetricsSummary"></div>
             </div>
           </div>
         </div>
 
-        <!-- Mean Volume Tab -->
         <div class="tab-content" id="mean-volume-tab">
-          <div class="chart-container">
+          <div class="chart-card">
             <div id="meanVolumeTitle" class="chart-title"></div>
             <div id="meanVolumeLegend" class="custom-legend"></div>
             <div class="chart-canvas-container">
               <canvas id="meanVolumeChart"></canvas>
             </div>
           </div>
-
-          <div class="statistics-section">
+          <div class="analytics-grid">
             <div class="statistics-card">
               <h3>📊 Mean Volume Statistics</h3>
               <div id="meanVolumeStats"></div>
@@ -348,17 +279,15 @@
           </div>
         </div>
 
-        <!-- Particle Count Tab -->
         <div class="tab-content" id="particle-count-tab">
-          <div class="chart-container">
+          <div class="chart-card">
             <div id="particleCountTitle" class="chart-title"></div>
             <div id="particleCountLegend" class="custom-legend"></div>
             <div class="chart-canvas-container">
               <canvas id="particleCountChart"></canvas>
             </div>
           </div>
-
-          <div class="statistics-section">
+          <div class="analytics-grid">
             <div class="statistics-card">
               <h3>📊 Particle Count Statistics</h3>
               <div id="particleCountStats"></div>
@@ -366,25 +295,20 @@
             <div class="metrics-card">
               <h3>📈 Forecast Quality Metrics</h3>
               <div class="metrics-grid" id="particleCountMetrics"></div>
-              <div
-                class="metrics-summary"
-                id="particleCountMetricsSummary"
-              ></div>
+              <div class="metrics-summary" id="particleCountMetricsSummary"></div>
             </div>
           </div>
         </div>
 
-        <!-- Concentration Tab -->
         <div class="tab-content" id="concentration-tab">
-          <div class="chart-container">
+          <div class="chart-card">
             <div id="concentrationTitle" class="chart-title"></div>
             <div id="concentrationLegend" class="custom-legend"></div>
             <div class="chart-canvas-container">
               <canvas id="concentrationChart"></canvas>
             </div>
           </div>
-
-          <div class="statistics-section">
+          <div class="analytics-grid">
             <div class="statistics-card">
               <h3>📊 Concentration Statistics</h3>
               <div id="concentrationStats"></div>
@@ -392,256 +316,215 @@
             <div class="metrics-card">
               <h3>📈 Forecast Quality Metrics</h3>
               <div class="metrics-grid" id="concentrationMetrics"></div>
-              <div
-                class="metrics-summary"
-                id="concentrationMetricsSummary"
-              ></div>
+              <div class="metrics-summary" id="concentrationMetricsSummary"></div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      </section>
+    </main>
 
-    <!-- Statistics Help Modal -->
     <div id="statsHelpModal" class="help-modal" style="display: none">
-      <div class="help-modal-content">
-        <button class="modal-close-x" onclick="closeStatsHelp()" title="Close">
-          &times;
-        </button>
+      <div class="help-modal__content">
+        <button class="modal-close-x" onclick="closeStatsHelp()" title="Close">&times;</button>
         <h3>📖 RoboJar Analyzer - Complete User Guide</h3>
-
-        <div class="help-metric">
+        <div class="help-section">
           <h4>🚀 Getting Started</h4>
-          <p>
-            <strong>File Upload:</strong> Choose a RoboJar Excel report file
-            (.xlsx/.xls) using the Import button, or click "Load Test File" to
-            try the analyzer with sample data.
-          </p>
-          <p>
-            <strong>Generate Charts:</strong> Click "Generate Charts" in the
-            header to automatically create visualizations for all four
-            parameters (Mean Diameter, Mean Volume, Particle Count,
-            Concentration).
-          </p>
-          <p>
-            <strong>Navigate Tabs:</strong> Use the tabs to switch between
-            different parameter analyses. Each tab shows charts, statistics, and
-            forecast metrics for that specific measurement.
-          </p>
+          <p><strong>File Upload:</strong> Choose a RoboJar Excel report (.xlsx/.xls) using the Import button, or click "Load Test File" to try the analyzer with sample data.</p>
+          <p><strong>Generate Charts:</strong> Click "Generate Charts" to automatically create visualizations for all four parameters (Mean Diameter, Mean Volume, Particle Count, Concentration).</p>
+          <p><strong>Navigate Tabs:</strong> Use the parameter tabs to switch analyses. Each tab includes charts, statistics, and forecast metrics tailored to that measurement.</p>
         </div>
-
-        <div class="help-metric">
+        <div class="help-section">
           <h4>🤖 Understanding RoboJar Data</h4>
-          <p>
-            <strong>Mean Diameter:</strong> Average particle size, typically
-            measured in micrometers (μm). Key indicator of flocculation
-            effectiveness.
-          </p>
-          <p>
-            <strong>Mean Volume:</strong> Average volume of particles. Often
-            correlates with settling characteristics and treatment efficiency.
-          </p>
-          <p>
-            <strong>Particle Count:</strong> Number of particles detected per
-            unit volume. Higher counts may indicate poor coagulation.
-          </p>
-          <p>
-            <strong>Concentration:</strong> Total particle concentration, often
-            expressed as volume percentage. Critical for understanding solids
-            loading.
-          </p>
+          <p><strong>Mean Diameter:</strong> Average particle size in micrometers (µm). Key indicator of flocculation effectiveness.</p>
+          <p><strong>Mean Volume:</strong> Average volume of particles—often tied to settling characteristics.</p>
+          <p><strong>Particle Count:</strong> Number of particles detected per unit volume. Higher counts may indicate poor coagulation.</p>
+          <p><strong>Concentration:</strong> Total particle concentration, typically expressed as volume percentage.</p>
         </div>
-
-        <div class="help-metric">
+        <div class="help-section">
           <h4>📊 Chart Configuration</h4>
-          <p>
-            <strong>Line Chart:</strong> Shows trends over time with connected
-            data points. Best for viewing continuous changes and patterns.
-          </p>
-          <p>
-            <strong>Scatter Plot:</strong> Shows individual data points without
-            connections. Better for identifying outliers and data distribution.
-          </p>
-          <p>
-            <strong>Secondary Axis (RPM):</strong> Displays paddle RPM data
-            alongside primary measurements to correlate mixing intensity with
-            particle behavior.
-          </p>
+          <p><strong>Line Chart:</strong> Emphasizes trends over time with connected points.</p>
+          <p><strong>Scatter Plot:</strong> Reveals outliers and distribution without connecting data.</p>
+          <p><strong>Secondary Axis (RPM):</strong> Overlay paddle RPM to correlate mixing intensity with particle behavior.</p>
         </div>
-
-        <div class="help-metric">
+        <div class="help-section">
           <h4>🔮 Forecasting Methods</h4>
-          <p>
-            <strong>Adaptive:</strong> Best for data with trend changes.
-            Automatically adjusts polynomial order based on data
-            characteristics. Recommended for most analyses.
-          </p>
-          <p>
-            <strong>Windowed:</strong> Uses a sliding window approach focusing
-            on recent stable periods. Good for systems with changing operating
-            conditions.
-          </p>
-          <p>
-            <strong>Weighted:</strong> Emphasizes recent data points gradually.
-            Useful when recent measurements are more representative of current
-            conditions.
-          </p>
-          <p>
-            <strong>Simple:</strong> Uses all available data with standard
-            polynomial regression. Best for very stable systems with consistent
-            trends.
-          </p>
-          <p>
-            <strong>Forecast Start Time:</strong> Controls when forecasting
-            begins (typically 10-20 minutes). Earlier start provides more
-            prediction data but may be less accurate.
-          </p>
-          <p>
-            <strong>Forecast Window:</strong> Amount of historical data used for
-            prediction. Larger windows provide stability but may miss recent
-            changes.
-          </p>
+          <p><strong>Adaptive:</strong> Adjusts polynomial order automatically and works best for changing trends.</p>
+          <p><strong>Windowed:</strong> Focuses on the most recent stable window.</p>
+          <p><strong>Weighted:</strong> Emphasizes newer data points.</p>
+          <p><strong>Simple:</strong> Uses a traditional polynomial regression across all data.</p>
+          <p><strong>Start Time &amp; Window:</strong> Control how much history the forecast uses after an initial stabilization period.</p>
         </div>
-
-        <div class="help-metric">
+        <div class="help-section">
           <h4>⏰ Time Window Selection</h4>
-          <p><strong>Full Duration:</strong> Uses all available data points.</p>
-          <p>
-            <strong>Steady State:</strong> Excludes first 5 minutes to avoid
-            startup transients.
-          </p>
-          <p>
-            <strong>Final 10 Minutes:</strong> Uses only the last 10 minutes
-            when system should be most stable.
-          </p>
-          <p>
-            <strong>Custom Range:</strong> Allows you to specify exact time
-            bounds for analysis.
-          </p>
+          <p><strong>Full Duration:</strong> Uses the entire dataset.</p>
+          <p><strong>Steady State:</strong> Excludes the first 5 minutes to remove start-up effects.</p>
+          <p><strong>Final 10 Minutes:</strong> Focuses on the most stable portion of the test.</p>
+          <p><strong>Custom Range:</strong> Specify exact time bounds for bespoke analysis.</p>
         </div>
-
-        <div class="help-metric">
+        <div class="help-section">
           <h4>🧹 Filtering Options</h4>
-          <p>
-            <strong>Remove Outliers (IQR Method):</strong> Removes values beyond
-            1.5 × IQR from quartiles. Good for eliminating sensor spikes.
-          </p>
-          <p>
-            <strong>Smooth Data (Moving Average):</strong> Applies 5-point
-            moving average to reduce noise while preserving trends.
-          </p>
-          <p>
-            <strong>Both:</strong> First removes outliers, then smooths the
-            remaining data for maximum noise reduction.
-          </p>
+          <p><strong>Remove Outliers (IQR):</strong> Eliminates extreme values based on the interquartile range.</p>
+          <p><strong>Smooth Data (Moving Average):</strong> Applies a 5-point moving average to limit noise.</p>
+          <p><strong>Both:</strong> Remove outliers first, then smooth remaining data.</p>
         </div>
-
-        <div class="help-metric">
+        <div class="help-section">
           <h4>📊 Basic Statistics</h4>
-          <p>
-            <strong>Min/Max:</strong> The lowest and highest values in your
-            dataset. Useful for understanding the operational range.
-          </p>
-          <p>
-            <strong>Mean (Average):</strong> Sum of all values divided by count.
-            Most commonly used for reporting.
-          </p>
-          <p>
-            <strong>Median:</strong> The middle value when data is sorted. Less
-            affected by outliers than the mean.
-          </p>
-          <p>
-            <strong>Standard Deviation:</strong> Measures data spread around the
-            mean. Lower values indicate more consistent performance.
-          </p>
+          <p><strong>Min/Max:</strong> Operational range.</p>
+          <p><strong>Mean:</strong> Average value used for reporting.</p>
+          <p><strong>Median:</strong> Middle value, less influenced by spikes.</p>
+          <p><strong>Standard Deviation:</strong> Measures variability around the mean.</p>
         </div>
-
-        <div class="help-metric">
+        <div class="help-section">
           <h4>📈 Advanced Statistics</h4>
-          <p>
-            <strong>Coefficient of Variation (CV):</strong> Standard deviation
-            divided by mean, expressed as percentage. Useful for comparing
-            variability across different parameters.
-          </p>
-          <p>
-            <strong>Percentiles (P10, P90):</strong> Values below which 10% and
-            90% of data falls. Helps identify typical operating ranges.
-          </p>
-          <p>
-            <strong>Interquartile Range (IQR):</strong> Difference between 75th
-            and 25th percentiles. Shows the spread of the middle 50% of data.
-          </p>
+          <p><strong>Coefficient of Variation:</strong> Normalized variability (standard deviation ÷ mean).</p>
+          <p><strong>Percentiles (P10, P90):</strong> Typical operating range for the dataset.</p>
+          <p><strong>Interquartile Range:</strong> Spread of the middle 50% of readings.</p>
         </div>
-
-        <div class="help-metric">
+        <div class="help-section">
           <h4>🔊 Noise Assessment</h4>
-          <p>
-            <strong>Noise Level:</strong> Estimated using coefficient of
-            variation and outlier detection:
-          </p>
+          <p><strong>Noise Level:</strong> Uses CV and outlier detection to describe signal quality.</p>
           <div class="help-ranges">
             <div class="help-range excellent">Low: CV &lt; 15%</div>
             <div class="help-range good">Medium: CV 15-30%</div>
             <div class="help-range poor">High: CV &gt; 30%</div>
           </div>
         </div>
-
-        <div class="help-metric">
-          <h4>🎯 Quality Metrics (R², RMSE, MAE, MAPE)</h4>
-          <p>
-            <strong>R² (Coefficient of Determination):</strong> Measures how
-            well the forecast model explains data variance. Values closer to 1.0
-            indicate better fits.
-          </p>
-          <div class="help-ranges">
-            <div class="help-range excellent">≥ 0.90 Excellent</div>
-            <div class="help-range good">0.70-0.89 Good</div>
-            <div class="help-range fair">0.50-0.69 Fair</div>
-            <div class="help-range poor">&lt; 0.50 Poor</div>
-          </div>
-          <p>
-            <strong>RMSE (Root Mean Square Error):</strong> Average prediction
-            error in data units. Lower values indicate better accuracy.
-          </p>
-          <p>
-            <strong>MAE (Mean Absolute Error):</strong> Average absolute
-            prediction error. Less sensitive to outliers than RMSE.
-          </p>
-          <p>
-            <strong>MAPE (Mean Absolute Percentage Error):</strong>
-            Percentage-based error metric, easy to interpret regardless of data
-            scale.
-          </p>
+        <div class="help-section">
+          <h4>🎯 Forecast Quality Metrics</h4>
+          <p><strong>R²:</strong> Variance explained by the forecast model; closer to 1.0 is better.</p>
+          <p><strong>RMSE / MAE:</strong> Average prediction error in data units.</p>
+          <p><strong>MAPE:</strong> Error expressed as a percentage for easy comparison.</p>
         </div>
-
-        <div class="help-metric">
+        <div class="help-section">
           <h4>💡 Best Practices</h4>
-          <p>
-            <strong>Data Quality:</strong> Review raw data for sensor errors or
-            unusual spikes before analysis. Use filtering options to clean noisy
-            data.
-          </p>
-          <p>
-            <strong>Steady State Analysis:</strong> Focus on steady state
-            periods (after 5-10 minutes) for most accurate performance
-            assessments.
-          </p>
-          <p>
-            <strong>Forecasting Tips:</strong> Start with Adaptive method and
-            adjust if needed. Use forecast metrics to validate model quality.
-          </p>
-          <p>
-            <strong>Reporting:</strong> Include both raw data trends and
-            filtered statistics in reports. Document any data filtering applied.
-          </p>
+          <p>Validate raw data, focus on steady-state periods, confirm forecasts with metrics, and document any data conditioning applied.</p>
         </div>
       </div>
     </div>
 
-    <!-- Notification System -->
     <div id="notificationContainer" class="notification-container"></div>
 
-    <!-- Local JavaScript -->
+    <div class="floating-generate" id="generateActionBar">
+      <button class="btn btn-hero" id="generateChartsHeader" onclick="generateAllCharts()" disabled>
+        <span>📊</span>
+        <span>Generate Charts</span>
+      </button>
+    </div>
+
+    <script>
+      (function () {
+        const globalNav = document.querySelector(".global-nav");
+        const globalNavMenu = globalNav ? globalNav.querySelector(".global-nav__menu") : null;
+        const globalNavMenuToggle = globalNav ? globalNav.querySelector(".global-nav__menu-toggle") : null;
+        const navToggles = Array.from(document.querySelectorAll(".global-nav__toggle"));
+
+        if (globalNav) {
+          const shouldUseFallbackLinks =
+            window.location.protocol === "file:" || window.location.pathname.includes("/apps/");
+
+          if (shouldUseFallbackLinks) {
+            const fallbackLinks = document.querySelectorAll("[data-rel-href]");
+            fallbackLinks.forEach((link) => {
+              const relHref = link.getAttribute("data-rel-href");
+              if (relHref) {
+                link.setAttribute("href", relHref);
+              }
+            });
+          }
+        }
+
+        function closeDropdownMenus() {
+          navToggles.forEach((toggle) => {
+            const item = toggle.closest(".global-nav__item--dropdown");
+            if (item) {
+              item.classList.remove("global-nav__item--open");
+            }
+            toggle.setAttribute("aria-expanded", "false");
+          });
+        }
+
+        function setMobileMenuOpen(isOpen) {
+          if (!globalNav || !globalNavMenu || !globalNavMenuToggle) {
+            return;
+          }
+          globalNav.classList.toggle("global-nav--menu-open", isOpen);
+          globalNavMenuToggle.setAttribute("aria-expanded", String(isOpen));
+          document.body.classList.toggle("has-mobile-nav-open", isOpen);
+          if (!isOpen) {
+            closeDropdownMenus();
+          }
+        }
+
+        function closeMobileMenu() {
+          setMobileMenuOpen(false);
+        }
+
+        if (globalNav && globalNavMenu && globalNavMenuToggle) {
+          globalNavMenuToggle.addEventListener("click", (event) => {
+            event.stopPropagation();
+            const shouldOpen = !globalNav.classList.contains("global-nav--menu-open");
+            setMobileMenuOpen(shouldOpen);
+          });
+
+          globalNavMenu.addEventListener("click", (event) => {
+            const target = event.target;
+            if (target instanceof HTMLAnchorElement) {
+              closeMobileMenu();
+            }
+          });
+
+          window.addEventListener("resize", () => {
+            if (window.innerWidth > 720) {
+              closeMobileMenu();
+            }
+          });
+        }
+
+        navToggles.forEach((toggle) => {
+          toggle.setAttribute("aria-expanded", "false");
+          toggle.addEventListener("click", (event) => {
+            event.stopPropagation();
+            const item = toggle.closest(".global-nav__item--dropdown");
+            if (!item) {
+              return;
+            }
+
+            const isOpen = item.classList.contains("global-nav__item--open");
+            closeDropdownMenus();
+            if (!isOpen) {
+              item.classList.add("global-nav__item--open");
+              toggle.setAttribute("aria-expanded", "true");
+            }
+          });
+        });
+
+        document.addEventListener("click", (event) => {
+          if (!(event.target instanceof Node)) {
+            return;
+          }
+
+          const clickedWithinDropdown = navToggles.some((toggle) => {
+            const item = toggle.closest(".global-nav__item--dropdown");
+            return item && item.contains(event.target);
+          });
+
+          if (!clickedWithinDropdown) {
+            closeDropdownMenus();
+          }
+
+          if (globalNav && !globalNav.contains(event.target)) {
+            closeMobileMenu();
+          }
+        });
+
+        document.addEventListener("keydown", (event) => {
+          if (event.key === "Escape") {
+            closeDropdownMenus();
+            closeMobileMenu();
+          }
+        });
+      })();
+    </script>
     <script src="script.js?v=8"></script>
   </body>
 </html>
