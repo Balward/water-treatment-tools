@@ -315,7 +315,7 @@ main {
   padding: 2.75rem clamp(1.5rem, 4vw, 3.25rem);
   box-shadow: 0 40px 70px rgba(3, 7, 18, 0.7);
   margin-bottom: 2.75rem;
-  text-align: center;
+  text-align: left;
   border: 1px solid rgba(129, 140, 248, 0.25);
 }
 
@@ -327,8 +327,28 @@ main {
   margin-bottom: 0.85rem;
 }
 
+.hero__overline {
+  display: inline-block;
+  font-size: 0.78rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(232, 235, 255, 0.72);
+  margin-bottom: 0.4rem;
+}
+
+/* Fully left-align MWAT hero description */
+.hero p, .hero .hero__lede { text-align: left; margin: 0; }
+
+.hero h1 {
+  font-size: clamp(2.2rem, 5vw, 3rem);
+  font-weight: 700;
+  line-height: 1.1;
+  color: #f8faff;
+  margin-bottom: 0.85rem;
+}
+
 .hero__lede {
-  margin: 0 auto;
+  margin: 0;
   max-width: 48rem;
   color: var(--text-secondary);
   font-size: 1.05rem;

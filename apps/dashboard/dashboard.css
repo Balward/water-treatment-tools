@@ -281,57 +281,6 @@ a {
   outline: none;
 }
 
-.hero {
-  background: var(--card-gradient);
-  border-radius: 28px;
-  padding: clamp(2.25rem, 4vw, 3rem);
-  box-shadow: 0 40px 70px rgba(3, 7, 18, 0.7);
-  border: 1px solid rgba(129, 140, 248, 0.25);
-}
-
-.hero__brand {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: clamp(1.25rem, 3vw, 2.5rem);
-  text-align: center;
-}
-
-.hero__brand-logo {
-  width: clamp(160px, 22vw, 220px);
-  height: auto;
-  filter: drop-shadow(0 18px 36px rgba(3, 7, 18, 0.55));
-}
-
-.hero__brand-copy {
-  max-width: 560px;
-  display: flex;
-  flex-direction: column;
-  gap: 0.85rem;
-}
-
-.hero__brand-copy h1 {
-  margin: 0;
-  font-size: clamp(2.3rem, 5vw, 3.2rem);
-  color: #f8faff;
-  line-height: 1.1;
-}
-
-.hero__brand-copy p {
-  margin: 0;
-  color: var(--text-secondary);
-  line-height: 1.6;
-}
-
-.hero__overline {
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  font-size: 1.6rem;
-  font-weight: 600;
-  color: rgba(232, 235, 255, 0.78);
-}
-
 .card {
   background: var(--card-gradient);
   border-radius: 22px;
@@ -505,12 +454,6 @@ a {
   line-height: 1.6;
 }
 
-@media (max-width: 960px) {
-  .hero__brand {
-    text-align: left;
-  }
-}
-
 @media (max-width: 720px) {
   .global-nav {
     flex-direction: column;
@@ -596,4 +539,39 @@ a {
   * {
     transition-duration: 0.01ms !important;
   }
+}
+
+/* Unified hero styling (matches MWAT) */
+.hero {
+  background: var(--card-gradient);
+  border-radius: 28px;
+  padding: 2.75rem clamp(1.5rem, 4vw, 3.25rem);
+  box-shadow: 0 40px 70px rgba(3, 7, 18, 0.7);
+  margin-bottom: 2.75rem;
+  border: 1px solid rgba(129, 140, 248, 0.25);
+  text-align: left;
+}
+
+.hero h1 {
+  font-size: clamp(2.2rem, 5vw, 3rem);
+  font-weight: 700;
+  line-height: 1.1;
+  color: #f8faff;
+  margin-bottom: 0.85rem;
+}
+
+.hero__overline {
+  display: inline-block;
+  font-size: 0.78rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(232, 235, 255, 0.72);
+  margin-bottom: 0.4rem;
+}
+
+.hero__lede {
+  margin: 0;
+  max-width: 48rem;
+  color: var(--text-secondary);
+  font-size: 1.05rem;
 }
