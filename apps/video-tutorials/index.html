@@ -9,102 +9,116 @@
     <link rel="stylesheet" href="styles.css?v=1757369234" />
   </head>
   <body>
-    <div class="wt-container">
-      <header class="wt-header">
-        <div class="wt-header-content">
-          <div class="wt-brand">
-            <img
-              src="../../assets/logos/logo-horizontal.png"
-              alt="City Logo"
-              class="wt-logo"
-            />
-            <div class="wt-brand-text">
-              <h1>Water Treatment Tools</h1>
-              <p class="wt-tagline">Guided video training for every critical process</p>
-            </div>
-          </div>
-          <nav class="wt-nav">
-            <a href="../../" class="wt-nav-link">
-              <span aria-hidden="true">🏠</span>
-              <span>Return to dashboard</span>
-            </a>
-          </nav>
+    <nav class="global-nav" aria-label="Global navigation">
+      <a class="global-nav__brand" href="/" data-rel-href="../dashboard/dashboard.html">
+        <img class="global-nav__logo" src="../../assets/logos/logo-horizontal-dark.png" alt="City of Northglenn" />
+        <div class="global-nav__brand-text">
+          <span class="global-nav__overline">Utilities</span>
+          <span class="global-nav__title">Treatment Operations &amp; Training Portal</span>
         </div>
+      </a>
+      <button class="global-nav__menu-toggle" type="button" aria-expanded="false" aria-controls="globalNavMenu">
+        <span class="global-nav__menu-toggle-label">Menu</span>
+        <span class="global-nav__menu-toggle-icon" aria-hidden="true"></span>
+      </button>
+      <ul class="global-nav__menu" id="globalNavMenu">
+        <li class="global-nav__item">
+          <a class="global-nav__link" href="/" data-rel-href="../dashboard/dashboard.html">Home</a>
+        </li>
+        <li class="global-nav__item global-nav__item--dropdown">
+          <button class="global-nav__link global-nav__toggle" type="button" aria-expanded="false">
+            Water Treatment
+            <span class="global-nav__caret" aria-hidden="true"></span>
+          </button>
+          <div class="global-nav__dropdown" role="menu">
+            <a class="global-nav__dropdown-link" href="/robojar-analyzer/" data-rel-href="../robojar-analyzer/index.html" role="menuitem">
+              RoboJar Analyzer
+            </a>
+            <a
+              class="global-nav__dropdown-link"
+              href="/sodium-hypochlorite-calculator/"
+              data-rel-href="../sodium-hypochlorite-calculator/index.html"
+              role="menuitem"
+            >
+              Sodium Hypochlorite Calculator
+            </a>
+            <a class="global-nav__dropdown-link" href="/dose-predictor/" data-rel-href="../dose-predictor/index.html" role="menuitem">
+              Sodium Permanganate Dose Predictor
+            </a>
+            <a class="global-nav__dropdown-link" href="/water-data-explorer/" data-rel-href="../water-data-explorer/index.html" role="menuitem">
+              Water Data Explorer
+            </a>
+          </div>
+        </li>
+        <li class="global-nav__item global-nav__item--dropdown">
+          <button class="global-nav__link global-nav__toggle" type="button" aria-expanded="false">
+            Wastewater Treatment
+            <span class="global-nav__caret" aria-hidden="true"></span>
+          </button>
+          <div class="global-nav__dropdown" role="menu">
+            <a class="global-nav__dropdown-link" href="/mwat-calculator/" data-rel-href="../mwat-calculator/index.html" role="menuitem">
+              MWAT &amp; DM Calculator
+            </a>
+          </div>
+        </li>
+        <li class="global-nav__item global-nav__item--dropdown global-nav__item--align-end">
+          <button class="global-nav__link global-nav__toggle" type="button" aria-expanded="false">
+            Training
+            <span class="global-nav__caret" aria-hidden="true"></span>
+          </button>
+          <div class="global-nav__dropdown" role="menu">
+            <a class="global-nav__dropdown-link" href="/regulation-100-study/" data-rel-href="../regulation-100-study/index.html" role="menuitem">
+              Regulation 100 Study Guide
+            </a>
+            <a
+              class="global-nav__dropdown-link global-nav__link--active"
+              href="/video-tutorials/"
+              data-rel-href="../video-tutorials/index.html"
+              role="menuitem"
+              aria-current="page"
+            >
+              Water Treatment Class A Training Videos
+            </a>
+            <a
+              class="global-nav__dropdown-link"
+              href="/water-treatment-flashcards/"
+              data-rel-href="../water-treatment-flashcards/index.html"
+              role="menuitem"
+            >
+              Water Treatment Flashcards
+            </a>
+          </div>
+        </li>
+      </ul>
+    </nav>
+
+    <main class="page video-page">
+      <header class="hero">
+        <span class="hero__overline">Training</span>
+        <h1>Water Treatment Class A Training Videos</h1>
+        <p class="hero__lede">
+          Stream guided walkthroughs for core plant math, process control, and compliance topics without leaving the
+          control room.
+        </p>
       </header>
 
-      <main class="wt-main">
-        <section class="wt-card wt-video-hero">
-          <div class="wt-video-hero-text">
-            <h2>Master every calculation with guided walkthroughs</h2>
-            <p>
-              Follow along with HD lessons covering formulas, plant operations, and
-              compliance strategies so you can move from theory to confident
-              execution in the field.
-            </p>
-            <div class="wt-hero-actions">
-              <a class="wt-btn wt-btn-primary" href="#library">Browse lessons</a>
-              <a class="wt-btn wt-btn-outline" href="../../">Open dashboard</a>
-            </div>
-            <div class="wt-video-metrics">
-              <div class="wt-metric">
-                <span class="wt-metric-value">38</span>
-                <span class="wt-metric-label">Curated tutorials</span>
-              </div>
-              <div class="wt-metric">
-                <span class="wt-metric-value">24+</span>
-                <span class="wt-metric-label">Hours of instruction</span>
-              </div>
-              <div class="wt-metric">
-                <span class="wt-metric-value">5</span>
-                <span class="wt-metric-label">Core knowledge tracks</span>
-              </div>
-            </div>
+      <section id="library" class="card video-library">
+        <div class="card__header">
+          <div>
+            <h2>Video library</h2>
+            <p>Pick a lesson to watch instantly in your browser.</p>
           </div>
-          <div class="wt-video-hero-panel">
-            <div class="wt-video-hero-card">
-              <h3>What you'll gain</h3>
-              <ul>
-                <li>Step-by-step math walkthroughs for exam prep</li>
-                <li>Operational best practices from veteran operators</li>
-                <li>Download-ready formulas and printable references</li>
-              </ul>
-            </div>
-            <div class="wt-video-hero-card secondary">
-              <h3>Popular focus areas</h3>
-              <div class="wt-focus-tags">
-                <span>Jar testing &amp; dosing</span>
-                <span>Filtration performance</span>
-                <span>Regulatory compliance</span>
-                <span>Pumps &amp; hydraulics</span>
-              </div>
-            </div>
-          </div>
-        </section>
+        </div>
+        <div id="videoGrid" class="video-grid">
+          <!-- Videos rendered via script.js -->
+        </div>
+      </section>
 
-        <section id="library" class="wt-card wt-video-library">
-          <div class="wt-section-header">
-            <div>
-              <h2>Video library</h2>
-              <p>Pick a lesson to watch instantly in your browser</p>
-            </div>
-            <div class="wt-filter-chips">
-              <span class="wt-filter-chip">Foundations</span>
-              <span class="wt-filter-chip">Process control</span>
-              <span class="wt-filter-chip">Advanced math</span>
-              <span class="wt-filter-chip">Management &amp; safety</span>
-            </div>
-          </div>
-          <div id="videoGrid" class="wt-grid wt-grid-auto wt-video-grid">
-            <!-- Videos rendered via script.js -->
-          </div>
-        </section>
-      </main>
-
-      <footer class="wt-card wt-footer">
-        <p class="text-gray-600">&copy; 2025 Water Treatment Tools</p>
-        <p class="text-gray-500">Learning resources curated for operators, engineers, and analysts.</p>
+      <footer class="page-footer">
+        <p>&copy; 2025 Water Treatment Tools</p>
+        <p>Learning resources curated for operators, engineers, and analysts.</p>
       </footer>
-    </div>
+    </main>
 
     <div id="videoModal" class="wt-modal">
       <div class="wt-modal-content">
@@ -116,6 +130,121 @@
       </div>
     </div>
 
+    <script>
+      (function () {
+        const globalNav = document.querySelector(".global-nav");
+        const globalNavMenu = globalNav ? globalNav.querySelector(".global-nav__menu") : null;
+        const globalNavMenuToggle = globalNav ? globalNav.querySelector(".global-nav__menu-toggle") : null;
+        const navToggles = Array.from(document.querySelectorAll(".global-nav__toggle"));
+
+        if (globalNav) {
+          const shouldUseFallbackLinks = window.location.protocol === "file:" || window.location.pathname.includes("/apps/");
+
+          if (shouldUseFallbackLinks) {
+            const fallbackLinks = document.querySelectorAll("[data-rel-href]");
+            fallbackLinks.forEach((link) => {
+              const relHref = link.getAttribute("data-rel-href");
+              if (relHref) {
+                link.setAttribute("href", relHref);
+              }
+            });
+          }
+        }
+
+        function closeDropdownMenus() {
+          navToggles.forEach((toggle) => {
+            const item = toggle.closest(".global-nav__item--dropdown");
+            if (item) {
+              item.classList.remove("global-nav__item--open");
+            }
+            toggle.setAttribute("aria-expanded", "false");
+          });
+        }
+
+        function setMobileMenuOpen(isOpen) {
+          if (!globalNav || !globalNavMenu || !globalNavMenuToggle) {
+            return;
+          }
+
+          globalNav.classList.toggle("global-nav--menu-open", isOpen);
+          globalNavMenuToggle.setAttribute("aria-expanded", String(isOpen));
+          document.body.classList.toggle("has-mobile-nav-open", isOpen);
+
+          if (!isOpen) {
+            closeDropdownMenus();
+          }
+        }
+
+        function closeMobileMenu() {
+          setMobileMenuOpen(false);
+        }
+
+        if (globalNav && globalNavMenu && globalNavMenuToggle) {
+          globalNavMenuToggle.addEventListener("click", (event) => {
+            event.stopPropagation();
+            const shouldOpen = !globalNav.classList.contains("global-nav--menu-open");
+            setMobileMenuOpen(shouldOpen);
+          });
+
+          globalNavMenu.addEventListener("click", (event) => {
+            const target = event.target;
+            if (target instanceof HTMLAnchorElement) {
+              closeMobileMenu();
+            }
+          });
+
+          window.addEventListener("resize", () => {
+            if (window.innerWidth > 720) {
+              closeMobileMenu();
+            }
+          });
+        }
+
+        navToggles.forEach((toggle) => {
+          toggle.setAttribute("aria-expanded", "false");
+          toggle.addEventListener("click", (event) => {
+            event.stopPropagation();
+            const item = toggle.closest(".global-nav__item--dropdown");
+            if (!item) {
+              return;
+            }
+
+            const isOpen = item.classList.contains("global-nav__item--open");
+            closeDropdownMenus();
+            if (!isOpen) {
+              item.classList.add("global-nav__item--open");
+              toggle.setAttribute("aria-expanded", "true");
+            }
+          });
+        });
+
+        document.addEventListener("click", (event) => {
+          if (!(event.target instanceof Node)) {
+            return;
+          }
+
+          const clickedWithinDropdown = navToggles.some((toggle) => {
+            const item = toggle.closest(".global-nav__item--dropdown");
+            return item && item.contains(event.target);
+          });
+
+          if (!clickedWithinDropdown) {
+            closeDropdownMenus();
+          }
+
+          if (globalNav && !globalNav.contains(event.target)) {
+            closeMobileMenu();
+          }
+        });
+
+        document.addEventListener("keydown", (event) => {
+          if (event.key === "Escape") {
+            closeDropdownMenus();
+            closeMobileMenu();
+          }
+        });
+      })();
+    </script>
     <script src="script.js?v=20250813050"></script>
   </body>
 </html>
