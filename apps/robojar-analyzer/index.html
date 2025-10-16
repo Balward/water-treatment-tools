@@ -106,7 +106,7 @@
           <div class="file-input-wrapper">
             <input type="file" id="fileInput" class="file-input" accept=".xls,.xlsx" />
             <button type="button" class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
-              📁 Import RoboJar Excel File
+              📥 Import RoboJar Excel File
             </button>
           </div>
           <div class="instructions-action-buttons">
@@ -123,7 +123,7 @@
 
       <section class="card card--info" id="infoPanel" style="display: none">
         <div class="card__header">
-          <h2>Workbook Summary</h2>
+          <h2>Imported Run Summary</h2>
           <p>Key details from the uploaded RoboJar report.</p>
         </div>
         <div class="sheet-info-card" id="sheetInfo"></div>
@@ -199,9 +199,9 @@
       <section class="card card--charts" id="tabbedChartsContainer" style="display: none">
         <div class="tabs-header">
           <button class="tab-button active" onclick="switchTab('mean-diameter')" data-tab="mean-diameter">📏 Mean Diameter</button>
-          <button class="tab-button" onclick="switchTab('mean-volume')" data-tab="mean-volume">📦 Mean Volume</button>
-          <button class="tab-button" onclick="switchTab('particle-count')" data-tab="particle-count">🧮 Particle Count</button>
-          <button class="tab-button" onclick="switchTab('concentration')" data-tab="concentration">🧪 Concentration</button>
+          <button class="tab-button" onclick="switchTab('mean-volume')" data-tab="mean-volume">🧊 Mean Volume</button>
+          <button class="tab-button" onclick="switchTab('particle-count')" data-tab="particle-count">🔢 Particle Count</button>
+          <button class="tab-button" onclick="switchTab('concentration')" data-tab="concentration">💧 Concentration</button>
         </div>
 
         <div class="tab-content active" id="mean-diameter-tab">
@@ -214,7 +214,10 @@
           </div>
           <div class="analytics-grid">
             <div class="statistics-card">
-              <h3>📊 Mean Diameter Statistics</h3>
+              <div class="statistics-card__header">
+                <h3>📊 Mean Diameter Statistics</h3>
+                <button type="button" class="metrics-help-btn" onclick="openStatsHelp()" aria-label="Learn about statistics definitions">?</button>
+              </div>
               <div class="statistics-controls">
                 <div class="control-group">
                   <label for="timeWindow">Analysis Time Window</label>
@@ -251,7 +254,10 @@
               <div id="meanDiameterStats"></div>
             </div>
             <div class="metrics-card">
-              <h3>📈 Forecast Quality Metrics</h3>
+              <div class="metrics-card__header">
+                <h3>📈 Forecast Quality Metrics</h3>
+                <button type="button" class="metrics-help-btn" onclick="openMetricsHelp()" aria-label="Learn about forecast quality metrics">?</button>
+              </div>
               <div class="metrics-grid" id="meanDiameterMetrics"></div>
               <div class="metrics-summary" id="meanDiameterMetricsSummary"></div>
             </div>
@@ -268,11 +274,17 @@
           </div>
           <div class="analytics-grid">
             <div class="statistics-card">
-              <h3>📊 Mean Volume Statistics</h3>
+              <div class="statistics-card__header">
+                <h3>📊 Mean Volume Statistics</h3>
+                <button type="button" class="metrics-help-btn" onclick="openStatsHelp()" aria-label="Learn about statistics definitions">?</button>
+              </div>
               <div id="meanVolumeStats"></div>
             </div>
             <div class="metrics-card">
-              <h3>📈 Forecast Quality Metrics</h3>
+              <div class="metrics-card__header">
+                <h3>📈 Forecast Quality Metrics</h3>
+                <button type="button" class="metrics-help-btn" onclick="openMetricsHelp()" aria-label="Learn about forecast quality metrics">?</button>
+              </div>
               <div class="metrics-grid" id="meanVolumeMetrics"></div>
               <div class="metrics-summary" id="meanVolumeMetricsSummary"></div>
             </div>
@@ -289,11 +301,17 @@
           </div>
           <div class="analytics-grid">
             <div class="statistics-card">
-              <h3>📊 Particle Count Statistics</h3>
+              <div class="statistics-card__header">
+                <h3>📊 Particle Count Statistics</h3>
+                <button type="button" class="metrics-help-btn" onclick="openStatsHelp()" aria-label="Learn about statistics definitions">?</button>
+              </div>
               <div id="particleCountStats"></div>
             </div>
             <div class="metrics-card">
-              <h3>📈 Forecast Quality Metrics</h3>
+              <div class="metrics-card__header">
+                <h3>📈 Forecast Quality Metrics</h3>
+                <button type="button" class="metrics-help-btn" onclick="openMetricsHelp()" aria-label="Learn about forecast quality metrics">?</button>
+              </div>
               <div class="metrics-grid" id="particleCountMetrics"></div>
               <div class="metrics-summary" id="particleCountMetricsSummary"></div>
             </div>
@@ -310,11 +328,17 @@
           </div>
           <div class="analytics-grid">
             <div class="statistics-card">
-              <h3>📊 Concentration Statistics</h3>
+              <div class="statistics-card__header">
+                <h3>📊 Concentration Statistics</h3>
+                <button type="button" class="metrics-help-btn" onclick="openStatsHelp()" aria-label="Learn about statistics definitions">?</button>
+              </div>
               <div id="concentrationStats"></div>
             </div>
             <div class="metrics-card">
-              <h3>📈 Forecast Quality Metrics</h3>
+              <div class="metrics-card__header">
+                <h3>📈 Forecast Quality Metrics</h3>
+                <button type="button" class="metrics-help-btn" onclick="openMetricsHelp()" aria-label="Learn about forecast quality metrics">?</button>
+              </div>
               <div class="metrics-grid" id="concentrationMetrics"></div>
               <div class="metrics-summary" id="concentrationMetricsSummary"></div>
             </div>
@@ -323,81 +347,66 @@
       </section>
     </main>
 
-    <div id="statsHelpModal" class="help-modal" style="display: none">
+    <div id="statsHelpModal" class="help-modal" style="display: none" role="dialog" aria-modal="true" aria-labelledby="statsHelpTitle">
       <div class="help-modal__content">
         <button class="modal-close-x" onclick="closeStatsHelp()" title="Close">&times;</button>
-        <h3>📖 RoboJar Analyzer - Complete User Guide</h3>
+        <h3 id="statsHelpTitle">Statistics Reference</h3>
         <div class="help-section">
-          <h4>🚀 Getting Started</h4>
-          <p><strong>File Upload:</strong> Choose a RoboJar Excel report (.xlsx/.xls) using the Import button, or click "Load Test File" to try the analyzer with sample data.</p>
-          <p><strong>Generate Charts:</strong> Click "Generate Charts" to automatically create visualizations for all four parameters (Mean Diameter, Mean Volume, Particle Count, Concentration).</p>
-          <p><strong>Navigate Tabs:</strong> Use the parameter tabs to switch analyses. Each tab includes charts, statistics, and forecast metrics tailored to that measurement.</p>
+          <p>Use these definitions to interpret the statistics card and compare RoboJar runs confidently.</p>
         </div>
         <div class="help-section">
-          <h4>🤖 Understanding RoboJar Data</h4>
-          <p><strong>Mean Diameter:</strong> Average particle size in micrometers (µm). Key indicator of flocculation effectiveness.</p>
-          <p><strong>Mean Volume:</strong> Average volume of particles—often tied to settling characteristics.</p>
-          <p><strong>Particle Count:</strong> Number of particles detected per unit volume. Higher counts may indicate poor coagulation.</p>
-          <p><strong>Concentration:</strong> Total particle concentration, typically expressed as volume percentage.</p>
+          <h4>Count, Min &amp; Max</h4>
+          <p>Count is the number of samples within the selected window. Min and Max capture the lowest and highest readings observed.</p>
         </div>
         <div class="help-section">
-          <h4>📊 Chart Configuration</h4>
-          <p><strong>Line Chart:</strong> Emphasizes trends over time with connected points.</p>
-          <p><strong>Scatter Plot:</strong> Reveals outliers and distribution without connecting data.</p>
-          <p><strong>Secondary Axis (RPM):</strong> Overlay paddle RPM to correlate mixing intensity with particle behavior.</p>
+          <h4>Mean &amp; Median</h4>
+          <p>The mean is the arithmetic average. The median marks the middle of the sorted data and is less sensitive to sudden spikes.</p>
         </div>
         <div class="help-section">
-          <h4>🔮 Forecasting Methods</h4>
-          <p><strong>Adaptive:</strong> Adjusts polynomial order automatically and works best for changing trends.</p>
-          <p><strong>Windowed:</strong> Focuses on the most recent stable window.</p>
-          <p><strong>Weighted:</strong> Emphasizes newer data points.</p>
-          <p><strong>Simple:</strong> Uses a traditional polynomial regression across all data.</p>
-          <p><strong>Start Time &amp; Window:</strong> Control how much history the forecast uses after an initial stabilization period.</p>
+          <h4>Standard Deviation (Std Dev)</h4>
+          <p>Average distance between each reading and the mean. Larger values indicate greater variability; smaller values signal a tighter, steadier process.</p>
         </div>
         <div class="help-section">
-          <h4>⏰ Time Window Selection</h4>
-          <p><strong>Full Duration:</strong> Uses the entire dataset.</p>
-          <p><strong>Steady State:</strong> Excludes the first 5 minutes to remove start-up effects.</p>
-          <p><strong>Final 10 Minutes:</strong> Focuses on the most stable portion of the test.</p>
-          <p><strong>Custom Range:</strong> Specify exact time bounds for bespoke analysis.</p>
+          <h4>Coefficient of Variation (CV %)</h4>
+          <p>Standard deviation expressed as a percentage of the mean. Compare stability between runs regardless of scale. CV below about 15% is typically very stable.</p>
         </div>
         <div class="help-section">
-          <h4>🧹 Filtering Options</h4>
-          <p><strong>Remove Outliers (IQR):</strong> Eliminates extreme values based on the interquartile range.</p>
-          <p><strong>Smooth Data (Moving Average):</strong> Applies a 5-point moving average to limit noise.</p>
-          <p><strong>Both:</strong> Remove outliers first, then smooth remaining data.</p>
+          <h4>P10 &amp; P90</h4>
+          <p>10th and 90th percentile values. Most readings fall inside this band, defining the typical operating window for the run.</p>
         </div>
         <div class="help-section">
-          <h4>📊 Basic Statistics</h4>
-          <p><strong>Min/Max:</strong> Operational range.</p>
-          <p><strong>Mean:</strong> Average value used for reporting.</p>
-          <p><strong>Median:</strong> Middle value, less influenced by spikes.</p>
-          <p><strong>Standard Deviation:</strong> Measures variability around the mean.</p>
+          <h4>Interquartile Range (IQR)</h4>
+          <p>Difference between the 75th and 25th percentiles. Highlights the spread of the middle half of the data while filtering out extreme outliers.</p>
         </div>
         <div class="help-section">
-          <h4>📈 Advanced Statistics</h4>
-          <p><strong>Coefficient of Variation:</strong> Normalized variability (standard deviation ÷ mean).</p>
-          <p><strong>Percentiles (P10, P90):</strong> Typical operating range for the dataset.</p>
-          <p><strong>Interquartile Range:</strong> Spread of the middle 50% of readings.</p>
+          <h4>Noise Indicator</h4>
+          <p>A quick visual cue driven by CV %. Green means low noise, amber is moderate, and red suggests highly variable readings that may need attention.</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="metricsHelpModal" class="help-modal" style="display: none" role="dialog" aria-modal="true" aria-labelledby="forecastMetricsHelpTitle">
+      <div class="help-modal__content">
+        <button class="modal-close-x" onclick="closeMetricsHelp()" title="Close">&times;</button>
+        <h3 id="forecastMetricsHelpTitle">Forecast Quality Metrics</h3>
+        <div class="help-section">
+          <p>These measures show how closely a forecast follows the historical RoboJar data. Review them whenever forecasting is enabled to confirm the prediction is trustworthy.</p>
         </div>
         <div class="help-section">
-          <h4>🔊 Noise Assessment</h4>
-          <p><strong>Noise Level:</strong> Uses CV and outlier detection to describe signal quality.</p>
-          <div class="help-ranges">
-            <div class="help-range excellent">Low: CV &lt; 15%</div>
-            <div class="help-range good">Medium: CV 15-30%</div>
-            <div class="help-range poor">High: CV &gt; 30%</div>
-          </div>
+          <h4>R&sup2; (Fit Quality)</h4>
+          <p>Ranges from 0 to 1. Values near 1 mean the model explains almost all variation in the data. Scores below about 0.7 suggest the fit may be weak.</p>
         </div>
         <div class="help-section">
-          <h4>🎯 Forecast Quality Metrics</h4>
-          <p><strong>R²:</strong> Variance explained by the forecast model; closer to 1.0 is better.</p>
-          <p><strong>RMSE / MAE:</strong> Average prediction error in data units.</p>
-          <p><strong>MAPE:</strong> Error expressed as a percentage for easy comparison.</p>
+          <h4>RMSE (Root Mean Squared Error)</h4>
+          <p>Expressed in the same units as the chart. It highlights larger errors, so lower values indicate the forecast stays close to observed readings.</p>
         </div>
         <div class="help-section">
-          <h4>💡 Best Practices</h4>
-          <p>Validate raw data, focus on steady-state periods, confirm forecasts with metrics, and document any data conditioning applied.</p>
+          <h4>MAE (Mean Absolute Error)</h4>
+          <p>The average absolute difference between predicted and observed values. Less sensitive to isolated spikes than RMSE, but also best when small.</p>
+        </div>
+        <div class="help-section">
+          <h4>MAPE (Mean Absolute Percentage Error)</h4>
+          <p>Shows the typical error relative to the data value. Under 10% is excellent, 10-25% is acceptable, and above 25% indicates the forecast likely needs review.</p>
         </div>
       </div>
     </div>
@@ -406,7 +415,7 @@
 
     <div class="floating-generate" id="generateActionBar">
       <button class="btn btn-hero" id="generateChartsHeader" onclick="generateAllCharts()" disabled>
-        <span>📊</span>
+        <span>📈</span>
         <span>Generate Charts</span>
       </button>
     </div>
@@ -528,3 +537,11 @@
     <script src="script.js?v=8"></script>
   </body>
 </html>
+
+
+
+
+
+
+
+

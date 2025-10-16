@@ -157,7 +157,32 @@ document.addEventListener("DOMContentLoaded", function() {
       // Statistics updated automatically in tabbed interface
     });
   }
-  
+
+  const metricsHelpModal = document.getElementById("metricsHelpModal");
+  if (metricsHelpModal) {
+    metricsHelpModal.addEventListener("click", (event) => {
+      if (event.target === metricsHelpModal) {
+        closeMetricsHelp();
+      }
+    });
+  }
+
+  const statsHelpModal = document.getElementById("statsHelpModal");
+  if (statsHelpModal) {
+    statsHelpModal.addEventListener("click", (event) => {
+      if (event.target === statsHelpModal) {
+        closeStatsHelp();
+      }
+    });
+  }
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      closeMetricsHelp();
+      closeStatsHelp();
+    }
+  });
+
   // Forecast info handlers
   const forecastWindow = document.getElementById("forecastWindow");
   if (forecastWindow) {
@@ -1271,11 +1296,10 @@ function formatCommentsForDisplay(comments) {
 function displaySheetInfo() {
   const sheetInfo = document.getElementById("sheetInfo");
 
-  // Create table structure wrapped in a card
+  // Create table structure
   let tableHTML = `
-    <div class="statistics-card">
-      <h3>📋 Imported Run Summary</h3>
-      <table class="stats-table">
+    <div class="stats-table-container">
+      <table class="stats-table sheet-info-table">
         <thead>
           <tr>
             <th>Run</th>
@@ -1421,20 +1445,24 @@ function createLegendItem(dataset, datasetIndex, isRPM, isForecast, chartInstanc
   const item = document.createElement("div");
   item.className = "legend-item";
   item.dataset.datasetIndex = datasetIndex;
+  item.setAttribute("role", "button");
+  item.tabIndex = 0;
 
-  const marker = document.createElement("div");
+  const marker = document.createElement("span");
   marker.className = "legend-marker";
 
+  const borderColor = Array.isArray(dataset.borderColor)
+    ? dataset.borderColor[0]
+    : dataset.borderColor || dataset.backgroundColor || "#9fa8ff";
+
+  marker.style.setProperty("--legend-color", borderColor);
+
+  if (isForecast) {
+    marker.classList.add("legend-marker--forecast");
+  }
+
   if (isRPM) {
-    marker.style.borderColor = dataset.borderColor;
-    marker.style.backgroundColor = dataset.borderColor;
-  } else if (isForecast) {
-    marker.style.borderColor = dataset.borderColor;
-    marker.style.backgroundColor = "transparent";
-    marker.style.borderStyle = "dashed";
-  } else {
-    marker.style.borderColor = dataset.borderColor;
-    marker.style.backgroundColor = dataset.borderColor;
+    marker.classList.add("legend-marker--rpm");
   }
 
   const text = document.createElement("span");
@@ -1444,16 +1472,38 @@ function createLegendItem(dataset, datasetIndex, isRPM, isForecast, chartInstanc
   item.appendChild(marker);
   item.appendChild(text);
 
-  item.addEventListener("click", function () {
-    const index = parseInt(this.dataset.datasetIndex);
-    const targetChart = chartInstance || currentChart;
-    if (targetChart) {
-      const meta = targetChart.getDatasetMeta(index);
-      meta.hidden = !meta.hidden;
-      this.classList.toggle("hidden");
-      targetChart.update();
+  const targetChart = chartInstance || currentChart;
+
+  const syncLegendState = () => {
+    const isVisible = targetChart
+      ? targetChart.isDatasetVisible(datasetIndex)
+      : dataset.hidden !== true;
+    item.classList.toggle("legend-item--inactive", !isVisible);
+    marker.classList.toggle("legend-marker--inactive", !isVisible);
+    item.setAttribute("aria-pressed", String(isVisible));
+  };
+
+  const toggleDatasetVisibility = (event) => {
+    if (event) {
+      event.preventDefault();
+    }
+    if (!targetChart) {
+      return;
+    }
+    const currentlyVisible = targetChart.isDatasetVisible(datasetIndex);
+    targetChart.setDatasetVisibility(datasetIndex, !currentlyVisible);
+    targetChart.update();
+    syncLegendState();
+  };
+
+  item.addEventListener("click", toggleDatasetVisibility);
+  item.addEventListener("keydown", (event) => {
+    if (event.key === " " || event.key === "Enter") {
+      toggleDatasetVisibility(event);
     }
   });
+
+  syncLegendState();
 
   return item;
 }
@@ -1916,44 +1966,36 @@ function displayForecastMetrics(metrics) {
 
   const metricItems = [
     {
-      value: metrics.rSquared.toFixed(3),
-      label: "R² (Goodness of Fit)",
+      value: metrics.rSquared.toFixed(4),
+      label: "R^2 (Fit Quality)",
       quality:
         metrics.rSquared >= 0.9
-          ? "good"
+          ? "excellent"
           : metrics.rSquared >= 0.7
-          ? "ok"
-          : "poor",
-    },
-    {
-      value: metrics.rmse.toFixed(2),
-      label: "RMSE",
-      quality: "good",
-    },
-    {
-      value: metrics.mae.toFixed(2),
-      label: "MAE",
-      quality: "good",
-    },
-    {
-      value: metrics.mape.toFixed(1) + "%",
-      label: "MAPE",
-      quality: metrics.mape <= 10 ? "good" : metrics.mape <= 25 ? "ok" : "poor",
-    },
-    {
-      value: metrics.normalizedRMSE.toFixed(1) + "%",
-      label: "Normalized RMSE",
-      quality:
-        metrics.normalizedRMSE <= 5
           ? "good"
-          : metrics.normalizedRMSE <= 15
-          ? "ok"
-          : "poor",
+          : "fair",
     },
     {
-      value: metrics.dataPoints.toString(),
-      label: "Training Points",
-      quality: "good",
+      value: metrics.rmse.toFixed(3),
+      label: "RMSE",
+      quality:
+        metrics.rmse < 1 ? "excellent" : metrics.rmse < 5 ? "good" : "fair",
+    },
+    {
+      value: metrics.mae.toFixed(3),
+      label: "MAE",
+      quality:
+        metrics.mae < 1 ? "excellent" : metrics.mae < 3 ? "good" : "fair",
+    },
+    {
+      value: `${metrics.mape.toFixed(1)}%`,
+      label: "MAPE",
+      quality:
+        metrics.mape <= 10
+          ? "excellent"
+          : metrics.mape <= 25
+          ? "good"
+          : "fair",
     },
   ];
 
@@ -2188,6 +2230,7 @@ async function generateChartForParameter(
   polynomialOrder
 ) {
   const enableForecast = forecastMethod !== "false";
+  setForecastMetricsVisibility(parameterId, false);
   const forecastStartTime = enableForecast
     ? parseInt(document.getElementById("forecastStart").value)
     : 1200;
@@ -2683,9 +2726,35 @@ function updateCustomLegendForParameter(parameterId, datasets) {
   });
 }
 
+function setForecastMetricsVisibility(parameterId, shouldShow) {
+  const metricsContainer = document.getElementById(`${parameterId}Metrics`);
+  if (!metricsContainer) {
+    return;
+  }
+
+  const metricsCard = metricsContainer.closest(".metrics-card");
+  if (!metricsCard) {
+    return;
+  }
+
+  metricsCard.style.display = shouldShow ? "" : "none";
+
+  const metricsSummary = document.getElementById(
+    `${parameterId}MetricsSummary`
+  );
+  if (!shouldShow) {
+    metricsContainer.innerHTML = "";
+    if (metricsSummary) {
+      metricsSummary.innerHTML = "";
+    }
+  }
+}
+
 // Display forecast metrics for a specific parameter
 function displayForecastMetricsForParameter(parameterId, metrics) {
   if (!metrics) return;
+
+  setForecastMetricsVisibility(parameterId, true);
 
   const metricsGrid = document.getElementById(`${parameterId}Metrics`);
   const metricsSummary = document.getElementById(
@@ -2699,7 +2768,7 @@ function displayForecastMetricsForParameter(parameterId, metrics) {
   const metricItems = [
     {
       value: metrics.rSquared.toFixed(4),
-      label: "R² (Fit Quality)",
+      label: "R^2 (Fit Quality)",
       quality:
         metrics.rSquared >= 0.9
           ? "excellent"
@@ -2723,7 +2792,11 @@ function displayForecastMetricsForParameter(parameterId, metrics) {
       value: `${metrics.mape.toFixed(1)}%`,
       label: "MAPE",
       quality:
-        metrics.mape <= 10 ? "excellent" : metrics.mape <= 25 ? "good" : "fair",
+        metrics.mape <= 10
+          ? "excellent"
+          : metrics.mape <= 25
+          ? "good"
+          : "fair",
     },
   ];
 
@@ -2880,7 +2953,8 @@ function generateStatisticsTable(stats, columnName) {
   const noiseIndicator = `<span class="noise-indicator ${noiseClass}"></span>`;
 
   return `
-    <table class="stats-table">
+    <div class="stats-table-container">
+      <table class="stats-table">
       <thead>
         <tr>
           <th>Parameter</th>
@@ -2913,7 +2987,8 @@ function generateStatisticsTable(stats, columnName) {
           <td>${noiseIndicator}${capitalizeFirst(getNoiseLevel(stats.cv))}</td>
         </tr>
       </tbody>
-    </table>
+      </table>
+    </div>
     <div class="stats-tip">
       <span class="stats-tip-icon">💡</span>
       <div class="stats-tip-text">Statistical Summary</div>

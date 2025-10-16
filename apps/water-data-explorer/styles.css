@@ -1,4 +1,4 @@
-/* Updated Font Paths - Source Sans Pro */
+﻿/* Updated Font Paths - Source Sans Pro */
 @font-face {
   font-family: "SourceSansPro";
   src: url("../../assets/fonts/source-sans-pro/SourceSansPro-Regular.otf")
@@ -172,7 +172,7 @@ body::before {
   display: flex;
   justify-content: center;
   gap: 0.5rem;
-  margin-top: 1rem;
+  margin-top: 4rem;
 }
 
 .loading-dots span {
@@ -420,7 +420,7 @@ main {
 }
 
 .general-help {
-  margin-top: 1rem;
+  margin-top: 4rem;
   padding-top: 0.75rem;
   border-top: 1px solid rgba(0, 103, 127, 0.1);
 }
@@ -861,7 +861,7 @@ main {
 
 /* Chart Section for single-chart tabs */
 .chart-section {
-  margin-top: 1.5rem;
+  margin-top: 5.5rem;
 }
 
 .chart-section .chart-container {
@@ -964,7 +964,7 @@ main {
   grid-template-columns: 1fr 3fr;
   grid-template-rows: 640px; /* Force grid row to be 640px tall */
   gap: 2rem;
-  margin-top: 1.5rem;
+  margin-top: 5.5rem;
 }
 
 @media (max-width: 1024px) {
@@ -1248,7 +1248,7 @@ main {
 /* Notifications */
 .notification-container {
   position: fixed;
-  top: 20px;
+  top: 120px;
   right: 20px;
   z-index: 1001;
 }
@@ -1324,7 +1324,7 @@ main {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 1rem;
-  margin-top: 1rem;
+  margin-top: 4rem;
 }
 
 .data-item {
@@ -1854,3 +1854,4 @@ main {
   transform: none;
   box-shadow: none;
 }
+

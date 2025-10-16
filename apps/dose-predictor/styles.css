@@ -1,4 +1,4 @@
-:root {
+﻿:root {
   color-scheme: dark;
   --bg-page: #040510;
   --bg-surface: #080b1c;
@@ -658,7 +658,7 @@ a {
 /* Notification System */
 .notification-container {
   position: fixed;
-  top: 1.5rem;
+  top: 7rem;
   right: 1.5rem;
   z-index: 1100;
   display: flex;
@@ -764,3 +764,4 @@ a {
     max-width: none;
   }
 }
+
