@@ -259,6 +259,24 @@ a {
 
 .global-nav__item--open .global-nav__dropdown { display: flex; }
 
+.global-nav__dropdown-link {
+  display: block;
+  padding: 0.65rem 1rem;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: rgba(232, 235, 255, 0.92);
+  text-decoration: none;
+  transition: background var(--transition), color var(--transition);
+}
+
+.global-nav__dropdown-link:hover,
+.global-nav__dropdown-link:focus-visible {
+  background: rgba(129, 140, 248, 0.25);
+  color: #f8faff;
+  outline: none;
+}
+
 /* Hero */
 .hero {
   background: var(--card-gradient);
