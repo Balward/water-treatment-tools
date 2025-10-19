@@ -5,610 +5,788 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Regulation 100 Study Guide - Interactive Slideshow</title>
     <link rel="icon" type="image/png" href="../../assets/logos/favicon.png" />
+    <link rel="stylesheet" href="../../global-styles.css?v=1757369234" />
     <link rel="stylesheet" href="styles.css?v=1757369234" />
   </head>
 
   <body>
-    <div class="container">
-      <header class="header">
-        <div class="brand">
-          <div class="header-top">
-            <div class="logo-container">
-              <img
-                src="../../assets/logos/logo-horizontal.png"
-                alt="City Logo"
-                class="logo-image"
-              />
-            </div>
-          </div>
-          <div class="brand-text">
-            <h1>Regulation 100 Study Guide</h1>
-            <p class="tagline">
-              Interactive slideshow for water and wastewater facility operator certification
-            </p>
-          </div>
-          <div class="header-bottom">
-            <a href="../../" class="back-to-dashboard-btn">
-              ← Back to Dashboard
+    <nav class="global-nav" aria-label="Global navigation">
+      <a class="global-nav__brand" href="/" data-rel-href="../dashboard/dashboard.html">
+        <img class="global-nav__logo" src="../../assets/logos/logo-horizontal-dark.png" alt="City of Northglenn" />
+        <div class="global-nav__brand-text">
+          <span class="global-nav__overline">Utilities</span>
+          <span class="global-nav__title">Treatment Operations &amp; Training Portal</span>
+        </div>
+      </a>
+      <button class="global-nav__menu-toggle" type="button" aria-expanded="false" aria-controls="globalNavMenu">
+        <span class="global-nav__menu-toggle-label">Menu</span>
+        <span class="global-nav__menu-toggle-icon" aria-hidden="true"></span>
+      </button>
+      <ul class="global-nav__menu" id="globalNavMenu">
+        <li class="global-nav__item">
+          <a class="global-nav__link" href="/" data-rel-href="../dashboard/dashboard.html">Home</a>
+        </li>
+        <li class="global-nav__item global-nav__item--dropdown">
+          <button class="global-nav__link global-nav__toggle" type="button" aria-expanded="false">
+            Water Treatment
+            <span class="global-nav__caret" aria-hidden="true"></span>
+          </button>
+          <div class="global-nav__dropdown" role="menu">
+            <a class="global-nav__dropdown-link" href="/robojar-analyzer/" data-rel-href="../robojar-analyzer/index.html" role="menuitem">
+              RoboJar Analyzer
+            </a>
+            <a class="global-nav__dropdown-link" href="/sodium-hypochlorite-calculator/" data-rel-href="../sodium-hypochlorite-calculator/index.html" role="menuitem">
+              Sodium Hypochlorite Calculator
+            </a>
+            <a class="global-nav__dropdown-link" href="/dose-predictor/" data-rel-href="../dose-predictor/index.html" role="menuitem">
+              Sodium Permanganate Dose Predictor
+            </a>
+            <a class="global-nav__dropdown-link" href="/water-data-explorer/" data-rel-href="../water-data-explorer/index.html" role="menuitem">
+              Water Data Explorer
             </a>
           </div>
-        </div>
+        </li>
+        <li class="global-nav__item global-nav__item--dropdown">
+          <button class="global-nav__link global-nav__toggle" type="button" aria-expanded="false">
+            Wastewater Treatment
+            <span class="global-nav__caret" aria-hidden="true"></span>
+          </button>
+          <div class="global-nav__dropdown" role="menu">
+            <a class="global-nav__dropdown-link" href="/mwat-calculator/" data-rel-href="../mwat-calculator/index.html" role="menuitem">
+              MWAT &amp; DM Calculator
+            </a>
+          </div>
+        </li>
+        <li class="global-nav__item global-nav__item--dropdown global-nav__item--align-end">
+          <button class="global-nav__link global-nav__toggle" type="button" aria-expanded="false">
+            Training
+            <span class="global-nav__caret" aria-hidden="true"></span>
+          </button>
+          <div class="global-nav__dropdown" role="menu">
+            <a
+              class="global-nav__dropdown-link global-nav__link--active"
+              href="/regulation-100-study/"
+              data-rel-href="../regulation-100-study/index.html"
+              role="menuitem"
+              aria-current="page"
+            >
+              Regulation 100 Study Guide
+            </a>
+            <a class="global-nav__dropdown-link" href="/video-tutorials/" data-rel-href="../video-tutorials/index.html" role="menuitem">
+              Water Treatment Class A Training Videos
+            </a>
+            <a class="global-nav__dropdown-link" href="/water-treatment-flashcards/" data-rel-href="../water-treatment-flashcards/index.html" role="menuitem">
+              Water Treatment Flashcards
+            </a>
+          </div>
+        </li>
+      </ul>
+    </nav>
+
+    <main class="page reg-page">
+      <header class="hero">
+        <span class="hero__overline">Training</span>
+        <h1>Regulation 100 Study Guide</h1>
+        <p class="hero__lede">
+          Interactive slideshow covering certification rules, experience pathways, and compliance duties so every
+          facility stays audit-ready.
+        </p>
       </header>
 
-      <nav class="navigation">
-        <button class="nav-btn" id="prevBtn">← Previous</button>
-        <div class="slide-counter">
-          <span id="currentSlide">1</span> / <span id="totalSlides">15</span>
-        </div>
-        <button class="nav-btn" id="nextBtn">Next →</button>
-      </nav>
-
-      <main class="slideshow-container">
-        <!-- Slide 1: Purpose and Overview -->
-        <div class="slide active" data-slide="1">
-          <div class="slide-content">
-            <h2>Purpose and Overview</h2>
-            <div class="content-section">
-              <h3>🎯 Purpose (Section 100.1)</h3>
-              <ul>
-                <li><strong>Article 9 of Title 25, C.R.S.</strong> requires every water/wastewater facility to be under supervision of a certified operator</li>
-                <li>Certificate class must be <strong>equal to or higher</strong> than facility classification</li>
-                <li>Certification available to all persons meeting minimum qualifications</li>
-                <li>Operators encouraged to apply for highest classification consistent with qualifications</li>
-              </ul>
-            </div>
-            <div class="key-takeaway">
-              <strong>Key Takeaway:</strong> All facilities must have certified supervision matching or exceeding facility complexity
-            </div>
+      <section class="card study-toolbar" aria-label="Slide controls">
+        <div class="study-toolbar__nav">
+          <button class="nav-btn deck-nav-btn" id="prevBtn">← Previous</button>
+          <div class="slide-counter">
+            <span id="currentSlide">1</span>
+            <span class="divider">/</span>
+            <span id="totalSlides">15</span>
           </div>
+          <button class="nav-btn deck-nav-btn" id="nextBtn">Next →</button>
         </div>
+      </section>
 
-        <!-- Slide 2: Key Definitions -->
-        <div class="slide" data-slide="2">
-          <div class="slide-content">
-            <h2>Key Definitions</h2>
-            <div class="content-section">
-              <h3>📚 Critical Terms (Section 100.2)</h3>
-              <div class="definition-grid">
-                <div class="definition-item">
-                  <strong>BOARD:</strong> Colorado Water and Wastewater Facility Operators Certification Board
-                </div>
-                <div class="definition-item">
-                  <strong>CERTIFICATE:</strong> Written document stating person meets requirements for specified facility class
-                </div>
-                <div class="definition-item">
-                  <strong>CERTIFIED OPERATOR:</strong> Person with responsibility for operation, making process control/system integrity decisions affecting public health/environment
-                </div>
-                <div class="definition-item">
-                  <strong>CLASSIFICATION:</strong> Level of operational complexity determined by Division
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Slide 3: Water System Types -->
-        <div class="slide" data-slide="3">
-          <div class="slide-content">
-            <h2>Water System Types</h2>
-            <div class="content-section">
-              <h3>💧 Public Water System Classifications</h3>
-              <div class="system-types">
-                <div class="system-type">
-                  <h4>Community Water System</h4>
-                  <p>≥15 service connections for year-round residents OR regularly serves ≥25 year-round residents</p>
-                </div>
-                <div class="system-type">
-                  <h4>Non-Transient Non-Community</h4>
-                  <p>Regularly serves ≥25 same individuals for >6 months/year</p>
-                </div>
-                <div class="system-type">
-                  <h4>Transient Non-Community</h4>
-                  <p>Does NOT regularly serve ≥25 same individuals for >6 months/year</p>
-                </div>
-                <div class="system-type">
-                  <h4>Small System</h4>
-                  <p>Serves ≤3,300 population, Class D treatment + Class 1 distribution/collection</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Slide 4: Water Treatment Facility Classifications -->
-        <div class="slide" data-slide="4">
-          <div class="slide-content">
-            <h2>Water Treatment Classifications</h2>
-            <div class="content-section">
-              <h3>🏭 Facility Classifications (Section 100.4)</h3>
-              <div class="classification-table">
-                <div class="table-header">
-                  <span>Source Type</span>
-                  <span>&lt;2 MGD</span>
-                  <span>2-5 MGD</span>
-                  <span>5.01-9.99 MGD</span>
-                </div>
-                <div class="table-row">
-                  <span>Groundwater, chlorine only</span>
-                  <span class="class-d">D</span>
-                  <span class="class-d">D</span>
-                  <span class="class-c">C</span>
-                </div>
-                <div class="table-row">
-                  <span>Groundwater, UV/ozone</span>
-                  <span class="class-d">D</span>
-                  <span class="class-c">C</span>
-                  <span class="class-c">C</span>
-                </div>
-                <div class="table-row">
-                  <span>Conventional/direct filtration</span>
-                  <span class="class-b">B</span>
-                  <span class="class-a">A</span>
-                  <span class="class-a">A</span>
-                </div>
-              </div>
-              <p class="note"><strong>Note:</strong> Class A = highest complexity, Class D = lowest</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Slide 5: Wastewater Treatment Classifications -->
-        <div class="slide" data-slide="5">
-          <div class="slide-content">
-            <h2>Wastewater Treatment Classifications</h2>
-            <div class="content-section">
-              <h3>🚰 Domestic Wastewater Classifications (Section 100.5)</h3>
-              <div class="classification-table">
-                <div class="table-header">
-                  <span>Process Type</span>
-                  <span>&lt;0.5 MGD</span>
-                  <span>0.5-1.0 MGD</span>
-                  <span>1.01-2.0 MGD</span>
-                </div>
-                <div class="table-row">
-                  <span>Stabilization ponds</span>
-                  <span class="class-d">D</span>
-                  <span class="class-c">C</span>
-                  <span class="class-c">C</span>
-                </div>
-                <div class="table-row">
-                  <span>Trickling filter/RBC</span>
-                  <span class="class-c">C</span>
-                  <span class="class-c">C</span>
-                  <span class="class-b">B</span>
-                </div>
-                <div class="table-row">
-                  <span>Extended aeration/SBR</span>
-                  <span class="class-c">C</span>
-                  <span class="class-b">B</span>
-                  <span class="class-b">B</span>
-                </div>
-                <div class="table-row">
-                  <span>Advanced treatment</span>
-                  <span class="class-b">B</span>
-                  <span class="class-b">B</span>
-                  <span class="class-b">B</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Slide 6: Distribution and Collection Systems -->
-        <div class="slide" data-slide="6">
-          <div class="slide-content">
-            <h2>Distribution & Collection Systems</h2>
-            <div class="content-section">
-              <h3>🔄 System Classifications (Sections 100.7-100.8)</h3>
-              <div class="system-classification">
-                <div class="classification-group">
-                  <h4>Water Distribution</h4>
-                  <ul>
-                    <li><strong>Class 1:</strong> ≤3,300 population</li>
-                    <li><strong>Class 2:</strong> 3,301-25,000 population</li>
-                    <li><strong>Class 3:</strong> >25,000 population</li>
-                  </ul>
-                </div>
-                <div class="classification-group">
-                  <h4>Wastewater Collection</h4>
-                  <ul>
-                    <li><strong>Class 1:</strong> ≤3,300 population</li>
-                    <li><strong>Class 2:</strong> 3,301-25,000 population</li>
-                    <li><strong>Class 3:</strong> >25,000 population</li>
-                  </ul>
-                </div>
-              </div>
-              <div class="key-factors">
-                <h4>Division May Consider:</h4>
+      <section class="card slideshow-card">
+        <div class="slideshow-container">
+          <!-- Slide 1: Purpose and Overview -->
+          <div class="slide active" data-slide="1">
+            <div class="slide-content">
+              <h2>Purpose and Overview</h2>
+              <div class="content-section">
+                <h3>🎯 Purpose (Section 100.1)</h3>
                 <ul>
-                  <li>System complexity factors</li>
-                  <li>Multiple pressure zones</li>
-                  <li>Booster stations</li>
-                  <li>Storage tanks</li>
-                  <li>Number of service connections</li>
+                  <li><strong>Article 9 of Title 25, C.R.S.</strong> requires every water/wastewater facility to be under supervision of a certified operator</li>
+                  <li>Certificate class must be <strong>equal to or higher</strong> than facility classification</li>
+                  <li>Certification available to all persons meeting minimum qualifications</li>
+                  <li>Operators encouraged to apply for highest classification consistent with qualifications</li>
                 </ul>
               </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Slide 7: Experience Requirements -->
-        <div class="slide" data-slide="7">
-          <div class="slide-content">
-            <h2>Experience Requirements</h2>
-            <div class="content-section">
-              <h3>⏱️ Minimum Experience (Section 100.9)</h3>
-              <div class="experience-table">
-                <div class="experience-row">
-                  <span class="class-label">Class D / Class 1</span>
-                  <span class="time-req">1 Month</span>
-                </div>
-                <div class="experience-row">
-                  <span class="class-label">Class C / Class 2</span>
-                  <span class="time-req">2 Years</span>
-                </div>
-                <div class="experience-row">
-                  <span class="class-label">Class B / Class 3</span>
-                  <span class="time-req">3-4 Years</span>
-                </div>
-                <div class="experience-row">
-                  <span class="class-label">Class A</span>
-                  <span class="time-req">4 Years</span>
-                </div>
-              </div>
-              <div class="special-rules">
-                <h4>Special Rules:</h4>
-                <ul>
-                  <li><strong>Class D & Class 1:</strong> Can take exam before experience, certificate issued after experience verified</li>
-                  <li><strong>Transient Non-Community:</strong> No minimum experience requirement</li>
-                  <li><strong>Education substitution:</strong> 15 semester hours = 6 months experience</li>
-                  <li><strong>Cross-experience:</strong> Water/wastewater treatment interchangeable</li>
-                </ul>
+              <div class="key-takeaway">
+                <strong>Key Takeaway:</strong> All facilities must have certified supervision matching or exceeding facility complexity
               </div>
             </div>
           </div>
-        </div>
 
-        <!-- Slide 8: Education Substitutions -->
-        <div class="slide" data-slide="8">
-          <div class="slide-content">
-            <h2>Education & Cross-Experience</h2>
-            <div class="content-section">
-              <h3>🎓 Substitution Rules (Section 100.12)</h3>
-              <div class="substitution-rules">
-                <div class="rule-group">
-                  <h4>Education for Experience</h4>
-                  <ul>
-                    <li>15 semester hours = 6 months experience</li>
-                    <li>30 semester hours = 1 year</li>
-                    <li>300 contact hours (30 training units) = 4 months</li>
-                    <li>≥75% courses must be technically oriented</li>
-                    <li><strong>≥50% must be actual facility experience</strong> (except Class D/1)</li>
-                  </ul>
-                </div>
-                <div class="rule-group">
-                  <h4>Cross-Experience Rules</h4>
-                  <ul>
-                    <li>Water treatment ↔ Wastewater treatment</li>
-                    <li>Water distribution ↔ Wastewater collection</li>
-                    <li>Available for Class C, B, A and Class 2, 3</li>
-                    <li><strong>≥50% must be in target facility type</strong></li>
-                  </ul>
-                </div>
-              </div>
-              <div class="important-note">
-                <strong>Important:</strong> Can't use same experience/education for both education and experience requirements
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Slide 9: Certification Process -->
-        <div class="slide" data-slide="9">
-          <div class="slide-content">
-            <h2>Certification Process</h2>
-            <div class="content-section">
-              <h3>📝 Application & Examination (Sections 100.10-100.11)</h3>
-              <div class="process-steps">
-                <div class="step">
-                  <span class="step-number">1</span>
-                  <div class="step-content">
-                    <h4>Application</h4>
-                    <p>Submit application with required documentation, specify exam type and level</p>
+          <!-- Slide 2: Key Definitions -->
+          <div class="slide" data-slide="2">
+            <div class="slide-content">
+              <h2>Key Definitions</h2>
+              <div class="content-section">
+                <h3>📚 Critical Terms (Section 100.2)</h3>
+                <div class="definition-grid">
+                  <div class="definition-item">
+                    <strong>BOARD:</strong> Colorado Water and Wastewater Facility Operators Certification Board
                   </div>
-                </div>
-                <div class="step">
-                  <span class="step-number">2</span>
-                  <div class="step-content">
-                    <h4>Review</h4>
-                    <p>Board/designee reviews eligibility, may request additional information (10 working days to provide)</p>
+                  <div class="definition-item">
+                    <strong>CERTIFICATE:</strong> Written document stating person meets requirements for specified facility class
                   </div>
-                </div>
-                <div class="step">
-                  <span class="step-number">3</span>
-                  <div class="step-content">
-                    <h4>Examination</h4>
-                    <p>Validated written examination, graded by Board/designee, results notification provided</p>
+                  <div class="definition-item">
+                    <strong>CERTIFIED OPERATOR:</strong> Person with responsibility for operation, making process control/system integrity decisions affecting public health/environment
                   </div>
-                </div>
-                <div class="step">
-                  <span class="step-number">4</span>
-                  <div class="step-content">
-                    <h4>Certificate</h4>
-                    <p>Upon passing and meeting all requirements, certificate issued valid for 3 years</p>
+                  <div class="definition-item">
+                    <strong>CLASSIFICATION:</strong> Level of operational complexity determined by Division
                   </div>
                 </div>
               </div>
-              <div class="exam-notes">
-                <p><strong>Failed Exam:</strong> Review provided, can retest in subsequent cycles</p>
-                <p><strong>Cheating:</strong> Results invalidated, 1-5 year exam ban possible</p>
-              </div>
             </div>
           </div>
-        </div>
 
-        <!-- Slide 10: Training Requirements -->
-        <div class="slide" data-slide="10">
-          <div class="slide-content">
-            <h2>Training Requirements for Renewal</h2>
-            <div class="content-section">
-              <h3>📚 Training Units (Section 100.14)</h3>
-              <div class="training-table">
-                <div class="training-row">
-                  <span>Class A (Treatment/Industrial)</span>
-                  <span>3.0 units</span>
-                </div>
-                <div class="training-row">
-                  <span>Class B (Treatment/Industrial)</span>
-                  <span>2.4 units</span>
-                </div>
-                <div class="training-row">
-                  <span>Class C (Treatment/Industrial)</span>
-                  <span>1.8 units</span>
-                </div>
-                <div class="training-row">
-                  <span>Class D (Treatment/Industrial)</span>
-                  <span>1.2 units</span>
-                </div>
-                <div class="training-row">
-                  <span>Class 3 (Distribution/Collection)</span>
-                  <span>3.0 units</span>
-                </div>
-                <div class="training-row">
-                  <span>Class 2 (Distribution/Collection)</span>
-                  <span>2.0 units</span>
-                </div>
-                <div class="training-row">
-                  <span>Class 1 (Distribution/Collection)</span>
-                  <span>1.2 units</span>
-                </div>
-                <div class="training-row">
-                  <span>Small Systems</span>
-                  <span>1.8 units</span>
-                </div>
-                <div class="training-row">
-                  <span>Transient Non-Community</span>
-                  <span>1.2 units</span>
-                </div>
-              </div>
-              <p class="conversion"><strong>Conversion:</strong> 10 contact hours = 1 training unit</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Slide 11: Training Types -->
-        <div class="slide" data-slide="11">
-          <div class="slide-content">
-            <h2>Core vs Supplemental Training</h2>
-            <div class="content-section">
-              <h3>🎯 Training Categories (Section 100.14.4)</h3>
-              <div class="training-types">
-                <div class="training-type">
-                  <h4>Core Training (100% eligible)</h4>
-                  <p>Directly applicable to facility operations affecting public health/environment:</p>
-                  <ul>
-                    <li>Mechanical systems, electrical equipment, hydraulics</li>
-                    <li>Physical/chemical/biological treatment</li>
-                    <li>Testing and disinfection</li>
-                    <li>Regulatory compliance</li>
-                    <li>Other Board-approved relevant topics</li>
-                  </ul>
-                </div>
-                <div class="training-type">
-                  <h4>Supplemental Training (50% max)</h4>
-                  <p>Useful general knowledge not directly related to operations:</p>
-                  <ul>
-                    <li>First aid, CPR</li>
-                    <li>Computer skills</li>
-                    <li>Management training</li>
-                    <li>Safety training (general)</li>
-                    <li>Communication skills</li>
-                  </ul>
-                </div>
-              </div>
-              <div class="teaching-credit">
-                <p><strong>Teaching Credit:</strong> Certified operators receive training units for teaching approved courses</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Slide 12: Operator Duties -->
-        <div class="slide" data-slide="12">
-          <div class="slide-content">
-            <h2>Operator Duties & Responsibilities</h2>
-            <div class="content-section">
-              <h3>👷 Certified Operator Duties (Section 100.16)</h3>
-              <div class="duties-grid">
-                <div class="duty-item">Controlling source selection and flow</div>
-                <div class="duty-item">Processing raw/treated/finished water/wastewater</div>
-                <div class="duty-item">Preparing/controlling chemical additions</div>
-                <div class="duty-item">Responding to operating condition variations</div>
-                <div class="duty-item">Interpreting readings and adjusting processes</div>
-                <div class="duty-item">Operating valves/gates manually or remotely</div>
-                <div class="duty-item">Starting/stopping pumps</div>
-                <div class="duty-item">Maintaining logs and records</div>
-                <div class="duty-item">Collecting/analyzing process control samples</div>
-                <div class="duty-item">Inspecting/testing new/modified/repaired facilities</div>
-                <div class="duty-item">Developing preventative maintenance programs</div>
-                <div class="duty-item">Ensuring regulatory compliance and reporting</div>
-              </div>
-              <div class="responsibility-level">
-                <p><strong>Standard:</strong> Exercise reasonable care and judgment consistent with certification level</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Slide 13: Operator in Responsible Charge -->
-        <div class="slide" data-slide="13">
-          <div class="slide-content">
-            <h2>Operator in Responsible Charge</h2>
-            <div class="content-section">
-              <h3>👨‍💼 ORC Duties (Section 100.17)</h3>
-              <div class="orc-requirements">
-                <div class="requirement-group">
-                  <h4>Certification Requirements</h4>
-                  <p>Must hold valid certificate <strong>equal to or greater than</strong> facility classification</p>
-                </div>
-                <div class="requirement-group">
-                  <h4>Specific Duties</h4>
-                  <ul>
-                    <li>Management/administration of facility</li>
-                    <li>Compliance with regulations and requirements</li>
-                    <li>Accountability for proper operation/maintenance</li>
-                    <li>Control/supervision of daily planning and operation</li>
-                    <li>Authority for day-to-day operational decisions</li>
-                    <li>Capacity and availability to perform functions</li>
-                  </ul>
-                </div>
-              </div>
-              <div class="orc-table">
-                <h4>ORC Certification Requirements by Facility</h4>
-                <div class="table-row">
-                  <span>Class A Facility</span>
-                  <span>Class A Operator Only</span>
-                </div>
-                <div class="table-row">
-                  <span>Class B Facility</span>
-                  <span>Class A or B Operator</span>
-                </div>
-                <div class="table-row">
-                  <span>Class C Facility</span>
-                  <span>Class A, B, or C Operator</span>
-                </div>
-                <div class="table-row">
-                  <span>Class D Facility</span>
-                  <span>Any Class Operator</span>
+          <!-- Slide 3: Water System Types -->
+          <div class="slide" data-slide="3">
+            <div class="slide-content">
+              <h2>Water System Types</h2>
+              <div class="content-section">
+                <h3>💧 Public Water System Classifications</h3>
+                <div class="system-types">
+                  <div class="system-type">
+                    <h4>Community Water System</h4>
+                    <p>≥15 service connections for year-round residents OR regularly serves ≥25 year-round residents</p>
+                  </div>
+                  <div class="system-type">
+                    <h4>Non-Transient Non-Community</h4>
+                    <p>Regularly serves ≥25 same individuals for >6 months/year</p>
+                  </div>
+                  <div class="system-type">
+                    <h4>Transient Non-Community</h4>
+                    <p>Does NOT regularly serve ≥25 same individuals for >6 months/year</p>
+                  </div>
+                  <div class="system-type">
+                    <h4>Small System</h4>
+                    <p>Serves ≤3,300 population, Class D treatment + Class 1 distribution/collection</p>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <!-- Slide 14: Owner Responsibilities -->
-        <div class="slide" data-slide="14">
-          <div class="slide-content">
-            <h2>Facility Owner Responsibilities</h2>
-            <div class="content-section">
-              <h3>🏢 Owner Requirements (Section 100.21)</h3>
-              <div class="owner-duties">
-                <div class="duty-section">
-                  <h4>Staffing Requirements</h4>
-                  <ul>
-                    <li><strong>ORC Required:</strong> Direct supervision by certified ORC with appropriate classification</li>
-                    <li><strong>Decision Making:</strong> All process control/system integrity decisions by certified operators</li>
-                    <li><strong>Shift Coverage:</strong> Certified operator available for each operating shift</li>
-                  </ul>
+          <!-- Slide 4: Water Treatment Facility Classifications -->
+          <div class="slide" data-slide="4">
+            <div class="slide-content">
+              <h2>Water Treatment Classifications</h2>
+              <div class="content-section">
+                <h3>🏭 Facility Classifications (Section 100.4)</h3>
+                <div class="classification-table">
+                  <div class="table-header">
+                    <span>Source Type</span>
+                    <span>&lt;2 MGD</span>
+                    <span>2-5 MGD</span>
+                    <span>5.01-9.99 MGD</span>
+                  </div>
+                  <div class="table-row">
+                    <span>Groundwater, chlorine only</span>
+                    <span class="class-d">D</span>
+                    <span class="class-d">D</span>
+                    <span class="class-c">C</span>
+                  </div>
+                  <div class="table-row">
+                    <span>Groundwater, UV/ozone</span>
+                    <span class="class-d">D</span>
+                    <span class="class-c">C</span>
+                    <span class="class-c">C</span>
+                  </div>
+                  <div class="table-row">
+                    <span>Conventional/direct filtration</span>
+                    <span class="class-b">B</span>
+                    <span class="class-a">A</span>
+                    <span class="class-a">A</span>
+                  </div>
                 </div>
-                <div class="duty-section">
-                  <h4>Reporting Requirements</h4>
-                  <ul>
-                    <li>Submit facility information within 60 days</li>
-                    <li>Keep current with Board/designee:</li>
+                <p class="note"><strong>Note:</strong> Class A = highest complexity, Class D = lowest</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Slide 5: Wastewater Treatment Classifications -->
+          <div class="slide" data-slide="5">
+            <div class="slide-content">
+              <h2>Wastewater Treatment Classifications</h2>
+              <div class="content-section">
+                <h3>🚰 Domestic Wastewater Classifications (Section 100.5)</h3>
+                <div class="classification-table">
+                  <div class="table-header">
+                    <span>Process Type</span>
+                    <span>&lt;0.5 MGD</span>
+                    <span>0.5-1.0 MGD</span>
+                    <span>1.01-2.0 MGD</span>
+                  </div>
+                  <div class="table-row">
+                    <span>Stabilization ponds</span>
+                    <span class="class-d">D</span>
+                    <span class="class-c">C</span>
+                    <span class="class-c">C</span>
+                  </div>
+                  <div class="table-row">
+                    <span>Trickling filter/RBC</span>
+                    <span class="class-c">C</span>
+                    <span class="class-c">C</span>
+                    <span class="class-b">B</span>
+                  </div>
+                  <div class="table-row">
+                    <span>Extended aeration/SBR</span>
+                    <span class="class-c">C</span>
+                    <span class="class-b">B</span>
+                    <span class="class-b">B</span>
+                  </div>
+                  <div class="table-row">
+                    <span>Advanced treatment</span>
+                    <span class="class-b">B</span>
+                    <span class="class-b">B</span>
+                    <span class="class-b">B</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Slide 6: Distribution and Collection Systems -->
+          <div class="slide" data-slide="6">
+            <div class="slide-content">
+              <h2>Distribution & Collection Systems</h2>
+              <div class="content-section">
+                <h3>🔄 System Classifications (Sections 100.7-100.8)</h3>
+                <div class="system-classification">
+                  <div class="classification-group">
+                    <h4>Water Distribution</h4>
                     <ul>
-                      <li>Facility representative contact info</li>
-                      <li>ORC names, addresses, phone, certification levels</li>
-                      <li>Facility identification and responsibilities</li>
-                      <li>Public Water System ID and permit numbers</li>
+                      <li><strong>Class 1:</strong> ≤3,300 population</li>
+                      <li><strong>Class 2:</strong> 3,301-25,000 population</li>
+                      <li><strong>Class 3:</strong> >25,000 population</li>
                     </ul>
-                  </ul>
+                  </div>
+                  <div class="classification-group">
+                    <h4>Wastewater Collection</h4>
+                    <ul>
+                      <li><strong>Class 1:</strong> ≤3,300 population</li>
+                      <li><strong>Class 2:</strong> 3,301-25,000 population</li>
+                      <li><strong>Class 3:</strong> >25,000 population</li>
+                    </ul>
+                  </div>
                 </div>
-              </div>
-              <div class="availability-note">
-                <p><strong>"Available" means:</strong> On-site OR able to be contacted to initiate appropriate actions in timely manner</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Slide 15: Fees and Enforcement -->
-        <div class="slide" data-slide="15">
-          <div class="slide-content">
-            <h2>Fees & Enforcement</h2>
-            <div class="content-section">
-              <h3>💰 Fees (Section 100.22)</h3>
-              <div class="fee-structure">
-                <div class="fee-item">
-                  <span>Application Fee</span>
-                  <span>$15.00 (nonrefundable)</span>
-                </div>
-                <div class="fee-item">
-                  <span>Examination Fee</span>
-                  <span>$25.00 per exam</span>
-                </div>
-                <div class="fee-item">
-                  <span>Administration Fee</span>
-                  <span>$60.00 (new & renewal)</span>
-                </div>
-              </div>
-              
-              <h3>⚖️ Disciplinary Actions (Section 100.23)</h3>
-              <div class="enforcement-actions">
-                <div class="action-group">
-                  <h4>Board May:</h4>
+                <div class="key-factors">
+                  <h4>Division May Consider:</h4>
                   <ul>
-                    <li>Reprimand operators</li>
-                    <li>Suspend certificates</li>
-                    <li>Revoke certificates</li>
-                  </ul>
-                </div>
-                <div class="action-group">
-                  <h4>Violations Include:</h4>
-                  <ul>
-                    <li>Failing to meet performance standards</li>
-                    <li>Violating regulations</li>
-                    <li>Submitting false information</li>
-                    <li>Using fraud/deception</li>
-                    <li>Exam dishonesty</li>
-                    <li>Operating with expired/revoked certificate</li>
+                    <li>System complexity factors</li>
+                    <li>Multiple pressure zones</li>
+                    <li>Booster stations</li>
+                    <li>Storage tanks</li>
+                    <li>Number of service connections</li>
                   </ul>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </main>
 
-      <div class="study-controls">
-        <button class="control-btn" id="progressBtn">Study Progress</button>
-        <button class="control-btn" id="bookmarkBtn">Bookmark</button>
-        <button class="control-btn" id="notesBtn">Notes</button>
-      </div>
+          <!-- Slide 7: Experience Requirements -->
+          <div class="slide" data-slide="7">
+            <div class="slide-content">
+              <h2>Experience Requirements</h2>
+              <div class="content-section">
+                <h3>⏱️ Minimum Experience (Section 100.9)</h3>
+                <div class="experience-table">
+                  <div class="experience-row">
+                    <span class="class-label">Class D / Class 1</span>
+                    <span class="time-req">1 Month</span>
+                  </div>
+                  <div class="experience-row">
+                    <span class="class-label">Class C / Class 2</span>
+                    <span class="time-req">2 Years</span>
+                  </div>
+                  <div class="experience-row">
+                    <span class="class-label">Class B / Class 3</span>
+                    <span class="time-req">3-4 Years</span>
+                  </div>
+                  <div class="experience-row">
+                    <span class="class-label">Class A</span>
+                    <span class="time-req">4 Years</span>
+                  </div>
+                </div>
+                <div class="special-rules">
+                  <h4>Special Rules:</h4>
+                  <ul>
+                    <li><strong>Class D & Class 1:</strong> Can take exam before experience, certificate issued after experience verified</li>
+                    <li><strong>Transient Non-Community:</strong> No minimum experience requirement</li>
+                    <li><strong>Education substitution:</strong> 15 semester hours = 6 months experience</li>
+                    <li><strong>Cross-experience:</strong> Water/wastewater treatment interchangeable</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
 
-      <footer class="footer">
-        <div class="footer-content">
-          <p>&copy; 2025 Regulation 100 Study Guide | Colorado Water & Wastewater Facility Operators Certification</p>
-          <div class="footer-links">
-            <span class="footer-status">
-              <span class="status-dot"></span>
-              Study materials current as of 2025
-            </span>
+          <!-- Slide 8: Education Substitutions -->
+          <div class="slide" data-slide="8">
+            <div class="slide-content">
+              <h2>Education & Cross-Experience</h2>
+              <div class="content-section">
+                <h3>🎓 Substitution Rules (Section 100.12)</h3>
+                <div class="substitution-rules">
+                  <div class="rule-group">
+                    <h4>Education for Experience</h4>
+                    <ul>
+                      <li>15 semester hours = 6 months experience</li>
+                      <li>30 semester hours = 1 year</li>
+                      <li>300 contact hours (30 training units) = 4 months</li>
+                      <li>≥75% courses must be technically oriented</li>
+                      <li><strong>≥50% must be actual facility experience</strong> (except Class D/1)</li>
+                    </ul>
+                  </div>
+                  <div class="rule-group">
+                    <h4>Cross-Experience Rules</h4>
+                    <ul>
+                      <li>Water treatment ↔ Wastewater treatment</li>
+                      <li>Water distribution ↔ Wastewater collection</li>
+                      <li>Available for Class C, B, A and Class 2, 3</li>
+                      <li><strong>≥50% must be in target facility type</strong></li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="important-note">
+                  <strong>Important:</strong> Can't use same experience/education for both education and experience requirements
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Slide 9: Certification Process -->
+          <div class="slide" data-slide="9">
+            <div class="slide-content">
+              <h2>Certification Process</h2>
+              <div class="content-section">
+                <h3>📝 Application & Examination (Sections 100.10-100.11)</h3>
+                <div class="process-steps">
+                  <div class="step">
+                    <span class="step-number">1</span>
+                    <div class="step-content">
+                      <h4>Application</h4>
+                      <p>Submit application with required documentation, specify exam type and level</p>
+                    </div>
+                  </div>
+                  <div class="step">
+                    <span class="step-number">2</span>
+                    <div class="step-content">
+                      <h4>Review</h4>
+                      <p>Board/designee reviews eligibility, may request additional information (10 working days to provide)</p>
+                    </div>
+                  </div>
+                  <div class="step">
+                    <span class="step-number">3</span>
+                    <div class="step-content">
+                      <h4>Examination</h4>
+                      <p>Validated written examination, graded by Board/designee, results notification provided</p>
+                    </div>
+                  </div>
+                  <div class="step">
+                    <span class="step-number">4</span>
+                    <div class="step-content">
+                      <h4>Certificate</h4>
+                      <p>Upon passing and meeting all requirements, certificate issued valid for 3 years</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="exam-notes">
+                  <p><strong>Failed Exam:</strong> Review provided, can retest in subsequent cycles</p>
+                  <p><strong>Cheating:</strong> Results invalidated, 1-5 year exam ban possible</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Slide 10: Training Requirements -->
+          <div class="slide" data-slide="10">
+            <div class="slide-content">
+              <h2>Training Requirements for Renewal</h2>
+              <div class="content-section">
+                <h3>📚 Training Units (Section 100.14)</h3>
+                <div class="training-table">
+                  <div class="training-row">
+                    <span>Class A (Treatment/Industrial)</span>
+                    <span>3.0 units</span>
+                  </div>
+                  <div class="training-row">
+                    <span>Class B (Treatment/Industrial)</span>
+                    <span>2.4 units</span>
+                  </div>
+                  <div class="training-row">
+                    <span>Class C (Treatment/Industrial)</span>
+                    <span>1.8 units</span>
+                  </div>
+                  <div class="training-row">
+                    <span>Class D (Treatment/Industrial)</span>
+                    <span>1.2 units</span>
+                  </div>
+                  <div class="training-row">
+                    <span>Class 3 (Distribution/Collection)</span>
+                    <span>3.0 units</span>
+                  </div>
+                  <div class="training-row">
+                    <span>Class 2 (Distribution/Collection)</span>
+                    <span>2.0 units</span>
+                  </div>
+                  <div class="training-row">
+                    <span>Class 1 (Distribution/Collection)</span>
+                    <span>1.2 units</span>
+                  </div>
+                  <div class="training-row">
+                    <span>Small Systems</span>
+                    <span>1.8 units</span>
+                  </div>
+                  <div class="training-row">
+                    <span>Transient Non-Community</span>
+                    <span>1.2 units</span>
+                  </div>
+                </div>
+                <p class="conversion"><strong>Conversion:</strong> 10 contact hours = 1 training unit</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Slide 11: Training Types -->
+          <div class="slide" data-slide="11">
+            <div class="slide-content">
+              <h2>Core vs Supplemental Training</h2>
+              <div class="content-section">
+                <h3>🎯 Training Categories (Section 100.14.4)</h3>
+                <div class="training-types">
+                  <div class="training-type">
+                    <h4>Core Training (100% eligible)</h4>
+                    <p>Directly applicable to facility operations affecting public health/environment:</p>
+                    <ul>
+                      <li>Mechanical systems, electrical equipment, hydraulics</li>
+                      <li>Physical/chemical/biological treatment</li>
+                      <li>Testing and disinfection</li>
+                      <li>Regulatory compliance</li>
+                      <li>Other Board-approved relevant topics</li>
+                    </ul>
+                  </div>
+                  <div class="training-type">
+                    <h4>Supplemental Training (50% max)</h4>
+                    <p>Useful general knowledge not directly related to operations:</p>
+                    <ul>
+                      <li>Management and supervision</li>
+                      <li>Computer skills and office software</li>
+                      <li>Safety training (unless directly related)</li>
+                      <li>General business or communications</li>
+                      <li>Other Board-approved supplemental topics</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Slide 12: Renewal Process -->
+          <div class="slide" data-slide="12">
+            <div class="slide-content">
+              <h2>Renewal Process & Deadlines</h2>
+              <div class="content-section">
+                <h3>🔄 Renewal Requirements (Section 100.14)</h3>
+                <div class="renewal-steps">
+                  <div class="renewal-step">
+                    <h4>Renewal Period</h4>
+                    <p>Certificates valid for 3 years. Submit renewal before expiration.</p>
+                  </div>
+                  <div class="renewal-step">
+                    <h4>Training Units</h4>
+                    <p>Meet minimum training units for each certification held.</p>
+                  </div>
+                  <div class="renewal-step">
+                    <h4>Late Renewal</h4>
+                    <p>Late fee applies if renewal submitted within 2 years after expiration.</p>
+                  </div>
+                  <div class="renewal-step">
+                    <h4>Expired 2+ Years</h4>
+                    <p>Must reapply and retake examination; prior certificate void.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Slide 13: Operator in Responsible Charge -->
+          <div class="slide" data-slide="13">
+            <div class="slide-content">
+              <h2>Operator in Responsible Charge (ORC)</h2>
+              <div class="content-section">
+                <h3>👨‍✈️ ORC Requirements (Section 100.20)</h3>
+                <div class="orc-details">
+                  <div class="orc-section">
+                    <h4>Designation</h4>
+                    <p>Owners must designate certified operators as ORCs for each facility classification.</p>
+                  </div>
+                  <div class="orc-section">
+                    <h4>Coverage</h4>
+                    <ul>
+                      <li>Each operating shift must have access to a certified operator</li>
+                      <li>Backup ORC recommended for extended operations</li>
+                    </ul>
+                  </div>
+                  <div class="orc-section">
+                    <h4>Responsibilities</h4>
+                    <ul>
+                      <li>Process control and system integrity decisions</li>
+                      <li>Documentation and reporting</li>
+                      <li>Staff oversight and training</li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="orc-table">
+                  <div class="table-header">
+                    <span>Facility Classification</span>
+                    <span>Minimum ORC Class</span>
+                  </div>
+                  <div class="table-row">
+                    <span>Water Treatment</span>
+                    <span>Equal or higher class</span>
+                  </div>
+                  <div class="table-row">
+                    <span>Wastewater Treatment</span>
+                    <span>Equal or higher class</span>
+                  </div>
+                  <div class="table-row">
+                    <span>Distribution System</span>
+                    <span>Equal or higher class</span>
+                  </div>
+                  <div class="table-row">
+                    <span>Collection System</span>
+                    <span>Equal or higher class</span>
+                  </div>
+                  <div class="table-row">
+                    <span>Class D Facility</span>
+                    <span>Any Class Operator</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Slide 14: Owner Responsibilities -->
+          <div class="slide" data-slide="14">
+            <div class="slide-content">
+              <h2>Facility Owner Responsibilities</h2>
+              <div class="content-section">
+                <h3>🏢 Owner Requirements (Section 100.21)</h3>
+                <div class="owner-duties">
+                  <div class="duty-section">
+                    <h4>Staffing Requirements</h4>
+                    <ul>
+                      <li><strong>ORC Required:</strong> Direct supervision by certified ORC with appropriate classification</li>
+                      <li><strong>Decision Making:</strong> All process control/system integrity decisions by certified operators</li>
+                      <li><strong>Shift Coverage:</strong> Certified operator available for each operating shift</li>
+                    </ul>
+                  </div>
+                  <div class="duty-section">
+                    <h4>Reporting Requirements</h4>
+                    <ul>
+                      <li>Submit facility information within 60 days</li>
+                      <li>Keep current with Board/designee:</li>
+                      <ul>
+                        <li>Facility representative contact info</li>
+                        <li>ORC names, addresses, phone, certification levels</li>
+                        <li>Facility identification and responsibilities</li>
+                        <li>Public Water System ID and permit numbers</li>
+                      </ul>
+                    </ul>
+                  </div>
+                </div>
+                <div class="availability-note">
+                  <p><strong>"Available" means:</strong> On-site OR able to be contacted to initiate appropriate actions in timely manner</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Slide 15: Fees and Enforcement -->
+          <div class="slide" data-slide="15">
+            <div class="slide-content">
+              <h2>Fees & Enforcement</h2>
+              <div class="content-section">
+                <h3>💰 Fees (Section 100.22)</h3>
+                <div class="fee-structure">
+                  <div class="fee-item">
+                    <span>Application Fee</span>
+                    <span>$15.00 (nonrefundable)</span>
+                  </div>
+                  <div class="fee-item">
+                    <span>Examination Fee</span>
+                    <span>$25.00 per exam</span>
+                  </div>
+                  <div class="fee-item">
+                    <span>Administration Fee</span>
+                    <span>$60.00 (new &amp; renewal)</span>
+                  </div>
+                </div>
+
+                <h3>⚖️ Disciplinary Actions (Section 100.23)</h3>
+                <div class="enforcement-actions">
+                  <div class="action-group">
+                    <h4>Board May:</h4>
+                    <ul>
+                      <li>Reprimand operators</li>
+                      <li>Suspend certificates</li>
+                      <li>Revoke certificates</li>
+                    </ul>
+                  </div>
+                  <div class="action-group">
+                    <h4>Violations Include:</h4>
+                    <ul>
+                      <li>Failing to meet performance standards</li>
+                      <li>Violating regulations</li>
+                      <li>Submitting false information</li>
+                      <li>Using fraud/deception</li>
+                      <li>Exam dishonesty</li>
+                      <li>Operating with expired/revoked certificate</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
+      </section>
+
+      <footer class="page-footer">
+        <p>&copy; 2025 Regulation 100 Study Guide | Colorado Water &amp; Wastewater Facility Operators Certification</p>
+        <span class="footer-status">
+          <span class="status-dot"></span>
+          Study materials current as of 2025
+        </span>
       </footer>
-    </div>
+    </main>
 
+    <script>
+      (function () {
+        const globalNav = document.querySelector(".global-nav");
+        const globalNavMenu = globalNav ? globalNav.querySelector(".global-nav__menu") : null;
+        const globalNavMenuToggle = globalNav ? globalNav.querySelector(".global-nav__menu-toggle") : null;
+        const navToggles = Array.from(document.querySelectorAll(".global-nav__toggle"));
+
+        if (globalNav) {
+          const shouldUseFallbackLinks = window.location.protocol === "file:" || window.location.pathname.includes("/apps/");
+
+          if (shouldUseFallbackLinks) {
+            const fallbackLinks = document.querySelectorAll("[data-rel-href]");
+            fallbackLinks.forEach((link) => {
+              const relHref = link.getAttribute("data-rel-href");
+              if (relHref) {
+                link.setAttribute("href", relHref);
+              }
+            });
+          }
+        }
+
+        function closeDropdownMenus() {
+          navToggles.forEach((toggle) => {
+            const item = toggle.closest(".global-nav__item--dropdown");
+            if (item) {
+              item.classList.remove("global-nav__item--open");
+            }
+            toggle.setAttribute("aria-expanded", "false");
+          });
+        }
+
+        function setMobileMenuOpen(isOpen) {
+          if (!globalNav || !globalNavMenu || !globalNavMenuToggle) {
+            return;
+          }
+
+          globalNav.classList.toggle("global-nav--menu-open", isOpen);
+          globalNavMenuToggle.setAttribute("aria-expanded", String(isOpen));
+          document.body.classList.toggle("has-mobile-nav-open", isOpen);
+
+          if (!isOpen) {
+            closeDropdownMenus();
+          }
+        }
+
+        function closeMobileMenu() {
+          setMobileMenuOpen(false);
+        }
+
+        if (globalNav && globalNavMenu && globalNavMenuToggle) {
+          globalNavMenuToggle.addEventListener("click", (event) => {
+            event.stopPropagation();
+            const shouldOpen = !globalNav.classList.contains("global-nav--menu-open");
+            setMobileMenuOpen(shouldOpen);
+          });
+
+          globalNavMenu.addEventListener("click", (event) => {
+            const target = event.target;
+            if (target instanceof HTMLAnchorElement) {
+              closeMobileMenu();
+            }
+          });
+
+          window.addEventListener("resize", () => {
+            if (window.innerWidth > 720) {
+              closeMobileMenu();
+            }
+          });
+        }
+
+        navToggles.forEach((toggle) => {
+          toggle.setAttribute("aria-expanded", "false");
+          toggle.addEventListener("click", (event) => {
+            event.stopPropagation();
+            const item = toggle.closest(".global-nav__item--dropdown");
+            if (!item) {
+              return;
+            }
+
+            const isOpen = item.classList.contains("global-nav__item--open");
+            closeDropdownMenus();
+            if (!isOpen) {
+              item.classList.add("global-nav__item--open");
+              toggle.setAttribute("aria-expanded", "true");
+            }
+          });
+        });
+
+        document.addEventListener("click", (event) => {
+          if (!(event.target instanceof Node)) {
+            return;
+          }
+
+          const clickedWithinDropdown = navToggles.some((toggle) => {
+            const item = toggle.closest(".global-nav__item--dropdown");
+            return item && item.contains(event.target);
+          });
+
+          if (!clickedWithinDropdown) {
+            closeDropdownMenus();
+          }
+
+          if (globalNav && !globalNav.contains(event.target)) {
+            closeMobileMenu();
+          }
+        });
+
+        document.addEventListener("keydown", (event) => {
+          if (event.key === "Escape") {
+            closeDropdownMenus();
+            closeMobileMenu();
+          }
+        });
+      })();
+    </script>
     <script src="script.js?v=1757369234"></script>
   </body>
 </html>
