@@ -3,500 +3,483 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      http-equiv="Cache-Control"
-      content="no-cache, no-store, must-revalidate, max-age=0"
-    />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
     <meta http-equiv="Last-Modified" content="Mon, 09 Sep 2025 00:00:00 GMT" />
     <title>Water Data Explorer</title>
-    <!-- Preload font weights to prevent tab switching delay -->
-    <link rel="preload" href="../../assets/fonts/source-sans-pro/SourceSansPro-Regular.otf" as="font" type="font/otf" crossorigin>
-    <link rel="preload" href="../../assets/fonts/source-sans-pro/SourceSansPro-Semibold.otf" as="font" type="font/otf" crossorigin>
-    <link rel="preload" href="../../assets/fonts/helvetica-neue/OpenType TTF Pro/HelveticaNeueLTPro-MdEx.ttf" as="font" type="font/ttf" crossorigin>
+    <link rel="preload" href="../../assets/fonts/source-sans-pro/SourceSansPro-Regular.otf" as="font" type="font/otf" crossorigin />
+    <link rel="preload" href="../../assets/fonts/source-sans-pro/SourceSansPro-Semibold.otf" as="font" type="font/otf" crossorigin />
+    <link rel="preload" href="../../assets/fonts/helvetica-neue/OpenType TTF Pro/HelveticaNeueLTPro-MdEx.ttf" as="font" type="font/ttf" crossorigin />
+    <link rel="icon" type="image/png" href="../../assets/logos/favicon.png" />
+    <link rel="stylesheet" href="../../global-styles.css?v=1757369234" />
+    <link rel="stylesheet" href="styles.css?v=1757513554" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/2.0.1/chartjs-plugin-zoom.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <link rel="stylesheet" href="styles.css?v=1757513553" />
   </head>
   <body>
-    <header>
-      <div class="header-content">
-        <div class="header-logo">
-          <img
-            src="../../assets/logos/logo-horizontal.png"
-            alt="City Logo"
-            class="logo-main"
-          />
+    <nav class="global-nav" aria-label="Global navigation">
+      <a class="global-nav__brand" href="/" data-rel-href="../dashboard/dashboard.html">
+        <img class="global-nav__logo" src="../../assets/logos/logo-horizontal-dark.png" alt="City of Northglenn" />
+        <div class="global-nav__brand-text">
+          <span class="global-nav__overline">Utilities</span>
+          <span class="global-nav__title">Treatment Operations &amp; Training Portal</span>
         </div>
-        <div class="header-text">
-          <h1>Water Data Explorer</h1>
-          <p>Interactive analysis of water quality and treatment parameters</p>
-        </div>
-      </div>
-      <!-- Full Width Dataset Information -->
-      <div id="headerDataInfo" class="header-dataset-info hidden"></div>
-    </header>
-
-    <div id="loadingScreen" class="loading-screen">
-      <div class="loading-content">
-        <div class="loading-logo">
-          <img
-            src="../../assets/logos/logo-horizontal.png"
-            alt="City Logo"
-            class="logo-loading"
-          />
-        </div>
-        <h2 class="loading-title">Loading Data...</h2>
-        <div class="progress-bar">
-          <div id="progressFill" class="progress-fill"></div>
-        </div>
-        <p id="loadingText" class="loading-message">Initializing...</p>
-        <div class="loading-dots">
-          <span></span>
-          <span></span>
-          <span></span>
-        </div>
-      </div>
-    </div>
-
-    <main id="mainContent" class="hidden">
-      <!-- Navigation Tabs -->
-      <nav class="tab-navigation">
-        <button
-          class="tab active"
-          data-tab="correlation"
-          onclick="switchTab('correlation')"
-        >
-          <img src="/assets/icons/correlation.png" alt="" class="tab-icon">
-          Correlation
-        </button>
-        <button
-          class="tab"
-          data-tab="timeseries"
-          onclick="switchTab('timeseries')"
-        >
-          <img src="/assets/icons/time-series.png" alt="" class="tab-icon">
-          Time Series
-        </button>
-        <button
-          class="tab"
-          data-tab="distribution"
-          onclick="switchTab('distribution')"
-        >
-          <img src="/assets/icons/distribution.png" alt="" class="tab-icon">
-          Distribution
-        </button>
-        <button
-          class="tab"
-          data-tab="optimization"
-          onclick="switchTab('optimization')"
-        >
-          <img src="/assets/icons/optimization.png?v=2" alt="" class="tab-icon">
-          Optimization
-        </button>
-      </nav>
-
-      <!-- Correlation Analysis -->
-      <section id="correlation-tab" class="tab-content active">
-        <div class="unified-analysis-card">
-          <div class="card-header">
-            <h3>Correlation Analysis</h3>
-            <div class="header-buttons">
-              <button class="help-toggle-btn" onclick="toggleHelp('correlation-help')" title="Show/Hide Help">
-                ℹ️ Help
-              </button>
-              <button class="export-pdf-btn" onclick="exportChartToPDF('correlation')" title="Export Chart as PDF">
-                📄 Export PDF
-              </button>
-            </div>
-            <p id="correlation-help" class="instruction-text">
-              ℹ️ <strong>How to use:</strong> Select X and Y variables to
-              explore relationships. Add color grouping to see how a third
-              variable affects the correlation. Larger bubbles indicate multiple
-              data points at the same location.
-            </p>
+      </a>
+      <button class="global-nav__menu-toggle" type="button" aria-expanded="false" aria-controls="globalNavMenu">
+        <span class="global-nav__menu-toggle-label">Menu</span>
+        <span class="global-nav__menu-toggle-icon" aria-hidden="true"></span>
+      </button>
+      <ul class="global-nav__menu" id="globalNavMenu">
+        <li class="global-nav__item">
+          <a class="global-nav__link" href="/" data-rel-href="../dashboard/dashboard.html">Home</a>
+        </li>
+        <li class="global-nav__item global-nav__item--dropdown">
+          <button class="global-nav__link global-nav__toggle" type="button" aria-expanded="false">
+            Water Treatment
+            <span class="global-nav__caret" aria-hidden="true"></span>
+          </button>
+          <div class="global-nav__dropdown" role="menu">
+            <a class="global-nav__dropdown-link" href="/robojar-analyzer/" data-rel-href="../robojar-analyzer/index.html" role="menuitem">
+              RoboJar Analyzer
+            </a>
+            <a class="global-nav__dropdown-link" href="/sodium-hypochlorite-calculator/" data-rel-href="../sodium-hypochlorite-calculator/index.html" role="menuitem">
+              Sodium Hypochlorite Calculator
+            </a>
+            <a class="global-nav__dropdown-link" href="/dose-predictor/" data-rel-href="../dose-predictor/index.html" role="menuitem">
+              Sodium Permanganate Dose Predictor
+            </a>
+            <a
+              class="global-nav__dropdown-link global-nav__link--active"
+              href="/water-data-explorer/"
+              data-rel-href="../water-data-explorer/index.html"
+              role="menuitem"
+              aria-current="page"
+            >
+              Water Data Explorer
+            </a>
           </div>
+        </li>
+        <li class="global-nav__item global-nav__item--dropdown">
+          <button class="global-nav__link global-nav__toggle" type="button" aria-expanded="false">
+            Wastewater Treatment
+            <span class="global-nav__caret" aria-hidden="true"></span>
+          </button>
+          <div class="global-nav__dropdown" role="menu">
+            <a class="global-nav__dropdown-link" href="/mwat-calculator/" data-rel-href="../mwat-calculator/index.html" role="menuitem">
+              MWAT &amp; DM Calculator
+            </a>
+          </div>
+        </li>
+        <li class="global-nav__item global-nav__item--dropdown global-nav__item--align-end">
+          <button class="global-nav__link global-nav__toggle" type="button" aria-expanded="false">
+            Training
+            <span class="global-nav__caret" aria-hidden="true"></span>
+          </button>
+          <div class="global-nav__dropdown" role="menu">
+            <a class="global-nav__dropdown-link" href="/regulation-100-study/" data-rel-href="../regulation-100-study/index.html" role="menuitem">
+              Regulation 100 Study Guide
+            </a>
+            <a class="global-nav__dropdown-link" href="/video-tutorials/" data-rel-href="../video-tutorials/index.html" role="menuitem">
+              Water Treatment Class A Training Videos
+            </a>
+            <a class="global-nav__dropdown-link" href="/water-treatment-flashcards/" data-rel-href="../water-treatment-flashcards/index.html" role="menuitem">
+              Water Treatment Flashcards
+            </a>
+          </div>
+        </li>
+      </ul>
+    </nav>
 
-          <!-- Controls Section -->
-          <div class="control-group">
-            <div class="control">
-              <label for="corrXAxis">X-Axis Variable:</label>
-              <select id="corrXAxis" onchange="updateCorrelationChart()">
-                <option value="">Select Variable...</option>
-              </select>
+    <main id="mainContent" class="page explorer-page hidden">
+      <header class="hero">
+        <span class="hero__overline">Analytics</span>
+        <h1>Water Data Explorer</h1>
+        <p class="hero__lede">
+          Explore correlations, trends, distributions, and optimization insights for every treatment parameter in one
+          interactive workspace.
+        </p>
+      </header>
+
+      <section class="card dataset-card">
+        <div id="headerDataInfo" class="dataset-info header-dataset-info hidden">
+          <p class="dataset-placeholder">Dataset details will appear once data is loaded.</p>
+        </div>
+      </section>
+
+      <section class="card explorer-shell">
+        <nav class="tab-navigation">
+          <button class="tab active" type="button" data-tab="correlation" onclick="switchTab('correlation')">
+            <img src="/assets/icons/correlation.png" alt="" class="tab-icon" />
+            Correlation
+          </button>
+          <button class="tab" type="button" data-tab="timeseries" onclick="switchTab('timeseries')">
+            <img src="/assets/icons/time-series.png" alt="" class="tab-icon" />
+            Time Series
+          </button>
+          <button class="tab" type="button" data-tab="distribution" onclick="switchTab('distribution')">
+            <img src="/assets/icons/distribution.png" alt="" class="tab-icon" />
+            Distribution
+          </button>
+          <button class="tab" type="button" data-tab="optimization" onclick="switchTab('optimization')">
+            <img src="/assets/icons/optimization.png?v=2" alt="" class="tab-icon" />
+            Optimization
+          </button>
+        </nav>
+
+        <section id="correlation-tab" class="tab-content active">
+          <div class="unified-analysis-card">
+            <div class="card-header">
+              <h3>Correlation Analysis</h3>
+              <div class="header-buttons">
+                <button class="help-toggle-btn" type="button" onclick="toggleHelp('correlation-help')" title="Show/Hide Help">
+                  ℹ️ Help
+                </button>
+                <button class="export-pdf-btn" type="button" onclick="exportChartToPDF('correlation')" title="Export Chart as PDF">
+                  📄 Export PDF
+                </button>
+              </div>
+              <p id="correlation-help" class="instruction-text">
+                ℹ️ <strong>How to use:</strong> Select X and Y variables to explore relationships. Add color grouping to
+                see how a third variable affects the correlation. Larger bubbles indicate multiple data points at the
+                same location.
+              </p>
             </div>
-            <div class="control">
-              <label for="corrYAxis">Y-Axis Variable:</label>
-              <select id="corrYAxis" onchange="updateCorrelationChart()">
-                <option value="">Select Variable...</option>
-              </select>
+
+            <div class="control-group">
+              <div class="control">
+                <label for="corrXAxis">X-Axis Variable:</label>
+                <select id="corrXAxis" onchange="updateCorrelationChart()">
+                  <option value="">Select Variable...</option>
+                </select>
+              </div>
+              <div class="control">
+                <label for="corrYAxis">Y-Axis Variable:</label>
+                <select id="corrYAxis" onchange="updateCorrelationChart()">
+                  <option value="">Select Variable...</option>
+                </select>
+              </div>
+              <div class="control">
+                <label for="corrColorBy">Color By Variable:</label>
+                <select id="corrColorBy" onchange="updateCorrelationChart()">
+                  <option value="">No Color Grouping</option>
+                </select>
+              </div>
             </div>
-            <div class="control">
-              <label for="corrColorBy">Color By Variable:</label>
-              <select id="corrColorBy" onchange="updateCorrelationChart()">
-                <option value="">No Color Grouping</option>
-              </select>
+
+            <div class="chart-section">
+              <div class="chart-container">
+                <h4 id="correlationTitle">Select variables to view correlation</h4>
+                <p id="correlationSubtitle" class="chart-subtitle"></p>
+                <canvas id="correlationChart"></canvas>
+                <div class="empty-state" id="correlationEmpty">
+                  <p>
+                    🔍 Choose X and Y axis variables above to explore correlations between water treatment parameters.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
+        </section>
 
-          <!-- Chart Content -->
-          <div class="chart-section">
-            <div class="chart-container">
-              <h4 id="correlationTitle">
-                Select variables to view correlation
-              </h4>
-              <p id="correlationSubtitle" class="chart-subtitle"></p>
-              <canvas id="correlationChart"></canvas>
-              <div class="empty-state" id="correlationEmpty">
-                <p>
-                  🔍 Choose X and Y axis variables above to explore correlations
-                  between water treatment parameters.
+        <section id="timeseries-tab" class="tab-content">
+          <div class="unified-analysis-card">
+            <div class="card-header">
+              <h3>Time Series Analysis</h3>
+              <div class="header-buttons">
+                <button class="help-toggle-btn" type="button" onclick="toggleHelp('timeseries-help')" title="Show/Hide Help">
+                  ℹ️ Help
+                </button>
+                <button class="export-pdf-btn" type="button" onclick="exportChartToPDF('timeseries')" title="Export Chart as PDF">
+                  📄 Export PDF
+                </button>
+              </div>
+              <p id="timeseries-help" class="instruction-text">
+                ℹ️ <strong>How to use:</strong> Select up to 4 variables to view trends over time. Check "Own Y-axis"
+                to force a variable onto its own axis, or let the system automatically group by similar scales. Use
+                scroll to zoom into time periods, drag to pan left/right.
+              </p>
+            </div>
+
+            <div class="time-series-controls">
+              <div class="variable-card">
+                <h5 class="variable-card-title">Variable 1:</h5>
+                <div class="variable-card-content">
+                  <select id="timeVar1" onchange="updateTimeSeriesChart()">
+                    <option value="">Select Variable...</option>
+                  </select>
+                  <label class="axis-checkbox">
+                    <input type="checkbox" id="timeVar1Axis" onchange="updateTimeSeriesChart()" />
+                    Own Y-axis
+                  </label>
+                  <label class="smoothing-dropdown">
+                    <span>Smoothing:</span>
+                    <select id="timeVar1Smooth" onchange="updateTimeSeriesChart()">
+                      <option value="0">None</option>
+                      <option value="1">1 Hour</option>
+                      <option value="2">2 Hours</option>
+                      <option value="4">4 Hours</option>
+                      <option value="8">8 Hours</option>
+                      <option value="12">12 Hours</option>
+                      <option value="24">24 Hours</option>
+                    </select>
+                  </label>
+                </div>
+              </div>
+              <div class="variable-card">
+                <h5 class="variable-card-title">Variable 2:</h5>
+                <div class="variable-card-content">
+                  <select id="timeVar2" onchange="updateTimeSeriesChart()">
+                    <option value="">Select Variable...</option>
+                  </select>
+                  <label class="axis-checkbox">
+                    <input type="checkbox" id="timeVar2Axis" onchange="updateTimeSeriesChart()" />
+                    Own Y-axis
+                  </label>
+                  <label class="smoothing-dropdown">
+                    <span>Smoothing:</span>
+                    <select id="timeVar2Smooth" onchange="updateTimeSeriesChart()">
+                      <option value="0">None</option>
+                      <option value="1">1 Hour</option>
+                      <option value="2">2 Hours</option>
+                      <option value="4">4 Hours</option>
+                      <option value="8">8 Hours</option>
+                      <option value="12">12 Hours</option>
+                      <option value="24">24 Hours</option>
+                    </select>
+                  </label>
+                </div>
+              </div>
+              <div class="variable-card">
+                <h5 class="variable-card-title">Variable 3:</h5>
+                <div class="variable-card-content">
+                  <select id="timeVar3" onchange="updateTimeSeriesChart()">
+                    <option value="">Select Variable...</option>
+                  </select>
+                  <label class="axis-checkbox">
+                    <input type="checkbox" id="timeVar3Axis" onchange="updateTimeSeriesChart()" />
+                    Own Y-axis
+                  </label>
+                  <label class="smoothing-dropdown">
+                    <span>Smoothing:</span>
+                    <select id="timeVar3Smooth" onchange="updateTimeSeriesChart()">
+                      <option value="0">None</option>
+                      <option value="1">1 Hour</option>
+                      <option value="2">2 Hours</option>
+                      <option value="4">4 Hours</option>
+                      <option value="8">8 Hours</option>
+                      <option value="12">12 Hours</option>
+                      <option value="24">24 Hours</option>
+                    </select>
+                  </label>
+                </div>
+              </div>
+              <div class="variable-card">
+                <h5 class="variable-card-title">Variable 4:</h5>
+                <div class="variable-card-content">
+                  <select id="timeVar4" onchange="updateTimeSeriesChart()">
+                    <option value="">Select Variable...</option>
+                  </select>
+                  <label class="axis-checkbox">
+                    <input type="checkbox" id="timeVar4Axis" onchange="updateTimeSeriesChart()" />
+                    Own Y-axis
+                  </label>
+                  <label class="smoothing-dropdown">
+                    <span>Smoothing:</span>
+                    <select id="timeVar4Smooth" onchange="updateTimeSeriesChart()">
+                      <option value="0">None</option>
+                      <option value="1">1 Hour</option>
+                      <option value="2">2 Hours</option>
+                      <option value="4">4 Hours</option>
+                      <option value="8">8 Hours</option>
+                      <option value="12">12 Hours</option>
+                      <option value="24">24 Hours</option>
+                    </select>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div class="chart-section">
+              <div class="chart-container">
+                <h4 id="timeSeriesTitle">Variables over Time</h4>
+                <canvas id="timeSeriesChart"></canvas>
+                <p class="chart-zoom-hint">💡 Scroll to zoom, drag to pan, double-click to reset</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="distribution-tab" class="tab-content">
+          <div class="unified-analysis-card">
+            <div class="card-header">
+              <h3>Distribution Analysis</h3>
+              <div class="header-buttons">
+                <button class="help-toggle-btn" type="button" onclick="toggleHelp('distribution-help')" title="Show/Hide Help">
+                  ℹ️ Help
+                </button>
+                <button class="export-pdf-btn" type="button" onclick="exportChartToPDF('distribution')" title="Export Chart as PDF">
+                  📄 Export PDF
+                </button>
+              </div>
+              <p id="distribution-help" class="instruction-text">
+                ℹ️ <strong>How to use:</strong> Select a variable to see its frequency distribution. Adjust bin count to
+                change histogram detail. Statistics panel shows key metrics like mean, median, and standard deviation.
+                <br /><br />
+                <strong>Key Statistics Explained:</strong><br />
+                • <strong>STD Deviation:</strong> Measures how spread out your data is from the average. Lower values
+                mean data points are clustered close to the mean; higher values indicate more variation.<br />
+                • <strong>Q1 (First Quartile):</strong> The value below which 25% of your data falls. Useful for
+                identifying the lower range of typical values.<br />
+                • <strong>Q3 (Third Quartile):</strong> The value below which 75% of your data falls. Helps identify the
+                upper range of typical values. The difference between Q3 and Q1 shows the middle 50% spread of your
+                data.
+              </p>
+            </div>
+
+            <div class="control-group">
+              <div class="control">
+                <label for="distVariable">Variable:</label>
+                <select id="distVariable" onchange="updateDistributionChart()">
+                  <option value="">Select Variable...</option>
+                </select>
+              </div>
+              <div class="control">
+                <label for="distBins">Number of Bins:</label>
+                <select id="distBins" onchange="updateDistributionChart()">
+                  <option value="auto">Auto</option>
+                  <option value="5">5</option>
+                  <option value="10">10</option>
+                  <option value="15">15</option>
+                  <option value="20">20</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="unified-content optimization-layout">
+              <div class="stats-panel">
+                <h4>Statistics</h4>
+                <div id="distributionStats"></div>
+              </div>
+              <div class="chart-container">
+                <h4 id="distributionTitle">Select variable to view distribution</h4>
+                <canvas id="distributionChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="optimization-tab" class="tab-content">
+          <div class="unified-analysis-card">
+            <div class="card-header">
+              <h3>Optimization Analysis</h3>
+              <div class="header-buttons">
+                <button class="help-toggle-btn" type="button" onclick="toggleHelp('optimization-help')" title="Show/Hide Help">
+                  ℹ️ Help
+                </button>
+                <button class="export-pdf-btn" type="button" onclick="exportChartToPDF('optimization')" title="Export Chart as PDF">
+                  📄 Export PDF
+                </button>
+              </div>
+              <p id="optimization-help" class="instruction-text">
+                ℹ️ <strong>How to use:</strong> Select a target variable to optimize. The correlation matrix shows which
+                variables most strongly influence your target. Click correlation buttons to view scatter plots with
+                trend lines.
+              </p>
+            </div>
+
+            <div class="ai-insights-panel" id="aiInsightsPanel" style="display: none">
+              <div class="ai-insights-header">
+                <div class="ai-header-top">
+                  <h4>🤖 AI Correlation Insights</h4>
+                  <div class="ai-provider-selector">
+                    <label class="provider-option">
+                      <input type="radio" name="aiProvider" value="claude" checked />
+                      <span class="provider-label">Claude</span>
+                    </label>
+                    <label class="provider-option">
+                      <input type="radio" name="aiProvider" value="openai" />
+                      <span class="provider-label">OpenAI</span>
+                    </label>
+                  </div>
+                </div>
+                <p class="ai-instruction-text">
+                  <strong>Get AI explanations:</strong> When viewing a correlation, click "Explain Correlation" to get
+                  AI-powered insights about the relationship between variables in your water treatment process.
                 </p>
               </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Time Series Analysis -->
-      <section id="timeseries-tab" class="tab-content">
-        <div class="unified-analysis-card">
-          <div class="card-header">
-            <h3>Time Series Analysis</h3>
-            <div class="header-buttons">
-              <button class="help-toggle-btn" onclick="toggleHelp('timeseries-help')" title="Show/Hide Help">
-                ℹ️ Help
-              </button>
-              <button class="export-pdf-btn" onclick="exportChartToPDF('timeseries')" title="Export Chart as PDF">
-                📄 Export PDF
-              </button>
-            </div>
-            <p id="timeseries-help" class="instruction-text">
-              ℹ️ <strong>How to use:</strong> Select up to 4 variables to view
-              trends over time. Check "Own Y-axis" to force a variable onto its
-              own axis, or let the system automatically group by similar scales.
-              Use scroll to zoom into time periods, drag to pan left/right.
-            </p>
-          </div>
-
-          <!-- Controls Section -->
-          <div class="time-series-controls">
-            <div class="variable-card">
-              <h5 class="variable-card-title">Variable 1:</h5>
-              <div class="variable-card-content">
-                <select id="timeVar1" onchange="updateTimeSeriesChart()">
-                  <option value="">Select Variable...</option>
-                </select>
-                <label class="axis-checkbox">
-                  <input
-                    type="checkbox"
-                    id="timeVar1Axis"
-                    onchange="updateTimeSeriesChart()"
-                  />
-                  Own Y-axis
-                </label>
-                <label class="smoothing-dropdown">
-                  <span>Smoothing:</span>
-                  <select id="timeVar1Smooth" onchange="updateTimeSeriesChart()">
-                    <option value="0">None</option>
-                    <option value="1">1 Hour</option>
-                    <option value="2">2 Hours</option>
-                    <option value="4">4 Hours</option>
-                    <option value="8">8 Hours</option>
-                    <option value="12">12 Hours</option>
-                    <option value="24">24 Hours</option>
-                  </select>
-                </label>
-              </div>
-            </div>
-            <div class="variable-card">
-              <h5 class="variable-card-title">Variable 2:</h5>
-              <div class="variable-card-content">
-                <select id="timeVar2" onchange="updateTimeSeriesChart()">
-                  <option value="">Select Variable...</option>
-                </select>
-                <label class="axis-checkbox">
-                  <input
-                    type="checkbox"
-                    id="timeVar2Axis"
-                    onchange="updateTimeSeriesChart()"
-                  />
-                  Own Y-axis
-                </label>
-                <label class="smoothing-dropdown">
-                  <span>Smoothing:</span>
-                  <select id="timeVar2Smooth" onchange="updateTimeSeriesChart()">
-                    <option value="0">None</option>
-                    <option value="1">1 Hour</option>
-                    <option value="2">2 Hours</option>
-                    <option value="4">4 Hours</option>
-                    <option value="8">8 Hours</option>
-                    <option value="12">12 Hours</option>
-                    <option value="24">24 Hours</option>
-                  </select>
-                </label>
-              </div>
-            </div>
-            <div class="variable-card">
-              <h5 class="variable-card-title">Variable 3:</h5>
-              <div class="variable-card-content">
-                <select id="timeVar3" onchange="updateTimeSeriesChart()">
-                  <option value="">Select Variable...</option>
-                </select>
-                <label class="axis-checkbox">
-                  <input
-                    type="checkbox"
-                    id="timeVar3Axis"
-                    onchange="updateTimeSeriesChart()"
-                  />
-                  Own Y-axis
-                </label>
-                <label class="smoothing-dropdown">
-                  <span>Smoothing:</span>
-                  <select id="timeVar3Smooth" onchange="updateTimeSeriesChart()">
-                    <option value="0">None</option>
-                    <option value="1">1 Hour</option>
-                    <option value="2">2 Hours</option>
-                    <option value="4">4 Hours</option>
-                    <option value="8">8 Hours</option>
-                    <option value="12">12 Hours</option>
-                    <option value="24">24 Hours</option>
-                  </select>
-                </label>
-              </div>
-            </div>
-            <div class="variable-card">
-              <h5 class="variable-card-title">Variable 4:</h5>
-              <div class="variable-card-content">
-                <select id="timeVar4" onchange="updateTimeSeriesChart()">
-                  <option value="">Select Variable...</option>
-                </select>
-                <label class="axis-checkbox">
-                  <input
-                    type="checkbox"
-                    id="timeVar4Axis"
-                    onchange="updateTimeSeriesChart()"
-                  />
-                  Own Y-axis
-                </label>
-                <label class="smoothing-dropdown">
-                  <span>Smoothing:</span>
-                  <select id="timeVar4Smooth" onchange="updateTimeSeriesChart()">
-                    <option value="0">None</option>
-                    <option value="1">1 Hour</option>
-                    <option value="2">2 Hours</option>
-                    <option value="4">4 Hours</option>
-                    <option value="8">8 Hours</option>
-                    <option value="12">12 Hours</option>
-                    <option value="24">24 Hours</option>
-                  </select>
-                </label>
-              </div>
-            </div>
-          </div>
-
-          <!-- Chart Content -->
-          <div class="chart-section">
-            <div class="chart-container">
-              <h4 id="timeSeriesTitle">Variables over Time</h4>
-              <canvas id="timeSeriesChart"></canvas>
-              <p class="chart-zoom-hint">
-                💡 Scroll to zoom, drag to pan, double-click to reset
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Distribution Analysis -->
-      <section id="distribution-tab" class="tab-content">
-        <div class="unified-analysis-card">
-          <div class="card-header">
-            <h3>Distribution Analysis</h3>
-            <div class="header-buttons">
-              <button class="help-toggle-btn" onclick="toggleHelp('distribution-help')" title="Show/Hide Help">
-                ℹ️ Help
-              </button>
-              <button class="export-pdf-btn" onclick="exportChartToPDF('distribution')" title="Export Chart as PDF">
-                📄 Export PDF
-              </button>
-            </div>
-            <p id="distribution-help" class="instruction-text">
-              ℹ️ <strong>How to use:</strong> Select a variable to see its
-              frequency distribution. Adjust bin count to change histogram
-              detail. Statistics panel shows key metrics like mean, median, and
-              standard deviation.<br><br>
-              <strong>Key Statistics Explained:</strong><br>
-              • <strong>STD Deviation:</strong> Measures how spread out your data is from the average. Lower values mean data points are clustered close to the mean; higher values indicate more variation.<br>
-              • <strong>Q1 (First Quartile):</strong> The value below which 25% of your data falls. Useful for identifying the lower range of typical values.<br>
-              • <strong>Q3 (Third Quartile):</strong> The value below which 75% of your data falls. Helps identify the upper range of typical values. The difference between Q3 and Q1 shows the middle 50% spread of your data.
-            </p>
-          </div>
-
-          <!-- Controls Section -->
-          <div class="control-group">
-            <div class="control">
-              <label for="distVariable">Variable:</label>
-              <select id="distVariable" onchange="updateDistributionChart()">
-                <option value="">Select Variable...</option>
-              </select>
-            </div>
-            <div class="control">
-              <label for="distBins">Number of Bins:</label>
-              <select id="distBins" onchange="updateDistributionChart()">
-                <option value="auto">Auto</option>
-                <option value="5">5</option>
-                <option value="10">10</option>
-                <option value="15">15</option>
-                <option value="20">20</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- Analysis Content -->
-          <div class="unified-content">
-            <div class="stats-panel">
-              <h4>Statistics</h4>
-              <div id="distributionStats"></div>
-            </div>
-            <div class="chart-container">
-              <h4 id="distributionTitle">
-                Select variable to view distribution
-              </h4>
-              <canvas id="distributionChart"></canvas>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Optimization Analysis -->
-      <section id="optimization-tab" class="tab-content">
-        <div class="unified-analysis-card">
-          <div class="card-header">
-            <h3>Optimization Analysis</h3>
-            <div class="header-buttons">
-              <button class="help-toggle-btn" onclick="toggleHelp('optimization-help')" title="Show/Hide Help">
-                ℹ️ Help
-              </button>
-              <button class="export-pdf-btn" onclick="exportChartToPDF('optimization')" title="Export Chart as PDF">
-                📄 Export PDF
-              </button>
-            </div>
-            <p id="optimization-help" class="instruction-text">
-              ℹ️ <strong>How to use:</strong> Select a target variable to
-              optimize. The correlation matrix shows which variables most
-              strongly influence your target. Click correlation buttons to view
-              scatter plots with trend lines.
-            </p>
-          </div>
-
-          <!-- AI Insights Section -->
-          <div
-            class="ai-insights-panel"
-            id="aiInsightsPanel"
-            style="display: none"
-          >
-            <div class="ai-insights-header">
-              <div class="ai-header-top">
-                <h4>🤖 AI Correlation Insights</h4>
-                <div class="ai-provider-selector">
-                  <label class="provider-option">
-                    <input
-                      type="radio"
-                      name="aiProvider"
-                      value="claude"
-                      checked
-                    />
-                    <span class="provider-label">Claude</span>
-                  </label>
-                  <label class="provider-option">
-                    <input type="radio" name="aiProvider" value="openai" />
-                    <span class="provider-label">OpenAI</span>
-                  </label>
+              <div class="ai-insights-content">
+                <div class="correlation-bar" id="correlationContext" style="display: none">
+                  <div class="correlation-context">
+                    <span class="correlation-label">Analyzing:</span>
+                    <span id="correlationDisplayText" class="correlation-display"></span>
+                    <span class="correlation-value">R = <span id="correlationDisplayValue"></span></span>
+                  </div>
+                  <button
+                    id="explainCorrelationBtn"
+                    class="explain-btn-enhanced"
+                    type="button"
+                    onclick="explainCorrelation()"
+                    style="display: none"
+                  >
+                    🤖 Explain This Correlation
+                  </button>
                 </div>
               </div>
-              <p class="ai-instruction-text">
-                <strong>Get AI explanations:</strong> When viewing a
-                correlation, click "Explain Correlation" to get AI-powered
-                insights about the relationship between variables in your water
-                treatment process.
-              </p>
             </div>
-            <div class="ai-insights-content">
-              <div
-                class="correlation-context"
-                id="correlationContext"
-                style="display: none"
-              >
-                <span class="correlation-label">Analyzing:</span>
-                <span
-                  id="correlationDisplayText"
-                  class="correlation-display"
-                ></span>
-                <span class="correlation-value"
-                  >R = <span id="correlationDisplayValue"></span
-                ></span>
+
+            <div class="control-group">
+              <div class="control">
+                <label for="targetVariable">Target Variable:</label>
+                <select id="targetVariable" onchange="updateOptimizationChart()">
+                  <option value="">Select Variable...</option>
+                </select>
               </div>
-              <button
-                id="explainCorrelationBtn"
-                class="explain-btn-enhanced"
-                onclick="explainCorrelation()"
-                style="display: none"
-              >
-                🤖 Explain This Correlation
-              </button>
+              <div class="control">
+                <label for="minCorrelation">Minimum Correlation:</label>
+                <select id="minCorrelation" onchange="updateOptimizationChart()">
+                  <option value="0.1">0.1</option>
+                  <option value="0.3" selected>0.3</option>
+                  <option value="0.5">0.5</option>
+                  <option value="0.7">0.7</option>
+                </select>
+              </div>
             </div>
-          </div>
 
-          <!-- Controls Section -->
-          <div class="control-group">
-            <div class="control">
-              <label for="targetVariable">Target Variable:</label>
-              <select id="targetVariable" onchange="updateOptimizationChart()">
-                <option value="">Select Variable...</option>
-              </select>
-            </div>
-            <div class="control">
-              <label for="minCorrelation">Minimum Correlation:</label>
-              <select id="minCorrelation" onchange="updateOptimizationChart()">
-                <option value="0.1">0.1</option>
-                <option value="0.3" selected>0.3</option>
-                <option value="0.5">0.5</option>
-                <option value="0.7">0.7</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- Analysis Content -->
-          <div class="unified-content">
-            <div class="correlation-matrix">
-              <h4>Correlation Matrix</h4>
-              <div id="correlationMatrix"></div>
-            </div>
-            <div class="chart-container">
-              <div class="chart-header">
-                <div class="chart-title-section">
-                  <h4 id="optimizationTitle">
-                    Select target variable for optimization analysis
-                  </h4>
-                  <p id="optimizationSubtitle" class="chart-subtitle"></p>
+            <div class="unified-content">
+              <div class="correlation-matrix">
+                <h4>Correlation Matrix</h4>
+                <div id="correlationMatrix"></div>
+              </div>
+              <div class="chart-container">
+                <div class="chart-header">
+                  <div class="chart-title-section">
+                    <h4 id="optimizationTitle">Select target variable for optimization analysis</h4>
+                    <p id="optimizationSubtitle" class="chart-subtitle"></p>
+                  </div>
                 </div>
+                <canvas id="optimizationChart"></canvas>
               </div>
-              <canvas id="optimizationChart"></canvas>
             </div>
           </div>
-        </div>
+        </section>
       </section>
+
+      <footer class="page-footer">
+        <p>&copy; 2025 Water Data Explorer</p>
+        <span class="footer-status">
+          <span class="status-dot"></span>
+          Live analytics powered by Water Treatment Tools
+        </span>
+      </footer>
     </main>
 
     <div id="notificationContainer" class="notification-container"></div>
 
-    <!-- AI Explanation Modal -->
     <div id="explanationModal" class="modal" style="display: none">
       <div class="modal-content">
         <div class="modal-header">
@@ -509,11 +492,7 @@
             <p id="modalCorrelationDetails" class="correlation-details"></p>
           </div>
           <div class="explanation-content">
-            <div
-              id="explanationLoading"
-              class="loading-explanation"
-              style="display: none"
-            >
+            <div id="explanationLoading" class="loading-explanation" style="display: none">
               <div class="loading-spinner"></div>
               <p>Analyzing correlation...</p>
             </div>
@@ -521,17 +500,130 @@
           </div>
           <div class="modal-footer">
             <p class="disclaimer">
-              💡 Technical explanation based on water treatment principles.
-              Please verify with your operational expertise.
+              💡 Technical explanation based on water treatment principles. Please verify with your operational
+              expertise.
             </p>
-            <button class="btn-secondary" onclick="closeExplanationModal()">
-              Close
-            </button>
+            <button class="btn-secondary" type="button" onclick="closeExplanationModal()">Close</button>
           </div>
         </div>
       </div>
     </div>
 
+    <script>
+      (function () {
+        const globalNav = document.querySelector(".global-nav");
+        const globalNavMenu = globalNav ? globalNav.querySelector(".global-nav__menu") : null;
+        const globalNavMenuToggle = globalNav ? globalNav.querySelector(".global-nav__menu-toggle") : null;
+        const navToggles = Array.from(document.querySelectorAll(".global-nav__toggle"));
+
+        if (globalNav) {
+          const shouldUseFallbackLinks = window.location.protocol === "file:" || window.location.pathname.includes("/apps/");
+
+          if (shouldUseFallbackLinks) {
+            const fallbackLinks = document.querySelectorAll("[data-rel-href]");
+            fallbackLinks.forEach((link) => {
+              const relHref = link.getAttribute("data-rel-href");
+              if (relHref) {
+                link.setAttribute("href", relHref);
+              }
+            });
+          }
+        }
+
+        function closeDropdownMenus() {
+          navToggles.forEach((toggle) => {
+            const item = toggle.closest(".global-nav__item--dropdown");
+            if (item) {
+              item.classList.remove("global-nav__item--open");
+            }
+            toggle.setAttribute("aria-expanded", "false");
+          });
+        }
+
+        function setMobileMenuOpen(isOpen) {
+          if (!globalNav || !globalNavMenu || !globalNavMenuToggle) {
+            return;
+          }
+
+          globalNav.classList.toggle("global-nav--menu-open", isOpen);
+          globalNavMenuToggle.setAttribute("aria-expanded", String(isOpen));
+          document.body.classList.toggle("has-mobile-nav-open", isOpen);
+
+          if (!isOpen) {
+            closeDropdownMenus();
+          }
+        }
+
+        function closeMobileMenu() {
+          setMobileMenuOpen(false);
+        }
+
+        if (globalNav && globalNavMenu && globalNavMenuToggle) {
+          globalNavMenuToggle.addEventListener("click", (event) => {
+            event.stopPropagation();
+            const shouldOpen = !globalNav.classList.contains("global-nav--menu-open");
+            setMobileMenuOpen(shouldOpen);
+          });
+
+          globalNavMenu.addEventListener("click", (event) => {
+            const target = event.target;
+            if (target instanceof HTMLAnchorElement) {
+              closeMobileMenu();
+            }
+          });
+
+          window.addEventListener("resize", () => {
+            if (window.innerWidth > 720) {
+              closeMobileMenu();
+            }
+          });
+        }
+
+        navToggles.forEach((toggle) => {
+          toggle.setAttribute("aria-expanded", "false");
+          toggle.addEventListener("click", (event) => {
+            event.stopPropagation();
+            const item = toggle.closest(".global-nav__item--dropdown");
+            if (!item) {
+              return;
+            }
+
+            const isOpen = item.classList.contains("global-nav__item--open");
+            closeDropdownMenus();
+            if (!isOpen) {
+              item.classList.add("global-nav__item--open");
+              toggle.setAttribute("aria-expanded", "true");
+            }
+          });
+        });
+
+        document.addEventListener("click", (event) => {
+          if (!(event.target instanceof Node)) {
+            return;
+          }
+
+          const clickedWithinDropdown = navToggles.some((toggle) => {
+            const item = toggle.closest(".global-nav__item--dropdown");
+            return item && item.contains(event.target);
+          });
+
+          if (!clickedWithinDropdown) {
+            closeDropdownMenus();
+          }
+
+          if (globalNav && !globalNav.contains(event.target)) {
+            closeMobileMenu();
+          }
+        });
+
+        document.addEventListener("keydown", (event) => {
+          if (event.key === "Escape") {
+            closeDropdownMenus();
+            closeMobileMenu();
+          }
+        });
+      })();
+    </script>
     <script src="script.js?v=1757513553"></script>
   </body>
 </html>

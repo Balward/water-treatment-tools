@@ -81,8 +81,7 @@ let optimizationChart = null;
 
 // Smart delay function that works even when tab is not active
 async function smartDelay(ms) {
-  // Use setTimeout which continues in background regardless of tab visibility
-  return new Promise((resolve) => setTimeout(resolve, ms));
+  return Promise.resolve();
 }
 
 // Initialize application
@@ -228,6 +227,7 @@ async function loadData() {
   } catch (error) {
     console.error("Error loading data:", error);
     hideLoadingScreen();
+    showMainContent();
     showNotification("Error loading data: " + error.message, "error");
   }
 }
@@ -236,6 +236,10 @@ async function loadData() {
 async function updateLoadingProgress(targetPercentage, text) {
   const progressFill = document.getElementById("progressFill");
   const loadingText = document.getElementById("loadingText");
+
+  if (!progressFill && !loadingText) {
+    return;
+  }
 
   if (loadingText) {
     loadingText.textContent = text;
@@ -462,15 +466,27 @@ function switchTab(tabName) {
   switch (tabName) {
     case "correlation":
       updateCorrelationChart();
+      if (correlationChart) {
+        correlationChart.resize();
+      }
       break;
     case "timeseries":
       updateTimeSeriesChart();
+      if (timeSeriesChart) {
+        timeSeriesChart.resize();
+      }
       break;
     case "distribution":
       updateDistributionChart();
+      if (distributionChart) {
+        distributionChart.resize();
+      }
       break;
     case "optimization":
       updateOptimizationChart();
+      if (optimizationChart) {
+        optimizationChart.resize();
+      }
       break;
   }
 }
