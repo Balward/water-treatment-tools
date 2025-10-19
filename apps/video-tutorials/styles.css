@@ -321,13 +321,14 @@ main {
 .hero {
   background: var(--card-gradient);
   border-radius: 28px;
-  padding: 2.75rem clamp(1.6rem, 4vw, 3.2rem);
+  padding: 2.2rem clamp(1.5rem, 4vw, 3.25rem);
   box-shadow: 0 40px 70px rgba(3, 7, 18, 0.7);
-  border: 1px solid var(--border-soft);
+  border: 1px solid rgba(129, 140, 248, 0.25);
   text-align: left;
 }
 
 .hero h1 {
+  margin: 0;
   font-size: clamp(2.2rem, 5vw, 3rem);
   font-weight: 700;
   line-height: 1.1;
@@ -345,7 +346,8 @@ main {
 }
 
 .hero__lede {
-  max-width: 52ch;
+  margin: 0;
+  max-width: 48rem;
   color: var(--text-secondary);
   font-size: 1.05rem;
 }
@@ -679,7 +681,7 @@ main {
   }
 
   .hero {
-    padding: 2.4rem 1.8rem;
+    padding: 1.9rem 1.6rem;
   }
 
   .button {
@@ -695,6 +697,6 @@ main {
 @media (max-width: 480px) {
   .hero {
     border-radius: 22px;
-    padding: 2rem 1.6rem;
+    padding: 1.6rem 1.4rem;
   }
 }

@@ -281,7 +281,7 @@ a {
 .hero {
   background: var(--card-gradient);
   border-radius: 28px;
-  padding: 2.75rem clamp(1.5rem, 4vw, 3.25rem);
+  padding: 2.2rem clamp(1.5rem, 4vw, 3.25rem);
   box-shadow: 0 40px 70px rgba(3, 7, 18, 0.7);
   border: 1px solid rgba(129, 140, 248, 0.25);
   text-align: left;

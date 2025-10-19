@@ -72,6 +72,10 @@ main {
   padding: 3rem 1.5rem 4.5rem;
 }
 
+.page > * + * {
+  margin-top: 2.75rem;
+}
+
 .global-nav {
   position: sticky;
   top: 0;
@@ -327,14 +331,14 @@ main {
 .hero {
   background: var(--card-gradient);
   border-radius: 28px;
-  padding: 2.75rem clamp(1.5rem, 4vw, 3.25rem);
+  padding: 2.2rem clamp(1.5rem, 4vw, 3.25rem);
   box-shadow: 0 40px 70px rgba(3, 7, 18, 0.7);
-  margin-bottom: 2.75rem;
   text-align: left;
   border: 1px solid rgba(129, 140, 248, 0.25);
 }
 
 .hero h1 {
+  margin: 0;
   font-size: clamp(2.2rem, 5vw, 3rem);
   font-weight: 700;
   line-height: 1.1;
@@ -349,17 +353,6 @@ main {
   text-transform: uppercase;
   color: rgba(232, 235, 255, 0.72);
   margin-bottom: 0.4rem;
-}
-
-/* Fully left-align MWAT hero description */
-.hero p, .hero .hero__lede { text-align: left; margin: 0; }
-
-.hero h1 {
-  font-size: clamp(2.2rem, 5vw, 3rem);
-  font-weight: 700;
-  line-height: 1.1;
-  color: #f8faff;
-  margin-bottom: 0.85rem;
 }
 
 .hero__lede {
@@ -947,7 +940,7 @@ main {
   }
 
   .hero {
-    padding: 2.25rem 1.5rem;
+    padding: 1.8rem 1.5rem;
   }
 
   .card {
