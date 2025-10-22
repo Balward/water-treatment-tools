@@ -102,6 +102,8 @@
     thresholdNumber: document.getElementById("thresholdNumber"),
     thresholdValue: document.getElementById("thresholdValue"),
     thresholdPercent: document.getElementById("thresholdPercent"),
+    thresholdBaseValue: document.getElementById("thresholdBaseValue"),
+    thresholdAdjustedValue: document.getElementById("thresholdAdjustedValue"),
     startDateInput: document.getElementById("startDateInput"),
     endDateInput: document.getElementById("endDateInput"),
     resetDateRange: document.getElementById("resetDateRange"),
@@ -697,11 +699,57 @@
     return bands;
   }
 
+  function calculateGapThreshold(records) {
+    if (!Array.isArray(records) || records.length < 2) {
+      return Infinity;
+    }
+    const diffs = [];
+    for (let i = 1; i < records.length; i += 1) {
+      const prev = records[i - 1].timestamp?.getTime?.() ?? null;
+      const current = records[i].timestamp?.getTime?.() ?? null;
+      if (typeof prev === "number" && typeof current === "number" && Number.isFinite(prev) && Number.isFinite(current)) {
+        const delta = current - prev;
+        if (delta > 0) {
+          diffs.push(delta);
+        }
+      }
+    }
+    if (!diffs.length) {
+      return Infinity;
+    }
+    diffs.sort((a, b) => a - b);
+    const median = diffs[Math.floor(diffs.length / 2)];
+    if (!Number.isFinite(median) || median <= 0) {
+      return Infinity;
+    }
+    const multiplier = 6;
+    return median * multiplier;
+  }
+
   /* ===== Charts ===== */
   function buildTimeSeriesDataset(records, thresholdValue) {
-    const points = Array.isArray(records)
-      ? records.map((record) => ({ x: record.timestamp, y: record.value }))
-      : [];
+    const gapThreshold = calculateGapThreshold(records);
+    const points = [];
+    if (Array.isArray(records) && records.length) {
+      let previousTimestamp = null;
+      records.forEach((record) => {
+        if (!record || !(record.timestamp instanceof Date)) {
+          return;
+        }
+        const currentTimestamp = record.timestamp.getTime();
+        if (
+          previousTimestamp !== null &&
+          Number.isFinite(gapThreshold) &&
+          gapThreshold !== Infinity &&
+          currentTimestamp - previousTimestamp > gapThreshold
+        ) {
+          const breakTimestamp = new Date(currentTimestamp - 1);
+          points.push({ x: breakTimestamp, y: null });
+        }
+        points.push({ x: record.timestamp, y: record.value });
+        previousTimestamp = currentTimestamp;
+      });
+    }
     const weekendBands = deriveWeekendBands(records);
 
     const datasets = [];
@@ -713,6 +761,7 @@
         borderColor: colors.weekday,
         backgroundColor: `${colors.weekday}20`,
         tension: 0.3,
+        spanGaps: false,
         pointRadius: 0,
         borderWidth: 2,
       });
@@ -1085,10 +1134,21 @@
         : `No samples exceed ${formatNumber(thresholdValue)} lbs/day`;
   }
 
-  function updateThresholdLabels(thresholdValue, multiplier) {
-    els.thresholdValue.textContent =
-      thresholdValue !== null ? `${formatNumber(thresholdValue)} lbs/day` : "N/A (no base available)";
-    els.thresholdPercent.textContent = `${Math.round(multiplier * 100)}%`;
+  function updateThresholdLabels(baseAverage, thresholdValue, multiplier) {
+    const hasBase = baseAverage !== null && Number.isFinite(baseAverage);
+    const hasThreshold = thresholdValue !== null && Number.isFinite(thresholdValue);
+    const percentValue = Number.isFinite(multiplier) ? Math.round(multiplier * 100) : null;
+
+    if (els.thresholdBaseValue) {
+      els.thresholdBaseValue.textContent = hasBase ? `${formatNumber(baseAverage)} lbs/day` : "N/A";
+    }
+
+    if (els.thresholdAdjustedValue) {
+      els.thresholdAdjustedValue.textContent = hasThreshold ? `${formatNumber(thresholdValue)} lbs/day` : "N/A";
+    }
+
+    els.thresholdValue.textContent = hasThreshold ? `${formatNumber(thresholdValue)} lbs/day` : "N/A (no base available)";
+    els.thresholdPercent.textContent = percentValue !== null ? `${percentValue}%` : "—";
   }
 
   function recalculateAndRender() {
@@ -1096,7 +1156,7 @@
     const thresholdValue =
       baseAverage !== null ? Math.round(baseAverage * state.thresholdMultiplier * 10) / 10 : null;
 
-    updateThresholdLabels(thresholdValue, state.thresholdMultiplier);
+    updateThresholdLabels(baseAverage, thresholdValue, state.thresholdMultiplier);
 
     const filteredRecords = getFilteredRecords();
     const hourAnalytics = calculateHourAnalytics(filteredRecords, thresholdValue);
