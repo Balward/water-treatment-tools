@@ -11,7 +11,7 @@
   --accent-secondary: #22d3ee;
   --accent-tertiary: #f97316;
   --focus-ring: rgba(129, 140, 248, 0.38);
-  --card-gradient: linear-gradient(135deg, rgba(99, 102, 241, 0.35), rgba(34, 211, 238, 0.18));
+  --card-gradient: var(--surface-gradient-primary);
   --transition: 0.18s ease;
 }
 
@@ -33,9 +33,9 @@ body {
   line-height: 1.6;
   color: var(--text-primary);
   background:
-    radial-gradient(circle at 18% 15%, rgba(99, 102, 241, 0.24), transparent 55%),
-    radial-gradient(circle at 80% 20%, rgba(34, 211, 238, 0.18), transparent 55%),
-    radial-gradient(circle at 68% 80%, rgba(249, 115, 22, 0.2), transparent 60%),
+    radial-gradient(circle at 18% 20%, rgba(88, 132, 255, 0.22), transparent 58%),
+    radial-gradient(circle at 82% 18%, rgba(48, 196, 255, 0.16), transparent 55%),
+    radial-gradient(circle at 70% 84%, rgba(60, 120, 235, 0.14), transparent 60%),
     var(--bg-page);
   -webkit-font-smoothing: antialiased;
 }
@@ -316,40 +316,6 @@ main {
   display: flex;
   flex-direction: column;
   gap: clamp(2rem, 4vw, 3rem);
-}
-
-.hero {
-  background: var(--card-gradient);
-  border-radius: 28px;
-  padding: 2.2rem clamp(1.5rem, 4vw, 3.25rem);
-  box-shadow: 0 40px 70px rgba(3, 7, 18, 0.7);
-  border: 1px solid rgba(129, 140, 248, 0.25);
-  text-align: left;
-}
-
-.hero h1 {
-  margin: 0;
-  font-size: clamp(2.2rem, 5vw, 3rem);
-  font-weight: 700;
-  line-height: 1.1;
-  color: #f8faff;
-  margin-bottom: 0.85rem;
-}
-
-.hero__overline {
-  display: inline-block;
-  font-size: 0.78rem;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
-  color: rgba(232, 235, 255, 0.72);
-  margin-bottom: 0.4rem;
-}
-
-.hero__lede {
-  margin: 0;
-  max-width: 48rem;
-  color: var(--text-secondary);
-  font-size: 1.05rem;
 }
 
 .button {
