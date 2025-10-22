@@ -76,7 +76,7 @@
     includeWeekday: true,
     includeWeekend: true,
     baseAverageKey: "overall",
-    thresholdMultiplier: 1.3,
+    thresholdMultiplier: 1.0,
     dateRange: { start: null, end: null },
     extents: { start: null, end: null },
     shouldResetZoom: true,
@@ -119,6 +119,7 @@
     thresholdSummary: document.getElementById("exceedanceSummary"),
     resetZoomButton: document.getElementById("resetZoomButton"),
     timeSeriesCanvas: document.getElementById("timeSeriesChart"),
+    timeSeriesTooltip: document.getElementById("timeSeriesTooltip"),
     hourlyBarCanvas: document.getElementById("hourlyBarChart"),
     hourTableBody: document.getElementById("hourTableBody"),
     previewTableBody: document.getElementById("previewTableBody"),
@@ -132,6 +133,60 @@
     neutral: colorVars.getPropertyValue("--accent-primary").trim() || "#1ea4bf",
   };
 
+  const weekendBackgroundPlugin = {
+    id: "weekendBackground",
+    beforeDraw(chart, args, pluginOptions = {}) {
+      const ranges = Array.isArray(pluginOptions.ranges) ? pluginOptions.ranges : [];
+      if (!ranges.length) {
+        return;
+      }
+
+      const { ctx, chartArea, scales } = chart;
+      if (!chartArea || !scales || !scales.x || !Number.isFinite(chartArea.left) || !Number.isFinite(chartArea.right)) {
+        return;
+      }
+
+      const xScale = scales.x;
+      const fillStyle = pluginOptions.fillStyle || `${colors.weekend}20`;
+      const top = chartArea.top;
+      const height = chartArea.bottom - chartArea.top;
+
+      ctx.save();
+      ctx.fillStyle = fillStyle;
+
+      ranges.forEach((range) => {
+        if (!range || !range.start || !range.end) {
+          return;
+        }
+        const startValue = range.start instanceof Date ? range.start : new Date(range.start);
+        const endValue = range.end instanceof Date ? range.end : new Date(range.end);
+        if (Number.isNaN(startValue.getTime()) || Number.isNaN(endValue.getTime())) {
+          return;
+        }
+
+        const rawStart = xScale.getPixelForValue(startValue);
+        const rawEnd = xScale.getPixelForValue(endValue);
+        if (!Number.isFinite(rawStart) || !Number.isFinite(rawEnd)) {
+          return;
+        }
+
+        const left = Math.max(chartArea.left, Math.min(rawStart, rawEnd));
+        const right = Math.min(chartArea.right, Math.max(rawStart, rawEnd));
+        if (right <= left) {
+          return;
+        }
+
+        ctx.fillRect(left, top, right - left, height);
+      });
+
+      ctx.restore();
+    },
+  };
+
+  if (typeof Chart !== "undefined" && typeof Chart.register === "function") {
+    Chart.register(weekendBackgroundPlugin);
+  }
+
   const zoomPluginGlobal =
     (window.ChartZoom && (window.ChartZoom.default || window.ChartZoom)) ||
     (window["chartjs-plugin-zoom"] && (window["chartjs-plugin-zoom"].default || window["chartjs-plugin-zoom"]));
@@ -142,6 +197,7 @@
 
   let timeSeriesChart = null;
   let hourlyBarChart = null;
+  const timeSeriesTooltipController = createExternalTooltipController(els.timeSeriesTooltip, { delay: 0 });
 
   /* ===== Helpers ===== */
   function formatNumber(value, options = {}) {
@@ -180,6 +236,104 @@
       hour12: false,
     });
     return formatter.format(date);
+  }
+
+  function createExternalTooltipController(element, { delay = 0 } = {}) {
+    if (!element) {
+      return {
+        handler() {},
+        hide() {},
+      };
+    }
+
+    let timeoutId = null;
+
+    function hide() {
+      if (timeoutId !== null) {
+        window.clearTimeout(timeoutId);
+        timeoutId = null;
+      }
+      element.classList.add("chart-tooltip--hidden");
+      element.innerHTML = "";
+    }
+
+    function handler(context) {
+      const { tooltip } = context;
+      if (!tooltip || tooltip.opacity === 0) {
+        hide();
+        return;
+      }
+
+      const dataPoints = tooltip.dataPoints || [];
+      if (!dataPoints.length) {
+        return;
+      }
+
+      const firstPoint = dataPoints[0];
+      const rawTimestamp =
+        firstPoint.raw && firstPoint.raw.x instanceof Date
+          ? firstPoint.raw.x
+          : Number.isFinite(firstPoint.parsed?.x)
+          ? new Date(firstPoint.parsed.x)
+          : null;
+      const timestamp =
+        rawTimestamp instanceof Date && !Number.isNaN(rawTimestamp.getTime())
+          ? rawTimestamp
+          : tooltip.title && tooltip.title.length
+          ? new Date(tooltip.title[0])
+          : null;
+      const timestampLabel =
+        timestamp instanceof Date && !Number.isNaN(timestamp.getTime())
+          ? formatTimestamp(timestamp)
+          : tooltip.title && tooltip.title.length
+          ? tooltip.title[0]
+          : "";
+
+      const itemsHtml = dataPoints
+        .map((point) => {
+          const datasetLabel = point.dataset?.label ?? "";
+          const color =
+            typeof point.dataset?.borderColor === "string" && point.dataset.borderColor
+              ? point.dataset.borderColor
+              : colors.neutral;
+          const valueNumber = typeof point.parsed?.y === "number" ? point.parsed.y : null;
+          const formattedValue =
+            valueNumber !== null
+              ? `${formatNumber(valueNumber)}${datasetLabel.includes("Threshold") ? "" : " lbs/day"}`
+              : point.formattedValue ?? "";
+          return `
+            <div class="chart-tooltip__item">
+              <span class="chart-tooltip__bullet" style="background:${color}"></span>
+              <span class="chart-tooltip__label">${datasetLabel}</span>
+              <span class="chart-tooltip__value">${formattedValue}</span>
+            </div>
+          `;
+        })
+        .join("");
+
+      const content = `
+        <div class="chart-tooltip__title">${timestampLabel}</div>
+        <div class="chart-tooltip__body">${itemsHtml}</div>
+      `;
+
+      if (timeoutId !== null) {
+        window.clearTimeout(timeoutId);
+        timeoutId = null;
+      }
+
+      if (delay <= 0) {
+        element.innerHTML = content;
+        element.classList.remove("chart-tooltip--hidden");
+        return;
+      }
+
+      timeoutId = window.setTimeout(() => {
+        element.innerHTML = content;
+        element.classList.remove("chart-tooltip--hidden");
+      }, delay);
+    }
+
+    return { handler, hide };
   }
 
   function formatShortDate(date) {
@@ -501,24 +655,60 @@
     return hours;
   }
 
-  /* ===== Charts ===== */
-  function buildTimeSeriesDataset(records, thresholdValue) {
-    const weekdayData = [];
-    const weekendData = [];
+  function deriveWeekendBands(records) {
+    if (!state.includeWeekend || !Array.isArray(records) || !records.length) {
+      return [];
+    }
+
+    const weekendStarts = new Set();
     records.forEach((record) => {
-      const point = { x: record.timestamp, y: record.value };
-      if (record.isWeekend) {
-        weekendData.push(point);
-      } else {
-        weekdayData.push(point);
+      if (!record || !record.isWeekend) {
+        return;
+      }
+      const dayStart = startOfDay(record.timestamp);
+      if (dayStart) {
+        weekendStarts.add(dayStart.getTime());
       }
     });
 
+    if (!weekendStarts.size) {
+      return [];
+    }
+
+    const sortedStarts = Array.from(weekendStarts).sort((a, b) => a - b);
+    const bands = [];
+    sortedStarts.forEach((startMs) => {
+      const start = new Date(startMs);
+      const end = endOfDay(start);
+      if (!bands.length) {
+        bands.push({ start, end });
+        return;
+      }
+      const lastBand = bands[bands.length - 1];
+      if (startMs <= lastBand.end.getTime() + 1) {
+        if (end.getTime() > lastBand.end.getTime()) {
+          lastBand.end = end;
+        }
+      } else {
+        bands.push({ start, end });
+      }
+    });
+
+    return bands;
+  }
+
+  /* ===== Charts ===== */
+  function buildTimeSeriesDataset(records, thresholdValue) {
+    const points = Array.isArray(records)
+      ? records.map((record) => ({ x: record.timestamp, y: record.value }))
+      : [];
+    const weekendBands = deriveWeekendBands(records);
+
     const datasets = [];
-    if (state.includeWeekday && weekdayData.length) {
+    if (points.length) {
       datasets.push({
-        label: "Weekday",
-        data: weekdayData,
+        label: "NH4 loading",
+        data: points,
         parsing: false,
         borderColor: colors.weekday,
         backgroundColor: `${colors.weekday}20`,
@@ -528,20 +718,7 @@
       });
     }
 
-    if (state.includeWeekend && weekendData.length) {
-      datasets.push({
-        label: "Weekend",
-        data: weekendData,
-        parsing: false,
-        borderColor: colors.weekend,
-        backgroundColor: `${colors.weekend}20`,
-        tension: 0.3,
-        pointRadius: 0,
-        borderWidth: 2,
-      });
-    }
-
-    if (thresholdValue !== null && records.length) {
+    if (thresholdValue !== null && points.length) {
       const sortedRecords = [...records].sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
       datasets.push({
         label: `Threshold (${formatNumber(thresholdValue)} lbs/day)`,
@@ -555,11 +732,14 @@
       });
     }
 
-    return datasets;
+    return { datasets, weekendBands };
   }
 
   function updateTimeSeriesChart(filteredRecords, thresholdValue, options = {}) {
-    const datasets = buildTimeSeriesDataset(filteredRecords, thresholdValue);
+    const { datasets, weekendBands } = buildTimeSeriesDataset(filteredRecords, thresholdValue);
+    if (timeSeriesTooltipController) {
+      timeSeriesTooltipController.hide();
+    }
     const minTimestamp = filteredRecords.length ? filteredRecords[0].timestamp.getTime() : undefined;
     const maxTimestamp = filteredRecords.length
       ? filteredRecords[filteredRecords.length - 1].timestamp.getTime()
@@ -619,6 +799,14 @@
           legend: {
             position: "top",
           },
+          tooltip: {
+            enabled: false,
+            external: timeSeriesTooltipController.handler,
+          },
+          weekendBackground: {
+            ranges: weekendBands,
+            fillStyle: `${colors.weekend}20`,
+          },
         },
       };
 
@@ -628,7 +816,7 @@
           pan: {
             enabled: true,
             mode: "x",
-            modifierKey: "shift",
+            threshold: 4,
           },
           zoom: {
             wheel: { enabled: true },
@@ -649,7 +837,26 @@
       timeSeriesChart.options.scales.x.max = maxTimestamp;
       if (zoomEnabled && timeSeriesChart.options.plugins && timeSeriesChart.options.plugins.zoom) {
         timeSeriesChart.options.plugins.zoom.limits = zoomLimits;
+        if (!timeSeriesChart.options.plugins.zoom.pan) {
+          timeSeriesChart.options.plugins.zoom.pan = {};
+        }
+        timeSeriesChart.options.plugins.zoom.pan.enabled = true;
+        timeSeriesChart.options.plugins.zoom.pan.mode = "x";
+        timeSeriesChart.options.plugins.zoom.pan.threshold = 4;
       }
+      if (!timeSeriesChart.options.plugins) {
+        timeSeriesChart.options.plugins = {};
+      }
+      if (!timeSeriesChart.options.plugins.tooltip) {
+        timeSeriesChart.options.plugins.tooltip = {};
+      }
+      timeSeriesChart.options.plugins.tooltip.enabled = false;
+      timeSeriesChart.options.plugins.tooltip.external = timeSeriesTooltipController.handler;
+      if (!timeSeriesChart.options.plugins.weekendBackground) {
+        timeSeriesChart.options.plugins.weekendBackground = {};
+      }
+      timeSeriesChart.options.plugins.weekendBackground.ranges = weekendBands;
+      timeSeriesChart.options.plugins.weekendBackground.fillStyle = `${colors.weekend}20`;
       timeSeriesChart.update();
     }
 
