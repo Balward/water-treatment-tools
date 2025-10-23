@@ -755,7 +755,7 @@
     const datasets = [];
     if (points.length) {
       datasets.push({
-        label: "NH4 loading",
+        label: "NH3 loading",
         data: points,
         parsing: false,
         borderColor: colors.weekday,
@@ -837,7 +837,7 @@
             beginAtZero: true,
             title: {
               display: true,
-              text: "NH4 loading (lbs/day)",
+              text: "NH3 loading (lbs/day)",
             },
             grid: {
               color: "rgba(14, 42, 54, 0.08)",
@@ -1209,7 +1209,7 @@
       .then((workbook) => {
         const records = parseWorkbook(workbook);
         if (!records.length) {
-          throw new Error("No valid records found. Confirm the timestamp and NH4 columns are populated.");
+          throw new Error("No valid records found. Confirm the timestamp and NH3 columns are populated.");
         }
         handleDataset(records);
         els.loadStatus.textContent = `Loaded ${records.length} records from ${file.name}.`;
@@ -1225,7 +1225,7 @@
 
   function handleDemoLoad() {
     els.loadStatus.textContent = "Loading demo dataset…";
-    getWorkbookFromUrl("../../sample-data/NH4 Loading - Original.xlsx")
+    getWorkbookFromUrl("../../sample-data/NH3 Loading - Original.xlsx")
       .then((workbook) => {
         const records = parseWorkbook(workbook);
         if (!records.length) {
