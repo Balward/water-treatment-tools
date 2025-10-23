@@ -636,16 +636,33 @@
     const hours = Array.from({ length: 24 }, (_, hour) => ({
       hour,
       total: 0,
+      weekdayTotal: 0,
+      weekendTotal: 0,
       exceedances: 0,
+      exceedancesWeekday: 0,
+      exceedancesWeekend: 0,
       values: [],
     }));
 
     filteredRecords.forEach((record) => {
       const bucket = hours[record.hour];
+      const isWeekend = Boolean(record.isWeekend);
+
       bucket.total += 1;
+      if (isWeekend) {
+        bucket.weekendTotal += 1;
+      } else {
+        bucket.weekdayTotal += 1;
+      }
       bucket.values.push(record.value);
+
       if (thresholdValue !== null && record.value >= thresholdValue) {
         bucket.exceedances += 1;
+        if (isWeekend) {
+          bucket.exceedancesWeekend += 1;
+        } else {
+          bucket.exceedancesWeekday += 1;
+        }
       }
     });
 
@@ -946,54 +963,73 @@
 
   function updateHourlyBarChart(hourAnalytics) {
     const labels = hourAnalytics.map((bucket) => bucket.hour.toString().padStart(2, "0"));
-    const exceedances = hourAnalytics.map((bucket) => bucket.exceedances);
-    const totals = hourAnalytics.map((bucket) => bucket.total);
+    const weekdayExceedances = hourAnalytics.map((bucket) => bucket.exceedancesWeekday);
+    const weekendExceedances = hourAnalytics.map((bucket) => bucket.exceedancesWeekend);
+    const totalExceedances = hourAnalytics.map((bucket) => bucket.exceedances);
+
+    const datasets = [
+      {
+        label: "Weekday exceedances",
+        data: weekdayExceedances,
+        backgroundColor: `${colors.weekday}66`,
+        borderColor: colors.weekday,
+        borderWidth: 1,
+      },
+      {
+        label: "Weekend exceedances",
+        data: weekendExceedances,
+        backgroundColor: `${colors.weekend}66`,
+        borderColor: colors.weekend,
+        borderWidth: 1,
+      },
+      {
+        label: "Total exceedances",
+        data: totalExceedances,
+        backgroundColor: `${colors.threshold}66`,
+        borderColor: colors.threshold,
+        borderWidth: 1,
+      },
+    ];
+
+    const chartConfig = {
+      type: "bar",
+      data: {
+        labels,
+        datasets,
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: {
+            title: { display: true, text: "Hour of day (24h)" },
+            grid: { display: false },
+          },
+          y: {
+            beginAtZero: true,
+            title: { display: true, text: "Exceedances" },
+            grid: { color: "rgba(14, 42, 54, 0.08)" },
+          },
+        },
+        plugins: {
+          legend: { position: "bottom" },
+        },
+      },
+    };
 
     if (!hourlyBarChart) {
-      hourlyBarChart = new Chart(els.hourlyBarCanvas, {
-        type: "bar",
-        data: {
-          labels,
-          datasets: [
-            {
-              label: "Exceedances",
-              data: exceedances,
-              backgroundColor: `${colors.threshold}66`,
-              borderColor: colors.threshold,
-              borderWidth: 1,
-            },
-            {
-              label: "Total samples",
-              data: totals,
-              backgroundColor: `${colors.neutral}33`,
-              borderColor: colors.neutral,
-              borderWidth: 1,
-            },
-          ],
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            x: {
-              title: { display: true, text: "Hour of day (24h)" },
-              grid: { display: false },
-            },
-            y: {
-              beginAtZero: true,
-              title: { display: true, text: "Sample count" },
-              grid: { color: "rgba(14, 42, 54, 0.08)" },
-            },
-          },
-          plugins: {
-            legend: { position: "bottom" },
-          },
-        },
-      });
+      hourlyBarChart = new Chart(els.hourlyBarCanvas, chartConfig);
     } else {
       hourlyBarChart.data.labels = labels;
-      hourlyBarChart.data.datasets[0].data = exceedances;
-      hourlyBarChart.data.datasets[1].data = totals;
+      hourlyBarChart.data.datasets = datasets;
+      if (hourlyBarChart.options?.scales?.x?.title) {
+        hourlyBarChart.options.scales.x.title.display = true;
+        hourlyBarChart.options.scales.x.title.text = "Hour of day (24h)";
+      }
+      if (hourlyBarChart.options?.scales?.y?.title) {
+        hourlyBarChart.options.scales.y.title.display = true;
+        hourlyBarChart.options.scales.y.title.text = "Exceedances";
+      }
       hourlyBarChart.update();
     }
   }
