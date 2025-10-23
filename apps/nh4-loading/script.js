@@ -789,6 +789,15 @@
     if (timeSeriesTooltipController) {
       timeSeriesTooltipController.hide();
     }
+
+    let preservedViewport = null;
+    if (timeSeriesChart && !options.resetZoom) {
+      const xScale = timeSeriesChart.scales?.x;
+      if (xScale && Number.isFinite(xScale.min) && Number.isFinite(xScale.max) && xScale.min < xScale.max) {
+        preservedViewport = { min: xScale.min, max: xScale.max };
+      }
+    }
+
     const minTimestamp = filteredRecords.length ? filteredRecords[0].timestamp.getTime() : undefined;
     const maxTimestamp = filteredRecords.length
       ? filteredRecords[filteredRecords.length - 1].timestamp.getTime()
@@ -882,8 +891,29 @@
       });
     } else {
       timeSeriesChart.data.datasets = datasets;
-      timeSeriesChart.options.scales.x.min = minTimestamp;
-      timeSeriesChart.options.scales.x.max = maxTimestamp;
+      const xScaleOptions = timeSeriesChart.options.scales?.x ?? null;
+      if (xScaleOptions) {
+        if (preservedViewport) {
+          let desiredMin = preservedViewport.min;
+          let desiredMax = preservedViewport.max;
+          if (typeof minTimestamp === "number" && Number.isFinite(minTimestamp)) {
+            desiredMin = Math.max(desiredMin, minTimestamp);
+          }
+          if (typeof maxTimestamp === "number" && Number.isFinite(maxTimestamp)) {
+            desiredMax = Math.min(desiredMax, maxTimestamp);
+          }
+          if (Number.isFinite(desiredMin) && Number.isFinite(desiredMax) && desiredMin < desiredMax) {
+            xScaleOptions.min = desiredMin;
+            xScaleOptions.max = desiredMax;
+          } else {
+            xScaleOptions.min = minTimestamp;
+            xScaleOptions.max = maxTimestamp;
+          }
+        } else {
+          xScaleOptions.min = minTimestamp;
+          xScaleOptions.max = maxTimestamp;
+        }
+      }
       if (zoomEnabled && timeSeriesChart.options.plugins && timeSeriesChart.options.plugins.zoom) {
         timeSeriesChart.options.plugins.zoom.limits = zoomLimits;
         if (!timeSeriesChart.options.plugins.zoom.pan) {
