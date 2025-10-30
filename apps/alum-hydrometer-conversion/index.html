@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Video Tutorials - Water Treatment Tools</title>
+    <title>Alum Hydrometer Conversion - Water Treatment Tools</title>
     <link rel="icon" type="image/png" href="../../assets/logos/favicon.png" />
     <link rel="stylesheet" href="../../global-styles.css?v=1757369234" />
     <link rel="stylesheet" href="styles.css?v=1757369234" />
@@ -34,15 +34,19 @@
             <a class="global-nav__dropdown-link" href="/robojar-analyzer/" data-rel-href="../robojar-analyzer/index.html" role="menuitem">
               RoboJar Analyzer
             </a>
-            <a
-              class="global-nav__dropdown-link"
-              href="/sodium-hypochlorite-calculator/"
-              data-rel-href="../sodium-hypochlorite-calculator/index.html"
-              role="menuitem"
-            >
+            <a class="global-nav__dropdown-link" href="/sodium-hypochlorite-calculator/" data-rel-href="../sodium-hypochlorite-calculator/index.html" role="menuitem">
               Sodium Hypochlorite Calculator
             </a>
-            <a class="global-nav__dropdown-link" href="/alum-hydrometer-conversion/" data-rel-href="../alum-hydrometer-conversion/index.html" role="menuitem">
+            <a class="global-nav__dropdown-link" href="/dose-predictor/" data-rel-href="../dose-predictor/index.html" role="menuitem">
+              Permanganate Dose Predictor
+            </a>
+            <a
+              class="global-nav__dropdown-link"
+              href="/alum-hydrometer-conversion/"
+              data-rel-href="../alum-hydrometer-conversion/index.html"
+              role="menuitem"
+              aria-current="page"
+            >
               Alum Hydrometer Conversion
             </a>
             <a class="global-nav__dropdown-link" href="/water-data-explorer/" data-rel-href="../water-data-explorer/index.html" role="menuitem">
@@ -73,57 +77,182 @@
             <a class="global-nav__dropdown-link" href="/regulation-100-study/" data-rel-href="../regulation-100-study/index.html" role="menuitem">
               Regulation 100 Study Guide
             </a>
-            <a
-              class="global-nav__dropdown-link global-nav__link--active"
-              href="/video-tutorials/"
-              data-rel-href="../video-tutorials/index.html"
-              role="menuitem"
-              aria-current="page"
-            >
+            <a class="global-nav__dropdown-link" href="/video-tutorials/" data-rel-href="../video-tutorials/index.html" role="menuitem">
               Water Treatment Class A Training Videos
             </a>
-            <a class="global-nav__dropdown-link" href="/water-treatment-flashcards/" data-rel-href="../water-treatment-flashcards/index.html" role="menuitem">Water Treatment Flashcards</a>
+            <a class="global-nav__dropdown-link" href="/water-treatment-flashcards/" data-rel-href="../water-treatment-flashcards/index.html" role="menuitem">
+              Water Treatment Flashcards
+            </a>
           </div>
         </li>
       </ul>
     </nav>
 
-    <main class="page video-page">
+    <main class="page alum-page">
       <header class="hero">
-        <span class="hero__overline">Training</span>
-        <h1>Water Treatment Class A Training Videos</h1>
+        <span class="hero__overline">Water Treatment</span>
+        <h1>Alum Hydrometer Conversion</h1>
         <p class="hero__lede">
-          Stream concise walkthroughs on plant math, process control, and compliance topics without leaving the control room.
+          Convert hydrometer density readings and process temperature into corrected &deg;Be, density at 60&nbsp;&deg;F, and estimated dry alum strength.
         </p>
       </header>
 
-      <section id="library" class="card video-library">
+      <section class="card alum-card" aria-labelledby="calculatorTitle">
         <div class="card__header">
           <div>
-            <h2>Video library</h2>
-            <p>Pick a lesson to watch instantly in your browser.</p>
+            <h2 id="calculatorTitle">Enter observed conditions</h2>
+            <p>Edit the two inputs to mirror the Excel workflow.</p>
+          </div>
+          <div class="card__meta">
+            <button id="resetButton" class="btn btn--ghost btn--sm alum-reset-btn" type="button">Reset defaults</button>
           </div>
         </div>
-        <div id="videoGrid" class="video-grid">
-          <!-- Videos rendered via script.js -->
+        <div class="alum-card__content">
+          <div class="alum-inputs">
+            <section class="alum-strength-callout" aria-live="polite" role="status">
+              <div class="alum-strength-callout__label">Dry alum strength</div>
+              <div id="primaryDryAlum" class="alum-strength-callout__value">--</div>
+              <div id="primaryDryAlumStatus" class="alum-strength-callout__status">Awaiting inputs</div>
+            </section>
+            <form class="alum-form" aria-describedby="inputNote">
+            <div class="form-field">
+              <label class="form-label" for="densityInput">Hydrometer reading (g/cm^3)</label>
+              <input
+                id="densityInput"
+                class="form-input"
+                type="number"
+                inputmode="decimal"
+                step="0.0001"
+                min="1"
+                max="2"
+                value="1.327"
+                aria-describedby="densityHelp"
+              />
+              <p id="densityHelp" class="form-help">
+                Enter the density reported by the hydrometer in g/cm^3.
+              </p>
+            </div>
+            <div class="form-field">
+              <label class="form-label" for="tempInput">Sample temperature (&deg;C)</label>
+              <input
+                id="tempInput"
+                class="form-input"
+                type="number"
+                inputmode="decimal"
+                step="0.1"
+                min="0"
+                max="100"
+                value="24.1"
+                aria-describedby="tempHelp"
+              />
+              <p id="tempHelp" class="form-help">
+                The solution temperature when the hydrometer reading was recorded.
+              </p>
+            </div>
+            <p id="inputNote" class="form-note">These are the only cells that move in the spreadsheet&mdash;everything else updates automatically.</p>
+            </form>
+          </div>
+          <aside class="alum-summary">
+            <h3>Quick checks</h3>
+            <ul>
+              <li>Valid ranges: 1.00&ndash;1.40&nbsp;g/cm<sup>3</sup> and 0&ndash;100&nbsp;&deg;C.</li>
+              <li>Positive &deg;Be correction when the sample is warmer than 60&nbsp;&deg;F.</li>
+              <li>The dry alum % should not fall below the guaranteed minimum of 46.6%.</li>
+            </ul>
+          </aside>
         </div>
+      </section>
+
+      <section class="card alum-card" aria-labelledby="resultTitle">
+        <div class="card__header">
+          <div>
+            <h2 id="resultTitle">Corrected hydrometer outputs</h2>
+            <p>Values mirror the conversion polynomials captured in the original Excel tool.</p>
+          </div>
+        </div>
+        <div class="alum-results">
+          <section class="result-group" aria-labelledby="temperatureHeading">
+            <h3 id="temperatureHeading">Temperature conversion</h3>
+            <dl>
+              <div>
+                <dt>Temperature (&deg;F)</dt>
+                <dd id="tempFResult">--</dd>
+              </div>
+              <div>
+                <dt>&deg;Be correction</dt>
+                <dd id="correctionResult">--</dd>
+              </div>
+            </dl>
+          </section>
+          <section class="result-group" aria-labelledby="hydrometerHeading">
+            <h3 id="hydrometerHeading">Hydrometer</h3>
+            <dl>
+              <div>
+                <dt>Equivalent &deg;Be @ 60&nbsp;&deg;F</dt>
+                <dd id="baseBaumeResult">--</dd>
+              </div>
+              <div>
+                <dt>Corrected &deg;Be</dt>
+                <dd id="correctedBaumeResult">--</dd>
+              </div>
+              <div>
+                <dt>Corrected density (g/cm<sup>3</sup>)</dt>
+                <dd id="correctedDensityResult">--</dd>
+              </div>
+            </dl>
+          </section>
+          <section class="result-group" aria-labelledby="strengthHeading">
+            <h3 id="strengthHeading">Dry alum strength</h3>
+            <dl>
+              <div>
+                <dt>Dry alum (%)</dt>
+                <dd id="dryAlumResult" data-unit="%">--</dd>
+              </div>
+              <div class="min-note" role="note">
+                Minimum percent available: <span id="minPercent">46.6%</span>
+              </div>
+            </dl>
+          </section>
+        </div>
+      </section>
+
+      <section class="card alum-card" aria-labelledby="referenceTitle">
+        <div class="card__header">
+          <div>
+            <h2 id="referenceTitle">Reference table</h2>
+            <p>These density to deg Be to % solids triplets underpin the conversion curves.</p>
+          </div>
+        </div>
+        <div class="reference-table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Density (g/cm<sup>3</sup>)</th>
+                <th scope="col">&deg;Be @ 60&nbsp;&deg;F</th>
+                <th scope="col">Dry alum (%)</th>
+              </tr>
+            </thead>
+            <tbody id="referenceTableBody">
+              <tr>
+                <td colspan="3" class="loading-placeholder">Loading reference values...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <footer class="reference-footer">
+          <p>
+            Source: <a href="https://www.usalco.com/products/aluminum-sulfate-solution-alum/" target="_blank" rel="noopener">USALCO Aluminum Sulfate Solution</a>
+            &amp;
+            <a href="https://www.usalco.com/wp-content/uploads/2020/06/USALCO_TDS_Aluminum_Sulfate_Solution-6-30-20.pdf" target="_blank" rel="noopener">Technical data sheet</a>
+          </p>
+        </footer>
       </section>
 
       <footer class="page-footer">
         <p>&copy; 2025 Water Treatment Tools</p>
-        <p>Learning resources curated for operators, engineers, and analysts.</p>
+        <p>Built to support alum feed adjustments at the Water Treatment Facility.</p>
       </footer>
     </main>
-
-    <div id="videoModal" class="wt-modal">
-      <div class="wt-modal-content">
-        <button class="wt-modal-close" type="button" aria-label="Close video">&times;</button>
-        <video id="modalVideo" class="wt-modal-video" controls>
-          Your browser does not support the video tag.
-        </video>
-        <h3 id="modalTitle" class="wt-modal-title"></h3>
-      </div>
-    </div>
 
     <script>
       (function () {
@@ -134,7 +263,6 @@
 
         if (globalNav) {
           const shouldUseFallbackLinks = window.location.protocol === "file:" || window.location.pathname.includes("/apps/");
-
           if (shouldUseFallbackLinks) {
             const fallbackLinks = document.querySelectorAll("[data-rel-href]");
             fallbackLinks.forEach((link) => {
@@ -160,7 +288,6 @@
           if (!globalNav || !globalNavMenu || !globalNavMenuToggle) {
             return;
           }
-
           globalNav.classList.toggle("global-nav--menu-open", isOpen);
           globalNavMenuToggle.setAttribute("aria-expanded", String(isOpen));
           document.body.classList.toggle("has-mobile-nav-open", isOpen);
@@ -240,9 +367,6 @@
         });
       })();
     </script>
-    <script src="script.js?v=20250813050"></script>
+    <script src="script.js?v=1757369234" defer></script>
   </body>
 </html>
-
-
-

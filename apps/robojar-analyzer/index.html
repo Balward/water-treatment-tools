@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -40,8 +40,8 @@
             <a class="global-nav__dropdown-link" href="/sodium-hypochlorite-calculator/" data-rel-href="../sodium-hypochlorite-calculator/index.html" role="menuitem">
               Sodium Hypochlorite Calculator
             </a>
-            <a class="global-nav__dropdown-link" href="/dose-predictor/" data-rel-href="../dose-predictor/index.html" role="menuitem">
-              Permanganate Dose Predictor
+            <a class="global-nav__dropdown-link" href="/alum-hydrometer-conversion/" data-rel-href="../alum-hydrometer-conversion/index.html" role="menuitem">
+              Alum Hydrometer Conversion
             </a>
             <a class="global-nav__dropdown-link" href="/water-data-explorer/" data-rel-href="../water-data-explorer/index.html" role="menuitem">
               Water Data Explorer
@@ -100,22 +100,22 @@
           <li><strong>Upload:</strong> Choose a RoboJar Excel report (.xlsx/.xls) or load demo data.</li>
           <li><strong>Generate:</strong> Run <em>Generate Charts</em> to build visuals for all parameters.</li>
           <li><strong>Navigate:</strong> Switch tabs for Mean Diameter, Mean Volume, Particle Count, and Concentration.</li>
-          <li><strong>Configure:</strong> Adjust chart, forecast, and analytics settings to fit today’s run.</li>
+          <li><strong>Configure:</strong> Adjust chart, forecast, and analytics settings to fit todayâ€™s run.</li>
         </ol>
         <div class="callout callout--tip">
-          💡 <strong>Tip:</strong> Reference the guide below for definitions, forecasting options, and best practices.
+          ðŸ’¡ <strong>Tip:</strong> Reference the guide below for definitions, forecasting options, and best practices.
         </div>
         <div class="instructions-actions">
           <div class="file-input-wrapper">
             <input type="file" id="fileInput" class="file-input" accept=".xls,.xlsx" />
             <button type="button" class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
-              📥 Import RoboJar Excel File
+              ðŸ“¥ Import RoboJar Excel File
             </button>
           </div>
           <div class="instructions-action-buttons">
-            <button id="loadTestFile" class="btn btn-secondary" onclick="loadTestFile()">🧪 Load Test File</button>
+            <button id="loadTestFile" class="btn btn-secondary" onclick="loadTestFile()">ðŸ§ª Load Test File</button>
             <button id="loadStreamingCurrentDemo" class="btn btn-secondary" onclick="loadStreamingCurrentDemo()">
-              ⚡ Load Streaming Current Demo Data
+              âš¡ Load Streaming Current Demo Data
             </button>
           </div>
           <p class="instructions-footnote">
@@ -201,10 +201,10 @@
 
       <section class="card card--charts" id="tabbedChartsContainer" style="display: none">
         <div class="tabs-header">
-          <button class="tab-button active" onclick="switchTab('mean-diameter')" data-tab="mean-diameter">📏 Mean Diameter</button>
-          <button class="tab-button" onclick="switchTab('mean-volume')" data-tab="mean-volume">🧊 Mean Volume</button>
-          <button class="tab-button" onclick="switchTab('particle-count')" data-tab="particle-count">🔢 Particle Count</button>
-          <button class="tab-button" onclick="switchTab('concentration')" data-tab="concentration">💧 Concentration</button>
+          <button class="tab-button active" onclick="switchTab('mean-diameter')" data-tab="mean-diameter">ðŸ“ Mean Diameter</button>
+          <button class="tab-button" onclick="switchTab('mean-volume')" data-tab="mean-volume">ðŸ§Š Mean Volume</button>
+          <button class="tab-button" onclick="switchTab('particle-count')" data-tab="particle-count">ðŸ”¢ Particle Count</button>
+          <button class="tab-button" onclick="switchTab('concentration')" data-tab="concentration">ðŸ’§ Concentration</button>
         </div>
 
         <div class="tab-content active" id="mean-diameter-tab">
@@ -218,7 +218,7 @@
           <div class="analytics-grid">
             <div class="statistics-card">
               <div class="statistics-card__header">
-                <h3>📊 Mean Diameter Statistics</h3>
+                <h3>ðŸ“Š Mean Diameter Statistics</h3>
                 <button type="button" class="metrics-help-btn" onclick="openStatsHelp()" aria-label="Learn about statistics definitions">?</button>
               </div>
               <div class="statistics-controls">
@@ -258,7 +258,7 @@
             </div>
             <div class="metrics-card">
               <div class="metrics-card__header">
-                <h3>📈 Forecast Quality Metrics</h3>
+                <h3>ðŸ“ˆ Forecast Quality Metrics</h3>
                 <button type="button" class="metrics-help-btn" onclick="openMetricsHelp()" aria-label="Learn about forecast quality metrics">?</button>
               </div>
               <div class="metrics-grid" id="meanDiameterMetrics"></div>
@@ -278,14 +278,14 @@
           <div class="analytics-grid">
             <div class="statistics-card">
               <div class="statistics-card__header">
-                <h3>📊 Mean Volume Statistics</h3>
+                <h3>ðŸ“Š Mean Volume Statistics</h3>
                 <button type="button" class="metrics-help-btn" onclick="openStatsHelp()" aria-label="Learn about statistics definitions">?</button>
               </div>
               <div id="meanVolumeStats"></div>
             </div>
             <div class="metrics-card">
               <div class="metrics-card__header">
-                <h3>📈 Forecast Quality Metrics</h3>
+                <h3>ðŸ“ˆ Forecast Quality Metrics</h3>
                 <button type="button" class="metrics-help-btn" onclick="openMetricsHelp()" aria-label="Learn about forecast quality metrics">?</button>
               </div>
               <div class="metrics-grid" id="meanVolumeMetrics"></div>
@@ -305,14 +305,14 @@
           <div class="analytics-grid">
             <div class="statistics-card">
               <div class="statistics-card__header">
-                <h3>📊 Particle Count Statistics</h3>
+                <h3>ðŸ“Š Particle Count Statistics</h3>
                 <button type="button" class="metrics-help-btn" onclick="openStatsHelp()" aria-label="Learn about statistics definitions">?</button>
               </div>
               <div id="particleCountStats"></div>
             </div>
             <div class="metrics-card">
               <div class="metrics-card__header">
-                <h3>📈 Forecast Quality Metrics</h3>
+                <h3>ðŸ“ˆ Forecast Quality Metrics</h3>
                 <button type="button" class="metrics-help-btn" onclick="openMetricsHelp()" aria-label="Learn about forecast quality metrics">?</button>
               </div>
               <div class="metrics-grid" id="particleCountMetrics"></div>
@@ -332,14 +332,14 @@
           <div class="analytics-grid">
             <div class="statistics-card">
               <div class="statistics-card__header">
-                <h3>📊 Concentration Statistics</h3>
+                <h3>ðŸ“Š Concentration Statistics</h3>
                 <button type="button" class="metrics-help-btn" onclick="openStatsHelp()" aria-label="Learn about statistics definitions">?</button>
               </div>
               <div id="concentrationStats"></div>
             </div>
             <div class="metrics-card">
               <div class="metrics-card__header">
-                <h3>📈 Forecast Quality Metrics</h3>
+                <h3>ðŸ“ˆ Forecast Quality Metrics</h3>
                 <button type="button" class="metrics-help-btn" onclick="openMetricsHelp()" aria-label="Learn about forecast quality metrics">?</button>
               </div>
               <div class="metrics-grid" id="concentrationMetrics"></div>
@@ -418,7 +418,7 @@
 
     <div class="floating-generate" id="generateActionBar">
       <button class="btn btn-hero" id="generateChartsHeader" onclick="generateAllCharts()" disabled>
-        <span>📈</span>
+        <span>ðŸ“ˆ</span>
         <span>Generate Charts</span>
       </button>
     </div>
@@ -540,6 +540,9 @@
     <script src="script.js?v=8"></script>
   </body>
 </html>
+
+
+
 
 
 

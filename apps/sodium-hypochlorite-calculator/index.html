@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -33,7 +33,9 @@
           <div class="global-nav__dropdown" role="menu">
             <a class="global-nav__dropdown-link" href="/robojar-analyzer/" data-rel-href="../robojar-analyzer/index.html" role="menuitem">RoboJar Analyzer</a>
             <a class="global-nav__dropdown-link global-nav__link--active" href="/sodium-hypochlorite-calculator/" data-rel-href="../sodium-hypochlorite-calculator/index.html" role="menuitem" aria-current="page">Sodium Hypochlorite Calculator</a>
-            <a class="global-nav__dropdown-link" href="/dose-predictor/" data-rel-href="../dose-predictor/index.html" role="menuitem">Permanganate Dose Predictor</a>
+            <a class="global-nav__dropdown-link" href="/alum-hydrometer-conversion/" data-rel-href="../alum-hydrometer-conversion/index.html" role="menuitem">
+              Alum Hydrometer Conversion
+            </a>
             <a class="global-nav__dropdown-link" href="/water-data-explorer/" data-rel-href="../water-data-explorer/index.html" role="menuitem">Water Data Explorer</a>
           </div>
         </li>
@@ -100,18 +102,18 @@
 
         <div id="result" class="wt-card wt-card--success mt-6" style="display: none;">
             <h3 class="text-xl font-bold text-success flex items-center mb-4">
-                🧪 Filter Basin Dosage Required
+                ðŸ§ª Filter Basin Dosage Required
             </h3>
             <div id="dosageAmount"></div>
             <div id="dosageVolume"></div>
             
             <div id="calculations" class="wt-card mt-6">
                 <h4 class="text-lg font-semibold flex items-center mb-4">
-                    📊 How This Was Calculated
+                    ðŸ“Š How This Was Calculated
                 </h4>
                 <div class="formula-display">
-                    Basic Formula: Dosage (lbs) = (Desired mg/L × Volume MG × 8.34) ÷ (Chemical Strength × Available Chlorine)<br>
-                    Volume (gal) = Dosage (lbs) ÷ (Specific Gravity × 8.34)
+                    Basic Formula: Dosage (lbs) = (Desired mg/L Ã— Volume MG Ã— 8.34) Ã· (Chemical Strength Ã— Available Chlorine)<br>
+                    Volume (gal) = Dosage (lbs) Ã· (Specific Gravity Ã— 8.34)
                 </div>
                 
                 <div id="step1" class="calculation-step"></div>
@@ -121,17 +123,17 @@
                 
                 <div class="constants-info">
                     <strong>Key Constants:</strong><br>
-                    • 8.34 = lbs per gallon of water<br>
-                    • 1.1 = specific gravity of 10% sodium hypochlorite<br>
-                    • 0.96 = available chlorine factor (96%)<br>
-                    • MG = million gallons (basin volume ÷ 1,000,000)<br>
-                    • 128 = fluid ounces per gallon<br>
-                    • 3,785.41 = milliliters per gallon
+                    â€¢ 8.34 = lbs per gallon of water<br>
+                    â€¢ 1.1 = specific gravity of 10% sodium hypochlorite<br>
+                    â€¢ 0.96 = available chlorine factor (96%)<br>
+                    â€¢ MG = million gallons (basin volume Ã· 1,000,000)<br>
+                    â€¢ 128 = fluid ounces per gallon<br>
+                    â€¢ 3,785.41 = milliliters per gallon
                 </div>
             </div>
             
             <div class="wt-card wt-card--warning mt-4">
-                <strong>⚠️ Important Note:</strong> This calculation is for filter basin chemical addition to increase residual levels. It assumes uniform mixing and does not account for chlorine demand or decay. Always verify with residual testing and adjust based on actual filter basin conditions.
+                <strong>âš ï¸ Important Note:</strong> This calculation is for filter basin chemical addition to increase residual levels. It assumes uniform mixing and does not account for chlorine demand or decay. Always verify with residual testing and adjust based on actual filter basin conditions.
             </div>
         </div>
 
@@ -340,10 +342,10 @@
             const availableChlorine = 0.96; // 96% available chlorine
             
             // Main calculation - Standard water treatment formula
-            // Chemical needed (lbs) = (Desired mg/L × Water volume MG × 8.34) ÷ (Chemical purity × Available chlorine)
+            // Chemical needed (lbs) = (Desired mg/L Ã— Water volume MG Ã— 8.34) Ã· (Chemical purity Ã— Available chlorine)
             const dosageLbsPerDay = (residualIncrease * basinVolumeMG * 8.34) / (hypochloriteConcentration * availableChlorine);
             
-            // Convert pounds to gallons: Gallons = lbs ÷ (specific gravity × 8.34)
+            // Convert pounds to gallons: Gallons = lbs Ã· (specific gravity Ã— 8.34)
             const dosageGallons = dosageLbsPerDay / (specificGravity * 8.34);
             const dosageOunces = dosageGallons * 128;
             const dosageMl = dosageGallons * 3785.41;
@@ -368,28 +370,28 @@
             document.getElementById('step1').innerHTML = 
                 `<strong>Step 1: Convert basin volume to million gallons</strong><br>
                 <em>Water treatment calculations use million gallons (MG) as the standard unit for large volumes.</em><br>
-                Volume (MG) = ${basinVolume.toLocaleString()} gal ÷ 1,000,000 = <strong>${basinVolumeMG.toFixed(6)} MG</strong><br>
+                Volume (MG) = ${basinVolume.toLocaleString()} gal Ã· 1,000,000 = <strong>${basinVolumeMG.toFixed(6)} MG</strong><br>
                 <small class="step-note">This conversion allows us to use the standard water treatment dosing formula.</small>`;
             
             document.getElementById('step2').innerHTML = 
                 `<strong>Step 2: Calculate chemical weight needed</strong><br>
-                <em>Using the standard water treatment formula: Chemical weight = (Target concentration × Volume × Water density) ÷ (Chemical strength × Available chlorine)</em><br>
-                Dosage (lbs) = (${residualIncrease} mg/L × ${basinVolumeMG.toFixed(6)} MG × 8.34) ÷ (${hypochloriteConcentration.toFixed(2)} × ${availableChlorine})<br>
-                Dosage (lbs) = ${(residualIncrease * basinVolumeMG * 8.34).toFixed(6)} ÷ ${(hypochloriteConcentration * availableChlorine).toFixed(3)} = <strong>${dosageLbsPerDay.toFixed(4)} lbs</strong><br>
+                <em>Using the standard water treatment formula: Chemical weight = (Target concentration Ã— Volume Ã— Water density) Ã· (Chemical strength Ã— Available chlorine)</em><br>
+                Dosage (lbs) = (${residualIncrease} mg/L Ã— ${basinVolumeMG.toFixed(6)} MG Ã— 8.34) Ã· (${hypochloriteConcentration.toFixed(2)} Ã— ${availableChlorine})<br>
+                Dosage (lbs) = ${(residualIncrease * basinVolumeMG * 8.34).toFixed(6)} Ã· ${(hypochloriteConcentration * availableChlorine).toFixed(3)} = <strong>${dosageLbsPerDay.toFixed(4)} lbs</strong><br>
                 <small class="step-note">
-                    • 8.34 = lbs per gallon of water (density conversion factor)<br>
-                    • ${hypochloriteConcentration.toFixed(2)} = ${hypochloriteConcentrationPercent}% sodium hypochlorite concentration as decimal<br>
-                    • ${availableChlorine} = available chlorine factor (only 96% of the hypochlorite is available for disinfection)
+                    â€¢ 8.34 = lbs per gallon of water (density conversion factor)<br>
+                    â€¢ ${hypochloriteConcentration.toFixed(2)} = ${hypochloriteConcentrationPercent}% sodium hypochlorite concentration as decimal<br>
+                    â€¢ ${availableChlorine} = available chlorine factor (only 96% of the hypochlorite is available for disinfection)
                 </small>`;
             
             document.getElementById('step3').innerHTML = 
                 `<strong>Step 3: Convert chemical weight to solution volume</strong><br>
                 <em>Convert pounds of chemical needed to gallons of solution required using the solution's specific gravity.</em><br>
-                Volume (gal) = ${dosageLbsPerDay.toFixed(4)} lbs ÷ (${specificGravity} × 8.34)<br>
-                Volume (gal) = ${dosageLbsPerDay.toFixed(4)} ÷ ${(specificGravity * 8.34).toFixed(2)} = <strong>${dosageGallons.toFixed(4)} gallons</strong><br>
+                Volume (gal) = ${dosageLbsPerDay.toFixed(4)} lbs Ã· (${specificGravity} Ã— 8.34)<br>
+                Volume (gal) = ${dosageLbsPerDay.toFixed(4)} Ã· ${(specificGravity * 8.34).toFixed(2)} = <strong>${dosageGallons.toFixed(4)} gallons</strong><br>
                 <small class="step-note">
-                    • ${specificGravity} = specific gravity of ${hypochloriteConcentrationPercent}% sodium hypochlorite solution (heavier than water)<br>
-                    • 8.34 = conversion factor to get solution weight per gallon
+                    â€¢ ${specificGravity} = specific gravity of ${hypochloriteConcentrationPercent}% sodium hypochlorite solution (heavier than water)<br>
+                    â€¢ 8.34 = conversion factor to get solution weight per gallon
                 </small>`;
             
             document.getElementById('step4').innerHTML = 
@@ -417,3 +419,6 @@
     </script>
 </body>
 </html>
+
+
+

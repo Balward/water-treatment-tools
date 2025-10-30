@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -46,9 +46,10 @@
             >
               Permanganate Dose Predictor
             </a>
-            <a class="global-nav__dropdown-link" href="/water-data-explorer/" data-rel-href="../water-data-explorer/index.html" role="menuitem">
-              Water Data Explorer
+            <a class="global-nav__dropdown-link" href="/alum-hydrometer-conversion/" data-rel-href="../alum-hydrometer-conversion/index.html" role="menuitem">
+              Alum Hydrometer Conversion
             </a>
+
           </div>
         </li>
         <li class="global-nav__item global-nav__item--dropdown">
@@ -90,7 +91,7 @@
         <span class="hero__overline">Water Treatment</span>
         <h1>Permanganate Dose Predictor</h1>
         <p class="hero__lede">
-          Combine seasonal AI baselines with today’s raw-water readings to dial in confident permanganate feed targets.
+          Combine seasonal AI baselines with todayâ€™s raw-water readings to dial in confident permanganate feed targets.
         </p>
       </header>
 
@@ -100,14 +101,14 @@
           <p>Follow these steps so the model can return a confident recommendation.</p>
         </div>
         <ol class="instructions-list">
-          <li><strong>Seasonal preset:</strong> Choose the profile that best reflects today’s source water conditions.</li>
+          <li><strong>Seasonal preset:</strong> Choose the profile that best reflects todayâ€™s source water conditions.</li>
           <li><strong>Input parameters:</strong> Enter raw water quality data from the most recent grab or online instruments.</li>
           <li><strong>Request prediction:</strong> Select <em>Predict Optimal Dose</em> to run the AI model against your inputs.</li>
           <li><strong>Apply &amp; verify:</strong> Use the suggested dose, then confirm plant response with routine monitoring.</li>
           <li><strong>Document:</strong> Capture the output for compliance records and future model refinements.</li>
         </ol>
         <div class="callout callout--tip">
-          💡 <strong>Model insight:</strong> Trained on 3.5 years of plant history, the model averages ±0.08 mg/L accuracy when source data
+          ðŸ’¡ <strong>Model insight:</strong> Trained on 3.5 years of plant history, the model averages Â±0.08 mg/L accuracy when source data
           is within range.
         </div>
       </section>
@@ -115,26 +116,26 @@
       <section class="card card--presets">
         <div class="card__header">
           <h2>Seasonal Presets</h2>
-          <p>Start with Northglenn’s typical seasonal conditions, then fine-tune with your latest lab results.</p>
+          <p>Start with Northglennâ€™s typical seasonal conditions, then fine-tune with your latest lab results.</p>
         </div>
         <div class="preset-grid">
           <button class="preset-btn" data-season="spring">
-            <span class="preset-icon">🌱</span>
+            <span class="preset-icon">ðŸŒ±</span>
             <span class="preset-name">Spring</span>
             <span class="preset-desc">Higher organics from runoff</span>
           </button>
           <button class="preset-btn" data-season="summer">
-            <span class="preset-icon">☀️</span>
+            <span class="preset-icon">â˜€ï¸</span>
             <span class="preset-name">Summer</span>
             <span class="preset-desc">Stable conditions</span>
           </button>
           <button class="preset-btn" data-season="fall">
-            <span class="preset-icon">🍂</span>
+            <span class="preset-icon">ðŸ‚</span>
             <span class="preset-name">Fall</span>
             <span class="preset-desc">Elevated leaf matter</span>
           </button>
           <button class="preset-btn" data-season="winter">
-            <span class="preset-icon">❄️</span>
+            <span class="preset-icon">â„ï¸</span>
             <span class="preset-name">Winter</span>
             <span class="preset-desc">Reduced biological activity</span>
           </button>
@@ -144,42 +145,42 @@
       <section class="card card--parameters">
         <div class="card__header">
           <h2>Water Quality Inputs</h2>
-          <p>Provide the latest lab values and observations to tailor the prediction to today’s conditions.</p>
+          <p>Provide the latest lab values and observations to tailor the prediction to todayâ€™s conditions.</p>
         </div>
         <form id="parametersForm" class="parameters-form">
           <div class="parameters-grid">
             <div class="parameter-group">
-              <label for="rawMn">⚗️ Raw Manganese (mg/L)</label>
+              <label for="rawMn">âš—ï¸ Raw Manganese (mg/L)</label>
               <input type="number" id="rawMn" step="0.001" min="0.001" max="0.500" placeholder="0.040" required />
               <small>Primary driver of permanganate demand</small>
             </div>
 
             <div class="parameter-group">
-              <label for="rawFe">🔬 Raw Iron (mg/L)</label>
+              <label for="rawFe">ðŸ”¬ Raw Iron (mg/L)</label>
               <input type="number" id="rawFe" step="0.001" min="0.001" max="0.300" placeholder="0.015" required />
               <small>Competes with manganese for permanganate</small>
             </div>
 
             <div class="parameter-group">
-              <label for="rawToc">🌿 Total Organic Carbon (mg/L)</label>
+              <label for="rawToc">ðŸŒ¿ Total Organic Carbon (mg/L)</label>
               <input type="number" id="rawToc" step="0.1" min="0.1" max="10.0" placeholder="2.30" required />
               <small>Organic matter consuming permanganate</small>
             </div>
 
             <div class="parameter-group">
-              <label for="rawPh">🧪 pH Level</label>
+              <label for="rawPh">ðŸ§ª pH Level</label>
               <input type="number" id="rawPh" step="0.1" min="6.0" max="9.0" placeholder="7.45" required />
               <small>Affects permanganate reaction kinetics</small>
             </div>
 
             <div class="parameter-group">
-              <label for="rawTemp">🌡️ Temperature (°C)</label>
+              <label for="rawTemp">ðŸŒ¡ï¸ Temperature (Â°C)</label>
               <input type="number" id="rawTemp" step="0.1" min="-5" max="35" placeholder="6.0" required />
               <small>Higher temperatures increase reaction rates</small>
             </div>
 
             <div class="parameter-group">
-              <label for="rainfall">🌧️ Previous Day Rainfall (inches)</label>
+              <label for="rainfall">ðŸŒ§ï¸ Previous Day Rainfall (inches)</label>
               <input type="number" id="rainfall" step="0.01" min="0.0" max="5.0" placeholder="0.1" required />
               <small>Influences raw water turbidity and organics</small>
             </div>
@@ -187,7 +188,7 @@
 
           <div class="predict-section">
             <button type="submit" class="btn btn-large btn-accent" id="predictBtn">
-              <span>🧠</span>
+              <span>ðŸ§ </span>
               <span>Predict Optimal Dose</span>
             </button>
           </div>
@@ -206,25 +207,25 @@
           </div>
           <div class="prediction-meta">
             <div class="meta-item">
-              <span class="meta-label">🕐 Generated:</span>
+              <span class="meta-label">ðŸ• Generated:</span>
               <span class="meta-value" id="predictionTime">--</span>
             </div>
             <div class="meta-item">
-              <span class="meta-label">🎯 Accuracy:</span>
-              <span class="meta-value">±0.08 mg/L</span>
+              <span class="meta-label">ðŸŽ¯ Accuracy:</span>
+              <span class="meta-value">Â±0.08 mg/L</span>
             </div>
             <div class="meta-item">
-              <span class="meta-label">🤖 Model:</span>
+              <span class="meta-label">ðŸ¤– Model:</span>
               <span class="meta-value">Random Forest</span>
             </div>
           </div>
           <div class="results-actions">
             <button class="btn btn-success" id="copyBtn">
-              <span>📋</span>
+              <span>ðŸ“‹</span>
               <span>Copy Result</span>
             </button>
             <button class="btn btn-slate" id="resetBtn">
-              <span>🔄</span>
+              <span>ðŸ”„</span>
               <span>Reset Form</span>
             </button>
           </div>
@@ -352,3 +353,10 @@
     <script src="script.js?v=1757369234"></script>
   </body>
 </html>
+
+
+
+
+
+
+
