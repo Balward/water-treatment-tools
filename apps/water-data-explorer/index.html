@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -142,14 +142,14 @@
               <h3>Correlation Analysis</h3>
               <div class="header-buttons">
                 <button class="help-toggle-btn" type="button" onclick="toggleHelp('correlation-help')" title="Show/Hide Help">
-                  â„¹ï¸ Help
+                  ℹ️ Help
                 </button>
                 <button class="export-pdf-btn" type="button" onclick="exportChartToPDF('correlation')" title="Export Chart as PDF">
-                  ðŸ“„ Export PDF
+                  📄 Export PDF
                 </button>
               </div>
               <p id="correlation-help" class="instruction-text">
-                â„¹ï¸ <strong>How to use:</strong> Select X and Y variables to explore relationships. Add color grouping to
+                ℹ️ <strong>How to use:</strong> Select X and Y variables to explore relationships. Add color grouping to
                 see how a third variable affects the correlation. Larger bubbles indicate multiple data points at the
                 same location.
               </p>
@@ -183,7 +183,7 @@
                 <canvas id="correlationChart"></canvas>
                 <div class="empty-state" id="correlationEmpty">
                   <p>
-                    ðŸ” Choose X and Y axis variables above to explore correlations between water treatment parameters.
+                    🔍 Choose X and Y axis variables above to explore correlations between water treatment parameters.
                   </p>
                 </div>
               </div>
@@ -197,14 +197,14 @@
               <h3>Time Series Analysis</h3>
               <div class="header-buttons">
                 <button class="help-toggle-btn" type="button" onclick="toggleHelp('timeseries-help')" title="Show/Hide Help">
-                  â„¹ï¸ Help
+                  ℹ️ Help
                 </button>
                 <button class="export-pdf-btn" type="button" onclick="exportChartToPDF('timeseries')" title="Export Chart as PDF">
-                  ðŸ“„ Export PDF
+                  📄 Export PDF
                 </button>
               </div>
               <p id="timeseries-help" class="instruction-text">
-                â„¹ï¸ <strong>How to use:</strong> Select up to 4 variables to view trends over time. Check "Own Y-axis"
+                ℹ️ <strong>How to use:</strong> Select up to 4 variables to view trends over time. Check "Own Y-axis"
                 to force a variable onto its own axis, or let the system automatically group by similar scales. Use
                 scroll to zoom into time periods, drag to pan left/right.
               </p>
@@ -313,7 +313,7 @@
               <div class="chart-container">
                 <h4 id="timeSeriesTitle">Variables over Time</h4>
                 <canvas id="timeSeriesChart"></canvas>
-                <p class="chart-zoom-hint">ðŸ’¡ Scroll to zoom, drag to pan, double-click to reset</p>
+                <p class="chart-zoom-hint">💡 Scroll to zoom, drag to pan, double-click to reset</p>
               </div>
             </div>
           </div>
@@ -325,22 +325,22 @@
               <h3>Distribution Analysis</h3>
               <div class="header-buttons">
                 <button class="help-toggle-btn" type="button" onclick="toggleHelp('distribution-help')" title="Show/Hide Help">
-                  â„¹ï¸ Help
+                  ℹ️ Help
                 </button>
                 <button class="export-pdf-btn" type="button" onclick="exportChartToPDF('distribution')" title="Export Chart as PDF">
-                  ðŸ“„ Export PDF
+                  📄 Export PDF
                 </button>
               </div>
               <p id="distribution-help" class="instruction-text">
-                â„¹ï¸ <strong>How to use:</strong> Select a variable to see its frequency distribution. Adjust bin count to
+                ℹ️ <strong>How to use:</strong> Select a variable to see its frequency distribution. Adjust bin count to
                 change histogram detail. Statistics panel shows key metrics like mean, median, and standard deviation.
                 <br /><br />
                 <strong>Key Statistics Explained:</strong><br />
-                â€¢ <strong>STD Deviation:</strong> Measures how spread out your data is from the average. Lower values
+                • <strong>STD Deviation:</strong> Measures how spread out your data is from the average. Lower values
                 mean data points are clustered close to the mean; higher values indicate more variation.<br />
-                â€¢ <strong>Q1 (First Quartile):</strong> The value below which 25% of your data falls. Useful for
+                • <strong>Q1 (First Quartile):</strong> The value below which 25% of your data falls. Useful for
                 identifying the lower range of typical values.<br />
-                â€¢ <strong>Q3 (Third Quartile):</strong> The value below which 75% of your data falls. Helps identify the
+                • <strong>Q3 (Third Quartile):</strong> The value below which 75% of your data falls. Helps identify the
                 upper range of typical values. The difference between Q3 and Q1 shows the middle 50% spread of your
                 data.
               </p>
@@ -384,14 +384,14 @@
               <h3>Optimization Analysis</h3>
               <div class="header-buttons">
                 <button class="help-toggle-btn" type="button" onclick="toggleHelp('optimization-help')" title="Show/Hide Help">
-                  â„¹ï¸ Help
+                  ℹ️ Help
                 </button>
                 <button class="export-pdf-btn" type="button" onclick="exportChartToPDF('optimization')" title="Export Chart as PDF">
-                  ðŸ“„ Export PDF
+                  📄 Export PDF
                 </button>
               </div>
               <p id="optimization-help" class="instruction-text">
-                â„¹ï¸ <strong>How to use:</strong> Select a target variable to optimize. The correlation matrix shows which
+                ℹ️ <strong>How to use:</strong> Select a target variable to optimize. The correlation matrix shows which
                 variables most strongly influence your target. Click correlation buttons to view scatter plots with
                 trend lines.
               </p>
@@ -400,7 +400,7 @@
             <div class="ai-insights-panel" id="aiInsightsPanel" style="display: none">
               <div class="ai-insights-header">
                 <div class="ai-header-top">
-                  <h4>ðŸ¤– AI Correlation Insights</h4>
+                  <h4>🤖 AI Correlation Insights</h4>
                   <div class="ai-provider-selector">
                     <label class="provider-option">
                       <input type="radio" name="aiProvider" value="claude" checked />
@@ -431,7 +431,7 @@
                     onclick="explainCorrelation()"
                     style="display: none"
                   >
-                    ðŸ¤– Explain This Correlation
+                    🤖 Explain This Correlation
                   </button>
                 </div>
               </div>
@@ -488,7 +488,7 @@
     <div id="explanationModal" class="modal" style="display: none">
       <div class="modal-content">
         <div class="modal-header">
-          <h3>ðŸ’¡ Correlation Explanation</h3>
+          <h3>💡 Correlation Explanation</h3>
           <span class="close" onclick="closeExplanationModal()">&times;</span>
         </div>
         <div class="modal-body">
@@ -505,7 +505,7 @@
           </div>
           <div class="modal-footer">
             <p class="disclaimer">
-              ðŸ’¡ Technical explanation based on water treatment principles. Please verify with your operational
+              💡 Technical explanation based on water treatment principles. Please verify with your operational
               expertise.
             </p>
             <button class="btn-secondary" type="button" onclick="closeExplanationModal()">Close</button>
