@@ -45,6 +45,10 @@ const SEASONAL_PRESETS = {
 // Global variables
 let selectedPreset = null;
 let lastPrediction = null;
+let helpModal = null;
+let helpModalBackdrop = null;
+let helpModalCloseBtn = null;
+let helpModalDismissBtn = null;
 
 // Notification System
 function showNotification(message, type = "info", duration = 5000) {
@@ -100,7 +104,15 @@ function closeNotification(closeButton) {
 document.addEventListener("DOMContentLoaded", function () {
   initializeEventListeners();
   loadSavedValues();
+  cacheModalElements();
 });
+
+function cacheModalElements() {
+  helpModal = document.getElementById("helpModal");
+  helpModalBackdrop = document.getElementById("helpModalBackdrop");
+  helpModalCloseBtn = document.getElementById("helpModalClose");
+  helpModalDismissBtn = document.getElementById("helpModalDismiss");
+}
 
 function initializeEventListeners() {
   // Seasonal preset buttons
@@ -119,6 +131,22 @@ function initializeEventListeners() {
   // Action buttons
   document.getElementById("copyBtn").addEventListener("click", copyPrediction);
   document.getElementById("resetBtn").addEventListener("click", resetForm);
+
+  // Help modal
+  const helpBtn = document.getElementById("helpBtn");
+  if (helpBtn) {
+    helpBtn.addEventListener("click", openHelpModal);
+  }
+
+  [helpModalCloseBtn, helpModalDismissBtn, helpModalBackdrop]
+    .filter(Boolean)
+    .forEach((el) => el.addEventListener("click", closeHelpModal));
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && helpModal?.classList.contains("is-open")) {
+      closeHelpModal();
+    }
+  });
 }
 
 function loadSavedValues() {
@@ -370,4 +398,26 @@ function resetForm() {
   localStorage.removeItem("dosePredictor_lastValues");
 
   showNotification("Form reset successfully", "info");
+}
+
+function openHelpModal() {
+  if (!helpModal) return;
+  helpModal.classList.add("is-open");
+  helpModal.setAttribute("aria-hidden", "false");
+  document.body.style.overflow = "hidden";
+  const focusTarget = helpModal.querySelector("button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])");
+  if (focusTarget instanceof HTMLElement) {
+    focusTarget.focus();
+  }
+}
+
+function closeHelpModal() {
+  if (!helpModal) return;
+  helpModal.classList.remove("is-open");
+  helpModal.setAttribute("aria-hidden", "true");
+  document.body.style.overflow = "";
+  const helpBtn = document.getElementById("helpBtn");
+  if (helpBtn) {
+    helpBtn.focus();
+  }
 }
