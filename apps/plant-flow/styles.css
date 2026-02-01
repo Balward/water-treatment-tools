@@ -47,17 +47,22 @@ main {
 }
 
 .floating-banner {
-  position: sticky;
-  top: 96px;
-  width: calc(100% - 2rem);
-  max-width: 1120px;
-  margin: 0.75rem auto 0;
+  /* Override bundled styles to center and keep sticky inside the page */
+  position: sticky !important;
+  top: 96px !important;
+  left: auto !important;
+  right: auto !important;
+  transform: none !important;
+  width: 100% !important;
+  max-width: 1120px !important;
+  margin: 0.75rem auto 0 !important;
   background: linear-gradient(135deg, #0f172a, #0c1531);
   border: 1px solid var(--border-soft);
   border-radius: 14px;
   box-shadow: 0 20px 32px rgba(0, 0, 0, 0.32);
   color: var(--text-primary);
   padding: 0.8rem 1.1rem;
+  z-index: 10;
 }
 
 .micro-segment {
