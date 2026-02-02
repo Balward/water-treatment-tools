@@ -19,9 +19,21 @@
 
 body {
   background:
-    radial-gradient(circle at 18% 20%, rgba(88, 132, 255, 0.18), transparent 58%),
-    radial-gradient(circle at 82% 18%, rgba(48, 196, 255, 0.12), transparent 55%),
-    radial-gradient(circle at 70% 84%, rgba(60, 120, 235, 0.12), transparent 60%),
+    radial-gradient(
+      circle at 18% 20%,
+      rgba(88, 132, 255, 0.18),
+      transparent 58%
+    ),
+    radial-gradient(
+      circle at 82% 18%,
+      rgba(48, 196, 255, 0.12),
+      transparent 55%
+    ),
+    radial-gradient(
+      circle at 70% 84%,
+      rgba(60, 120, 235, 0.12),
+      transparent 60%
+    ),
     var(--bg-page);
   color: var(--text-primary);
   font-family: "Inter", "Segoe UI", Roboto, sans-serif;
@@ -47,27 +59,37 @@ main {
 }
 
 .floating-banner {
-  /* Override bundled styles to center and keep sticky inside the page */
+  /* Force centering and stickiness over bundled fixed positioning */
   position: sticky !important;
-  top: 96px !important;
-  left: auto !important;
-  right: auto !important;
+  top: 104px !important;
+  left: 0 !important;
+  right: 0 !important;
   transform: none !important;
   width: 100% !important;
   max-width: 1120px !important;
-  margin: 0.75rem auto 0 !important;
-  background: linear-gradient(135deg, #0f172a, #0c1531);
+  margin: 0.4rem auto 0 !important;
+  background: linear-gradient(135deg, rgba(38, 61, 135), rgba(18, 32, 75));
   border: 1px solid var(--border-soft);
   border-radius: 14px;
   box-shadow: 0 20px 32px rgba(0, 0, 0, 0.32);
   color: var(--text-primary);
-  padding: 0.8rem 1.1rem;
-  z-index: 10;
+  padding: 0.9rem 1.25rem;
+  z-index: 12;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
 }
 
 .micro-segment {
-  background: rgba(99, 102, 241, 0.12);
-  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.18);
+  color: #0a1a34;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  font-weight: 800;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+
+.micro-segment span {
+  color: #0a1a34;
 }
 
 .micro-tooltip {
@@ -81,7 +103,11 @@ main {
 }
 
 .hero {
-  background: linear-gradient(135deg, rgba(38, 61, 135, 0.9), rgba(18, 32, 75, 0.95));
+  background: linear-gradient(
+    135deg,
+    rgba(38, 61, 135, 0.9),
+    rgba(18, 32, 75, 0.95)
+  );
   border: 1px solid var(--border-soft);
   border-radius: 18px;
   box-shadow: 0 18px 34px rgba(0, 0, 0, 0.35);
@@ -107,7 +133,11 @@ main {
 .process-map,
 .timeline,
 .chem {
-  background: linear-gradient(135deg, #1a2f61, #16254d);
+  background: linear-gradient(
+    135deg,
+    rgba(38, 61, 135, 0.9),
+    rgba(18, 32, 75, 0.95)
+  );
   border: 1px solid var(--border-soft);
   border-radius: 16px;
   box-shadow: 0 18px 36px rgba(0, 0, 0, 0.32);
