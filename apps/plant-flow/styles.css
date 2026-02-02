@@ -85,7 +85,7 @@ main {
   color: #0a1a34;
   border: 1px solid rgba(255, 255, 255, 0.28);
   font-weight: 800;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.35);
 }
 
 .micro-segment span {
@@ -298,4 +298,56 @@ input[type="range"]::-moz-range-thumb {
   height: 12px;
   border-radius: 999px;
   background: linear-gradient(90deg, #1f2d51 0%, #2f4477 100%);
+}
+
+/* Align process train button colors with total-detention badge palette */
+.unit-block.on.stage-flash {
+  --stage-bg: linear-gradient(150deg, #7fb7da 0%, #4e85ad 100%);
+  --stage-border: #6ba6ce;
+}
+
+.unit-block.on.stage-floc {
+  --stage-bg: linear-gradient(150deg, #8698d7 0%, #5566a7 100%);
+  --stage-border: #7385c8;
+}
+
+.unit-block.on.stage-clar {
+  --stage-bg: linear-gradient(150deg, #d7bd86 0%, #a07f4b 100%);
+  --stage-border: #c29a63;
+}
+
+.unit-block.on.stage-pac {
+  --stage-bg: linear-gradient(150deg, #84c3a4 0%, #568871 100%);
+  --stage-border: #6fab93;
+}
+
+.unit-block.on.stage-filters {
+  --stage-bg: linear-gradient(150deg, #ada0e0 0%, #7c68b6 100%);
+  --stage-border: #9a87d6;
+}
+
+.unit-block.on.stage-clearwell {
+  --stage-bg: linear-gradient(150deg, #86c5c5 0%, #5b9696 100%);
+  --stage-border: #74b8b8;
+}
+
+:root {
+  --bar-flash: #6ba6ce;
+  --bar-floc: #7385c8;
+  --bar-clar: #c29a63;
+  --bar-pac: #6fab93;
+  --bar-filters: #9a87d6;
+  --bar-clearwell: #74b8b8;
+}
+
+/* Match button text/border treatment to banner badges */
+.unit-block.on.stage-flash,
+.unit-block.on.stage-floc,
+.unit-block.on.stage-clar,
+.unit-block.on.stage-pac,
+.unit-block.on.stage-filters,
+.unit-block.on.stage-clearwell {
+  color: #0f1a2e;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.35);
+  border: 2px solid rgba(255, 255, 255, 0.28);
 }
