@@ -121,6 +121,20 @@ main {
   color: var(--text-primary);
 }
 
+/* Reorder main sections so banner sits between hero and process train */
+.hero {
+  order: 1;
+}
+
+.floating-banner {
+  order: 2;
+  margin-top: 0.75rem;
+}
+
+.process-map {
+  order: 3;
+}
+
 .eyebrow {
   color: rgba(232, 235, 255, 0.7);
 }
@@ -227,6 +241,19 @@ main {
 .page p,
 .page span {
   color: var(--text-primary);
+}
+
+/* Normalize global nav appearance to match other apps */
+.global-nav a,
+.global-nav__link,
+.global-nav__dropdown-link {
+  text-decoration: none !important;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.global-nav__dropdown-link {
+  padding: 0.65rem 0.9rem;
 }
 
 .page h2 {
