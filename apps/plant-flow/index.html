@@ -104,6 +104,29 @@
       <div id="root"></div>
     </main>
 
+    <!-- Inline help modal for quick guidance -->
+    <button class="help-launch" type="button" aria-haspopup="dialog" aria-controls="helpModal" aria-expanded="false" title="Open help">
+      ?
+      <span class="sr-only">Open help</span>
+    </button>
+    <div class="help-modal" id="helpModal" role="dialog" aria-modal="true" aria-hidden="true">
+      <div class="help-modal__surface">
+        <header class="help-modal__header">
+          <h2>How this app works</h2>
+          <button class="help-close" type="button" aria-label="Close help">×</button>
+        </header>
+        <div class="help-modal__body">
+          <ol>
+            <li>Adjust plant flow with the slider; detention times update instantly.</li>
+            <li>Tap any basin button to toggle that unit in/out of service.</li>
+            <li>The banner shows total detention; hover badges for per-stage detail.</li>
+            <li>Injection chips show where each chemical enters the train.</li>
+            <li>Toggle filters individually; clarifiers and floc basins respect parallel loading.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
     <script type="module" crossorigin src="./assets/index-jDXMqWz2.js"></script>
     <script>
       (() => {
@@ -156,6 +179,37 @@
         document.addEventListener("click", () => {
           closeDropdownMenus();
           setMobileMenuOpen(false);
+        });
+      })();
+
+      // Lightweight help modal controls
+      (() => {
+        const launch = document.querySelector(".help-launch");
+        const modal = document.getElementById("helpModal");
+        const closeBtn = modal?.querySelector(".help-close");
+        if (!launch || !modal || !closeBtn) return;
+
+        const open = () => {
+          modal.setAttribute("aria-hidden", "false");
+          launch.setAttribute("aria-expanded", "true");
+          closeBtn.focus();
+        };
+        const close = () => {
+          modal.setAttribute("aria-hidden", "true");
+          launch.setAttribute("aria-expanded", "false");
+          launch.focus();
+        };
+
+        launch.addEventListener("click", (e) => {
+          e.stopPropagation();
+          modal.getAttribute("aria-hidden") === "true" ? open() : close();
+        });
+        closeBtn.addEventListener("click", close);
+        modal.addEventListener("click", (e) => {
+          if (e.target === modal) close();
+        });
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "Escape" && modal.getAttribute("aria-hidden") === "false") close();
         });
       })();
     </script>
