@@ -651,6 +651,18 @@
       })();
     </script>
     <script src="script.js?v=20260204a"></script>
+    <script>
+      // Remove any legacy provider badge (e.g., "ChatGPT • GPT-4") that may linger from cached builds
+      document.addEventListener("DOMContentLoaded", () => {
+        const header = document.querySelector(".ai-header-top");
+        if (!header) return;
+        header.querySelectorAll("button, a, span, div").forEach((el) => {
+          if (el.textContent && el.textContent.toLowerCase().includes("chatgpt")) {
+            el.remove();
+          }
+        });
+      });
+    </script>
   </body>
 </html>
 
