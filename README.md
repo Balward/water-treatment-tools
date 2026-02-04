@@ -1,216 +1,64 @@
 # Water Treatment Tools
 
-A comprehensive collection of data analysis and visualization tools for water treatment professionals. This workspace provides a centralized hub for various analytics applications designed specifically for water treatment operations, regulatory compliance, and operator training.
+A collection of focused, single-page web apps that help operators analyze data, size chemical feeds, and train staff for surface water and wastewater treatment. Everything is static HTML/CSS/JS (no build step required); just open an app’s `index.html` in a browser or serve the `/apps` folder from any web server.
 
-## 🚀 Quick Start
+## App directory
 
-1. **Access the Dashboard**: Open `packages/dashboard/dashboard.html` for the main interface
-2. **Navigate to Tools**: Use the dashboard to access individual applications
-3. **Sample Data**: Test files are available in the `data/` directory
-4. **Documentation**: Detailed guides available in the `docs/` directory
-5. **Working with the AI Agent**: See [docs/agent-single-branch-workflow.md](docs/agent-single-branch-workflow.md) for tips on using short-lived PR branches that merge back into `main`.
+- `apps/dashboard/` – Launch pad with city branding and links to every tool.
+- `apps/plant-flow/` – Interactive detention-time model; toggle basins, adjust flow, and see chemical travel times and cumulative detention. Mobile-friendly with in-app help.
+- `apps/robojar-analyzer/` – Analyze RoboJar particle reports; charts, stats, forecasting, export to PNG/PDF.
+- `apps/dose-predictor/` – Permanganate dose predictor using historical patterns.
+- `apps/alum-hydrometer-conversion/` – Convert alum hydrometer readings to percent strength.
+- `apps/sodium-hypochlorite-calculator/` – Sodium hypochlorite dose calculator for filters/basins.
+- `apps/mwat-calculator/` – Maximum Weekly Average Temperature calculator from overlapping CSVs.
+- `apps/nh4-loading/` – Ammonia (NH₄) loading insights for wastewater.
+- `apps/regulation-100-study/` – Operator certification study guide.
+- `apps/video-tutorials/` – Class A training video library.
+- `apps/water-treatment-flashcards/` – Flashcards for key terms and concepts.
+- `apps/water-data-explorer/` – Correlation, time series, and distribution explorer for water quality data.
 
-## 🛠️ Available Tools
+## Quick use
 
-### 🏠 Dashboard (`packages/dashboard/`)
-**Centralized application hub with modern interface**
+1. Open `apps/dashboard/index.html` in a browser to navigate the suite, or open any app’s `index.html` directly.
+2. Use `sample-data/` for quick demos where provided (e.g., RoboJar Analyzer).
+3. Most apps are client-side only; no backend is required.
 
-**Features:**
-- Clean, professional interface with city branding
-- Easy navigation between all tools
-- Tool descriptions and quick access
-- Responsive design for all devices
-- Official water treatment analysis platform
+## Optional proxy (for AI/remote calls)
 
-### 📊 RoboJar Analyzer (`packages/robojar-analyzer/`)
-**Advanced Excel report analyzer for RoboJar particle analysis data**
+A small Express proxy can be run if needed by certain integrations:
 
-**Key Features:**
-- **Tabbed Interface**: Analyze multiple parameters simultaneously (Mean Diameter, Mean Volume, Particle Count, Concentration)
-- **Smart Date Formatting**: Run dates automatically formatted as MM-DD-YYYY HH:MM
-- **Interactive Charts**: Line charts and scatter plots with Chart.js
-- **Statistical Analysis**: Comprehensive statistics with noise filtering and time window controls
-- **Advanced Forecasting**: Multiple algorithms (Adaptive, Windowed, Weighted, Simple polynomial regression)
-- **Export Capabilities**: PNG charts and comprehensive PDF reports
-- **Quality Metrics**: R², RMSE, MAE, MAPE for forecast validation
-- **Help System**: Built-in modal help for statistics and forecast metrics explanations
-- **Time Window Controls**: Full duration, steady state, final 10 minutes, or custom time ranges
-- **Data Filtering**: Remove outliers (IQR method) and smooth data with moving averages
-- **Header Action Bar**: Quick access buttons for chart generation and export functions
-- **Test File Support**: Load sample data for testing and demonstrations
-- **Notification System**: User-friendly alerts and status messages
-- **Responsive Design**: Works on desktop and mobile devices
-
-**Usage Instructions:**
-1. **Upload File**: Import RoboJar Excel report (.xlsx/.xls) or load test file
-2. **Generate Charts**: Click "Generate Charts" to create visualizations for all parameters
-3. **Navigate Tabs**: Switch between Mean Diameter, Mean Volume, Particle Count, and Concentration
-4. **Configure Analysis**: Adjust time windows, forecasting methods, and filtering options
-5. **View Statistics**: Comprehensive statistics with help tooltips for understanding metrics
-6. **Export Results**: Save individual PNG charts or generate comprehensive PDF reports
-
-**Recent Updates:**
-- ✅ Added "Load Water Quality Demo Data" button for specialized datasets
-- ✅ Paddle RPM enabled by default for comprehensive analysis
-- ✅ Removed dashboard button for cleaner interface
-- ✅ Redesigned UI with tabbed interface for better workflow
-- ✅ Enhanced run date parsing with timezone removal
-- ✅ Header action buttons for streamlined operations
-- ✅ Improved data visualization and statistics display
-- ✅ Test file loading functionality for quick demos
-- ✅ Comprehensive help modals for statistics and forecast metrics
-- ✅ Advanced time window and filtering controls
-
-### 🧪 Dose Predictor (`packages/dose-predictor/`)
-**AI-powered sodium permanganate dose optimization using machine learning**
-
-**Features:**
-- Machine learning trained on operational data
-- Predictive dosing algorithms for sodium permanganate
-- Historical data analysis and trending
-- Treatment optimization recommendations
-- Chemical cost calculation and ROI analysis
-
-### 📊 MWAT & Daily Maximum Calculator (`packages/data-parser/`)
-**Calculate Maximum Weekly Average Temperature (MWAT) and Daily Maximum Temperature per Colorado DMR requirements**
-
-**Features:**
-- Colorado DMR compliance calculations
-- MWAT (Maximum Weekly Average Temperature) calculations
-- Daily Maximum temperature tracking
-- Data merging and validation
-- Automated regulatory report generation
-- Temperature trend analysis
-
-### 📚 Regulation 100 Study Guide (`packages/regulation-100-study/`)
-**Interactive slideshow for mastering water and wastewater facility operator certification requirements**
-
-**Features:**
-- Interactive slideshow format
-- Colorado Regulation 100 content
-- Water and wastewater operator certification prep
-- Professional exam preparation materials
-- Self-paced learning modules
-
-### 🃏 Water Treatment Flashcards (`packages/water-treatment-flashcards/`)
-**Master water treatment terminology with interactive flashcards from professional reference books**
-
-**Features:**
-- Interactive flashcard system
-- Professional water treatment terminology
-- Reference book content integration
-- Study progress tracking
-- Spaced repetition learning
-
-### 💧 Sodium Hypochlorite Calculator (`packages/sodium-hypochlorite-calculator/`)
-**Calculate chemical addition to filter basins for residual increase using 10% sodium hypochlorite solution**
-
-**Features:**
-- Filter basin dosing calculations
-- 10% sodium hypochlorite solution calculations
-- Residual increase optimization
-- Chemical addition rate calculations
-- Real-time calculation updates
-
-### 🏭 Fan Press Data Tracker (`packages/fan-press-tracker/`)
-**Enter and analyze fan press operational data to optimize cake solids performance with interactive trending**
-
-**Features:**
-- Fan press operational data entry
-- Cake solids performance optimization
-- Interactive trending and visualization
-- Historical performance tracking
-- Operational efficiency analysis
-
-### 📈 Water Data Explorer (`apps/water-data-explorer/`)
-**Interactive analysis of water quality and treatment parameters with correlation, time series, distribution, and optimization charts**
-
-**Features:**
-- Water quality parameter analysis
-- Water treatment parameter correlation
-- Time series analysis and trending
-- Distribution analysis and statistics
-- Optimization charts and recommendations
-- Interactive data visualization
-- Multiple chart types and views
-
-### 🌡️ Stream MWAT Calculator (`apps/mwat-calculator/`)
-**Combine overlapping CSV exports to compute monthly Maximum Weekly Average Temperature values**
-
-**Features:**
-- Accepts two CSV files with timestamps in column B and temperatures in column C
-- Automatically merges overlapping 15-minute readings and computes daily averages
-- Calculates rolling seven-day MWAT windows following regulatory guidance
-- Attributes cross-month windows to the month containing at least four days in the span
-- Highlights the highest MWAT for the selected reporting month and lists all qualifying windows
-- Provides a daily-average summary table for transparency and QA checks
-
-## 📁 Project Structure
 ```
-water-treatment-tools/
-├── packages/
-│   ├── dashboard/                      # Main application dashboard
-│   ├── robojar-analyzer/              # RoboJar data analysis tool
-│   ├── dose-predictor/                # AI-powered chemical dosing calculator
-│   ├── data-parser/                   # MWAT & Daily Maximum calculator
-│   ├── regulation-100-study/          # Operator certification study guide
-│   ├── water-treatment-flashcards/    # Interactive flashcards
-│   ├── sodium-hypochlorite-calculator/# Chemical dosing calculator
-│   ├── fan-press-tracker/            # Fan press operational data tracker
-│   └── water-data-explorer/          # Water quality data analysis
-├── data/                              # Sample data files and templates
-├── docs/                              # Documentation and guides
-├── city-logos/                        # Branding and visual assets
-├── city-fonts/                        # Typography resources
-├── api/                               # Backend services
-└── README.md                          # This file
+npm install
+npm start   # runs claude-proxy-server.js
 ```
 
-## 🎯 Use Cases
+Environment: copy `.env.template` to `.env` and set required keys. The proxy is not needed for normal static use.
 
-- **Laboratory Analysis**: Process RoboJar particle analysis reports with advanced statistics
-- **Treatment Optimization**: AI-powered chemical dosing predictions and optimization
-- **Regulatory Compliance**: Calculate MWAT/DDMAX for Colorado DMR reporting
-- **Operator Training**: Interactive study guides and flashcards for certification
-- **Data Visualization**: Create professional charts and reports for all parameters
-- **Quality Control**: Statistical analysis with outlier detection and trending
-- **Operations Management**: Track fan press performance and water treatment parameters
-- **Chemical Calculations**: Precise dosing calculations for various treatment chemicals
-- **Process Monitoring**: Real-time analysis of water quality and treatment data
+## Design system
 
-## 🔧 Technical Details
+- Shared styles: `global-styles.css` plus app-specific `styles.css`.
+- Icons/logos: `assets/logos/`.
+- Each app ships pre-bundled assets in its `assets/` subfolder; no build step is required unless you edit source JS/TS (if present, the bundled file names are already referenced in the HTML).
 
-- **Frontend**: Pure HTML5, CSS3, JavaScript (ES6+)
-- **Charts**: Chart.js for interactive visualizations
-- **File Processing**: SheetJS for Excel file parsing
-- **PDF Generation**: jsPDF for report creation
-- **Styling**: Modern CSS with CSS Variables and Flexbox/Grid
-- **Responsive**: Mobile-first design approach
+## File layout
 
-## 📊 Supported File Formats
+```
+apps/                 individual tools (see above)
+assets/               shared images/logos
+docs/                 supplementary docs and guides
+sample-data/          demo datasets (where applicable)
+global-styles.css     shared typography and theme
+nginx.conf            sample reverse-proxy/static hosting config
+claude-proxy-server.js optional Express proxy
+package.json          proxy dependencies/scripts
+```
 
-- **Excel Files**: `.xls`, `.xlsx` (RoboJar reports, water quality data, operational data)
-- **CSV Files**: Comma-separated values for various data types
-- **Export Formats**: PNG images, PDF reports, data exports
-- **Demo Data**: Built-in test files for immediate functionality testing
+## Contributing and customization
 
-## 🏆 Key Benefits
+- Modify an app’s `styles.css` and `index.html` for content or layout tweaks.
+- When updating bundled JS assets, regenerate the build artifact the HTML references (e.g., `assets/index-*.js` / `.css`) using the app’s preferred bundler if source is available.
+- Keep mobile responsiveness in mind; most layouts rely on CSS grid/flex with clamp-based spacing.
 
-- **No Installation Required**: Browser-based applications work on any device
-- **Professional Results**: Publication-ready charts and reports for presentations
-- **Regulatory Compliant**: Built specifically for water treatment industry standards
-- **User Friendly**: Intuitive interfaces with comprehensive help systems
-- **Fast Processing**: Optimized for large datasets with real-time updates
-- **Quality Assurance**: Built-in data validation, error checking, and statistical analysis
-- **Comprehensive Coverage**: From lab analysis to operator training to regulatory compliance
-- **AI-Powered**: Machine learning integration for predictive analytics
-- **Customizable**: Flexible analysis options and export formats
-- **Educational**: Built-in training materials and study guides
+## Support
 
-## 📞 Support
-
-For questions, issues, or feature requests, please check the documentation in the `docs/` folder or create an issue in the project repository.
-
----
-
-*Built for water treatment professionals by water treatment professionals* 💧
+If you discover an issue or need a new calculation/workflow, open an issue in the repository or update the relevant app folder with a short note in `docs/`.

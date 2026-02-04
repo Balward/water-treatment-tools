@@ -23,7 +23,7 @@ app.post('/api/claude', async (req, res) => {
   try {
     console.log('Received request for AI explanation');
     
-    const { targetVariable, predictorVariable, correlationValue, provider = 'claude' } = req.body;
+    const { targetVariable, predictorVariable, correlationValue, provider = 'auto' } = req.body;
     
     if (!targetVariable || !predictorVariable || correlationValue === undefined) {
       return res.status(400).json({ 
@@ -31,12 +31,23 @@ app.post('/api/claude', async (req, res) => {
       });
     }
 
-    // Validate provider and API key
-    if (provider === 'claude' && (!CLAUDE_API_KEY || CLAUDE_API_KEY === "YOUR_CLAUDE_API_KEY_HERE")) {
-      return res.status(400).json({ error: 'Claude API key not configured' });
+    // Pick provider: auto prefers Claude when available, otherwise OpenAI
+    let providerToUse = provider;
+    const hasClaude = CLAUDE_API_KEY && CLAUDE_API_KEY !== "YOUR_CLAUDE_API_KEY_HERE";
+    const hasOpenAI = OPENAI_API_KEY && OPENAI_API_KEY !== "YOUR_OPENAI_API_KEY_HERE";
+
+    if (providerToUse === 'auto') {
+      providerToUse = hasClaude ? 'claude' : hasOpenAI ? 'openai' : null;
+    } else if (providerToUse === 'claude' && !hasClaude && hasOpenAI) {
+      console.warn('Claude key missing, falling back to OpenAI');
+      providerToUse = 'openai';
+    } else if (providerToUse === 'openai' && !hasOpenAI && hasClaude) {
+      console.warn('OpenAI key missing, falling back to Claude');
+      providerToUse = 'claude';
     }
-    if (provider === 'openai' && (!OPENAI_API_KEY || OPENAI_API_KEY === "YOUR_OPENAI_API_KEY_HERE")) {
-      return res.status(400).json({ error: 'OpenAI API key not configured' });
+
+    if (!providerToUse) {
+      return res.status(400).json({ error: 'No AI provider is configured (Claude or OpenAI key required)' });
     }
 
     const prompt = `Explain the correlation coefficient of ${correlationValue.toFixed(3)} between "${targetVariable}" and "${predictorVariable}" in a water treatment facility context.
@@ -49,11 +60,11 @@ Focus on the technical relationships and mechanisms that could cause this correl
 
 Provide a direct technical explanation of the underlying mechanisms without introductory phrases. Keep it concise but informative (2-3 paragraphs).`;
 
-    console.log(`Making ${provider.toUpperCase()} API request...`);
+    console.log(`Making ${providerToUse.toUpperCase()} API request...`);
 
     let response;
     
-    if (provider === 'claude') {
+    if (providerToUse === 'claude') {
       response = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
         headers: {
@@ -72,7 +83,7 @@ Provide a direct technical explanation of the underlying mechanisms without intr
           ]
         })
       });
-    } else if (provider === 'openai') {
+    } else if (providerToUse === 'openai') {
       response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
@@ -96,26 +107,26 @@ Provide a direct technical explanation of the underlying mechanisms without intr
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error(`${provider.toUpperCase()} API Error:`, errorText);
+      console.error(`${providerToUse.toUpperCase()} API Error:`, errorText);
       return res.status(response.status).json({ 
-        error: `${provider.toUpperCase()} API failed: ${response.status}`,
+        error: `${providerToUse.toUpperCase()} API failed: ${response.status}`,
         details: errorText 
       });
     }
 
     const data = await response.json();
-    console.log(`${provider.toUpperCase()} API response received`);
+    console.log(`${providerToUse.toUpperCase()} API response received`);
 
     let explanation;
     
-    if (provider === 'claude') {
+    if (providerToUse === 'claude') {
       if (data.content && data.content[0] && data.content[0].text) {
         explanation = data.content[0].text.trim();
       } else {
         console.error('Invalid Claude API response structure:', data);
         return res.status(500).json({ error: 'Invalid Claude API response structure' });
       }
-    } else if (provider === 'openai') {
+    } else if (providerToUse === 'openai') {
       if (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) {
         explanation = data.choices[0].message.content.trim();
       } else {
@@ -127,12 +138,12 @@ Provide a direct technical explanation of the underlying mechanisms without intr
     if (explanation) {
       res.json({ 
         explanation: explanation,
-        provider: provider,
+        provider: providerToUse,
         success: true 
       });
     } else {
       res.status(500).json({ 
-        error: `Failed to parse ${provider.toUpperCase()} response` 
+        error: `Failed to parse ${providerToUse.toUpperCase()} response` 
       });
     }
 

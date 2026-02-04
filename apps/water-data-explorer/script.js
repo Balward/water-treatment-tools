@@ -2140,53 +2140,53 @@ async function getHardcodedExplanation() {
   const textElement = document.getElementById("explanationText");
 
   if (USE_AI) {
-    // Get selected AI provider
+    const loadingDone = () => (loadingElement.style.display = "none");
     const selectedProvider =
       document.querySelector('input[name="aiProvider"]:checked')?.value ||
       "claude";
 
-    // Use selected AI provider via proxy server
-    try {
-      console.log(`Making ${selectedProvider.toUpperCase()} proxy request...`);
+    const providerFallbackOrder =
+      selectedProvider === "claude"
+        ? ["claude", "openai"]
+        : ["openai", "claude"];
 
+    const requestExplanation = async (provider) => {
+      console.log(`Making ${provider.toUpperCase()} proxy request...`);
       const response = await fetch(CLAUDE_PROXY_URL, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           targetVariable: currentTargetVariable,
           predictorVariable: currentPredictorVariable,
           correlationValue: currentCorrelationValue,
-          provider: selectedProvider,
+          provider,
         }),
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        console.error(
-          `${selectedProvider.toUpperCase()} proxy error:`,
-          errorData
-        );
+        const errorText = await response.text().catch(() => "");
         throw new Error(
-          `${selectedProvider.toUpperCase()} API error: ${response.status} - ${
-            errorData.error || "Unknown error"
-          }`
+          `${provider.toUpperCase()} ${response.status}: ${errorText || "API error"}`
         );
       }
 
       const data = await response.json();
-      console.log(`${selectedProvider.toUpperCase()} proxy response:`, data);
+      if (!data.success || !data.explanation) {
+        throw new Error("Invalid proxy response structure");
+      }
+      return { explanation: data.explanation, provider: data.provider || provider };
+    };
 
-      if (data.success && data.explanation) {
-        loadingElement.style.display = "none";
-
-        // Format the explanation text with proper paragraph breaks
-        const formattedExplanation = formatAIExplanation(data.explanation);
-
+    for (const provider of providerFallbackOrder) {
+      try {
+        const { explanation, provider: usedProvider } = await requestExplanation(
+          provider
+        );
+        loadingDone();
+        const formattedExplanation = formatAIExplanation(explanation);
         const providerName =
-          selectedProvider === "claude" ? "Claude AI" : "OpenAI GPT-4";
-        const providerIcon = selectedProvider === "claude" ? "🤖" : "🧠";
+          usedProvider === "claude" ? "Claude AI" : "OpenAI GPT-4";
+        const providerIcon = usedProvider === "claude" ? "🤖" : "🧠";
 
         textElement.innerHTML = `
           ${formattedExplanation}
@@ -2195,39 +2195,26 @@ async function getHardcodedExplanation() {
           </div>
         `;
         return;
-      } else {
-        throw new Error("Invalid proxy response structure");
+      } catch (err) {
+        console.error(`AI provider ${provider} failed:`, err);
+        // try next provider
       }
-    } catch (error) {
-      console.error("Error with Claude proxy:", error);
-      loadingElement.style.display = "none";
-
-      let errorMessage = "AI service temporarily unavailable";
-      if (error.message.includes("Failed to fetch")) {
-        errorMessage =
-          "Proxy server not running - start the proxy server first";
-      } else if (error.message.includes("401")) {
-        errorMessage = "Claude API authentication failed";
-      } else if (error.message.includes("429")) {
-        errorMessage =
-          "Claude API rate limit exceeded - please try again later";
-      } else if (error.message.includes("Proxy server error")) {
-        errorMessage = error.message;
-      }
-
-      textElement.innerHTML = `
-        <div style="color: #d32f2f; padding: 1rem; background: #ffebee; border-radius: 4px; margin-bottom: 1rem;">
-          <strong>AI Error:</strong> ${errorMessage}
-        </div>
-        <p><strong>Fallback Explanation:</strong></p>
-        <p>${findCorrelationExplanation(
-          currentTargetVariable,
-          currentPredictorVariable,
-          currentCorrelationValue
-        )}</p>
-      `;
-      return;
     }
+
+    // Both providers failed -> show fallback
+    loadingDone();
+    textElement.innerHTML = `
+      <div style="color: #d32f2f; padding: 1rem; background: #ffebee; border-radius: 4px; margin-bottom: 1rem;">
+        <strong>AI Error:</strong> Unable to reach Claude or OpenAI (check proxy and API keys).
+      </div>
+      <p><strong>Fallback Explanation:</strong></p>
+      <p>${findCorrelationExplanation(
+        currentTargetVariable,
+        currentPredictorVariable,
+        currentCorrelationValue
+      )}</p>
+    `;
+    return;
   }
 
   // Use hardcoded explanations
