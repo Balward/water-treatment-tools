@@ -12,6 +12,8 @@
     <style>
       .ai-provider-selector { display: inline-flex !important; align-items: center; gap: 0.6rem; }
       .provider-option { display: inline-flex !important; align-items: center; gap: 0.4rem; }
+      .ai-provider-selector-fallback { margin-top: 0.5rem; display: flex; gap: 0.75rem; color: #f8faff; }
+      .ai-provider-selector-fallback input { accent-color: #f97316; }
     </style>
     <link rel="preload" href="../../assets/fonts/source-sans-pro/SourceSansPro-Regular.otf" as="font" type="font/otf" crossorigin />
     <link rel="preload" href="../../assets/fonts/source-sans-pro/SourceSansPro-Semibold.otf" as="font" type="font/otf" crossorigin />
@@ -424,6 +426,17 @@
                   <strong>Get AI explanations:</strong> When viewing a correlation, click "Explain Correlation" to get
                   AI-powered insights about the relationship between variables in your water treatment process. You can switch providers above.
                 </p>
+                <!-- Fallback provider selector (shows even if custom pill styling fails) -->
+                <div class="ai-provider-selector-fallback">
+                  <label>
+                    <input type="radio" name="aiProvider" value="claude" />
+                    Claude
+                  </label>
+                  <label>
+                    <input type="radio" name="aiProvider" value="openai" />
+                    OpenAI
+                  </label>
+                </div>
               </div>
               <div class="ai-insights-content">
                 <div class="correlation-bar" id="correlationContext" style="display: none">
