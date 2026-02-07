@@ -5,11 +5,24 @@
 
 set -o pipefail
 
-header()    { echo -e "\n==== $1 ===="; }
-info()      { echo -e "[INFO]  $1"; }
-ok()        { echo -e "[OK]    $1"; }
-warn()      { echo -e "[WARN]  $1"; }
-err()       { echo -e "[ERROR] $1"; }
+# Color palette (falls back to plain text if not a TTY)
+if [ -t 1 ]; then
+    C_RESET="\033[0m"
+    C_BOLD="\033[1m"
+    C_BLUE="\033[38;5;33m"
+    C_GREEN="\033[38;5;40m"
+    C_YELLOW="\033[38;5;214m"
+    C_RED="\033[38;5;196m"
+    C_GRAY="\033[38;5;245m"
+else
+    C_RESET=""; C_BOLD=""; C_BLUE=""; C_GREEN=""; C_YELLOW=""; C_RED=""; C_GRAY="";
+fi
+
+header() { echo -e "\n${C_BOLD}${C_BLUE}==== $1 ====${C_RESET}"; }
+info()   { echo -e "${C_GRAY}[INFO]${C_RESET}  $1"; }
+ok()     { echo -e "${C_GREEN}[OK]${C_RESET}    $1"; }
+warn()   { echo -e "${C_YELLOW}[WARN]${C_RESET}  $1"; }
+err()    { echo -e "${C_RED}[ERROR]${C_RESET} $1"; }
 
 # Keep git output non-interactive (avoid paging)
 export GIT_PAGER=cat
