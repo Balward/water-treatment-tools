@@ -11,6 +11,11 @@ ok()        { echo -e "[OK]    $1"; }
 warn()      { echo -e "[WARN]  $1"; }
 err()       { echo -e "[ERROR] $1"; }
 
+# Keep git output non-interactive (avoid paging)
+export GIT_PAGER=cat
+export PAGER=cat
+export LESS=FRX
+
 COMPOSE_CMD=(docker-compose)
 if command -v docker >/dev/null 2>&1 && docker compose version >/dev/null 2>&1; then
     COMPOSE_CMD=(docker compose)
@@ -48,7 +53,7 @@ info "Using compose command: ${COMPOSE_CMD[*]}"
 
 # Show concise repo status
 header "Repo Status"
-git status -sb
+git --no-pager status -sb
 
 # Protect .env
 if [ -f ".env" ]; then
@@ -78,8 +83,8 @@ fi
 
 # Fetch and pull
 header "Pull Latest"
-if git fetch --prune; then
-    PULL_OUTPUT=$(git pull --rebase 2>&1)
+if git -c pager.fetch=false fetch --prune; then
+    PULL_OUTPUT=$(git -c pager.pull=false pull --rebase 2>&1)
     if echo "$PULL_OUTPUT" | grep -q "Already up to date"; then
         ok "Repository already up to date"
     else
