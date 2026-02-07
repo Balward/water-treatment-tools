@@ -10,10 +10,9 @@
     <title>Water Data Explorer</title>
     <!-- Fallback style to force AI provider selector visible even if old CSS is cached -->
     <style>
-      .ai-provider-selector { display: inline-flex !important; align-items: center; gap: 0.6rem; }
-      .provider-option { display: inline-flex !important; align-items: center; gap: 0.4rem; }
-      .ai-provider-selector-fallback { margin-top: 0.5rem; display: flex; gap: 0.75rem; color: #f8faff; }
-      .ai-provider-selector-fallback input { accent-color: #f97316; }
+      /* legacy toggle fallbacks no longer shown, keep minimal overrides */
+      .ai-provider-selector { display: none !important; }
+      .ai-provider-selector-fallback { display: none !important; }
     </style>
     <link rel="preload" href="../../assets/fonts/source-sans-pro/SourceSansPro-Regular.otf" as="font" type="font/otf" crossorigin />
     <link rel="preload" href="../../assets/fonts/source-sans-pro/SourceSansPro-Semibold.otf" as="font" type="font/otf" crossorigin />
@@ -408,35 +407,24 @@
             </div>
 
             <div class="ai-insights-panel" id="aiInsightsPanel" style="display: none">
-              <div class="ai-insights-header">
-                <div class="ai-header-top">
-                  <h4>🤖 AI Correlation Insights</h4>
-                  <div class="ai-provider-selector">
-                    <label class="provider-option">
-                      <input type="radio" name="aiProvider" value="claude" checked />
-                      <span class="provider-label">Claude</span>
-                    </label>
-                    <label class="provider-option">
-                      <input type="radio" name="aiProvider" value="openai" />
-                      <span class="provider-label">OpenAI</span>
-                    </label>
+                <div class="ai-insights-header">
+                  <div class="ai-header-top">
+                    <h4>🤖 AI Correlation Insights</h4>
+                    <div class="ai-provider-pill">
+                      <label class="provider-pill">
+                        <input type="radio" name="aiProvider" value="claude" checked />
+                        <span class="pill-text">Claude</span>
+                      </label>
+                      <label class="provider-pill">
+                        <input type="radio" name="aiProvider" value="openai" />
+                        <span class="pill-text">OpenAI</span>
+                      </label>
+                    </div>
                   </div>
-                </div>
-                <p class="ai-instruction-text">
-                  <strong>Get AI explanations:</strong> When viewing a correlation, click "Explain Correlation" to get
-                  AI-powered insights about the relationship between variables in your water treatment process. You can switch providers above.
-                </p>
-                <!-- Fallback provider selector (shows even if custom pill styling fails) -->
-                <div class="ai-provider-selector-fallback">
-                  <label>
-                    <input type="radio" name="aiProvider" value="claude" />
-                    Claude
-                  </label>
-                  <label>
-                    <input type="radio" name="aiProvider" value="openai" />
-                    OpenAI
-                  </label>
-                </div>
+                  <p class="ai-instruction-text">
+                    <strong>Get AI explanations:</strong> When viewing a correlation, click "Explain Correlation" to get
+                    AI-powered insights about the relationship between variables in your water treatment process. You can switch providers above.
+                  </p>
               </div>
               <div class="ai-insights-content">
                 <div class="correlation-bar" id="correlationContext" style="display: none">

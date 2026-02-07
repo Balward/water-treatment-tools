@@ -33,7 +33,7 @@ services:
       # Mount .env file if it exists (optional - environment variables take precedence)
       - ./.env:/app/.env:ro
     networks:
-      - cerberusnet
+      - gibbhub
 
   # Auto-updater service that pulls latest from GitHub
   watchtower:
@@ -50,36 +50,9 @@ services:
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
     networks:
-      - cerberusnet
+      - gibbhub
 
 networks:
-  cerberusnet:
-    external: true
-
-# Alternative compose file for simple local deployment
----
-# docker-compose.local.yml
-
-services:
-  water-treatment-tools:
-    build: .
-    container_name: water-treatment-tools-local
-    restart: unless-stopped
-    ports:
-      - "6767:80"   # Web interface
-      - "6768:3001" # Claude proxy API
-    environment:
-      - TZ=America/New_York
-      - CLAUDE_API_KEY=${CLAUDE_API_KEY}  # Set this in .env file
-      - OPENAI_API_KEY=${OPENAI_API_KEY}  # Set this in .env file
-    volumes:
-      - ./sample-data:/usr/share/nginx/html/sample-data:ro
-      - /mnt/user/appdata/water-treatment-tools/Videos:/usr/share/nginx/html/Videos:ro
-      # Mount .env file if it exists (optional - environment variables take precedence)
-      - ./.env:/app/.env:ro
-    networks:
-      - cerberusnet
-
-networks:
-  cerberusnet:
-    external: true
+  gibbhub:
+    name: gibbhub
+    driver: bridge
