@@ -157,37 +157,48 @@ fi
 # Quick health checks
 header "Health Checks"
 HOST_IP=$(hostname -I | awk '{print $1}')
-WEB_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "http://$HOST_IP:6767/" 2>/dev/null)
+WEB_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "http://$HOST_IP:6767/health" 2>/dev/null)
 API_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "http://$HOST_IP:6768/health" 2>/dev/null)
 
 if [ "$WEB_STATUS" = "200" ]; then
-    ok "Web UI responding (HTTP 200)"
+    ok "Nginx health: HTTP 200"
 else
-    warn "Web UI not ready (HTTP $WEB_STATUS)"
+    warn "Nginx health check: HTTP $WEB_STATUS"
 fi
 
 if [ "$API_STATUS" = "200" ]; then
-    ok "Claude proxy healthy (HTTP 200)"
+    ok "API service on 6768: HTTP 200"
 else
-    warn "Claude proxy not ready (HTTP $API_STATUS)"
+    warn "API service on 6768: HTTP $API_STATUS"
 fi
 
 header "Container Status"
 "${COMPOSE_CMD[@]}" ps
 
-# Summary
+# Summary and app URLs (derived from nginx.conf routes)
 header "Summary"
-echo "- Repo updated:        $( [ "$NEEDS_REBUILD" = true ] && echo yes || echo no changes )"
-echo "- Stash reapplied:     $( [ "$STASHED" = true ] && echo yes || echo not needed )"
-echo "- Web UI:              HTTP $WEB_STATUS"
-echo "- Claude proxy:        HTTP $API_STATUS"
-echo "- Access URLs:"
-echo "    Dashboard:         http://$HOST_IP:6767/"
-echo "    RoboJar Analyzer:  http://$HOST_IP:6767/apps/robojar-analyzer/"
-echo "    Dose Predictor:    http://$HOST_IP:6767/apps/dose-predictor/"
-echo "    Data Analyzer:     http://$HOST_IP:6767/apps/data-analyzer/"
-echo "    Data Parser:       http://$HOST_IP:6767/apps/data-parser/"
-echo "    Video Tutorials:   http://$HOST_IP:6767/apps/video-tutorials/"
-echo "    Claude Health:     http://$HOST_IP:6768/health"
+echo "- Repo updated:    $( [ "$NEEDS_REBUILD" = true ] && echo yes || echo no changes )"
+echo "- Stash reapplied: $( [ "$STASHED" = true ] && echo yes || echo not needed )"
+echo "- Nginx health:    HTTP $WEB_STATUS"
+echo "- API health:      HTTP $API_STATUS"
+echo "- Access URLs (host: $HOST_IP:6767):"
+APPS=(
+  "/dashboard/ (home)"
+  "/robojar-analyzer/"
+  "/dose-predictor/"
+  "/plant-flow/"
+  "/alum-hydrometer-conversion/"
+  "/mwat-calculator/"
+  "/regulation-100-study/"
+  "/water-treatment-flashcards/"
+  "/sodium-hypochlorite-calculator/"
+  "/water-data-explorer/"
+  "/nh3-loading/"
+  "/video-tutorials/"
+  "/Videos/ (static media)"
+)
+for app in "${APPS[@]}"; do
+  echo "   • http://$HOST_IP:6767$app"
+done
 echo
 ok "Update complete"
