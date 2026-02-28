@@ -529,6 +529,10 @@ h1 {
   justify-items: start;
 }
 
+.drawer-section[hidden] {
+  display: none !important;
+}
+
 .drawer-label {
   margin: 0;
   font-size: 0.82rem;
@@ -550,6 +554,10 @@ h1 {
 .drawer-inline-row {
   display: grid;
   gap: 0.3rem;
+}
+
+.drawer-inline-row[hidden] {
+  display: none !important;
 }
 
 #swYearSelect {
