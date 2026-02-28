@@ -16,6 +16,10 @@
           <div class="ops-titles">
             <p class="eyebrow">Water Treatment Plant</p>
             <h1>Live Operations Dashboard</h1>
+            <div class="sync-row sync-row--title">
+              <span id="syncStatus" class="sync-dot sync-dot--offline" role="status" aria-label="Reconnecting" title="Reconnecting"></span>
+              <span id="lastUpdated" class="last-updated">Last updated: --</span>
+            </div>
           </div>
         </div>
         <div class="header-qr" aria-label="Scan me to edit">
@@ -25,10 +29,6 @@
         <div class="header-meta">
           <div class="operator-row">
             <button id="themeToggle" class="theme-toggle" type="button" aria-pressed="false" aria-label="Switch to dark mode" title="Switch to dark mode">☾</button>
-          </div>
-          <div class="sync-row">
-            <span id="syncStatus" class="sync-dot sync-dot--offline" role="status" aria-label="Reconnecting" title="Reconnecting"></span>
-            <span id="lastUpdated" class="last-updated">Last updated: --</span>
           </div>
         </div>
       </header>

@@ -203,6 +203,11 @@ h1 {
   justify-content: flex-end;
 }
 
+.sync-row--title {
+  justify-content: center;
+  margin-top: 0.08rem;
+}
+
 .sync-dot {
   width: 10px;
   height: 10px;
@@ -1020,6 +1025,10 @@ h1 {
   }
 
   .sync-row {
+    justify-content: flex-start;
+  }
+
+  .sync-row--title {
     justify-content: flex-start;
   }
 
