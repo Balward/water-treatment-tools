@@ -319,8 +319,13 @@ h1 {
 
 .notes-indicator {
   display: none;
-  font-size: 0.8rem;
+  position: absolute;
+  right: 0.38rem;
+  bottom: 0.32rem;
+  font-size: 0.72rem;
   line-height: 1;
+  opacity: 0.92;
+  pointer-events: none;
 }
 
 .equipment-card.has-note .notes-indicator {
