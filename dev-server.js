@@ -50,6 +50,7 @@ const ROUTES = {
     '/sodium-hypochlorite-calculator/': '/apps/sodium-hypochlorite-calculator/index.html',
     '/water-data-explorer/': '/apps/water-data-explorer/index.html',
     '/video-tutorials/': '/apps/video-tutorials/index.html',
+    '/live-operations-dashboard/': '/apps/live-operations-dashboard/index.html',
 };
 
 function getMimeType(filePath) {
@@ -78,8 +79,10 @@ function serveFile(res, filePath) {
             'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept',
         };
         
-        // Add caching headers
-        if (filePath.match(/\.(css|js|png|jpg|jpeg|gif|svg|ico|ttf|otf|woff|woff2)$/)) {
+        // Disable caching in local dev for HTML/CSS/JS so edits appear immediately.
+        if (filePath.match(/\.(html|css|js)$/)) {
+            headers['Cache-Control'] = 'no-store, no-cache, must-revalidate';
+        } else if (filePath.match(/\.(png|jpg|jpeg|gif|svg|ico|ttf|otf|woff|woff2)$/)) {
             headers['Cache-Control'] = 'public, max-age=3600';
         }
         

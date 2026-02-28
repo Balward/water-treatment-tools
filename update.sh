@@ -184,6 +184,7 @@ echo "- API health:      HTTP $API_STATUS"
 echo "- Access URLs (host: $HOST_IP:6767):"
 APPS=(
   "/dashboard/ (home)"
+  "/live-operations-dashboard/ (standalone)"
   "/robojar-analyzer/"
   "/dose-predictor/"
   "/plant-flow/"

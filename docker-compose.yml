@@ -26,6 +26,8 @@ services:
       - "traefik.http.routers.water-treatment-api.tls.certresolver=letsencrypt"
       - "traefik.http.services.water-treatment-api.loadbalancer.server.port=3001"
     volumes:
+      # Persist live-ops shared state
+      - ./data:/app/data
       # Mount sample data for the apps
       - ./sample-data:/usr/share/nginx/html/sample-data:ro
       # Mount training videos directory from host
