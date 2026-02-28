@@ -18,8 +18,8 @@ body {
   margin: 0;
   min-height: 100vh;
   font-family: "Rajdhani", "Eurostile", "Bahnschrift", "Segoe UI", "Tahoma", sans-serif;
-  font-variant-caps: all-small-caps;
-  font-feature-settings: "smcp" 1, "c2sc" 1;
+  font-variant-caps: small-caps;
+  font-feature-settings: "smcp" 1;
   background: var(--ops-bg);
   color: var(--ops-text);
   overflow: hidden;
