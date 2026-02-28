@@ -484,7 +484,7 @@ h1 {
   padding: 1rem;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto;
-  gap: 0.8rem;
+  gap: 0.65rem;
   overflow: hidden;
 }
 
@@ -503,10 +503,9 @@ h1 {
   min-height: 0;
   display: grid;
   align-content: start;
-  gap: 0.9rem;
-  overflow-y: auto;
-  padding-right: 0.25rem;
-  padding-bottom: 0.5rem;
+  gap: 0.7rem;
+  overflow: hidden;
+  padding-bottom: 0.3rem;
 }
 
 .drawer-group {
@@ -520,7 +519,7 @@ h1 {
 
 .drawer-title {
   margin: 0.15rem 0 0;
-  font-size: 1.7rem;
+  font-size: clamp(1.25rem, 2.8vh, 1.7rem);
 }
 
 .drawer-close {
@@ -535,7 +534,7 @@ h1 {
 
 .drawer-section {
   display: grid;
-  gap: 0.45rem;
+  gap: 0.35rem;
   align-content: start;
   justify-items: start;
 }
@@ -585,7 +584,7 @@ h1 {
 .status-options {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0.5rem;
+  gap: 0.4rem;
 }
 
 .status-option {
@@ -596,7 +595,8 @@ h1 {
   font: inherit;
   font-weight: 700;
   cursor: pointer;
-  padding: 0.52rem 0.6rem;
+  padding: 0.42rem 0.52rem;
+  font-size: 0.84rem;
 }
 
 .status-option.is-active {
@@ -621,12 +621,12 @@ h1 {
 
 #drawerNotes {
   width: 100%;
-  min-height: clamp(130px, 22vh, 190px);
-  max-height: 40vh;
-  resize: vertical;
+  min-height: clamp(84px, 15vh, 135px);
+  max-height: none;
+  resize: none;
   border: 1px solid #a8b2bf;
   border-radius: 4px;
-  padding: 0.6rem;
+  padding: 0.52rem;
   font: inherit;
   color: var(--ops-text);
   background: #fdfefe;
@@ -636,8 +636,6 @@ h1 {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  justify-self: start;
-  align-self: start;
   width: auto;
   min-height: 0;
   line-height: 1.1;
@@ -658,12 +656,19 @@ h1 {
 
 .drawer-footer {
   display: grid;
-  gap: 0.5rem;
+  gap: 0.38rem;
   align-content: start;
-  justify-items: start;
+  justify-items: stretch;
   padding-top: 0.55rem;
   border-top: 1px solid #ccd6e2;
   background: inherit;
+}
+
+.drawer-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.45rem;
 }
 
 .save-sidebar-button {
@@ -993,15 +998,70 @@ h1 {
 
   .equipment-drawer {
     padding: 0.85rem;
-    gap: 0.7rem;
-  }
-
-  .drawer-content {
-    padding-bottom: calc(0.65rem + env(safe-area-inset-bottom));
+    gap: 0.6rem;
   }
 
   #drawerNotes {
-    min-height: clamp(110px, 24vh, 170px);
+    min-height: clamp(76px, 14vh, 120px);
+  }
+}
+
+@media (max-height: 860px) {
+  .equipment-drawer {
+    padding: 0.75rem;
+    gap: 0.55rem;
+  }
+
+  .drawer-content {
+    gap: 0.55rem;
+  }
+
+  .drawer-group {
+    font-size: 0.72rem;
+  }
+
+  .drawer-label,
+  .drawer-sublabel {
+    font-size: 0.72rem;
+  }
+
+  .status-option {
+    padding: 0.36rem 0.45rem;
+    font-size: 0.78rem;
+  }
+
+  #drawerNotes {
+    min-height: clamp(68px, 12vh, 100px);
+    padding: 0.46rem;
+  }
+
+  .clear-notes-button,
+  .save-sidebar-button {
+    font-size: 0.74rem;
+    padding-top: 0.28rem;
+    padding-bottom: 0.28rem;
+  }
+
+  .drawer-meta {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-height: 700px) {
+  .drawer-title {
+    font-size: 1.1rem;
+  }
+
+  .status-options {
+    gap: 0.3rem;
+  }
+
+  .drawer-content {
+    gap: 0.45rem;
+  }
+
+  #drawerNotes {
+    min-height: 56px;
   }
 
 }

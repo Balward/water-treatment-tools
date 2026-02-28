@@ -59,12 +59,14 @@
           <section class="drawer-section">
             <label class="drawer-label" for="drawerNotes">Notes</label>
             <textarea id="drawerNotes" rows="7" maxlength="1500" placeholder="Add operating notes..."></textarea>
-            <button id="clearNotesButton" class="clear-notes-button" type="button">Clear notes</button>
           </section>
         </div>
 
         <footer class="drawer-footer">
-          <button id="saveSidebarButton" class="save-sidebar-button" type="button" disabled>Save</button>
+          <div class="drawer-actions">
+            <button id="clearNotesButton" class="clear-notes-button" type="button">Clear notes</button>
+            <button id="saveSidebarButton" class="save-sidebar-button" type="button" disabled>Save</button>
+          </div>
           <p id="drawerMeta" class="drawer-meta"></p>
         </footer>
       </aside>
