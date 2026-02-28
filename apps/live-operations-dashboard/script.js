@@ -248,6 +248,19 @@
     Object.assign(equipment, drawerOriginalEquipment);
   }
 
+  function getDrawerEquipmentView(equipment) {
+    if (!equipment) {
+      return equipment;
+    }
+    if (!selectedEquipmentId || equipment.id !== selectedEquipmentId) {
+      return equipment;
+    }
+    return {
+      ...equipment,
+      ...pendingSidebarChanges,
+    };
+  }
+
   function getLowZonePartition(item) {
     const name = (item.name || '').toUpperCase();
     if (name.endsWith('B')) {
@@ -483,23 +496,24 @@
       return;
     }
 
-    const status = normalizeStatus(equipment.status, equipment.inService);
-    drawerGroup.textContent = equipment.groupLabel;
-    drawerTitle.textContent = equipment.name;
+    const drawerEquipment = getDrawerEquipmentView(equipment);
+    const status = normalizeStatus(drawerEquipment.status, equipment.inService);
+    drawerGroup.textContent = drawerEquipment.groupLabel;
+    drawerTitle.textContent = drawerEquipment.name;
     drawerMeta.textContent = `Last edit by ${equipment.updatedBy || 'operator'} at ${formatTimestamp(equipment.updatedAt)}`;
     renderStatusOptions(status);
 
-    const isFilter = equipment.groupKey === 'filters';
+    const isFilter = drawerEquipment.groupKey === 'filters';
     filterMaintenanceSection.hidden = !isFilter;
     if (isFilter) {
-      const isComplete = equipment.swMaintenanceComplete === true;
+      const isComplete = drawerEquipment.swMaintenanceComplete === true;
       renderSwMaintenanceOptions(isComplete);
       swYearRow.hidden = !isComplete;
-      swYearSelect.value = isComplete && equipment.swMaintenanceYear ? String(equipment.swMaintenanceYear) : '';
+      swYearSelect.value = isComplete && drawerEquipment.swMaintenanceYear ? String(drawerEquipment.swMaintenanceYear) : '';
     }
 
     if (document.activeElement !== drawerNotes) {
-      drawerNotes.value = equipment.note || '';
+      drawerNotes.value = drawerEquipment.note || '';
     }
   }
 
@@ -714,14 +728,8 @@
       return;
     }
     const selectedStatus = normalizeStatus(button.dataset.status, false);
-    const equipment = findEquipment(selectedEquipmentId);
-    if (!equipment) {
-      return;
-    }
-    equipment.status = selectedStatus;
-    equipment.inService = isInServiceStatus(selectedStatus);
     setPendingChanges({ status: selectedStatus });
-    syncFromState();
+    refreshDrawer();
   });
 
   swMaintenanceOptions.addEventListener('click', (event) => {
@@ -734,13 +742,15 @@
       return;
     }
     const isComplete = button.dataset.swMaintenance === 'complete';
-    equipment.swMaintenanceComplete = isComplete;
-    equipment.swMaintenanceYear = isComplete ? (equipment.swMaintenanceYear || null) : null;
+    const currentYear = Number.isInteger(pendingSidebarChanges.swMaintenanceYear)
+      ? pendingSidebarChanges.swMaintenanceYear
+      : (Number.isInteger(equipment.swMaintenanceYear) ? equipment.swMaintenanceYear : null);
+    const nextYear = isComplete ? currentYear : null;
     setPendingChanges({
       swMaintenanceComplete: isComplete,
-      swMaintenanceYear: equipment.swMaintenanceYear,
+      swMaintenanceYear: nextYear,
     });
-    syncFromState();
+    refreshDrawer();
   });
 
   swYearSelect.addEventListener('change', () => {
@@ -748,41 +758,33 @@
       return;
     }
     const equipment = findEquipment(selectedEquipmentId);
-    if (!equipment || equipment.groupKey !== 'filters' || equipment.swMaintenanceComplete !== true) {
+    if (!equipment || equipment.groupKey !== 'filters') {
+      return;
+    }
+    const workingEquipment = getDrawerEquipmentView(equipment);
+    if (workingEquipment.swMaintenanceComplete !== true) {
       return;
     }
     const parsedYear = Number.parseInt(swYearSelect.value, 10);
     const year = Number.isInteger(parsedYear) ? parsedYear : null;
-    equipment.swMaintenanceYear = year;
     setPendingChanges({ swMaintenanceYear: year });
-    syncFromState();
+    refreshDrawer();
   });
 
   drawerNotes.addEventListener('input', () => {
     if (!selectedEquipmentId) {
       return;
     }
-    const equipment = findEquipment(selectedEquipmentId);
-    if (!equipment) {
-      return;
-    }
-    equipment.note = drawerNotes.value;
     setPendingChanges({ note: drawerNotes.value });
-    syncFromState();
   });
 
   clearNotesButton.addEventListener('click', () => {
     if (!selectedEquipmentId) {
       return;
     }
-    const equipment = findEquipment(selectedEquipmentId);
-    if (!equipment) {
-      return;
-    }
     drawerNotes.value = '';
-    equipment.note = '';
     setPendingChanges({ note: '' });
-    syncFromState();
+    refreshDrawer();
   });
 
   saveSidebarButton.addEventListener('click', async () => {
