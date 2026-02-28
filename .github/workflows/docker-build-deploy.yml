@@ -74,11 +74,13 @@ jobs:
     needs: build-and-push
     runs-on: ubuntu-latest
     if: success() && github.ref == 'refs/heads/main'
+    env:
+      DEPLOY_WEBHOOK_URL: ${{ secrets.DEPLOY_WEBHOOK_URL }}
     steps:
     - name: Notify deployment webhook
-      if: secrets.DEPLOY_WEBHOOK_URL
+      if: env.DEPLOY_WEBHOOK_URL != ''
       run: |
-        curl -X POST "${{ secrets.DEPLOY_WEBHOOK_URL }}" \
+        curl -X POST "${{ env.DEPLOY_WEBHOOK_URL }}" \
           -H "Content-Type: application/json" \
           -d '{
             "repository": "${{ github.repository }}",

@@ -55,7 +55,7 @@ body.drawer-open {
 .ops-header {
   padding: 0.45rem 0.7rem;
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: 1fr auto auto;
   gap: 0.45rem;
   align-items: center;
 }
@@ -111,6 +111,36 @@ h1 {
   gap: 0.22rem;
   justify-items: end;
   align-items: center;
+}
+
+.header-qr {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.34rem;
+  padding: 0.2rem 0.35rem;
+  border: 1px solid #90a2b6;
+  border-radius: 3px;
+  background: #dfe7ef;
+  align-self: stretch;
+}
+
+.header-qr-image {
+  display: block;
+  height: 46px;
+  width: auto;
+  border: 1px solid #7f96ad;
+  border-radius: 2px;
+  background: #ffffff;
+}
+
+.header-qr-text {
+  font-size: 0.7rem;
+  line-height: 1.05;
+  letter-spacing: 0.08em;
+  color: #27455f;
+  font-weight: 800;
+  text-transform: uppercase;
+  max-width: 4.2rem;
 }
 
 .operator-label {
@@ -741,6 +771,19 @@ h1 {
   border-color: #89a3be;
 }
 
+.theme-dark .header-qr {
+  background: #1b2a38;
+  border-color: #7f97b1;
+}
+
+.theme-dark .header-qr-image {
+  border-color: #8ca7c3;
+}
+
+.theme-dark .header-qr-text {
+  color: #dceaf8;
+}
+
 .theme-dark .group {
   background: #1a2938;
   border-color: #7f98b3;
@@ -950,6 +993,10 @@ h1 {
   .ops-header {
     grid-template-columns: 1fr;
     align-items: start;
+  }
+
+  .header-qr {
+    display: none;
   }
 
   .ops-brand {
