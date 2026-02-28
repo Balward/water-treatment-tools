@@ -33,8 +33,9 @@
   const statusOptionsList = [
     { value: 'operational', label: 'Online' },
     { value: 'warning', label: 'Warning' },
-    { value: 'offline', label: 'Out of Service' },
-    { value: 'maintenance', label: 'Maintenance' },
+    { value: 'offline', label: 'Offline' },
+    { value: 'out-of-service', label: 'Out of Service' },
+    { value: 'maintenance', label: 'Maintenance Ongoing' },
   ];
   const swMaintenanceOptionsList = [
     { value: 'incomplete', label: 'Incomplete' },
@@ -143,10 +144,13 @@
 
   function normalizeStatus(statusValue, inService) {
     const normalized = typeof statusValue === 'string' ? statusValue.trim().toLowerCase() : '';
+    if (normalized === 'out of service') {
+      return 'out-of-service';
+    }
     if (statusOptionsList.some((statusOption) => statusOption.value === normalized)) {
       return normalized;
     }
-    return inService ? 'operational' : 'offline';
+    return inService ? 'operational' : 'out-of-service';
   }
 
   function isInServiceStatus(statusValue) {
@@ -165,6 +169,8 @@
       case 'warning':
         return '⚠️';
       case 'offline':
+        return '⚫';
+      case 'out-of-service':
         return '🔴';
       case 'maintenance':
         return '🛠️';
@@ -277,7 +283,7 @@
     const pill = card.querySelector('.status-pill');
     pill.textContent = `${getStatusEmoji(status)} ${getStatusLabel(status).toUpperCase()}`;
     pill.className = `status-pill status-pill--${status}`;
-    card.classList.remove('status-operational', 'status-warning', 'status-offline', 'status-maintenance');
+    card.classList.remove('status-operational', 'status-warning', 'status-offline', 'status-out-of-service', 'status-maintenance');
     card.classList.add(`status-${status}`);
   }
 

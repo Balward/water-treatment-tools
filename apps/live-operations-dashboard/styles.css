@@ -485,11 +485,22 @@ h1 {
 }
 
 .status-offline {
+  background: #dde1e5;
+  border-color: #9da8b3;
+}
+
+.status-offline .status-pill {
+  border-color: #7f8a95;
+  color: #3f4b57;
+  background: #d2d8de;
+}
+
+.status-out-of-service {
   background: #edd1d1;
   border-color: #b45b5b;
 }
 
-.status-offline .status-pill {
+.status-out-of-service .status-pill {
   border-color: #a34848;
   color: #651313;
   background: #e8bcbc;
@@ -656,7 +667,11 @@ h1 {
 }
 
 .status-option--offline {
-  color: #5f6f86;
+  color: #4e5966;
+}
+
+.status-option--out-of-service {
+  color: #8f2a2a;
 }
 
 .status-option--maintenance {
@@ -922,11 +937,22 @@ h1 {
 }
 
 .theme-dark .status-offline {
+  background: #3e4855;
+  border-color: #92a2b4;
+}
+
+.theme-dark .status-offline .status-pill {
+  background: #4a5664;
+  border-color: #a6b6c7;
+  color: #edf3fb;
+}
+
+.theme-dark .status-out-of-service {
   background: #5f2d35;
   border-color: #d97f8c;
 }
 
-.theme-dark .status-offline .status-pill {
+.theme-dark .status-out-of-service .status-pill {
   background: #8f3847;
   border-color: #eba3af;
   color: #ffe7eb;
@@ -947,6 +973,14 @@ h1 {
   background: #2f3a45;
   border-color: #5d6d7f;
   color: #d3dcea;
+}
+
+.theme-dark .status-option--offline {
+  color: #d1d9e2;
+}
+
+.theme-dark .status-option--out-of-service {
+  color: #ffc4cb;
 }
 
 .theme-dark .drawer-close {

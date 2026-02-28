@@ -24,7 +24,7 @@ const dataDirectory = path.join(__dirname, 'data');
 const liveOpsStatePath = path.join(dataDirectory, 'live-ops-state.json');
 const liveOpsClients = new Set();
 let writeQueue = Promise.resolve();
-const LIVE_OPS_STATUSES = ['operational', 'warning', 'offline', 'maintenance'];
+const LIVE_OPS_STATUSES = ['operational', 'warning', 'offline', 'out-of-service', 'maintenance'];
 
 function isInServiceStatus(status) {
   return status === 'operational' || status === 'warning';
@@ -66,7 +66,7 @@ function createInitialLiveOpsState() {
       name,
       groupKey: group.key,
       groupLabel: group.label,
-      status: 'offline',
+      status: 'out-of-service',
       inService: false,
       swMaintenanceComplete: false,
       swMaintenanceYear: null,
@@ -104,6 +104,9 @@ function sanitizeStatus(status) {
     return null;
   }
   const cleaned = status.trim().toLowerCase();
+  if (cleaned === 'out of service') {
+    return 'out-of-service';
+  }
   return LIVE_OPS_STATUSES.includes(cleaned) ? cleaned : null;
 }
 
@@ -171,7 +174,7 @@ function normalizeLoadedState(rawState) {
     const maintenanceYear = maintenanceComplete ? sanitizeMaintenanceYear(loaded.swMaintenanceYear) : null;
     return {
       ...fallback,
-      status: normalizedStatus || (Boolean(loaded.inService) ? 'operational' : 'offline'),
+      status: (normalizedStatus === 'offline' ? 'out-of-service' : normalizedStatus) || (Boolean(loaded.inService) ? 'operational' : 'out-of-service'),
       inService: normalizedStatus ? isInServiceStatus(normalizedStatus) : Boolean(loaded.inService),
       swMaintenanceComplete: maintenanceComplete,
       swMaintenanceYear: maintenanceYear,
@@ -270,8 +273,8 @@ app.put('/api/live-ops/equipment/:equipmentId', async (req, res) => {
   const resolvedStatus = hasStatus
     ? sanitizedStatus
     : hasInService
-      ? (incomingInService ? 'operational' : 'offline')
-      : (sanitizeStatus(currentEquipment.status) || (currentEquipment.inService ? 'operational' : 'offline'));
+      ? (incomingInService ? 'operational' : 'out-of-service')
+      : (sanitizeStatus(currentEquipment.status) || (currentEquipment.inService ? 'operational' : 'out-of-service'));
 
   const resolvedSwMaintenanceComplete = hasSwMaintenanceComplete
     ? incomingSwMaintenanceComplete
