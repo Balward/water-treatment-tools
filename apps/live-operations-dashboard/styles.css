@@ -1,3 +1,45 @@
+@font-face {
+  font-family: "Atkinson Hyperlegible Next";
+  src:
+    local("Atkinson Hyperlegible Next"),
+    local("Atkinson Hyperlegible Next Regular"),
+    url("/assets/fonts/AtkinsonHyperlegibleNext-VariableFont_wght.ttf") format("truetype");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Atkinson Hyperlegible Next";
+  src:
+    local("Atkinson Hyperlegible Next Italic"),
+    url("/assets/fonts/AtkinsonHyperlegibleNext-Italic-VariableFont_wght.ttf") format("truetype");
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Inter";
+  src:
+    local("Inter"),
+    local("Inter Regular"),
+    url("/assets/fonts/Inter-VariableFont_opsz,wght.ttf") format("truetype");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Inter";
+  src:
+    local("Inter Italic"),
+    url("/assets/fonts/Inter-Italic-VariableFont_opsz,wght.ttf") format("truetype");
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}
+
 :root {
   --ops-bg:
     linear-gradient(180deg, #d9e1ea 0%, #cfd8e3 100%),
@@ -9,6 +51,7 @@
   --ops-blue: #2c4763;
   --ops-shadow: 0 6px 14px rgba(18, 30, 44, 0.12);
   --ops-radius: 6px;
+  --ops-font-sans: "Atkinson Hyperlegible Next", "Inter", "Segoe UI", "Tahoma", sans-serif;
 }
 
 * {
@@ -18,17 +61,19 @@
 body {
   margin: 0;
   min-height: 100vh;
-  font-family: "Rajdhani", "Eurostile", "Bahnschrift", "Segoe UI", "Tahoma", sans-serif;
+  font-family: var(--ops-font-sans);
   background: var(--ops-bg);
   color: var(--ops-text);
   overflow: hidden;
+  font-optical-sizing: auto;
+  text-rendering: optimizeLegibility;
 }
 
 .ops-page,
 .ops-page *,
 .hover-popup,
 .hover-popup * {
-  font-family: "Rajdhani", "Eurostile", "Bahnschrift", "Segoe UI", "Tahoma", sans-serif !important;
+  font-family: var(--ops-font-sans) !important;
 }
 
 body.drawer-open {
