@@ -174,7 +174,7 @@ function normalizeLoadedState(rawState) {
     const maintenanceYear = maintenanceComplete ? sanitizeMaintenanceYear(loaded.swMaintenanceYear) : null;
     return {
       ...fallback,
-      status: (normalizedStatus === 'offline' ? 'out-of-service' : normalizedStatus) || (Boolean(loaded.inService) ? 'operational' : 'out-of-service'),
+      status: normalizedStatus || (Boolean(loaded.inService) ? 'operational' : 'out-of-service'),
       inService: normalizedStatus ? isInServiceStatus(normalizedStatus) : Boolean(loaded.inService),
       swMaintenanceComplete: maintenanceComplete,
       swMaintenanceYear: maintenanceYear,
