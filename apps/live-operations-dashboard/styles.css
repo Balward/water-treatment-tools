@@ -661,6 +661,26 @@ h1 {
   box-shadow: inset 0 0 0 2px currentColor;
 }
 
+.status-option--operational.is-active {
+  box-shadow: inset 0 0 0 2px #08784f, 0 0 0 1px rgba(8, 120, 79, 0.28);
+}
+
+.status-option--warning.is-active {
+  box-shadow: inset 0 0 0 2px #b66a00, 0 0 0 1px rgba(182, 106, 0, 0.3);
+}
+
+.status-option--offline.is-active {
+  box-shadow: inset 0 0 0 2px #4e5966, 0 0 0 1px rgba(78, 89, 102, 0.3);
+}
+
+.status-option--out-of-service.is-active {
+  box-shadow: inset 0 0 0 2px #8f2a2a, 0 0 0 1px rgba(143, 42, 42, 0.3);
+}
+
+.status-option--maintenance.is-active {
+  box-shadow: inset 0 0 0 2px #315fbe, 0 0 0 1px rgba(49, 95, 190, 0.3);
+}
+
 .status-option--operational {
   color: #08784f;
 }
@@ -973,6 +993,26 @@ h1 {
   background: #25313c;
   border-color: #526273;
   color: #c7d5e4;
+}
+
+.theme-dark .status-option--operational.is-active {
+  box-shadow: inset 0 0 0 2px #7ac4a0, 0 0 0 1px rgba(122, 196, 160, 0.32);
+}
+
+.theme-dark .status-option--warning.is-active {
+  box-shadow: inset 0 0 0 2px #d6a95b, 0 0 0 1px rgba(214, 169, 91, 0.34);
+}
+
+.theme-dark .status-option--offline.is-active {
+  box-shadow: inset 0 0 0 2px #b3c0ce, 0 0 0 1px rgba(179, 192, 206, 0.32);
+}
+
+.theme-dark .status-option--out-of-service.is-active {
+  box-shadow: inset 0 0 0 2px #e58e99, 0 0 0 1px rgba(229, 142, 153, 0.34);
+}
+
+.theme-dark .status-option--maintenance.is-active {
+  box-shadow: inset 0 0 0 2px #90b4de, 0 0 0 1px rgba(144, 180, 222, 0.34);
 }
 
 .theme-dark .status-option--offline {
