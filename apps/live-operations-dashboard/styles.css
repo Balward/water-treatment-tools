@@ -51,7 +51,7 @@
   --ops-blue: #2c4763;
   --ops-shadow: 0 6px 14px rgba(18, 30, 44, 0.12);
   --ops-radius: 6px;
-  --ops-font-sans: "Atkinson Hyperlegible Next", "Inter", "Segoe UI", "Tahoma", sans-serif;
+  --ops-font-sans: "Inter", "Source Sans Pro", "Segoe UI", "Tahoma", sans-serif;
 }
 
 * {
