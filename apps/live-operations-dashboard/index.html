@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Plant Operations Status Board</title>
+    <title>Asset Status Board</title>
     <link rel="icon" type="image/png" href="/assets/logos/favicon.png" />
     <link rel="stylesheet" href="../../global-styles.css" />
     <link rel="stylesheet" href="./styles.css?v=2529918-font-inter" />
@@ -12,28 +12,58 @@
     <main class="ops-page">
       <header class="ops-header card">
         <div class="ops-brand">
-          <img id="opsLogo" src="/assets/logos/logo-horizontal.png" alt="Water Treatment Tools" class="ops-logo" />
+          <img
+            id="opsLogo"
+            src="/assets/logos/logo-horizontal.png"
+            alt="Water Treatment Tools"
+            class="ops-logo"
+          />
           <div class="ops-titles">
             <p class="eyebrow">Water Treatment Facility</p>
             <h1>Asset Status Board</h1>
             <div class="sync-row sync-row--title">
-              <span id="syncStatus" class="sync-dot sync-dot--offline" role="status" aria-label="Reconnecting" title="Reconnecting"></span>
-              <span id="lastUpdated" class="last-updated">Last updated: --</span>
+              <span
+                id="syncStatus"
+                class="sync-dot sync-dot--offline"
+                role="status"
+                aria-label="Reconnecting"
+                title="Reconnecting"
+              ></span>
+              <span id="lastUpdated" class="last-updated"
+                >Last updated: --</span
+              >
             </div>
           </div>
         </div>
         <div class="header-qr" aria-label="Scan me to edit">
-          <img src="/assets/qrcodes/qr1.png" alt="QR code to edit dashboard" class="header-qr-image" />
-          <span class="header-qr-text">Scan me to edit</span>
+          <img
+            src="/assets/qrcodes/qr1.png"
+            alt="QR code to edit dashboard"
+            class="header-qr-image"
+          />
+          <span class="header-qr-text">Scan to me edit</span>
         </div>
         <div class="header-meta">
           <div class="operator-row">
-            <button id="themeToggle" class="theme-toggle" type="button" aria-pressed="false" aria-label="Switch to dark mode" title="Switch to dark mode">☾</button>
+            <button
+              id="themeToggle"
+              class="theme-toggle"
+              type="button"
+              aria-pressed="false"
+              aria-label="Switch to dark mode"
+              title="Switch to dark mode"
+            >
+              ☾
+            </button>
           </div>
         </div>
       </header>
 
-      <section id="equipmentContainer" class="equipment-layout" aria-live="polite"></section>
+      <section
+        id="equipmentContainer"
+        class="equipment-layout"
+        aria-live="polite"
+      ></section>
 
       <div id="drawerBackdrop" class="drawer-backdrop" hidden></div>
       <aside id="equipmentDrawer" class="equipment-drawer" aria-hidden="true">
@@ -42,7 +72,14 @@
             <p id="drawerGroup" class="drawer-group"></p>
             <h2 id="drawerTitle" class="drawer-title"></h2>
           </div>
-          <button id="drawerClose" class="drawer-close" type="button" aria-label="Close details">X</button>
+          <button
+            id="drawerClose"
+            class="drawer-close"
+            type="button"
+            aria-label="Close details"
+          >
+            X
+          </button>
         </header>
 
         <div class="drawer-content">
@@ -55,21 +92,41 @@
             <h3 class="drawer-label">Surface Wash Maintenance</h3>
             <div id="swMaintenanceOptions" class="status-options"></div>
             <div id="swYearRow" class="drawer-inline-row" hidden>
-              <label class="drawer-sublabel" for="swYearSelect">Year completed</label>
+              <label class="drawer-sublabel" for="swYearSelect"
+                >Year completed</label
+              >
               <select id="swYearSelect"></select>
             </div>
           </section>
 
           <section class="drawer-section">
             <label class="drawer-label" for="drawerNotes">Notes</label>
-            <textarea id="drawerNotes" rows="7" maxlength="1500" placeholder="Add operating notes..."></textarea>
+            <textarea
+              id="drawerNotes"
+              rows="7"
+              maxlength="1500"
+              placeholder="Add operating notes..."
+            ></textarea>
           </section>
         </div>
 
         <footer class="drawer-footer">
           <div class="drawer-actions">
-            <button id="clearNotesButton" class="clear-notes-button" type="button">Clear notes</button>
-            <button id="saveSidebarButton" class="save-sidebar-button" type="button" disabled>Save</button>
+            <button
+              id="clearNotesButton"
+              class="clear-notes-button"
+              type="button"
+            >
+              Clear notes
+            </button>
+            <button
+              id="saveSidebarButton"
+              class="save-sidebar-button"
+              type="button"
+              disabled
+            >
+              Save
+            </button>
           </div>
           <p id="drawerMeta" class="drawer-meta"></p>
         </footer>
@@ -91,7 +148,9 @@
         <header class="equipment-head">
           <div class="equipment-name-row">
             <h3 class="equipment-name"></h3>
-            <span class="notes-indicator" aria-hidden="true" title="Has notes">✎</span>
+            <span class="notes-indicator" aria-hidden="true" title="Has notes"
+              >✎</span
+            >
           </div>
           <span class="card-chevron" aria-hidden="true">></span>
         </header>
