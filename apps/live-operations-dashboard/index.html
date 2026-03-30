@@ -65,6 +65,62 @@
         aria-live="polite"
       ></section>
 
+      <section class="comments-board card" aria-labelledby="generalCommentsTitle">
+        <header class="comments-board-header">
+          <div>
+            <p class="eyebrow">Facility Notes</p>
+            <h2 id="generalCommentsTitle" class="comments-board-title">
+              General Comments
+            </h2>
+          </div>
+          <p class="comments-board-subtitle">
+            Shared notes for equipment issues, observations, and follow-ups.
+          </p>
+        </header>
+
+        <form id="generalCommentsForm" class="comments-form">
+          <label class="comments-form-label" for="generalCommentInput">
+            Add a message to the board
+          </label>
+          <textarea
+            id="generalCommentInput"
+            class="comments-form-input"
+            rows="4"
+            maxlength="2000"
+            placeholder="Add a general comment about equipment, operations, or follow-up work..."
+          ></textarea>
+          <div class="comments-form-actions">
+            <p id="generalCommentsMode" class="comments-form-mode" aria-live="polite">
+              Posting as a new comment
+            </p>
+            <div class="comments-form-buttons">
+              <button
+                id="cancelCommentEditButton"
+                class="clear-notes-button"
+                type="button"
+                hidden
+              >
+                Cancel edit
+              </button>
+              <button
+                id="submitCommentButton"
+                class="save-sidebar-button"
+                type="submit"
+                disabled
+              >
+                Post comment
+              </button>
+            </div>
+          </div>
+        </form>
+
+        <div
+          id="generalCommentsList"
+          class="comments-list"
+          aria-live="polite"
+        ></div>
+      </section>
+
       <div id="drawerBackdrop" class="drawer-backdrop" hidden></div>
       <aside id="equipmentDrawer" class="equipment-drawer" aria-hidden="true">
         <header class="drawer-header">
@@ -159,6 +215,49 @@
       </article>
     </template>
 
+    <template id="commentTemplate">
+      <article class="comment-card">
+        <div class="comment-card-accent" aria-hidden="true"></div>
+        <div class="comment-card-body">
+          <header class="comment-card-header">
+            <div class="comment-card-meta">
+              <p class="comment-card-author"></p>
+              <p class="comment-card-date"></p>
+            </div>
+            <div class="comment-card-actions">
+              <button
+                class="comment-icon-button"
+                type="button"
+                data-action="edit"
+                aria-label="Edit comment"
+                title="Edit comment"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path
+                    d="M4 17.25V20h2.75L17.81 8.94l-2.75-2.75zM19.92 7.53a.996.996 0 000-1.41l-2.04-2.04a.996.996 0 10-1.41 1.41l2.04 2.04a.996.996 0 001.41 0z"
+                  ></path>
+                </svg>
+              </button>
+              <button
+                class="comment-icon-button comment-icon-button--danger"
+                type="button"
+                data-action="delete"
+                aria-label="Delete comment"
+                title="Delete comment"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path
+                    d="M6 7h12l-1 13H7L6 7zm3-3h6l1 2h4v2H4V6h4l1-2z"
+                  ></path>
+                </svg>
+              </button>
+            </div>
+          </header>
+          <p class="comment-card-message"></p>
+        </div>
+      </article>
+    </template>
+
     <aside id="hoverPopup" class="hover-popup" aria-hidden="true">
       <p id="hoverPopupTitle" class="hover-popup-title"></p>
       <p id="hoverPopupSw" class="hover-popup-sw" hidden></p>
@@ -166,6 +265,6 @@
       <p id="hoverPopupMeta" class="hover-popup-meta"></p>
     </aside>
 
-    <script src="./script.js?v=2529918-status-offline"></script>
+    <script src="./script.js?v=2529918-comments-board"></script>
   </body>
 </html>

@@ -78,8 +78,9 @@ function createInitialLiveOpsState() {
   );
 
   return {
-    version: 1,
+    version: 2,
     updatedAt: now,
+    comments: [],
     equipment,
   };
 }
@@ -89,6 +90,13 @@ function sanitizeNote(note) {
     return '';
   }
   return note.trim().slice(0, 1500);
+}
+
+function sanitizeCommentMessage(message) {
+  if (typeof message !== 'string') {
+    return '';
+  }
+  return message.trim().slice(0, 2000);
 }
 
 function sanitizeUpdatedBy(updatedBy) {
@@ -184,9 +192,31 @@ function normalizeLoadedState(rawState) {
     };
   });
 
+  const normalizedComments = Array.isArray(rawState.comments)
+    ? rawState.comments
+      .map((comment, index) => {
+        const message = sanitizeCommentMessage(comment?.message);
+        if (!message) {
+          return null;
+        }
+        const rawId = typeof comment?.id === 'string' && comment.id.trim()
+          ? comment.id.trim().slice(0, 120)
+          : `comment-${index + 1}`;
+        return {
+          id: rawId,
+          message,
+          author: sanitizeUpdatedBy(comment?.author),
+          updatedAt: typeof comment?.updatedAt === 'string' ? comment.updatedAt : fallbackState.updatedAt,
+        };
+      })
+      .filter(Boolean)
+      .sort((left, right) => new Date(right.updatedAt).getTime() - new Date(left.updatedAt).getTime())
+    : [];
+
   return {
-    version: 1,
+    version: 2,
     updatedAt: typeof rawState.updatedAt === 'string' ? rawState.updatedAt : fallbackState.updatedAt,
+    comments: normalizedComments,
     equipment: mergedEquipment,
   };
 }
@@ -306,6 +336,106 @@ app.put('/api/live-ops/equipment/:equipmentId', async (req, res) => {
   return res.json({
     success: true,
     equipment: updatedEquipment,
+    updatedAt: now,
+  });
+});
+
+app.post('/api/live-ops/comments', async (req, res) => {
+  const message = sanitizeCommentMessage(req.body?.message);
+  if (!message) {
+    return res.status(400).json({ error: '"message" is required' });
+  }
+
+  const now = new Date().toISOString();
+  const comment = {
+    id: `comment-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    message,
+    author: sanitizeUpdatedBy(req.body?.updatedBy),
+    updatedAt: now,
+  };
+
+  liveOpsState = {
+    ...liveOpsState,
+    updatedAt: now,
+    comments: [comment, ...(Array.isArray(liveOpsState.comments) ? liveOpsState.comments : [])],
+  };
+
+  await queueStateWrite(liveOpsState);
+  broadcastLiveOpsEvent('state-updated', liveOpsState);
+
+  return res.json({
+    success: true,
+    comment,
+    state: liveOpsState,
+    updatedAt: now,
+  });
+});
+
+app.put('/api/live-ops/comments/:commentId', async (req, res) => {
+  const { commentId } = req.params;
+  const commentIndex = Array.isArray(liveOpsState.comments)
+    ? liveOpsState.comments.findIndex((item) => item.id === commentId)
+    : -1;
+
+  if (commentIndex === -1) {
+    return res.status(404).json({ error: `Comment not found: ${commentId}` });
+  }
+
+  const message = sanitizeCommentMessage(req.body?.message);
+  if (!message) {
+    return res.status(400).json({ error: '"message" is required' });
+  }
+
+  const now = new Date().toISOString();
+  const updatedComment = {
+    ...liveOpsState.comments[commentIndex],
+    message,
+    author: sanitizeUpdatedBy(req.body?.updatedBy),
+    updatedAt: now,
+  };
+
+  const nextComments = liveOpsState.comments.map((item, index) => (index === commentIndex ? updatedComment : item));
+  nextComments.sort((left, right) => new Date(right.updatedAt).getTime() - new Date(left.updatedAt).getTime());
+
+  liveOpsState = {
+    ...liveOpsState,
+    updatedAt: now,
+    comments: nextComments,
+  };
+
+  await queueStateWrite(liveOpsState);
+  broadcastLiveOpsEvent('state-updated', liveOpsState);
+
+  return res.json({
+    success: true,
+    comment: updatedComment,
+    state: liveOpsState,
+    updatedAt: now,
+  });
+});
+
+app.delete('/api/live-ops/comments/:commentId', async (req, res) => {
+  const { commentId } = req.params;
+  const currentComments = Array.isArray(liveOpsState.comments) ? liveOpsState.comments : [];
+  const nextComments = currentComments.filter((item) => item.id !== commentId);
+
+  if (nextComments.length === currentComments.length) {
+    return res.status(404).json({ error: `Comment not found: ${commentId}` });
+  }
+
+  const now = new Date().toISOString();
+  liveOpsState = {
+    ...liveOpsState,
+    updatedAt: now,
+    comments: nextComments,
+  };
+
+  await queueStateWrite(liveOpsState);
+  broadcastLiveOpsEvent('state-updated', liveOpsState);
+
+  return res.json({
+    success: true,
+    state: liveOpsState,
     updatedAt: now,
   });
 });

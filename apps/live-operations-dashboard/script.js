@@ -2,6 +2,7 @@
   const equipmentContainer = document.getElementById('equipmentContainer');
   const groupTemplate = document.getElementById('groupTemplate');
   const equipmentTemplate = document.getElementById('equipmentTemplate');
+  const commentTemplate = document.getElementById('commentTemplate');
   const syncStatus = document.getElementById('syncStatus');
   const lastUpdated = document.getElementById('lastUpdated');
   const opsLogo = document.getElementById('opsLogo');
@@ -25,6 +26,12 @@
   const hoverPopupSw = document.getElementById('hoverPopupSw');
   const hoverPopupNote = document.getElementById('hoverPopupNote');
   const hoverPopupMeta = document.getElementById('hoverPopupMeta');
+  const generalCommentsForm = document.getElementById('generalCommentsForm');
+  const generalCommentInput = document.getElementById('generalCommentInput');
+  const generalCommentsMode = document.getElementById('generalCommentsMode');
+  const submitCommentButton = document.getElementById('submitCommentButton');
+  const cancelCommentEditButton = document.getElementById('cancelCommentEditButton');
+  const generalCommentsList = document.getElementById('generalCommentsList');
 
   const isLocalDev = window.location.hostname === 'localhost' && window.location.port === '8080';
   const API_BASE = isLocalDev ? 'http://localhost:3001/api/live-ops' : '/api/live-ops';
@@ -47,6 +54,7 @@
   let pendingSidebarChanges = {};
   let drawerOriginalEquipment = null;
   let popupCardId = null;
+  let editingCommentId = null;
 
   function applyTheme(theme) {
     const isDark = theme === 'dark';
@@ -185,6 +193,16 @@
     }
     return {
       ...stateValue,
+      comments: Array.isArray(stateValue.comments)
+        ? stateValue.comments
+          .map((comment) => ({
+            id: typeof comment.id === 'string' ? comment.id : '',
+            message: typeof comment.message === 'string' ? comment.message.trim() : '',
+            author: typeof comment.author === 'string' && comment.author.trim() ? comment.author.trim() : 'operator',
+            updatedAt: typeof comment.updatedAt === 'string' ? comment.updatedAt : null,
+          }))
+          .filter((comment) => comment.id && comment.message)
+        : [],
       equipment: stateValue.equipment.map((equipment) => {
         const normalizedStatus = normalizeStatus(equipment.status, equipment.inService);
         return {
@@ -230,6 +248,27 @@
     return grouped;
   }
 
+  function setCommentFormState() {
+    if (!submitCommentButton || !generalCommentInput || !generalCommentsMode || !cancelCommentEditButton) {
+      return;
+    }
+    const hasMessage = Boolean(generalCommentInput.value.trim());
+    submitCommentButton.disabled = !hasMessage;
+    submitCommentButton.textContent = editingCommentId ? 'Save comment' : 'Post comment';
+    generalCommentsMode.textContent = editingCommentId
+      ? 'Editing existing comment'
+      : 'Posting as a new comment';
+    cancelCommentEditButton.hidden = !editingCommentId;
+  }
+
+  function resetCommentEditor() {
+    editingCommentId = null;
+    if (generalCommentsForm) {
+      generalCommentsForm.reset();
+    }
+    setCommentFormState();
+  }
+
   function findEquipment(id) {
     return liveState?.equipment.find((item) => item.id === id);
   }
@@ -241,6 +280,36 @@
     return {
       ...equipment,
     };
+  }
+
+  function buildCommentCard(comment) {
+    const card = commentTemplate.content.firstElementChild.cloneNode(true);
+    card.dataset.commentId = comment.id;
+    card.querySelector('.comment-card-author').textContent = comment.author || 'operator';
+    card.querySelector('.comment-card-date').textContent = formatTimestamp(comment.updatedAt);
+    card.querySelector('.comment-card-message').textContent = comment.message;
+    return card;
+  }
+
+  function renderComments() {
+    if (!generalCommentsList) {
+      return;
+    }
+
+    const comments = Array.isArray(liveState?.comments) ? liveState.comments : [];
+    generalCommentsList.innerHTML = '';
+
+    if (!comments.length) {
+      const emptyState = document.createElement('p');
+      emptyState.className = 'comments-empty';
+      emptyState.textContent = 'No general comments yet. Use the board to log shared equipment notes.';
+      generalCommentsList.appendChild(emptyState);
+      return;
+    }
+
+    for (const comment of comments) {
+      generalCommentsList.appendChild(buildCommentCard(comment));
+    }
   }
 
   function restoreDrawerSnapshot() {
@@ -590,11 +659,19 @@
     }
 
     updateLastUpdated();
+    renderComments();
   }
 
   function syncFromState() {
     if (!liveState) {
       return;
+    }
+
+    if (
+      editingCommentId
+      && (!Array.isArray(liveState.comments) || !liveState.comments.some((comment) => comment.id === editingCommentId))
+    ) {
+      resetCommentEditor();
     }
 
     const grouped = groupEquipment(liveState.equipment);
@@ -624,6 +701,7 @@
 
     refreshDrawer();
     updateLastUpdated();
+    renderComments();
 
     if (popupCardId) {
       const card = equipmentContainer.querySelector(`.equipment-card[data-id="${popupCardId}"]`);
@@ -650,6 +728,61 @@
       }
       return await response.json();
 
+    } catch (error) {
+      console.error(error);
+      setConnectivity(false);
+      return null;
+    }
+  }
+
+  async function createComment(message, updatedBy) {
+    try {
+      const response = await fetch(`${API_BASE}/comments`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message, updatedBy }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Comment create failed: ${response.status}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error(error);
+      setConnectivity(false);
+      return null;
+    }
+  }
+
+  async function updateComment(commentId, message, updatedBy) {
+    try {
+      const response = await fetch(`${API_BASE}/comments/${encodeURIComponent(commentId)}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message, updatedBy }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Comment update failed: ${response.status}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error(error);
+      setConnectivity(false);
+      return null;
+    }
+  }
+
+  async function removeComment(commentId) {
+    try {
+      const response = await fetch(`${API_BASE}/comments/${encodeURIComponent(commentId)}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error(`Comment delete failed: ${response.status}`);
+      }
+      return await response.json();
     } catch (error) {
       console.error(error);
       setConnectivity(false);
@@ -824,6 +957,91 @@
     syncFromState();
   });
 
+  generalCommentInput.addEventListener('input', () => {
+    setCommentFormState();
+  });
+
+  cancelCommentEditButton.addEventListener('click', () => {
+    resetCommentEditor();
+  });
+
+  generalCommentsForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const message = generalCommentInput.value.trim();
+    if (!message) {
+      setCommentFormState();
+      return;
+    }
+
+    const editorName = promptForOperatorName();
+    if (!editorName) {
+      return;
+    }
+
+    const result = editingCommentId
+      ? await updateComment(editingCommentId, message, editorName)
+      : await createComment(message, editorName);
+    if (!result) {
+      return;
+    }
+
+    if (result.state) {
+      liveState = normalizeState(result.state);
+      syncFromState();
+    }
+    resetCommentEditor();
+  });
+
+  generalCommentsList.addEventListener('click', async (event) => {
+    const button = event.target instanceof HTMLElement ? event.target.closest('button[data-action]') : null;
+    if (!button) {
+      return;
+    }
+
+    const commentCard = button.closest('.comment-card');
+    const commentId = commentCard?.dataset.commentId;
+    if (!commentId) {
+      return;
+    }
+
+    const comment = Array.isArray(liveState?.comments)
+      ? liveState.comments.find((item) => item.id === commentId)
+      : null;
+    if (!comment) {
+      return;
+    }
+
+    if (button.dataset.action === 'edit') {
+      editingCommentId = comment.id;
+      generalCommentInput.value = comment.message;
+      setCommentFormState();
+      generalCommentInput.focus();
+      generalCommentInput.setSelectionRange(generalCommentInput.value.length, generalCommentInput.value.length);
+      return;
+    }
+
+    if (button.dataset.action === 'delete') {
+      const shouldDelete = window.confirm(`Delete this comment from ${comment.author || 'operator'}?`);
+      if (!shouldDelete) {
+        return;
+      }
+
+      const result = await removeComment(commentId);
+      if (!result) {
+        return;
+      }
+
+      if (result.state) {
+        liveState = normalizeState(result.state);
+        syncFromState();
+      }
+
+      if (editingCommentId === commentId) {
+        resetCommentEditor();
+      }
+    }
+  });
+
   drawerClose.addEventListener('click', closeDrawer);
   drawerBackdrop.addEventListener('click', closeDrawer);
   document.addEventListener('keydown', (event) => {
@@ -899,6 +1117,7 @@
   async function init() {
     initTheme();
     buildMaintenanceYearOptions();
+    setCommentFormState();
     try {
       await loadInitialState();
       connectStream();
@@ -907,6 +1126,9 @@
       console.error(error);
       setConnectivity(false);
       equipmentContainer.innerHTML = '<p class="card" style="padding:1rem;">Live dashboard API is not reachable. Start the Node server on port 3001 to enable collaboration.</p>';
+      if (generalCommentsList) {
+        generalCommentsList.innerHTML = '<p class="comments-empty">Live dashboard API is not reachable. Comments are unavailable until the Node server is running.</p>';
+      }
     }
   }
 
