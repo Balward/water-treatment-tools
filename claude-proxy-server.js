@@ -71,6 +71,7 @@ function createInitialLiveOpsState() {
       swMaintenanceComplete: false,
       swMaintenanceYear: null,
       note: '',
+      changeLog: [],
       updatedAt: now,
       updatedBy: 'system',
     };
@@ -78,7 +79,7 @@ function createInitialLiveOpsState() {
   );
 
   return {
-    version: 2,
+    version: 3,
     updatedAt: now,
     comments: [],
     equipment,
@@ -127,6 +128,134 @@ function sanitizeMaintenanceYear(value) {
     return null;
   }
   return parsed;
+}
+
+function sanitizeChangeLogEntry(entry) {
+  if (!entry || typeof entry !== 'object') {
+    return null;
+  }
+
+  const timestamp = typeof entry.timestamp === 'string' ? entry.timestamp : null;
+  const updatedBy = sanitizeUpdatedBy(entry.updatedBy);
+  const rawChanges = Array.isArray(entry.changes) ? entry.changes : [];
+  const changes = rawChanges
+    .map((change) => {
+      if (!change || typeof change !== 'object') {
+        return null;
+      }
+      const field = typeof change.field === 'string' ? change.field.trim().slice(0, 80) : '';
+      const label = typeof change.label === 'string' ? change.label.trim().slice(0, 120) : '';
+      const from = typeof change.from === 'string' ? change.from.trim().slice(0, 300) : '';
+      const to = typeof change.to === 'string' ? change.to.trim().slice(0, 300) : '';
+      if (!field || !label) {
+        return null;
+      }
+      return { field, label, from, to };
+    })
+    .filter(Boolean);
+
+  if (!timestamp || !changes.length) {
+    return null;
+  }
+
+  return {
+    timestamp,
+    updatedBy,
+    changes,
+  };
+}
+
+function sanitizeChangeLog(changeLog) {
+  if (!Array.isArray(changeLog)) {
+    return [];
+  }
+
+  return changeLog
+    .map(sanitizeChangeLogEntry)
+    .filter(Boolean)
+    .sort((left, right) => new Date(right.timestamp).getTime() - new Date(left.timestamp).getTime())
+    .slice(0, 100);
+}
+
+function formatStatusLabel(status) {
+  switch (status) {
+    case 'operational':
+      return 'Online';
+    case 'warning':
+      return 'Warning';
+    case 'offline':
+      return 'Offline';
+    case 'out-of-service':
+      return 'Out of Service';
+    case 'maintenance':
+      return 'Maintenance Ongoing';
+    default:
+      return 'Unknown';
+  }
+}
+
+function formatNoteChange(value) {
+  const sanitized = sanitizeNote(value);
+  return sanitized || 'No notes';
+}
+
+function formatMaintenanceCompleteLabel(value) {
+  return value === true ? 'Complete' : 'Incomplete';
+}
+
+function formatMaintenanceYearLabel(value) {
+  const year = sanitizeMaintenanceYear(value);
+  return year === null ? 'None' : String(year);
+}
+
+function buildEquipmentChangeLog(currentEquipment, nextEquipment, timestamp, updatedBy) {
+  const changes = [];
+
+  if (currentEquipment.status !== nextEquipment.status) {
+    changes.push({
+      field: 'status',
+      label: 'Status',
+      from: formatStatusLabel(currentEquipment.status),
+      to: formatStatusLabel(nextEquipment.status),
+    });
+  }
+
+  if (sanitizeNote(currentEquipment.note) !== sanitizeNote(nextEquipment.note)) {
+    changes.push({
+      field: 'note',
+      label: 'Notes',
+      from: formatNoteChange(currentEquipment.note),
+      to: formatNoteChange(nextEquipment.note),
+    });
+  }
+
+  if (Boolean(currentEquipment.swMaintenanceComplete) !== Boolean(nextEquipment.swMaintenanceComplete)) {
+    changes.push({
+      field: 'swMaintenanceComplete',
+      label: 'Surface Wash Maintenance',
+      from: formatMaintenanceCompleteLabel(currentEquipment.swMaintenanceComplete),
+      to: formatMaintenanceCompleteLabel(nextEquipment.swMaintenanceComplete),
+    });
+  }
+
+  if (sanitizeMaintenanceYear(currentEquipment.swMaintenanceYear) !== sanitizeMaintenanceYear(nextEquipment.swMaintenanceYear)) {
+    changes.push({
+      field: 'swMaintenanceYear',
+      label: 'Surface Wash Year',
+      from: formatMaintenanceYearLabel(currentEquipment.swMaintenanceYear),
+      to: formatMaintenanceYearLabel(nextEquipment.swMaintenanceYear),
+    });
+  }
+
+  if (!changes.length) {
+    return null;
+  }
+
+  return {
+    timestamp,
+    updatedBy,
+    changes,
+  };
 }
 
 function sendSseEvent(res, event, payload) {
@@ -187,6 +316,7 @@ function normalizeLoadedState(rawState) {
       swMaintenanceComplete: maintenanceComplete,
       swMaintenanceYear: maintenanceYear,
       note: sanitizeNote(loaded.note),
+      changeLog: sanitizeChangeLog(loaded.changeLog),
       updatedAt: typeof loaded.updatedAt === 'string' ? loaded.updatedAt : fallback.updatedAt,
       updatedBy: sanitizeUpdatedBy(loaded.updatedBy),
     };
@@ -214,7 +344,7 @@ function normalizeLoadedState(rawState) {
     : [];
 
   return {
-    version: 2,
+    version: 3,
     updatedAt: typeof rawState.updatedAt === 'string' ? rawState.updatedAt : fallbackState.updatedAt,
     comments: normalizedComments,
     equipment: mergedEquipment,
@@ -320,9 +450,28 @@ app.put('/api/live-ops/equipment/:equipmentId', async (req, res) => {
     swMaintenanceComplete: resolvedSwMaintenanceComplete,
     swMaintenanceYear: resolvedSwMaintenanceYear,
     note: hasNote ? sanitizeNote(incomingNote) : currentEquipment.note,
+    changeLog: sanitizeChangeLog(currentEquipment.changeLog),
     updatedBy: sanitizeUpdatedBy(incomingUpdatedBy),
     updatedAt: now,
   };
+
+  const changeLogEntry = buildEquipmentChangeLog(
+    currentEquipment,
+    updatedEquipment,
+    now,
+    updatedEquipment.updatedBy
+  );
+
+  if (!changeLogEntry) {
+    return res.json({
+      success: true,
+      changed: false,
+      equipment: currentEquipment,
+      updatedAt: currentEquipment.updatedAt,
+    });
+  }
+
+  updatedEquipment.changeLog = [changeLogEntry, ...sanitizeChangeLog(currentEquipment.changeLog)].slice(0, 100);
 
   liveOpsState = {
     ...liveOpsState,

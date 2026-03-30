@@ -21,6 +21,7 @@
   const clearNotesButton = document.getElementById('clearNotesButton');
   const saveSidebarButton = document.getElementById('saveSidebarButton');
   const drawerMeta = document.getElementById('drawerMeta');
+  const assetLogList = document.getElementById('assetLogList');
   const hoverPopup = document.getElementById('hoverPopup');
   const hoverPopupTitle = document.getElementById('hoverPopupTitle');
   const hoverPopupSw = document.getElementById('hoverPopupSw');
@@ -217,6 +218,36 @@
           inService: isInServiceStatus(normalizedStatus),
           swMaintenanceComplete: equipment.swMaintenanceComplete === true,
           swMaintenanceYear: Number.isInteger(equipment.swMaintenanceYear) ? equipment.swMaintenanceYear : null,
+          changeLog: Array.isArray(equipment.changeLog)
+            ? equipment.changeLog
+              .map((entry) => {
+                const timestamp = typeof entry?.timestamp === 'string' ? entry.timestamp : null;
+                const updatedBy = typeof entry?.updatedBy === 'string' && entry.updatedBy.trim()
+                  ? entry.updatedBy.trim()
+                  : 'operator';
+                const changes = Array.isArray(entry?.changes)
+                  ? entry.changes
+                    .map((change) => {
+                      const field = typeof change?.field === 'string' ? change.field.trim() : '';
+                      const label = typeof change?.label === 'string' ? change.label.trim() : '';
+                      const from = typeof change?.from === 'string' ? change.from : '';
+                      const to = typeof change?.to === 'string' ? change.to : '';
+                      if (!field || !label) {
+                        return null;
+                      }
+                      return { field, label, from, to };
+                    })
+                    .filter(Boolean)
+                  : [];
+
+                if (!timestamp || !changes.length) {
+                  return null;
+                }
+
+                return { timestamp, updatedBy, changes };
+              })
+              .filter(Boolean)
+            : [],
         };
       }),
     };
@@ -415,6 +446,58 @@
 
   function formatHoverMeta(item) {
     return `Last edit ${formatTimestamp(item.updatedAt)}`;
+  }
+
+  function buildChangeDescription(change) {
+    const fromValue = typeof change.from === 'string' && change.from.trim() ? change.from.trim() : 'None';
+    const toValue = typeof change.to === 'string' && change.to.trim() ? change.to.trim() : 'None';
+    return `${change.label}: ${fromValue} -> ${toValue}`;
+  }
+
+  function renderAssetLog(equipment) {
+    if (!assetLogList) {
+      return;
+    }
+
+    const changeLog = Array.isArray(equipment?.changeLog) ? equipment.changeLog : [];
+    assetLogList.innerHTML = '';
+
+    if (!changeLog.length) {
+      const emptyState = document.createElement('p');
+      emptyState.className = 'asset-log-empty';
+      emptyState.textContent = 'No asset changes have been logged yet.';
+      assetLogList.appendChild(emptyState);
+      return;
+    }
+
+    for (const entry of changeLog) {
+      const item = document.createElement('article');
+      item.className = 'asset-log-item';
+
+      const meta = document.createElement('div');
+      meta.className = 'asset-log-item-meta';
+
+      const author = document.createElement('p');
+      author.className = 'asset-log-item-author';
+      author.textContent = entry.updatedBy || 'operator';
+      meta.appendChild(author);
+
+      const timestamp = document.createElement('p');
+      timestamp.className = 'asset-log-item-time';
+      timestamp.textContent = formatTimestamp(entry.timestamp);
+      meta.appendChild(timestamp);
+
+      const changesList = document.createElement('ul');
+      changesList.className = 'asset-log-item-changes';
+      for (const change of entry.changes) {
+        const listItem = document.createElement('li');
+        listItem.textContent = buildChangeDescription(change);
+        changesList.appendChild(listItem);
+      }
+
+      item.append(meta, changesList);
+      assetLogList.appendChild(item);
+    }
   }
 
   function setCardDetails(card, item) {
@@ -647,6 +730,7 @@
     drawerTitle.textContent = drawerEquipment.name;
     drawerMeta.textContent = `Last edit by ${equipment.updatedBy || 'operator'} at ${formatTimestamp(equipment.updatedAt)}`;
     renderStatusOptions(status);
+    renderAssetLog(equipment);
 
     const isFilter = drawerEquipment.groupKey === 'filters';
     filterMaintenanceSection.hidden = !isFilter;
@@ -1020,7 +1104,7 @@
     const equipment = findEquipment(selectedEquipmentId);
     if (equipment) {
       if (result.equipment && typeof result.equipment === 'object') {
-        Object.assign(equipment, result.equipment);
+        Object.assign(equipment, normalizeState({ equipment: [result.equipment], comments: [] }).equipment[0]);
       } else {
         equipment.updatedBy = editorName;
         equipment.updatedAt = new Date().toISOString();

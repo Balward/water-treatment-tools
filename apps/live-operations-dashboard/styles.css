@@ -994,7 +994,9 @@ body.mode-tv .sw-status {
   display: grid;
   align-content: start;
   gap: 0.9rem;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-right: 0.25rem;
   padding-bottom: 0.3rem;
 }
 
@@ -1065,6 +1067,95 @@ body.mode-tv .sw-status {
 
 .drawer-inline-row[hidden] {
   display: none !important;
+}
+
+.asset-log-details {
+  width: 100%;
+}
+
+.asset-log-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  list-style: none;
+  cursor: pointer;
+}
+
+.asset-log-summary::-webkit-details-marker {
+  display: none;
+}
+
+.asset-log-summary::after {
+  content: "+";
+  font-size: 1rem;
+  line-height: 1;
+  color: #59728c;
+}
+
+.asset-log-details[open] .asset-log-summary::after {
+  content: "-";
+}
+
+.asset-log-list {
+  display: grid;
+  gap: 0.55rem;
+  width: 100%;
+  max-height: 190px;
+  overflow: auto;
+  margin-top: 0.55rem;
+  padding-right: 0.1rem;
+}
+
+.asset-log-empty {
+  margin: 0;
+  padding: 0.72rem 0.8rem;
+  border: 1px dashed rgba(114, 136, 162, 0.45);
+  border-radius: var(--ops-radius);
+  color: #6f83a0;
+  background: rgba(232, 238, 245, 0.55);
+  font-size: 0.85rem;
+}
+
+.asset-log-item {
+  display: grid;
+  gap: 0.45rem;
+  width: 100%;
+  padding: 0.72rem 0.8rem;
+  border: 1px solid rgba(114, 136, 162, 0.35);
+  border-radius: var(--ops-radius);
+  background: linear-gradient(180deg, rgba(245, 248, 252, 0.98) 0%, rgba(234, 240, 247, 0.96) 100%);
+}
+
+.asset-log-item-meta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.asset-log-item-author,
+.asset-log-item-time {
+  margin: 0;
+}
+
+.asset-log-item-author {
+  color: #314b66;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.asset-log-item-time {
+  color: #6f83a0;
+  font-size: 0.78rem;
+}
+
+.asset-log-item-changes {
+  margin: 0;
+  padding-left: 1rem;
+  color: #21384f;
+  display: grid;
+  gap: 0.3rem;
+  font-size: 0.84rem;
 }
 
 #swYearSelect {
@@ -1152,7 +1243,7 @@ body.mode-tv .sw-status {
 
 #drawerNotes {
   width: 100%;
-  min-height: clamp(84px, 15vh, 135px);
+  min-height: clamp(52px, 8vh, 84px);
   max-height: none;
   resize: none;
   border: 1px solid #a8b2bf;
@@ -1309,6 +1400,33 @@ body.mode-tv .equipment-card--pump {
 
 .theme-dark .drawer-sublabel {
   color: #afbfce;
+}
+
+.theme-dark .asset-log-summary::after {
+  color: #9eb4cb;
+}
+
+.theme-dark .asset-log-empty {
+  border-color: rgba(73, 96, 122, 0.8);
+  background: rgba(12, 20, 30, 0.75);
+  color: #9cb0c5;
+}
+
+.theme-dark .asset-log-item {
+  border-color: rgba(73, 96, 122, 0.72);
+  background: linear-gradient(180deg, rgba(14, 22, 33, 0.98) 0%, rgba(11, 18, 28, 0.98) 100%);
+}
+
+.theme-dark .asset-log-item-author {
+  color: #dce9f7;
+}
+
+.theme-dark .asset-log-item-time {
+  color: #8ea5be;
+}
+
+.theme-dark .asset-log-item-changes {
+  color: #d0dfef;
 }
 
 .theme-dark .theme-toggle {
