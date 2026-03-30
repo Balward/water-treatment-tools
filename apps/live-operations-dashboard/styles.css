@@ -401,20 +401,24 @@ h1 {
 
 .comment-card-body {
   padding: 0.9rem 1rem 0.95rem;
-  display: grid;
-  gap: 0.7rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
 }
 
 .comment-card-header {
   display: flex;
   justify-content: space-between;
   gap: 0.7rem;
-  align-items: start;
+  align-items: center;
+  order: 2;
+  margin-top: 0.1rem;
 }
 
 .comment-card-meta {
   display: grid;
-  gap: 0.14rem;
+  gap: 0.08rem;
+  opacity: 0.72;
 }
 
 .comment-card-author,
@@ -424,22 +428,26 @@ h1 {
 }
 
 .comment-card-author {
-  font-size: 0.96rem;
-  font-weight: 800;
-  color: #1b3854;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #7d91a5;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
 
 .comment-card-date {
-  font-size: 0.73rem;
-  color: #7388a1;
+  font-size: 0.58rem;
+  color: #97a8ba;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
 }
 
 .comment-card-message {
-  font-size: 0.95rem;
-  line-height: 1.55;
-  color: #21374d;
+  order: 1;
+  font-size: 1.08rem;
+  line-height: 1.65;
+  color: #183149;
+  font-weight: 600;
   white-space: pre-wrap;
   word-break: break-word;
 }
@@ -448,31 +456,33 @@ h1 {
   display: inline-flex;
   align-items: center;
   gap: 0.32rem;
+  opacity: 0.78;
 }
 
 .comment-icon-button {
-  width: 34px;
-  height: 34px;
+  width: 30px;
+  height: 30px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid #aab8c6;
+  border: 1px solid rgba(123, 149, 176, 0.55);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.85);
-  color: #325170;
+  background: rgba(255, 255, 255, 0.04);
+  color: #6d87a1;
   cursor: pointer;
   transition: transform 0.12s ease, background 0.12s ease, border-color 0.12s ease;
 }
 
 .comment-icon-button:hover {
   transform: translateY(-1px);
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.12);
   border-color: #7f97b0;
+  color: #2d4e6d;
 }
 
 .comment-icon-button svg {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   fill: currentColor;
 }
 
@@ -1200,22 +1210,35 @@ h1 {
 }
 
 .theme-dark .comment-card-author {
-  color: #edf4fb;
+  color: #87a0b8;
 }
 
 .theme-dark .comment-card-message {
-  color: #cfdbeb;
+  color: #edf4fb;
+}
+
+.theme-dark .comment-card-date {
+  color: #70869b;
+}
+
+.theme-dark .comment-card-meta {
+  opacity: 0.66;
+}
+
+.theme-dark .comment-card-actions {
+  opacity: 0.72;
 }
 
 .theme-dark .comment-icon-button {
-  background: rgba(18, 28, 40, 0.9);
-  border-color: #47617b;
-  color: #b9cde0;
+  background: rgba(18, 28, 40, 0.32);
+  border-color: rgba(97, 122, 146, 0.5);
+  color: #7f9ab4;
 }
 
 .theme-dark .comment-icon-button:hover {
-  background: #1a2939;
+  background: rgba(37, 55, 74, 0.86);
   border-color: #6d8aa8;
+  color: #d8e7f7;
 }
 
 .theme-dark .comment-icon-button--danger {
