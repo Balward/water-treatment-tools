@@ -5,7 +5,8 @@
   "main": "claude-proxy-server.js",
   "scripts": {
     "start": "node claude-proxy-server.js",
-    "dev": "nodemon claude-proxy-server.js"
+    "dev": "nodemon claude-proxy-server.js",
+    "live-ops-dev": "node scripts/live-ops-dev.js"
   },
   "dependencies": {
     "cors": "^2.8.5",

@@ -1037,6 +1037,7 @@
     setCommentFormState();
   });
 
+
   openCommentDrawerButton.addEventListener('click', () => {
     openCommentDrawer();
   });
