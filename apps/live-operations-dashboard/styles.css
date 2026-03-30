@@ -620,7 +620,12 @@ body.mode-tv .group--waste-pumps .card-grid {
 
 .group--reclaim-pumps,
 .group--waste-pumps {
-  grid-column: 1 / -1;
+  grid-column: span 1;
+}
+
+.group--reclaim-pumps .card-grid,
+.group--waste-pumps .card-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .group-header {
@@ -1712,6 +1717,16 @@ body.mode-tv .equipment-card--pump {
   .equipment-layout {
     grid-template-columns: 1fr;
     overflow: visible;
+  }
+
+  .group--reclaim-pumps,
+  .group--waste-pumps {
+    grid-column: 1 / -1;
+  }
+
+  .group--reclaim-pumps .card-grid,
+  .group--waste-pumps .card-grid {
+    grid-template-columns: 1fr;
   }
 
   body.mode-tv .equipment-layout,
