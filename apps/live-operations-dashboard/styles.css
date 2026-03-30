@@ -80,6 +80,10 @@ body.drawer-open {
   overflow: hidden;
 }
 
+body.mode-tv {
+  overflow: hidden;
+}
+
 .ops-page {
   width: calc(100% - 2rem);
   max-width: 1600px;
@@ -88,6 +92,16 @@ body.drawer-open {
   display: grid;
   grid-template-rows: auto auto auto;
   gap: 0.5rem;
+}
+
+body.mode-tv .ops-page {
+  width: calc(100vw - 1rem);
+  max-width: none;
+  height: calc(100vh - 1rem);
+  min-height: calc(100vh - 1rem);
+  margin: 0.5rem auto;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 0.4rem;
 }
 
 .card {
@@ -106,6 +120,12 @@ body.drawer-open {
   min-height: 108px;
 }
 
+body.mode-tv .ops-header {
+  min-height: 92px;
+  padding: 0.7rem 0.8rem;
+  gap: 0.35rem;
+}
+
 .eyebrow {
   margin: 0;
   text-transform: uppercase;
@@ -121,6 +141,10 @@ body.drawer-open {
   width: 272px;
   max-width: 100%;
   height: auto;
+}
+
+body.mode-tv .ops-logo {
+  width: clamp(220px, 16vw, 300px);
 }
 
 .ops-brand {
@@ -148,6 +172,10 @@ h1 {
   font-size: clamp(1.2rem, 1.8vw, 1.75rem);
   line-height: 1.05;
   text-transform: none;
+}
+
+body.mode-tv h1 {
+  font-size: clamp(1.1rem, 1.55vw, 1.55rem);
 }
 
 .lede {
@@ -181,6 +209,10 @@ h1 {
   border: 1px solid #7f96ad;
   border-radius: 2px;
   background: #ffffff;
+}
+
+body.mode-tv .header-qr-image {
+  height: 56px;
 }
 
 .header-qr-text {
@@ -287,6 +319,10 @@ h1 {
   font-size: 0.78rem;
 }
 
+body.mode-tv .last-updated {
+  font-size: 0.72rem;
+}
+
 .equipment-layout {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -295,10 +331,22 @@ h1 {
   align-content: start;
 }
 
+body.mode-tv .equipment-layout {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.42rem;
+  align-content: start;
+}
+
 .comments-board {
   padding: 0.9rem 1rem 1rem;
   display: grid;
   gap: 0.9rem;
+}
+
+body.mode-tv .comments-board {
+  padding: 0.65rem 0.8rem 0.75rem;
+  gap: 0.55rem;
+  min-height: 0;
 }
 
 .comments-board-header {
@@ -310,10 +358,20 @@ h1 {
   padding-bottom: 0.65rem;
 }
 
+body.mode-tv .comments-board-header {
+  padding-bottom: 0.45rem;
+  gap: 0.5rem;
+}
+
 .comments-board-title {
   margin: 0.15rem 0 0;
   font-size: 1.2rem;
   color: #1a3652;
+}
+
+body.mode-tv .comments-board-title {
+  font-size: 1rem;
+  margin-top: 0.08rem;
 }
 
 .comments-board-subtitle {
@@ -323,6 +381,11 @@ h1 {
   line-height: 1.45;
   color: #4d647b;
   text-align: right;
+}
+
+body.mode-tv .comments-board-subtitle {
+  font-size: 0.74rem;
+  max-width: 28rem;
 }
 
 .comments-form-input {
@@ -345,6 +408,13 @@ h1 {
 .comments-list {
   display: grid;
   gap: 0.7rem;
+}
+
+body.mode-tv .comments-list {
+  gap: 0.45rem;
+  max-height: min(24vh, 270px);
+  overflow: auto;
+  padding-right: 0.2rem;
 }
 
 .comments-board-actions {
@@ -371,6 +441,12 @@ h1 {
   cursor: pointer;
 }
 
+body.mode-tv .add-comment-button {
+  min-width: 156px;
+  padding: 0.42rem 0.75rem;
+  font-size: 0.74rem;
+}
+
 .add-comment-button:hover {
   background: #cfe0ee;
 }
@@ -395,6 +471,10 @@ h1 {
   box-shadow: 0 10px 20px rgba(17, 31, 48, 0.08);
 }
 
+body.mode-tv .comment-card {
+  border-radius: calc(var(--ops-radius) + 2px);
+}
+
 .comment-card-accent {
   background: linear-gradient(180deg, #567a9d 0%, #2d4f70 45%, #193650 100%);
 }
@@ -404,6 +484,11 @@ h1 {
   display: flex;
   flex-direction: column;
   gap: 0.45rem;
+}
+
+body.mode-tv .comment-card-body {
+  padding: 0.65rem 0.8rem 0.7rem;
+  gap: 0.3rem;
 }
 
 .comment-card-header {
@@ -452,6 +537,11 @@ h1 {
   word-break: break-word;
 }
 
+body.mode-tv .comment-card-message {
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
 .comment-card-actions {
   display: inline-flex;
   align-items: center;
@@ -471,6 +561,11 @@ h1 {
   color: #6d87a1;
   cursor: pointer;
   transition: transform 0.12s ease, background 0.12s ease, border-color 0.12s ease;
+}
+
+body.mode-tv .comment-icon-button {
+  width: 26px;
+  height: 26px;
 }
 
 .comment-icon-button:hover {
@@ -509,6 +604,10 @@ h1 {
   border-width: 1px;
 }
 
+body.mode-tv .group {
+  padding: 0.34rem 0.4rem 0.42rem;
+}
+
 .group--reclaim-pumps,
 .group--waste-pumps {
   grid-column: 1 / -1;
@@ -524,6 +623,11 @@ h1 {
   border-bottom: 1px solid rgba(54, 79, 106, 0.5);
 }
 
+body.mode-tv .group-header {
+  margin-bottom: 0.28rem;
+  padding-bottom: 0.16rem;
+}
+
 .group-title {
   margin: 0;
   font-size: 1.02rem;
@@ -533,11 +637,19 @@ h1 {
   font-weight: 800;
 }
 
+body.mode-tv .group-title {
+  font-size: 0.92rem;
+}
+
 .group-stats {
   margin: 0;
   color: #2e4d6d;
   font-size: 0.8rem;
   font-weight: 700;
+}
+
+body.mode-tv .group-stats {
+  font-size: 0.72rem;
 }
 
 .card-grid {
@@ -546,11 +658,19 @@ h1 {
   gap: 0.45rem;
 }
 
+body.mode-tv .card-grid {
+  gap: 0.32rem;
+}
+
 .low-zone-layout {
   display: grid;
   grid-template-columns: 4fr 3fr;
   gap: 0.7rem;
   align-items: start;
+}
+
+body.mode-tv .low-zone-layout {
+  gap: 0.45rem;
 }
 
 .low-zone-section {
@@ -575,6 +695,10 @@ h1 {
   font-weight: 800;
 }
 
+body.mode-tv .low-zone-title {
+  font-size: 0.74rem;
+}
+
 .equipment-card {
   position: relative;
   border: 0;
@@ -587,6 +711,12 @@ h1 {
   min-height: 72px;
   transition: box-shadow 0.12s ease, border-color 0.12s ease;
   align-content: start;
+}
+
+body.mode-tv .equipment-card {
+  min-height: 60px;
+  padding: 0.34rem;
+  gap: 0.18rem;
 }
 
 .equipment-card:hover {
@@ -614,6 +744,10 @@ h1 {
   color: #edf4fb;
   line-height: 1;
   text-transform: none;
+}
+
+body.mode-tv .equipment-name {
+  font-size: clamp(1.05rem, 1.6vw, 1.28rem);
 }
 
 .notes-indicator {
@@ -651,6 +785,11 @@ h1 {
   font-weight: 700;
 }
 
+body.mode-tv .status-pill {
+  padding: 0.08rem 0.36rem;
+  font-size: 0.58rem;
+}
+
 .sw-status {
   margin: 0;
   width: fit-content;
@@ -663,6 +802,11 @@ h1 {
   color: #4f6885;
   background: #e5ebf1;
   opacity: 0.9;
+}
+
+body.mode-tv .sw-status {
+  padding: 0.06rem 0.32rem;
+  font-size: 0.5rem;
 }
 
 .sw-status.sw-status--complete {
@@ -1082,6 +1226,12 @@ h1 {
   padding-bottom: 0.34rem;
 }
 
+body.mode-tv .equipment-card--pump {
+  min-height: 56px;
+  padding-top: 0.28rem;
+  padding-bottom: 0.28rem;
+}
+
 .theme-dark .card,
 .theme-dark .group,
 .theme-dark .equipment-drawer {
@@ -1483,6 +1633,10 @@ h1 {
 }
 
 @media (max-width: 900px) {
+  body.mode-tv {
+    overflow: auto;
+  }
+
   body {
     overflow: auto;
   }
@@ -1492,6 +1646,14 @@ h1 {
     margin-top: 0.9rem;
     height: auto;
     grid-template-rows: auto;
+  }
+
+  body.mode-tv .ops-page {
+    width: min(1600px, 100% - 1rem);
+    height: auto;
+    min-height: auto;
+    grid-template-rows: auto;
+    gap: 0.5rem;
   }
 
   .ops-header {
@@ -1542,8 +1704,19 @@ h1 {
     overflow: visible;
   }
 
+  body.mode-tv .equipment-layout,
+  body.mode-tv .comments-list {
+    max-height: none;
+    overflow: visible;
+  }
+
   .comments-board {
     padding: 0.85rem;
+  }
+
+  body.mode-tv .comments-board {
+    padding: 0.85rem;
+    gap: 0.9rem;
   }
 
   .comments-board-header {
@@ -1598,6 +1771,23 @@ h1 {
 
   .comment-card {
     grid-template-columns: 6px 1fr;
+  }
+
+  body.mode-tv .comment-card-body {
+    padding: 0.9rem 1rem 0.95rem;
+    gap: 0.45rem;
+  }
+
+  body.mode-tv .equipment-card {
+    min-height: 72px;
+    padding: 0.42rem;
+    gap: 0.24rem;
+  }
+
+  body.mode-tv .equipment-card--pump {
+    min-height: 64px;
+    padding-top: 0.34rem;
+    padding-bottom: 0.34rem;
   }
 }
 

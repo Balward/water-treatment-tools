@@ -42,6 +42,7 @@
   const API_BASE = isLocalDev ? 'http://localhost:3001/api/live-ops' : '/api/live-ops';
   const operatorNameStorageKey = 'live-ops-operator-name';
   const themeStorageKey = 'live-ops-theme';
+  const displayMode = new URLSearchParams(window.location.search).get('mode');
   const statusOptionsList = [
     { value: 'operational', label: 'Online' },
     { value: 'warning', label: 'Warning' },
@@ -352,6 +353,11 @@
     for (const comment of comments) {
       generalCommentsList.appendChild(buildCommentCard(comment));
     }
+  }
+
+  function applyDisplayMode() {
+    const isTvMode = typeof displayMode === 'string' && displayMode.toLowerCase() === 'tv';
+    document.body.classList.toggle('mode-tv', isTvMode);
   }
 
   function restoreDrawerSnapshot() {
@@ -1166,6 +1172,7 @@
   }
 
   async function init() {
+    applyDisplayMode();
     initTheme();
     buildMaintenanceYearOptions();
     setCommentFormState();
