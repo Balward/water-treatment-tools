@@ -843,10 +843,13 @@ body.mode-tv .sw-status {
 .hover-popup {
   position: fixed;
   width: min(640px, calc(100vw - 1rem));
-  background: #ffffff;
-  border: 1px solid #8ea2b8;
-  border-radius: var(--ops-radius);
-  box-shadow: 0 10px 20px rgba(22, 37, 52, 0.18);
+  background: linear-gradient(180deg, #ffffff 0%, #eef4fb 100%);
+  border: 2px solid #5f87b1;
+  border-radius: calc(var(--ops-radius) + 2px);
+  box-shadow:
+    0 0 0 2px rgba(214, 232, 250, 0.82),
+    0 22px 40px rgba(10, 22, 36, 0.28),
+    0 8px 16px rgba(10, 22, 36, 0.18);
   padding: 0.95rem 1rem;
   z-index: 18;
   opacity: 0;
@@ -1435,9 +1438,12 @@ body.mode-tv .equipment-card--pump {
 }
 
 .theme-dark .hover-popup {
-  background: #0d161f;
-  border-color: #47627d;
-  box-shadow: 0 16px 28px rgba(0, 0, 0, 0.62);
+  background: linear-gradient(180deg, #0d1824 0%, #101d2a 100%);
+  border-color: #7fb5ea;
+  box-shadow:
+    0 0 0 2px rgba(48, 86, 121, 0.55),
+    0 26px 44px rgba(0, 0, 0, 0.72),
+    0 10px 20px rgba(0, 0, 0, 0.45);
 }
 
 .theme-dark .hover-popup-title {
