@@ -842,12 +842,12 @@ body.mode-tv .sw-status {
 
 .hover-popup {
   position: fixed;
-  width: min(320px, calc(100vw - 1rem));
+  width: min(640px, calc(100vw - 1rem));
   background: #ffffff;
   border: 1px solid #8ea2b8;
   border-radius: var(--ops-radius);
   box-shadow: 0 10px 20px rgba(22, 37, 52, 0.18);
-  padding: 0.55rem 0.6rem;
+  padding: 0.95rem 1rem;
   z-index: 18;
   opacity: 0;
   transform: translateY(4px);
@@ -869,27 +869,28 @@ body.mode-tv .sw-status {
 }
 
 .hover-popup-title {
-  font-size: 0.74rem;
+  font-size: 1.08rem;
   font-weight: 700;
   color: #2e4668;
 }
 
 .hover-popup-note {
-  margin-top: 0.3rem;
-  font-size: 0.73rem;
+  margin-top: 0.45rem;
+  font-size: 0.98rem;
+  line-height: 1.55;
   color: #314d72;
 }
 
 .hover-popup-sw {
-  margin-top: 0.25rem;
-  font-size: 0.71rem;
+  margin-top: 0.35rem;
+  font-size: 0.92rem;
   font-weight: 700;
   color: #3e5a7b;
 }
 
 .hover-popup-meta {
-  margin-top: 0.28rem;
-  font-size: 0.64rem;
+  margin-top: 0.4rem;
+  font-size: 0.82rem;
   color: #7388a5;
 }
 
