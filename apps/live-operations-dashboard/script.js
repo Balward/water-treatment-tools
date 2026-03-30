@@ -1042,7 +1042,7 @@
   });
 
   generalCommentsList.addEventListener('click', async (event) => {
-    const button = event.target instanceof HTMLElement ? event.target.closest('button[data-action]') : null;
+    const button = event.target instanceof Element ? event.target.closest('button[data-action]') : null;
     if (!button) {
       return;
     }

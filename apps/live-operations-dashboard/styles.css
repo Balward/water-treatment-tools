@@ -484,6 +484,11 @@ h1 {
   width: 14px;
   height: 14px;
   fill: currentColor;
+  pointer-events: none;
+}
+
+.comment-icon-button svg * {
+  pointer-events: none;
 }
 
 .comment-icon-button--danger {
