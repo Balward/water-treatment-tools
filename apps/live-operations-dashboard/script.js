@@ -32,6 +32,11 @@
   const submitCommentButton = document.getElementById('submitCommentButton');
   const cancelCommentEditButton = document.getElementById('cancelCommentEditButton');
   const generalCommentsList = document.getElementById('generalCommentsList');
+  const openCommentDrawerButton = document.getElementById('openCommentDrawerButton');
+  const commentDrawer = document.getElementById('commentDrawer');
+  const commentDrawerBackdrop = document.getElementById('commentDrawerBackdrop');
+  const commentDrawerClose = document.getElementById('commentDrawerClose');
+  const commentDrawerTitle = document.getElementById('commentDrawerTitle');
 
   const isLocalDev = window.location.hostname === 'localhost' && window.location.port === '8080';
   const API_BASE = isLocalDev ? 'http://localhost:3001/api/live-ops' : '/api/live-ops';
@@ -249,16 +254,16 @@
   }
 
   function setCommentFormState() {
-    if (!submitCommentButton || !generalCommentInput || !generalCommentsMode || !cancelCommentEditButton) {
+    if (!submitCommentButton || !generalCommentInput || !generalCommentsMode || !commentDrawerTitle) {
       return;
     }
     const hasMessage = Boolean(generalCommentInput.value.trim());
     submitCommentButton.disabled = !hasMessage;
     submitCommentButton.textContent = editingCommentId ? 'Save comment' : 'Post comment';
+    commentDrawerTitle.textContent = editingCommentId ? 'Edit Comment' : 'Add Comment';
     generalCommentsMode.textContent = editingCommentId
       ? 'Editing existing comment'
       : 'Posting as a new comment';
-    cancelCommentEditButton.hidden = !editingCommentId;
   }
 
   function resetCommentEditor() {
@@ -267,6 +272,43 @@
       generalCommentsForm.reset();
     }
     setCommentFormState();
+  }
+
+  function openCommentDrawer(comment = null) {
+    if (!commentDrawer || !commentDrawerBackdrop || !generalCommentInput) {
+      return;
+    }
+
+    if (equipmentDrawer.classList.contains('is-open')) {
+      const closed = closeDrawer();
+      if (!closed) {
+        return;
+      }
+    }
+
+    editingCommentId = comment?.id || null;
+    generalCommentInput.value = comment?.message || '';
+    setCommentFormState();
+    commentDrawer.classList.add('is-open');
+    commentDrawer.setAttribute('aria-hidden', 'false');
+    commentDrawerBackdrop.hidden = false;
+    document.body.classList.add('drawer-open');
+    generalCommentInput.focus();
+    generalCommentInput.setSelectionRange(generalCommentInput.value.length, generalCommentInput.value.length);
+  }
+
+  function closeCommentDrawer() {
+    if (!commentDrawer || !commentDrawerBackdrop) {
+      return false;
+    }
+    resetCommentEditor();
+    commentDrawer.classList.remove('is-open');
+    commentDrawer.setAttribute('aria-hidden', 'true');
+    commentDrawerBackdrop.hidden = true;
+    if (!equipmentDrawer.classList.contains('is-open')) {
+      document.body.classList.remove('drawer-open');
+    }
+    return true;
   }
 
   function findEquipment(id) {
@@ -593,6 +635,9 @@
   }
 
   function openDrawer(equipmentId) {
+    if (commentDrawer?.classList.contains('is-open')) {
+      closeCommentDrawer();
+    }
     if (selectedEquipmentId && selectedEquipmentId !== equipmentId) {
       if (!confirmDiscardPendingChanges()) {
         return;
@@ -671,7 +716,7 @@
       editingCommentId
       && (!Array.isArray(liveState.comments) || !liveState.comments.some((comment) => comment.id === editingCommentId))
     ) {
-      resetCommentEditor();
+      closeCommentDrawer();
     }
 
     const grouped = groupEquipment(liveState.equipment);
@@ -961,8 +1006,12 @@
     setCommentFormState();
   });
 
+  openCommentDrawerButton.addEventListener('click', () => {
+    openCommentDrawer();
+  });
+
   cancelCommentEditButton.addEventListener('click', () => {
-    resetCommentEditor();
+    closeCommentDrawer();
   });
 
   generalCommentsForm.addEventListener('submit', async (event) => {
@@ -989,7 +1038,7 @@
       liveState = normalizeState(result.state);
       syncFromState();
     }
-    resetCommentEditor();
+    closeCommentDrawer();
   });
 
   generalCommentsList.addEventListener('click', async (event) => {
@@ -1012,11 +1061,7 @@
     }
 
     if (button.dataset.action === 'edit') {
-      editingCommentId = comment.id;
-      generalCommentInput.value = comment.message;
-      setCommentFormState();
-      generalCommentInput.focus();
-      generalCommentInput.setSelectionRange(generalCommentInput.value.length, generalCommentInput.value.length);
+      openCommentDrawer(comment);
       return;
     }
 
@@ -1037,16 +1082,22 @@
       }
 
       if (editingCommentId === commentId) {
-        resetCommentEditor();
+        closeCommentDrawer();
       }
     }
   });
 
   drawerClose.addEventListener('click', closeDrawer);
   drawerBackdrop.addEventListener('click', closeDrawer);
+  commentDrawerClose.addEventListener('click', closeCommentDrawer);
+  commentDrawerBackdrop.addEventListener('click', closeCommentDrawer);
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape' && equipmentDrawer.classList.contains('is-open')) {
       closeDrawer();
+      return;
+    }
+    if (event.key === 'Escape' && commentDrawer.classList.contains('is-open')) {
+      closeCommentDrawer();
       return;
     }
     if (event.key === 'Escape' && hoverPopup.classList.contains('is-visible')) {
