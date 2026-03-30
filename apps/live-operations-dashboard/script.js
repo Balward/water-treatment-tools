@@ -495,6 +495,28 @@
     groupNode.appendChild(lowZoneLayout);
   }
 
+  function buildGroupNode(group) {
+    const groupNode = groupTemplate.content.firstElementChild.cloneNode(true);
+    groupNode.classList.add(`group--${group.key}`);
+    const onlineCount = group.equipment.filter(
+      (item) => isInServiceStatus(normalizeStatus(item.status, item.inService))
+    ).length;
+    groupNode.querySelector('.group-title').textContent = group.label;
+    groupNode.querySelector('.group-stats').textContent = `${onlineCount} / ${group.equipment.length} online`;
+
+    const defaultGrid = groupNode.querySelector('.card-grid');
+    if (group.key === 'low-zone-pumps') {
+      defaultGrid.remove();
+      renderLowZoneLayout(groupNode, group);
+    } else {
+      for (const item of group.equipment) {
+        defaultGrid.appendChild(buildEquipmentCard(item));
+      }
+    }
+
+    return groupNode;
+  }
+
   function setHoverPopupContent(item) {
     const status = getStatusLabel(normalizeStatus(item.status, item.inService));
     hoverPopupTitle.textContent = `${item.name} - ${status}`;
@@ -687,26 +709,29 @@
     const grouped = groupEquipment(liveState.equipment);
     equipmentContainer.innerHTML = '';
 
-    for (const group of grouped) {
-      const groupNode = groupTemplate.content.firstElementChild.cloneNode(true);
-      groupNode.classList.add(`group--${group.key}`);
-      const onlineCount = group.equipment.filter(
-        (item) => isInServiceStatus(normalizeStatus(item.status, item.inService))
-      ).length;
-      groupNode.querySelector('.group-title').textContent = group.label;
-      groupNode.querySelector('.group-stats').textContent = `${onlineCount} / ${group.equipment.length} online`;
+    const renderedGroupKeys = new Set();
 
-      const defaultGrid = groupNode.querySelector('.card-grid');
-      if (group.key === 'low-zone-pumps') {
-        defaultGrid.remove();
-        renderLowZoneLayout(groupNode, group);
-      } else {
-        for (const item of group.equipment) {
-          defaultGrid.appendChild(buildEquipmentCard(item));
+    for (const group of grouped) {
+      if (renderedGroupKeys.has(group.key)) {
+        continue;
+      }
+
+      if (group.key === 'reclaim-pumps') {
+        const wasteGroup = grouped.find((item) => item.key === 'waste-pumps');
+        if (wasteGroup) {
+          const pairedGroupsRow = document.createElement('div');
+          pairedGroupsRow.className = 'paired-groups-row';
+          pairedGroupsRow.appendChild(buildGroupNode(group));
+          pairedGroupsRow.appendChild(buildGroupNode(wasteGroup));
+          equipmentContainer.appendChild(pairedGroupsRow);
+          renderedGroupKeys.add(group.key);
+          renderedGroupKeys.add(wasteGroup.key);
+          continue;
         }
       }
 
-      equipmentContainer.appendChild(groupNode);
+      equipmentContainer.appendChild(buildGroupNode(group));
+      renderedGroupKeys.add(group.key);
     }
 
     updateLastUpdated();
