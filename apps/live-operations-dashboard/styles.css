@@ -64,7 +64,7 @@ body {
   font-family: var(--ops-font-sans);
   background: var(--ops-bg);
   color: var(--ops-text);
-  overflow: hidden;
+  overflow: auto;
   font-optical-sizing: auto;
   text-rendering: optimizeLegibility;
 }
@@ -81,9 +81,10 @@ body.drawer-open {
 }
 
 .ops-page {
-  width: min(1600px, 100% - 2rem);
+  width: calc(100% - 2rem);
+  max-width: 1600px;
   margin: 0.5rem auto;
-  height: calc(100vh - 1rem);
+  min-height: calc(100vh - 1rem);
   display: grid;
   grid-template-rows: auto 1fr;
   gap: 0.5rem;
@@ -288,7 +289,7 @@ h1 {
 
 .equipment-layout {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 0.62rem;
   overflow: visible;
   align-content: start;
@@ -302,7 +303,7 @@ h1 {
 
 .group--reclaim-pumps,
 .group--waste-pumps {
-  grid-column: auto;
+  grid-column: 1 / -1;
 }
 
 .group-header {
@@ -1328,4 +1329,25 @@ h1 {
     min-height: 56px;
   }
 
+}
+
+@media (min-width: 1600px) {
+  .ops-page {
+    width: calc(100% - 2rem);
+    max-width: none;
+    margin: 0.5rem auto;
+  }
+
+  .equipment-layout {
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1rem;
+  }
+
+  .card-grid {
+    gap: 0.75rem;
+  }
+
+  .equipment-card {
+    min-height: 88px;
+  }
 }
