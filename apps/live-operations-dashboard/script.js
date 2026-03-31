@@ -5,8 +5,6 @@
   const commentTemplate = document.getElementById('commentTemplate');
   const syncStatus = document.getElementById('syncStatus');
   const lastUpdated = document.getElementById('lastUpdated');
-  const opsLogo = document.getElementById('opsLogo');
-  const themeToggle = document.getElementById('themeToggle');
   const equipmentDrawer = document.getElementById('equipmentDrawer');
   const drawerBackdrop = document.getElementById('drawerBackdrop');
   const drawerClose = document.getElementById('drawerClose');
@@ -42,7 +40,6 @@
   const isLocalDev = window.location.hostname === 'localhost' && window.location.port === '8080';
   const API_BASE = isLocalDev ? 'http://localhost:3001/api/live-ops' : '/api/live-ops';
   const operatorNameStorageKey = 'live-ops-operator-name';
-  const themeStorageKey = 'live-ops-theme';
   const displayMode = new URLSearchParams(window.location.search).get('mode');
   const statusOptionsList = [
     { value: 'operational', label: 'Online' },
@@ -62,41 +59,6 @@
   let drawerOriginalEquipment = null;
   let popupCardId = null;
   let editingCommentId = null;
-
-  function applyTheme(theme) {
-    const isDark = theme === 'dark';
-    document.body.classList.toggle('theme-dark', isDark);
-    if (opsLogo) {
-      opsLogo.src = isDark
-        ? '/assets/logos/logo-horizontal-dark.png'
-        : '/assets/logos/logo-horizontal.png';
-    }
-    if (themeToggle) {
-      themeToggle.setAttribute('aria-pressed', isDark ? 'true' : 'false');
-      const nextModeLabel = isDark ? 'Switch to light mode' : 'Switch to dark mode';
-      themeToggle.setAttribute('aria-label', nextModeLabel);
-      themeToggle.title = nextModeLabel;
-      themeToggle.textContent = isDark ? '☼' : '☾';
-    }
-  }
-
-  function initTheme() {
-    const savedTheme = localStorage.getItem(themeStorageKey);
-    if (savedTheme === 'dark' || savedTheme === 'light') {
-      applyTheme(savedTheme);
-      return;
-    }
-    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    applyTheme(prefersDark ? 'dark' : 'light');
-  }
-
-  if (themeToggle) {
-    themeToggle.addEventListener('click', () => {
-      const nextTheme = document.body.classList.contains('theme-dark') ? 'light' : 'dark';
-      localStorage.setItem(themeStorageKey, nextTheme);
-      applyTheme(nextTheme);
-    });
-  }
 
   function promptForOperatorName() {
     const savedName = localStorage.getItem(operatorNameStorageKey) || '';
@@ -1295,7 +1257,6 @@
 
   async function init() {
     applyDisplayMode();
-    initTheme();
     buildMaintenanceYearOptions();
     setCommentFormState();
     try {
@@ -1314,3 +1275,4 @@
 
   init();
 })();
+
