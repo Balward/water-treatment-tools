@@ -508,21 +508,9 @@
     if (!swStatus) {
       return;
     }
-    if (item.groupKey !== 'filters') {
-      swStatus.hidden = true;
-      swStatus.textContent = '';
-      swStatus.classList.remove('sw-status--complete', 'sw-status--incomplete');
-      return;
-    }
-
-    const isComplete = item.swMaintenanceComplete === true;
-    const year = Number.isInteger(item.swMaintenanceYear) ? ` (${item.swMaintenanceYear})` : '';
-    swStatus.hidden = false;
-    swStatus.textContent = isComplete
-      ? `SW COMPLETE${year}`
-      : 'SW INCOMPLETE';
-    swStatus.classList.toggle('sw-status--complete', isComplete);
-    swStatus.classList.toggle('sw-status--incomplete', !isComplete);
+    swStatus.hidden = true;
+    swStatus.textContent = '';
+    swStatus.classList.remove('sw-status--complete', 'sw-status--incomplete');
   }
 
   function buildEquipmentCard(item) {
