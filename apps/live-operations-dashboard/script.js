@@ -426,6 +426,29 @@
     return 'Other';
   }
 
+  function formatEquipmentDisplayName(item) {
+    const rawName = typeof item?.name === 'string' ? item.name.trim() : '';
+    if (!rawName) {
+      return '';
+    }
+
+    if (item?.groupKey === 'low-zone-pumps') {
+      const match = rawName.match(/^LZ\s*(\d+)([A-Z])$/i);
+      if (match) {
+        return `Low Zone ${match[1]}${match[2].toUpperCase()}`;
+      }
+    }
+
+    if (item?.groupKey === 'high-zone-pumps') {
+      const match = rawName.match(/^HZ\s*(\d+)$/i);
+      if (match) {
+        return `High Zone ${match[1]}`;
+      }
+    }
+
+    return rawName;
+  }
+
   function setCardAppearance(card, item) {
     const status = normalizeStatus(item.status, item.inService);
     const pill = card.querySelector('.status-pill');
@@ -515,14 +538,15 @@
 
   function buildEquipmentCard(item) {
     const card = equipmentTemplate.content.firstElementChild.cloneNode(true);
+    const displayName = formatEquipmentDisplayName(item);
     if (item.groupKey !== 'filters') {
       card.classList.add('equipment-card--pump');
     }
     card.dataset.id = item.id;
     card.tabIndex = 0;
     card.setAttribute('role', 'button');
-    card.setAttribute('aria-label', `${item.name} ${getStatusLabel(normalizeStatus(item.status, item.inService))}`);
-    card.querySelector('.equipment-name').textContent = item.name;
+    card.setAttribute('aria-label', `${displayName} ${getStatusLabel(normalizeStatus(item.status, item.inService))}`);
+    card.querySelector('.equipment-name').textContent = displayName;
     setCardAppearance(card, item);
     setCardDetails(card, item);
     return card;
@@ -590,7 +614,7 @@
 
   function setHoverPopupContent(item) {
     const status = getStatusLabel(normalizeStatus(item.status, item.inService));
-    hoverPopupTitle.textContent = `${item.name} - ${status}`;
+    hoverPopupTitle.textContent = `${formatEquipmentDisplayName(item)} - ${status}`;
     if (item.groupKey === 'filters') {
       const isComplete = item.swMaintenanceComplete === true;
       const year = Number.isInteger(item.swMaintenanceYear) ? ` (${item.swMaintenanceYear})` : '';
@@ -715,7 +739,7 @@
     const drawerEquipment = getDrawerEquipmentView(equipment);
     const status = normalizeStatus(drawerEquipment.status, equipment.inService);
     drawerGroup.textContent = drawerEquipment.groupLabel;
-    drawerTitle.textContent = drawerEquipment.name;
+    drawerTitle.textContent = formatEquipmentDisplayName(drawerEquipment);
     drawerMeta.textContent = `Last edit by ${equipment.updatedBy || 'operator'} at ${formatTimestamp(equipment.updatedAt)}`;
     renderStatusOptions(status);
     renderAssetLog(equipment);
@@ -844,7 +868,7 @@
 
       setCardAppearance(card, item);
       setCardDetails(card, item);
-      card.setAttribute('aria-label', `${item.name} ${getStatusLabel(normalizeStatus(item.status, item.inService))}`);
+      card.setAttribute('aria-label', `${formatEquipmentDisplayName(item)} ${getStatusLabel(normalizeStatus(item.status, item.inService))}`);
     }
 
     refreshDrawer();

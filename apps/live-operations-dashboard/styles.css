@@ -86,13 +86,13 @@ body.mode-tv {
 }
 
 .ops-page {
-  width: calc(100% - 2rem);
+  width: calc(100% - 1.4rem);
   max-width: 1600px;
-  margin: 0.85rem auto;
+  margin: 0.45rem auto;
   min-height: calc(100vh - 1rem);
   display: grid;
   grid-template-rows: auto auto auto;
-  gap: 0.8rem;
+  gap: 0.45rem;
 }
 
 body.mode-tv .ops-page {
@@ -116,12 +116,12 @@ body.mode-tv .ops-page {
 .ops-header {
   position: relative;
   overflow: hidden;
-  padding: 1.25rem 1.2rem;
+  padding: 0.82rem 0.92rem;
   display: grid;
   grid-template-columns: 1fr auto auto;
-  gap: 0.8rem;
+  gap: 0.55rem;
   align-items: stretch;
-  min-height: 132px;
+  min-height: 104px;
 }
 
 .ops-header::before {
@@ -158,7 +158,7 @@ body.mode-tv .ops-header {
 
 .ops-logo {
   display: block;
-  width: 272px;
+  width: 232px;
   max-width: 100%;
   height: auto;
 }
@@ -171,7 +171,7 @@ body.mode-tv .ops-logo {
   display: grid;
   grid-template-columns: auto 1fr;
   align-items: center;
-  gap: 0.9rem;
+  gap: 0.65rem;
   min-width: 0;
   align-self: stretch;
 }
@@ -180,7 +180,7 @@ body.mode-tv .ops-logo {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 0.18rem;
+  gap: 0.08rem;
   align-items: center;
   text-align: center;
   min-width: 0;
@@ -189,7 +189,7 @@ body.mode-tv .ops-logo {
 
 h1 {
   margin: 0;
-  font-size: clamp(1.45rem, 2.4vw, 2.4rem);
+  font-size: clamp(1.28rem, 2vw, 1.92rem);
   line-height: 0.98;
   text-transform: none;
   letter-spacing: -0.04em;
@@ -208,7 +208,7 @@ body.mode-tv h1 {
 
 .header-meta {
   display: grid;
-  gap: 0.4rem;
+  gap: 0.22rem;
   justify-items: end;
   align-items: center;
 }
@@ -216,8 +216,8 @@ body.mode-tv h1 {
 .header-qr {
   display: inline-flex;
   align-items: center;
-  gap: 0.7rem;
-  padding: 0.55rem 0.72rem;
+  gap: 0.5rem;
+  padding: 0.38rem 0.52rem;
   border: 1px solid rgba(111, 143, 177, 0.52);
   border-radius: calc(var(--ops-radius) - 2px);
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.42) 0%, rgba(220, 230, 240, 0.16) 100%);
@@ -227,7 +227,7 @@ body.mode-tv h1 {
 
 .header-qr-image {
   display: block;
-  height: 74px;
+  height: 60px;
   width: auto;
   border: 1px solid rgba(92, 120, 149, 0.85);
   border-radius: 8px;
@@ -240,13 +240,13 @@ body.mode-tv .header-qr-image {
 }
 
 .header-qr-text {
-  font-size: 0.9rem;
+  font-size: 0.76rem;
   line-height: 0.96;
   letter-spacing: 0.05em;
   color: #294866;
   font-weight: 800;
   text-transform: uppercase;
-  max-width: 6.4rem;
+  max-width: 5.1rem;
 }
 
 .operator-label {
@@ -267,8 +267,8 @@ body.mode-tv .header-qr-image {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
+  width: 34px;
+  height: 34px;
   border: 1px solid rgba(107, 132, 157, 0.6);
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.4) 0%, rgba(223, 231, 239, 0.12) 100%);
   color: #28425d;
@@ -313,9 +313,9 @@ body.mode-tv .header-qr-image {
 .sync-row--title {
   position: static;
   justify-content: center;
-  margin-top: 0.22rem;
+  margin-top: 0.12rem;
   opacity: 0.96;
-  padding: 0.35rem 0.7rem;
+  padding: 0.22rem 0.52rem;
   border: 1px solid rgba(98, 128, 158, 0.2);
   border-radius: 999px;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, rgba(223, 231, 239, 0.08) 100%);
@@ -343,7 +343,7 @@ body.mode-tv .header-qr-image {
 
 .last-updated {
   color: var(--ops-muted);
-  font-size: 0.78rem;
+  font-size: 0.72rem;
 }
 
 body.mode-tv .last-updated {
@@ -353,7 +353,7 @@ body.mode-tv .last-updated {
 .equipment-layout {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 0.62rem;
+  gap: 0.38rem;
   overflow: visible;
   align-content: start;
 }
@@ -365,9 +365,9 @@ body.mode-tv .equipment-layout {
 }
 
 .comments-board {
-  padding: 1rem 1.1rem 1.1rem;
+  padding: 0.72rem 0.82rem 0.78rem;
   display: grid;
-  gap: 1rem;
+  gap: 0.65rem;
 }
 
 body.mode-tv .comments-board {
@@ -379,10 +379,10 @@ body.mode-tv .comments-board {
 .comments-board-header {
   display: flex;
   justify-content: space-between;
-  gap: 0.8rem;
+  gap: 0.55rem;
   align-items: end;
   border-bottom: 1px solid rgba(54, 79, 106, 0.28);
-  padding-bottom: 0.65rem;
+  padding-bottom: 0.42rem;
 }
 
 body.mode-tv .comments-board-header {
@@ -392,7 +392,7 @@ body.mode-tv .comments-board-header {
 
 .comments-board-title {
   margin: 0.15rem 0 0;
-  font-size: 1.2rem;
+  font-size: 1rem;
   color: #1a3652;
 }
 
@@ -404,8 +404,8 @@ body.mode-tv .comments-board-title {
 .comments-board-subtitle {
   margin: 0;
   max-width: 32rem;
-  font-size: 0.84rem;
-  line-height: 1.45;
+  font-size: 0.76rem;
+  line-height: 1.32;
   color: #4d647b;
   text-align: right;
 }
@@ -434,7 +434,7 @@ body.mode-tv .comments-board-subtitle {
 
 .comments-list {
   display: grid;
-  gap: 0.7rem;
+  gap: 0.45rem;
 }
 
 body.mode-tv .comments-list {
@@ -447,21 +447,21 @@ body.mode-tv .comments-list {
 .comments-board-actions {
   display: flex;
   justify-content: center;
-  padding-top: 0.2rem;
+  padding-top: 0.05rem;
 }
 
 .add-comment-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 180px;
+  min-width: 156px;
   border: 1px solid #7f96ad;
   background: #dce8f3;
   color: #243d57;
   border-radius: var(--ops-radius);
-  padding: 0.55rem 0.9rem;
+  padding: 0.42rem 0.72rem;
   font: inherit;
-  font-size: 0.82rem;
+  font-size: 0.74rem;
   font-weight: 800;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -507,10 +507,10 @@ body.mode-tv .comment-card {
 }
 
 .comment-card-body {
-  padding: 0.9rem 1rem 0.95rem;
+  padding: 0.68rem 0.78rem 0.72rem;
   display: flex;
   flex-direction: column;
-  gap: 0.45rem;
+  gap: 0.28rem;
 }
 
 body.mode-tv .comment-card-body {
@@ -556,8 +556,8 @@ body.mode-tv .comment-card-body {
 
 .comment-card-message {
   order: 1;
-  font-size: 1.08rem;
-  line-height: 1.65;
+  font-size: 0.92rem;
+  line-height: 1.42;
   color: #183149;
   font-weight: 600;
   white-space: pre-wrap;
@@ -626,7 +626,7 @@ body.mode-tv .comment-icon-button {
 }
 
 .group {
-  padding: 0.72rem 0.76rem 0.82rem;
+  padding: 0.44rem 0.5rem 0.52rem;
   grid-column: 1 / -1;
   border-width: 1px;
   position: relative;
@@ -640,8 +640,8 @@ body.mode-tv .group {
 .paired-groups-row {
   grid-column: 1 / -1;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
-  gap: 0.62rem;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 0.38rem;
 }
 
 .paired-groups-row > .group {
@@ -665,9 +665,9 @@ body.mode-tv .paired-groups-row .card-grid {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  gap: 0.8rem;
-  margin-bottom: 0.65rem;
-  padding: 0 0.05rem 0.5rem;
+  gap: 0.55rem;
+  margin-bottom: 0.34rem;
+  padding: 0 0.04rem 0.24rem;
   border-bottom: 1px solid rgba(92, 121, 149, 0.26);
 }
 
@@ -678,7 +678,7 @@ body.mode-tv .group-header {
 
 .group-title {
   margin: 0;
-  font-size: 1.08rem;
+  font-size: 0.96rem;
   color: #17314c;
   text-transform: none;
   letter-spacing: -0.02em;
@@ -692,7 +692,7 @@ body.mode-tv .group-title {
 .group-stats {
   margin: 0;
   color: #5e7894;
-  font-size: 0.76rem;
+  font-size: 0.7rem;
   font-weight: 800;
   letter-spacing: 0.03em;
 }
@@ -703,8 +703,8 @@ body.mode-tv .group-stats {
 
 .card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
-  gap: 0.45rem;
+  grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+  gap: 0.26rem;
 }
 
 body.mode-tv .card-grid {
@@ -714,7 +714,7 @@ body.mode-tv .card-grid {
 .low-zone-layout {
   display: grid;
   grid-template-columns: 4fr 3fr;
-  gap: 0.7rem;
+  gap: 0.4rem;
   align-items: start;
 }
 
@@ -724,20 +724,20 @@ body.mode-tv .low-zone-layout {
 
 .low-zone-section {
   display: grid;
-  gap: 0.35rem;
+  gap: 0.2rem;
 }
 
 .low-zone-section[data-partition="B"] {
-  padding-right: 0.45rem;
+  padding-right: 0.22rem;
 }
 
 .low-zone-section[data-partition="A"] {
-  padding-left: 0.2rem;
+  padding-left: 0.12rem;
 }
 
 .low-zone-title {
   margin: 0;
-  font-size: 0.84rem;
+  font-size: 0.74rem;
   text-transform: none;
   letter-spacing: 0.03em;
   color: #4f6888;
@@ -753,11 +753,11 @@ body.mode-tv .low-zone-title {
   border: 1px solid rgba(116, 150, 185, 0.16);
   border-radius: var(--ops-radius);
   background: linear-gradient(180deg, rgba(24, 38, 54, 0.96) 0%, rgba(15, 26, 38, 0.98) 100%);
-  padding: 0.34rem 0.62rem;
+  padding: 0.24rem 0.46rem;
   display: grid;
-  gap: 0.34rem;
+  gap: 0.18rem;
   cursor: pointer;
-  min-height: 64px;
+  min-height: 54px;
   transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
   align-content: start;
   box-shadow:
@@ -782,22 +782,22 @@ body.mode-tv .equipment-card {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 0.55rem;
+  gap: 0.3rem;
 }
 
 .equipment-name-row {
   display: inline-flex;
   align-items: center;
-  gap: 0.28rem;
+  gap: 0.18rem;
 }
 
 .equipment-name {
   margin: 0;
-  font-size: 1.42rem;
+  font-size: 1.16rem;
   font-weight: 800;
   letter-spacing: -0.04em;
   color: #edf4fb;
-  line-height: 1;
+  line-height: 0.98;
   text-transform: none;
   text-wrap: balance;
 }
@@ -809,9 +809,9 @@ body.mode-tv .equipment-name {
 .notes-indicator {
   display: none;
   position: absolute;
-  right: 0.42rem;
-  top: 0.34rem;
-  font-size: 0.78rem;
+  right: 0.3rem;
+  top: 0.24rem;
+  font-size: 0.68rem;
   color: rgba(236, 244, 252, 0.82);
   font-weight: 700;
   line-height: 1;
@@ -832,12 +832,12 @@ body.mode-tv .equipment-name {
   width: fit-content;
   display: inline-flex;
   align-items: center;
-  gap: 0.34rem;
+  gap: 0.24rem;
   border-radius: 999px;
   border: 1px solid transparent;
-  padding: 0.18rem 0.62rem;
-  font-size: 0.7rem;
-  letter-spacing: 0.06em;
+  padding: 0.1rem 0.4rem;
+  font-size: 0.58rem;
+  letter-spacing: 0.04em;
   font-weight: 800;
   text-transform: uppercase;
 }
@@ -2084,21 +2084,22 @@ body.mode-tv .equipment-card--pump {
 
 @media (min-width: 1600px) {
   .ops-page {
-    width: calc(100% - 2rem);
+    width: calc(100% - 1.2rem);
     max-width: none;
-    margin: 0.5rem auto;
+    margin: 0.38rem auto;
   }
 
   .equipment-layout {
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 0.42rem;
   }
 
   .card-grid {
-    gap: 0.75rem;
+    grid-template-columns: repeat(auto-fit, minmax(126px, 1fr));
+    gap: 0.24rem;
   }
 
   .equipment-card {
-    min-height: 88px;
+    min-height: 54px;
   }
 }
