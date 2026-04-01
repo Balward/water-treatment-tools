@@ -489,6 +489,12 @@
     const hasNote = Boolean((item.note || '').trim());
     card.classList.toggle('has-note', hasNote);
 
+    const notePreview = card.querySelector('.equipment-note-preview');
+    if (notePreview) {
+      notePreview.hidden = !hasNote;
+      notePreview.textContent = hasNote ? item.note.trim() : '';
+    }
+
     const swStatus = card.querySelector('.sw-status');
     if (!swStatus) {
       return;
