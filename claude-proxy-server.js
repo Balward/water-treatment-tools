@@ -188,7 +188,7 @@ function formatStatusLabel(status) {
     case 'out-of-service':
       return 'Out of Service';
     case 'maintenance':
-      return 'Maintenance Ongoing';
+      return 'Maintenance';
     default:
       return 'Unknown';
   }

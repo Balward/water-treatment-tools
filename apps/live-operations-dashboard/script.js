@@ -46,7 +46,7 @@
     { value: 'warning', label: 'Warning' },
     { value: 'offline', label: 'Offline' },
     { value: 'out-of-service', label: 'Out of Service' },
-    { value: 'maintenance', label: 'Maintenance Ongoing' },
+    { value: 'maintenance', label: 'Maintenance' },
   ];
   const swMaintenanceOptionsList = [
     { value: 'incomplete', label: 'Incomplete' },
@@ -487,7 +487,6 @@
 
   function setCardDetails(card, item) {
     const hasNote = Boolean((item.note || '').trim());
-    card.classList.toggle('has-note', hasNote);
 
     const notePreview = card.querySelector('.equipment-note-preview');
     if (notePreview) {
