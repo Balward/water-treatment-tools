@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Water Treatment Tools - Operations Dashboard</title>
+    <link rel="icon" type="image/png" href="/assets/logos/favicon.png" />
+    <link rel="stylesheet" href="../../global-styles.css?v=1757369234" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <aside class="rail">
+        <a class="rail__brand" href="/" data-rel-href="../dashboard/dashboard.html" aria-label="Open current dashboard">
+          <img class="rail__logo" src="../../assets/logos/logo-square-dark.png" alt="City of Northglenn" />
+          <div>
+            <p class="rail__eyebrow">Utilities</p>
+            <h1 class="rail__title">Operations Dashboard</h1>
+          </div>
+        </a>
+
+        <div class="rail__panel">
+          <p class="rail__label">Panels</p>
+          <nav class="rail__nav" aria-label="Dashboard sections">
+            <a href="#overview">Overview</a>
+            <a href="#categories">Categories</a>
+            <a href="#all-tools">All Tools</a>
+          </nav>
+        </div>
+
+        <div class="rail__panel">
+          <p class="rail__label">Status</p>
+          <div class="status-stack">
+            <div class="status-card">
+              <span class="status-card__dot" aria-hidden="true"></span>
+              <div>
+                <strong>Operator Tools</strong>
+                <p>Daily calculations, live tracking, and training resources in one place.</p>
+              </div>
+            </div>
+            <div class="status-card status-card--muted">
+              <strong>Portal Home</strong>
+              <p><a href="/" data-rel-href="../dashboard/dashboard.html">Open the main portal</a></p>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <main class="workspace">
+        <section class="signal-strip" aria-label="Plant dashboard status">
+          <div class="signal-strip__item">
+            <span class="signal-strip__label">Shift</span>
+            <strong>Day Operations</strong>
+          </div>
+          <div class="signal-strip__item">
+            <span class="signal-strip__label">Portal State</span>
+            <strong>Links Online</strong>
+          </div>
+          <div class="signal-strip__item">
+            <span class="signal-strip__label">Primary Use</span>
+            <strong>Calculations, Ops, Training</strong>
+          </div>
+        </section>
+
+        <section class="hero" id="overview">
+          <div class="hero__content">
+            <p class="hero__stamp">Northglenn Utilities // Treatment Portal</p>
+            <p class="hero__eyebrow">Plant Floor</p>
+            <h2>Open the tools you need for treatment operations, reporting, and operator support.</h2>
+            <p class="hero__lede">
+              Use one dashboard to reach water treatment calculators, live plant coordination tools, wastewater reporting utilities,
+              and operator training resources.
+            </p>
+            <div class="hero__actions">
+              <a class="button button--primary" href="#all-tools">Jump to all tools</a>
+              <a class="button button--secondary" href="/" data-rel-href="../dashboard/dashboard.html">Open portal home</a>
+            </div>
+          </div>
+
+          <div class="hero__board" aria-label="Platform summary">
+            <article class="metric-tile metric-tile--primary">
+              <span class="metric-tile__label">Total Apps</span>
+              <strong>12</strong>
+              <p>Water treatment, wastewater, and training tools in one workspace.</p>
+            </article>
+            <article class="metric-tile">
+              <span class="metric-tile__label">Water Treatment</span>
+              <strong>7</strong>
+              <p>Calculators, analytics, and live plant coordination.</p>
+            </article>
+            <article class="metric-tile">
+              <span class="metric-tile__label">Wastewater</span>
+              <strong>2</strong>
+              <p>Loading insight and MWAT reporting tools.</p>
+            </article>
+            <article class="metric-tile">
+              <span class="metric-tile__label">Training</span>
+              <strong>3</strong>
+              <p>Study guides, videos, and flashcard review.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="bay-grid" id="categories" aria-label="System groups">
+          <article class="featured-panel featured-panel--water featured-panel--wide" data-panel="01">
+            <div class="featured-panel__header">
+              <p class="section-tag">System Group 01</p>
+              <h3>Water train</h3>
+            </div>
+            <p>
+              Core process tools for jar testing, feed calculations, detention checks, trending, and live operating notes.
+            </p>
+            <a href="#water-treatment" class="text-link">View water tools</a>
+          </article>
+
+          <article class="featured-panel featured-panel--wastewater" data-panel="02">
+            <div class="featured-panel__header">
+              <p class="section-tag">System Group 02</p>
+              <h3>Wastewater desk</h3>
+            </div>
+            <p>
+              Reporting and loading analysis for daily review, weekly summaries, and influent checks.
+            </p>
+            <a href="#wastewater-treatment" class="text-link">View wastewater tools</a>
+          </article>
+
+          <article class="featured-panel featured-panel--training" data-panel="03">
+            <div class="featured-panel__header">
+              <p class="section-tag">System Group 03</p>
+              <h3>Training shelf</h3>
+            </div>
+            <p>
+              Certification prep, refresher material, and quick study tools for operator support.
+            </p>
+            <a href="#training" class="text-link">View training tools</a>
+          </article>
+        </section>
+
+        <section class="controls" aria-label="Tool filters">
+          <div>
+            <p class="section-tag">Quick Filter</p>
+            <h3>Sort by work area</h3>
+          </div>
+          <div class="chip-row" role="tablist" aria-label="Filter tools by category">
+            <button class="chip chip--active" type="button" data-filter="all" aria-pressed="true">All</button>
+            <button class="chip" type="button" data-filter="water" aria-pressed="false">Water</button>
+            <button class="chip" type="button" data-filter="wastewater" aria-pressed="false">Wastewater</button>
+            <button class="chip" type="button" data-filter="training" aria-pressed="false">Training</button>
+          </div>
+        </section>
+
+        <section class="tool-groups" id="all-tools">
+          <section class="tool-group" id="water-treatment" data-category="water">
+            <div class="tool-group__heading">
+              <p class="section-tag">Water Treatment</p>
+              <h3>Operations and analysis</h3>
+              <p class="tool-group__subhead">Process tools used across coagulation, filtration, disinfection, and plant communication.</p>
+            </div>
+            <div class="tool-grid">
+              <a class="tool-card tool-card--featured" href="/live-operations-dashboard/" data-rel-href="../live-operations-dashboard/index.html">
+                <span class="tool-card__index">WT-01</span>
+                <span class="tool-card__badge">Live</span>
+                <h4>Live Operations Dashboard</h4>
+                <p>Select active equipment and share notes across devices in real time.</p>
+              </a>
+              <a class="tool-card" href="/robojar-analyzer/" data-rel-href="../robojar-analyzer/index.html">
+                <span class="tool-card__index">WT-02</span>
+                <span class="tool-card__badge">Jar Testing</span>
+                <h4>RoboJar Analyzer</h4>
+                <p>Compare coagulants, review jar runs, and export the strongest result.</p>
+              </a>
+              <a class="tool-card" href="/dose-predictor/" data-rel-href="../dose-predictor/index.html">
+                <span class="tool-card__index">WT-03</span>
+                <span class="tool-card__badge">AI Assist</span>
+                <h4>Permanganate Dose Predictor</h4>
+                <p>Estimate dosing with historical plant patterns and source-water context.</p>
+              </a>
+              <a class="tool-card" href="/water-data-explorer/" data-rel-href="../water-data-explorer/index.html">
+                <span class="tool-card__index">WT-04</span>
+                <span class="tool-card__badge">Analytics</span>
+                <h4>Water Data Explorer</h4>
+                <p>Inspect trends, correlations, and distribution across plant datasets.</p>
+              </a>
+              <a class="tool-card" href="/plant-flow/" data-rel-href="../plant-flow/index.html">
+                <span class="tool-card__index">WT-05</span>
+                <span class="tool-card__badge">Flow</span>
+                <h4>Detention Time</h4>
+                <p>Check detention time with current flow and basin volume assumptions.</p>
+              </a>
+              <a class="tool-card" href="/sodium-hypochlorite-calculator/" data-rel-href="../sodium-hypochlorite-calculator/index.html">
+                <span class="tool-card__index">WT-06</span>
+                <span class="tool-card__badge">Chemical Feed</span>
+                <h4>Sodium Hypochlorite Calculator</h4>
+                <p>Work through dose, contact time, and residual target calculations.</p>
+              </a>
+              <a class="tool-card" href="/alum-hydrometer-conversion/" data-rel-href="../alum-hydrometer-conversion/index.html">
+                <span class="tool-card__index">WT-07</span>
+                <span class="tool-card__badge">Conversion</span>
+                <h4>Alum Hydrometer Conversion</h4>
+                <p>Correct hydrometer readings to 60 F and estimate dry alum strength.</p>
+              </a>
+            </div>
+          </section>
+
+          <section class="tool-group" id="wastewater-treatment" data-category="wastewater">
+            <div class="tool-group__heading">
+              <p class="section-tag">Wastewater</p>
+              <h3>Loading and reporting</h3>
+              <p class="tool-group__subhead">Utility desk tools for review, summary generation, and influent loading checks.</p>
+            </div>
+            <div class="tool-grid tool-grid--compact">
+              <a class="tool-card" href="/mwat-calculator/" data-rel-href="../mwat-calculator/index.html">
+                <span class="tool-card__index">WW-01</span>
+                <span class="tool-card__badge">Reporting</span>
+                <h4>MWAT &amp; DM Calculator</h4>
+                <p>Merge overlapping exports and produce seven-day MWAT results.</p>
+              </a>
+              <a class="tool-card" href="/nh4-loading/" data-rel-href="../nh4-loading/index.html">
+                <span class="tool-card__index">WW-02</span>
+                <span class="tool-card__badge">Ammonia</span>
+                <h4>NH3 Loading Insight</h4>
+                <p>Compare weekday versus weekend loading and identify exceedance windows.</p>
+              </a>
+            </div>
+          </section>
+
+          <section class="tool-group" id="training" data-category="training">
+            <div class="tool-group__heading">
+              <p class="section-tag">Training</p>
+              <h3>Study and onboarding</h3>
+              <p class="tool-group__subhead">Reference material and review tools for certification, onboarding, and refreshers.</p>
+            </div>
+            <div class="tool-grid tool-grid--compact">
+              <a class="tool-card" href="/regulation-100-study/" data-rel-href="../regulation-100-study/index.html">
+                <span class="tool-card__index">TR-01</span>
+                <span class="tool-card__badge">Study</span>
+                <h4>Regulation 100 Study Guide</h4>
+                <p>Browse chaptered study material and certification checklists.</p>
+              </a>
+              <a class="tool-card" href="/video-tutorials/" data-rel-href="../video-tutorials/index.html">
+                <span class="tool-card__index">TR-02</span>
+                <span class="tool-card__badge">Video</span>
+                <h4>Class A Training Videos</h4>
+                <p>Watch on-demand walkthroughs for operators and refresher learning.</p>
+              </a>
+              <a class="tool-card" href="/water-treatment-flashcards/" data-rel-href="../water-treatment-flashcards/index.html">
+                <span class="tool-card__index">TR-03</span>
+                <span class="tool-card__badge">Review</span>
+                <h4>Water Treatment Flashcards</h4>
+                <p>Drill formulas, definitions, and key treatment concepts quickly.</p>
+              </a>
+            </div>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      (function () {
+        const shouldUseFallbackLinks =
+          window.location.protocol === "file:" || window.location.pathname.includes("/apps/");
+
+        if (shouldUseFallbackLinks) {
+          document.querySelectorAll("[data-rel-href]").forEach((link) => {
+            const relHref = link.getAttribute("data-rel-href");
+            if (relHref) {
+              link.setAttribute("href", relHref);
+            }
+          });
+        }
+
+        const filterButtons = Array.from(document.querySelectorAll("[data-filter]"));
+        const toolGroups = Array.from(document.querySelectorAll(".tool-group"));
+
+        function applyFilter(filter) {
+          toolGroups.forEach((group) => {
+            const isVisible = filter === "all" || group.dataset.category === filter;
+            group.hidden = !isVisible;
+          });
+
+          filterButtons.forEach((button) => {
+            const isActive = button.dataset.filter === filter;
+            button.classList.toggle("chip--active", isActive);
+            button.setAttribute("aria-pressed", String(isActive));
+          });
+        }
+
+        filterButtons.forEach((button) => {
+          button.addEventListener("click", function () {
+            applyFilter(button.dataset.filter || "all");
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>

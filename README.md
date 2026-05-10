@@ -4,6 +4,8 @@ A collection of focused, single-page web apps that help operators analyze data, 
 
 ## App directory
 
+- `apps/dashboard-new/` - Alternate dashboard with a fresh visual layout and links to the same app suite.
+
 - `apps/dashboard/` – Launch pad with city branding and links to every tool.
 - `apps/plant-flow/` – Interactive detention-time model; toggle basins, adjust flow, and see chemical travel times and cumulative detention. Mobile-friendly with in-app help.
 - `apps/robojar-analyzer/` – Analyze RoboJar particle reports; charts, stats, forecasting, export to PNG/PDF.

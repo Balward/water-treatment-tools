@@ -41,6 +41,7 @@ const ROUTES = {
     // Dashboard routes
     '/': '/apps/dashboard/dashboard.html',
     '/dashboard/': '/apps/dashboard/dashboard.html',
+    '/dashboard-new/': '/apps/dashboard-new/index.html',
     
     // App routes
     '/robojar-analyzer/': '/apps/robojar-analyzer/index.html',

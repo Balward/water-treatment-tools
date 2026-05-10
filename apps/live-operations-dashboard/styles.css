@@ -1351,15 +1351,18 @@ body.mode-tv .sw-status {
 
 body {
   --ops-bg:
-    radial-gradient(circle at 18% 0%, rgba(33, 70, 108, 0.36) 0%, rgba(33, 70, 108, 0) 30%),
-    radial-gradient(circle at 82% 12%, rgba(23, 58, 94, 0.28) 0%, rgba(23, 58, 94, 0) 26%),
-    linear-gradient(180deg, #07101a 0%, #04080d 100%);
-  --ops-panel: linear-gradient(180deg, rgba(11, 19, 29, 0.96) 0%, rgba(8, 14, 22, 0.98) 100%);
-  --ops-border: rgba(97, 122, 146, 0.42);
-  --ops-text: #f4f8fd;
-  --ops-muted: #8fa4bc;
-  --ops-blue: #dce9f7;
-  --ops-shadow: 0 24px 50px rgba(0, 0, 0, 0.5);
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    radial-gradient(circle at 18% 0%, rgba(31, 138, 112, 0.16) 0%, rgba(31, 138, 112, 0) 26%),
+    radial-gradient(circle at 82% 12%, rgba(224, 169, 59, 0.1) 0%, rgba(224, 169, 59, 0) 22%),
+    linear-gradient(180deg, #121b20 0%, #0e161a 100%);
+  --ops-panel: linear-gradient(180deg, rgba(28, 38, 44, 0.98) 0%, rgba(17, 25, 29, 0.99) 100%);
+  --ops-border: rgba(201, 214, 220, 0.18);
+  --ops-text: #e8eeea;
+  --ops-muted: #9fb0b6;
+  --ops-blue: #f0c96a;
+  --ops-shadow: 0 26px 52px rgba(4, 8, 10, 0.5);
+  background-size: 32px 32px, 32px 32px, auto, auto, auto;
 }
 
 .equipment-card--pump {
@@ -1377,22 +1380,22 @@ body.mode-tv .equipment-card--pump {
 .card,
 .group,
 .equipment-drawer {
-  background: linear-gradient(180deg, rgba(11, 19, 29, 0.96) 0%, rgba(8, 14, 22, 0.98) 100%);
-  border-color: rgba(92, 119, 145, 0.45);
+  background: linear-gradient(180deg, rgba(28, 38, 44, 0.98) 0%, rgba(17, 25, 29, 0.99) 100%);
+  border-color: rgba(201, 214, 220, 0.18);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.03),
-    0 24px 42px rgba(0, 0, 0, 0.42);
+    0 24px 42px rgba(4, 8, 10, 0.42);
 }
 
 .ops-header {
   background:
-    linear-gradient(135deg, rgba(11, 20, 31, 0.96) 0%, rgba(9, 17, 28, 0.98) 54%, rgba(8, 15, 24, 0.98) 100%);
-  border-color: rgba(102, 131, 160, 0.52);
+    linear-gradient(135deg, rgba(32, 43, 49, 0.98) 0%, rgba(23, 32, 36, 0.99) 54%, rgba(17, 25, 29, 0.99) 100%);
+  border-color: rgba(201, 214, 220, 0.2);
 }
 
 .header-qr {
-  background: linear-gradient(180deg, rgba(16, 28, 41, 0.82) 0%, rgba(11, 21, 32, 0.62) 100%);
-  border-color: rgba(103, 133, 163, 0.48);
+  background: linear-gradient(180deg, rgba(45, 58, 64, 0.82) 0%, rgba(27, 39, 44, 0.72) 100%);
+  border-color: rgba(224, 169, 59, 0.34);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
@@ -1406,8 +1409,8 @@ body.mode-tv .equipment-card--pump {
 
 .group {
   background:
-    linear-gradient(180deg, rgba(11, 19, 29, 0.96) 0%, rgba(8, 14, 22, 0.99) 100%);
-  border-color: rgba(88, 114, 139, 0.52);
+    linear-gradient(180deg, rgba(28, 38, 44, 0.98) 0%, rgba(17, 25, 29, 0.99) 100%);
+  border-color: rgba(201, 214, 220, 0.18);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.03),
     0 22px 38px rgba(0, 0, 0, 0.34);
@@ -1415,15 +1418,15 @@ body.mode-tv .equipment-card--pump {
 
 .comments-board {
   background:
-    linear-gradient(180deg, rgba(11, 19, 29, 0.96) 0%, rgba(8, 14, 22, 0.99) 100%);
-  border-color: rgba(88, 114, 139, 0.52);
+    linear-gradient(180deg, rgba(28, 38, 44, 0.98) 0%, rgba(17, 25, 29, 0.99) 100%);
+  border-color: rgba(201, 214, 220, 0.18);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.03),
     0 22px 38px rgba(0, 0, 0, 0.34);
 }
 
 .group-header {
-  border-bottom-color: rgba(111, 140, 170, 0.28);
+  border-bottom-color: rgba(224, 169, 59, 0.2);
   background: transparent;
   padding: 0 0.05rem 0.55rem;
   margin: 0 0 0.7rem;
@@ -1469,14 +1472,14 @@ body.mode-tv .equipment-card--pump {
 }
 
 .equipment-card {
-  border-color: rgba(104, 132, 160, 0.12);
+  border-color: rgba(201, 214, 220, 0.14);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.04),
     0 16px 28px rgba(0, 0, 0, 0.28);
 }
 
 .equipment-card:hover {
-  border-color: rgba(126, 160, 194, 0.24);
+  border-color: rgba(224, 169, 59, 0.3);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.06),
     0 22px 34px rgba(0, 0, 0, 0.34);
@@ -1500,7 +1503,7 @@ body.mode-tv .equipment-card--pump {
 }
 
 .comments-board-header {
-  border-bottom-color: rgba(92, 121, 149, 0.45);
+  border-bottom-color: rgba(224, 169, 59, 0.22);
 }
 
 .comments-board-title {
@@ -1518,9 +1521,9 @@ body.mode-tv .equipment-card--pump {
 }
 
 .comments-form-input {
-  background: linear-gradient(180deg, rgba(10, 18, 27, 0.96) 0%, rgba(13, 22, 34, 0.98) 100%);
+  background: linear-gradient(180deg, rgba(20, 30, 35, 0.98) 0%, rgba(14, 22, 27, 0.98) 100%);
   color: #edf4fb;
-  border-color: #49607a;
+  border-color: rgba(201, 214, 220, 0.24);
 }
 
 .comments-empty {
@@ -1529,13 +1532,13 @@ body.mode-tv .equipment-card--pump {
 }
 
 .comment-card {
-  border-color: #46607a;
-  background: linear-gradient(180deg, rgba(15, 23, 34, 0.98) 0%, rgba(11, 18, 27, 0.98) 100%);
+  border-color: rgba(201, 214, 220, 0.2);
+  background: linear-gradient(180deg, rgba(24, 35, 40, 0.98) 0%, rgba(16, 24, 28, 0.98) 100%);
   box-shadow: 0 16px 28px rgba(0, 0, 0, 0.38);
 }
 
 .comment-card-accent {
-  background: linear-gradient(180deg, #7ca2c8 0%, #42698f 45%, #294866 100%);
+  background: linear-gradient(180deg, #e0a93b 0%, #b78327 48%, #74541a 100%);
 }
 
 .comment-card-author {
@@ -1559,15 +1562,15 @@ body.mode-tv .equipment-card--pump {
 }
 
 .comment-icon-button {
-  background: rgba(18, 28, 40, 0.32);
-  border-color: rgba(97, 122, 146, 0.5);
-  color: #7f9ab4;
+  background: rgba(27, 39, 44, 0.4);
+  border-color: rgba(201, 214, 220, 0.26);
+  color: #b7c5cb;
 }
 
 .comment-icon-button:hover {
-  background: rgba(37, 55, 74, 0.86);
-  border-color: #6d8aa8;
-  color: #d8e7f7;
+  background: rgba(56, 70, 76, 0.92);
+  border-color: rgba(224, 169, 59, 0.38);
+  color: #f3f0e5;
 }
 
 .comment-icon-button--danger {
@@ -1575,13 +1578,13 @@ body.mode-tv .equipment-card--pump {
 }
 
 .add-comment-button {
-  background: #32526f;
-  border-color: #79a4cb;
-  color: #e5f2ff;
+  background: linear-gradient(180deg, #c9972f 0%, #9f7420 100%);
+  border-color: rgba(255, 226, 165, 0.34);
+  color: #17130b;
 }
 
 .add-comment-button:hover {
-  background: #3a6183;
+  background: linear-gradient(180deg, #d3a33c 0%, #a97a23 100%);
 }
 
 .low-zone-title {
@@ -1589,10 +1592,10 @@ body.mode-tv .equipment-card--pump {
 }
 
 .hover-popup {
-  background: linear-gradient(180deg, rgba(10, 19, 29, 0.98) 0%, rgba(12, 23, 35, 0.98) 100%);
-  border-color: rgba(125, 170, 214, 0.82);
+  background: linear-gradient(180deg, rgba(21, 31, 36, 0.98) 0%, rgba(15, 24, 28, 0.98) 100%);
+  border-color: rgba(224, 169, 59, 0.56);
   box-shadow:
-    0 0 0 1px rgba(48, 86, 121, 0.4),
+    0 0 0 1px rgba(117, 84, 26, 0.35),
     0 26px 44px rgba(0, 0, 0, 0.72),
     0 10px 20px rgba(0, 0, 0, 0.45);
 }
@@ -1610,9 +1613,9 @@ body.mode-tv .equipment-card--pump {
 }
 
 .sw-status {
-  color: #b9cadb;
-  border-color: #576c80;
-  background: #2f3f50;
+  color: #d7e0e5;
+  border-color: rgba(201, 214, 220, 0.26);
+  background: #33424a;
   opacity: 0.92;
 }
 
@@ -1700,8 +1703,8 @@ body.mode-tv .equipment-card--pump {
 }
 
 .status-option {
-  background: linear-gradient(180deg, rgba(14, 24, 35, 0.98) 0%, rgba(11, 19, 29, 0.98) 100%);
-  border-color: rgba(82, 108, 133, 0.6);
+  background: linear-gradient(180deg, rgba(23, 33, 38, 0.98) 0%, rgba(16, 24, 28, 0.98) 100%);
+  border-color: rgba(201, 214, 220, 0.32);
   color: #d9e4ef;
   border-radius: 14px;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
@@ -1759,9 +1762,9 @@ body.mode-tv .equipment-card--pump {
 
 
 .drawer-close {
-  background: linear-gradient(180deg, rgba(17, 29, 42, 0.96) 0%, rgba(12, 21, 31, 0.96) 100%);
-  border-color: rgba(81, 106, 130, 0.7);
-  color: #d2dce8;
+  background: linear-gradient(180deg, rgba(39, 52, 58, 0.96) 0%, rgba(26, 37, 42, 0.96) 100%);
+  border-color: rgba(201, 214, 220, 0.3);
+  color: #dfe7e3;
   border-radius: 12px;
 }
 
@@ -1774,9 +1777,9 @@ body.mode-tv .equipment-card--pump {
 }
 
 .clear-notes-button {
-  background: #4a3337;
-  border-color: #8a666d;
-  color: #ffd5d8;
+  background: #52363a;
+  border-color: #8d666b;
+  color: #ffd9dc;
 }
 
 .clear-notes-button:hover {
@@ -1784,13 +1787,13 @@ body.mode-tv .equipment-card--pump {
 }
 
 .save-sidebar-button {
-  background: #32526f;
-  border-color: #79a4cb;
-  color: #e5f2ff;
+  background: linear-gradient(180deg, #c9972f 0%, #9f7420 100%);
+  border-color: rgba(255, 226, 165, 0.34);
+  color: #17130b;
 }
 
 .save-sidebar-button:hover:not(:disabled) {
-  background: #3a6183;
+  background: linear-gradient(180deg, #d3a33c 0%, #a97a23 100%);
 }
 
 .sync-dot {
@@ -1805,7 +1808,7 @@ body.mode-tv .equipment-card--pump {
 .comment-icon-button:focus-visible,
 .comments-form-input:focus-visible,
 .add-comment-button:focus-visible {
-  outline: 2px solid #7ea8d6;
+  outline: 2px solid #e0a93b;
   outline-offset: 1px;
 }
 
@@ -1817,7 +1820,7 @@ body.mode-tv .equipment-card--pump {
 .comment-icon-button:focus-visible,
 .comments-form-input:focus-visible,
 .add-comment-button:focus-visible {
-  outline-color: #9ec7f1;
+  outline-color: #f0c96a;
 }
 
 @media (max-width: 900px) {
