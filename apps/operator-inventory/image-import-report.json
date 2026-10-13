@@ -1,0 +1,532 @@
+{
+  "generatedAt": "2026-10-10T19:37:31.904Z",
+  "noLink": [
+    {
+      "id": "s1-r31",
+      "description": "CL-17 Colorimeter"
+    },
+    {
+      "id": "s1-r38",
+      "description": "Crush Tube Large"
+    },
+    {
+      "id": "s1-r39",
+      "description": "Crush Tube Small"
+    },
+    {
+      "id": "s1-r42",
+      "description": "Hydrogen Peroxide"
+    },
+    {
+      "id": "s1-r43",
+      "description": "Vinegar"
+    },
+    {
+      "id": "s2-r5",
+      "description": "Toilet Paper"
+    },
+    {
+      "id": "s2-r6",
+      "description": "Tri Fold Paper Towel"
+    },
+    {
+      "id": "s2-r7",
+      "description": "Tissues"
+    },
+    {
+      "id": "s2-r8",
+      "description": "Small Trash Bags 13 gallon"
+    },
+    {
+      "id": "s2-r9",
+      "description": "Large Trash Bags 40-45 gallon"
+    },
+    {
+      "id": "s2-r10",
+      "description": "Jumbo Black Trash Bags 55 gallon"
+    },
+    {
+      "id": "s2-r11",
+      "description": "Dryer Sheets"
+    },
+    {
+      "id": "s2-r12",
+      "description": "Laundry Soap"
+    },
+    {
+      "id": "s2-r13",
+      "description": "Hand Soap"
+    },
+    {
+      "id": "s2-r14",
+      "description": "Paper Plates"
+    },
+    {
+      "id": "s2-r15",
+      "description": "Paper Bowls"
+    },
+    {
+      "id": "s2-r16",
+      "description": "Coffee"
+    },
+    {
+      "id": "s2-r17",
+      "description": "Coffee Filters"
+    },
+    {
+      "id": "s2-r18",
+      "description": "Sugar"
+    },
+    {
+      "id": "s2-r19",
+      "description": "Creamer"
+    },
+    {
+      "id": "s2-r20",
+      "description": "Hot Tea"
+    },
+    {
+      "id": "s2-r21",
+      "description": "Sponges"
+    },
+    {
+      "id": "s2-r22",
+      "description": "Dish Soap"
+    },
+    {
+      "id": "s3-r5",
+      "description": "Polymer #1"
+    },
+    {
+      "id": "s3-r6",
+      "description": "Polymer #2"
+    },
+    {
+      "id": "s3-r7",
+      "description": "Mineral Oil"
+    },
+    {
+      "id": "s3-r8",
+      "description": "Mineral Spirits"
+    },
+    {
+      "id": "s3-r9",
+      "description": "Pam Spray"
+    },
+    {
+      "id": "s3-r10",
+      "description": "Food Safe Axel Grease"
+    },
+    {
+      "id": "s3-r11",
+      "description": "White Rags"
+    },
+    {
+      "id": "s3-r12",
+      "description": "Paper Towels"
+    },
+    {
+      "id": "s3-r13",
+      "description": "Sample Pads for OEM"
+    },
+    {
+      "id": "s3-r16",
+      "description": "Hand Soap"
+    },
+    {
+      "id": "s3-r17",
+      "description": "Dish Soap"
+    },
+    {
+      "id": "s3-r18",
+      "description": "Lense Wipes"
+    }
+  ],
+  "results": [
+    {
+      "id": "s1-r30",
+      "description": "pH Probe",
+      "productUrl": "https://sea.hach.com/p-digital-differential-ph-sensors/DPD1P1",
+      "status": "cached",
+      "attempts": []
+    },
+    {
+      "id": "s1-r32",
+      "description": "Little Giant Pump",
+      "productUrl": "https://www.amazon.com/dp/B094LV889T?_encoding=UTF8&psc=1&ref=cm_sw_r_cp_ud_dp_PHQ7BB8D7BYQYTYCPZMX_1&ref_=cm_sw_r_cp_ud_dp_PHQ7BB8D7BYQYTYCPZMX_1&social_share=cm_sw_r_cp_ud_dp_PHQ7BB8D7BYQYTYCPZMX_1",
+      "status": "cached",
+      "attempts": []
+    },
+    {
+      "id": "s1-r6",
+      "description": "pH 4 Buffer Singlets",
+      "productUrl": "https://sea.hach.com/p-singlet-single-use-ph-buffer-ph-4-01-pk-20/2770020",
+      "status": "cached",
+      "attempts": []
+    },
+    {
+      "id": "s1-r7",
+      "description": "pH 7 Buffer Singlets",
+      "productUrl": "https://sea.hach.com/p-singlet-single-use-ph-buffer-ph-7-00-pk-20/2770120",
+      "status": "cached",
+      "attempts": []
+    },
+    {
+      "id": "s1-r8",
+      "description": "pH 10 Buffer Singlets",
+      "productUrl": "https://sea.hach.com/p-singlet-single-use-ph-buffer-ph-10-01-pk-20/2770220",
+      "status": "cached",
+      "attempts": []
+    },
+    {
+      "id": "s1-r13",
+      "description": "pH Storage Solution",
+      "productUrl": "https://sea.hach.com/p-ph-electrode-storage-solution-500-ml/2756549",
+      "status": "cached",
+      "attempts": []
+    },
+    {
+      "id": "s1-r19",
+      "description": "Asorbic Acid Packets",
+      "productUrl": "https://sea.hach.com/p-ascorbic-acid-powder-pillows-pk-100/1457799",
+      "status": "cached",
+      "attempts": []
+    },
+    {
+      "id": "s1-r21",
+      "description": "PAN Indicator Solution 0.1%",
+      "productUrl": "https://sea.hach.com/p-pan-indicator-solution-0-1-100-ml/2122432",
+      "status": "cached",
+      "attempts": []
+    },
+    {
+      "id": "s1-r24",
+      "description": "Ferrozine Iron Reagent",
+      "productUrl": "https://sea.hach.com/p-ferrozine-iron-reagent-500-ml/230149",
+      "status": "cached",
+      "attempts": []
+    },
+    {
+      "id": "s1-r25",
+      "description": "Swiftest Free CL2 Reagent Refill Vial",
+      "productUrl": "https://sea.hach.com/p-dpd-free-chlorine-reagent-swiftest-dispenser-refill-vial-approximately-250-tests/2105560",
+      "status": "cached",
+      "attempts": []
+    },
+    {
+      "id": "s1-r26",
+      "description": "Swiftest Total CL2 Reagent Refill Vial",
+      "productUrl": "https://sea.hach.com/p-dpd-total-chlorine-swiftest-dispenser-refill-vial-approximately-250-tests/2105660",
+      "status": "cached",
+      "attempts": []
+    },
+    {
+      "id": "s1-r27",
+      "description": "DPD Free Chlorine Reagent Powder Pillows",
+      "productUrl": "https://sea.hach.com/p-dpd-free-chlorine-reagent-powder-pillows-10-ml-pk-1000/2105528",
+      "status": "cached",
+      "attempts": []
+    },
+    {
+      "id": "s1-r28",
+      "description": "DPD Total Chlorine Reagent Powder Pillows",
+      "productUrl": "https://sea.hach.com/p-dpd-total-chlorine-reagent-powder-pillows-10-ml-pk-1000/2105628",
+      "status": "cached",
+      "attempts": []
+    },
+    {
+      "id": "s1-r33",
+      "description": "Turb. Vials",
+      "productUrl": "https://sea.hach.com/p-replacement-vial-for-tu5300sc-and-tu5400sc-online-laser-turbidimeter/LZY834",
+      "status": "cached",
+      "attempts": []
+    },
+    {
+      "id": "s1-r34",
+      "description": "Chlorine Reagent Set",
+      "productUrl": "https://sea.hach.com/p-free-chlorine-reagent-set-for-chlorine-analyzer-cl17-cl17sc/2556900",
+      "status": "cached",
+      "attempts": []
+    },
+    {
+      "id": "s1-r35",
+      "description": "Turbidimeter Desicant Cartridge",
+      "productUrl": "https://sea.hach.com/p-desiccant-cartridge-for-tu5300sc-and-tu5400sc-laser-turbidimeter/LZY876",
+      "status": "cached",
+      "attempts": []
+    },
+    {
+      "id": "s1-r36",
+      "description": "Turb. Wiper",
+      "productUrl": "https://sea.hach.com/p-replacement-wiper-for-mechanical-cleaning-unit-tu5300sc-and-tu5400sc/LZY915",
+      "status": "cached",
+      "attempts": []
+    },
+    {
+      "id": "s1-r37",
+      "description": "CL-17 Tubing Kit - Pre-Assembled",
+      "productUrl": "https://sea.hach.com/p-cl17sc-tubing-kit-pre-assembled/8560400",
+      "status": "cached",
+      "attempts": []
+    },
+    {
+      "id": "s1-r22",
+      "description": "Salt Bridge Solution",
+      "productUrl": "https://sea.hach.com/p-standard-cell-solution-concentrated-ph-7-0-buffer-equi-transferrant-500-ml/25M1A1025-115",
+      "status": "cached",
+      "attempts": []
+    },
+    {
+      "id": "s1-r23",
+      "description": "RoVer Rust Remover",
+      "productUrl": "https://www.hach.com/p-rover-rust-remover-454-g/30001",
+      "status": "cached",
+      "attempts": []
+    },
+    {
+      "id": "s1-r29",
+      "description": "Salt Bridge for DPD1P1 PEEK",
+      "productUrl": "https://sea.hach.com/p-salt-bridge-peek-pvdf-junctions-for-phd-sensor/SB-P1SV",
+      "status": "cached",
+      "attempts": []
+    },
+    {
+      "id": "s3-r14",
+      "description": "Pipettes",
+      "productUrl": "https://www.opticsplanet.com/vwr-disposable-transfer-pipets-p200-60vwr.html",
+      "status": "cached",
+      "attempts": []
+    },
+    {
+      "id": "s1-r9",
+      "description": "pH 7.00 Buffer",
+      "productUrl": "https://us.vwr.com/store/product?keyword=BDH5050-4L",
+      "status": "downloaded",
+      "attempts": []
+    },
+    {
+      "id": "s1-r5",
+      "description": "Methyl Purple Indicator",
+      "productUrl": "https://us.vwr.com/store/product?keyword=101202-868",
+      "status": "unavailable",
+      "attempts": [
+        {
+          "url": "https://www.nwsci.com/itemdetail/?itemCode=VAN%2F101202-868",
+          "error": "No product image with matching SKU metadata"
+        },
+        {
+          "url": "https://us.vwr.com/store/product?keyword=101202-868",
+          "error": "No product image with matching SKU metadata"
+        }
+      ]
+    },
+    {
+      "id": "s1-r10",
+      "description": "pH 10.01 Buffer",
+      "productUrl": "https://www.avantorsciences.com/us/en/product/NA1301668/ph-reference-standard-buffers-vwr-chemicals-bdh?isCatNumSearch=true&searchedCatalogNumber=BDH5076-4L",
+      "status": "downloaded",
+      "attempts": []
+    },
+    {
+      "id": "s1-r11",
+      "description": "Sulfuric Acid, 0.02N",
+      "productUrl": "https://us.vwr.com/store/product?keyword=101223-530",
+      "status": "unavailable",
+      "attempts": [
+        {
+          "url": "https://www.nwsci.com/itemdetail/?itemCode=VAN%2F101223-530",
+          "error": "No product image with matching SKU metadata"
+        },
+        {
+          "url": "https://us.vwr.com/store/product?keyword=101223-530",
+          "error": "No product image with matching SKU metadata"
+        }
+      ]
+    },
+    {
+      "id": "s1-r12",
+      "description": "EDTA Tritant 0.01M",
+      "productUrl": "https://www.avantorsciences.com/us/en/product/NA1264937/edta-disodium-salt-00100-m-m100-in-aqueous-solution-analytical-reagent",
+      "status": "unavailable",
+      "attempts": [
+        {
+          "url": "https://www.nwsci.com/itemdetail/?itemCode=VAN%2FRC270025",
+          "error": "No product image with matching SKU metadata"
+        },
+        {
+          "url": "https://www.avantorsciences.com/us/en/product/NA1264937/edta-disodium-salt-00100-m-m100-in-aqueous-solution-analytical-reagent",
+          "error": "No product image with matching SKU metadata"
+        }
+      ]
+    },
+    {
+      "id": "s1-r14",
+      "description": "Large 3 mil gloves",
+      "productUrl": "https://us.vwr.com/store/catalog/product.jsp?catalog_number=76457-134",
+      "status": "unavailable",
+      "attempts": [
+        {
+          "url": "https://www.nwsci.com/itemdetail/?itemCode=VAN%2F76457-134",
+          "error": "No product image with matching SKU metadata"
+        },
+        {
+          "url": "https://www.vwr.com/us/en/product/33546580/vwr-ultra-light-nitrile-examination-gloves-black",
+          "error": "No product image with matching SKU metadata"
+        },
+        {
+          "url": "https://us.vwr.com/store/catalog/product.jsp?catalog_number=76457-134",
+          "error": "No product image with matching SKU metadata"
+        }
+      ]
+    },
+    {
+      "id": "s1-r15",
+      "description": "XL 3 mil gloves",
+      "productUrl": "https://us.vwr.com/store/catalog/product.jsp?catalog_number=76457-136",
+      "status": "unavailable",
+      "attempts": [
+        {
+          "url": "https://www.nwsci.com/itemdetail/?itemCode=VAN%2F76457-136",
+          "error": "No product image with matching SKU metadata"
+        },
+        {
+          "url": "https://www.vwr.com/us/en/product/33546580/vwr-ultra-light-nitrile-examination-gloves-black",
+          "error": "No product image with matching SKU metadata"
+        },
+        {
+          "url": "https://us.vwr.com/store/catalog/product.jsp?catalog_number=76457-136",
+          "error": "No product image with matching SKU metadata"
+        }
+      ]
+    },
+    {
+      "id": "s1-r16",
+      "description": "Kim Wipes",
+      "productUrl": "https://us.vwr.com/store/product?keyword=82003-820",
+      "status": "downloaded",
+      "attempts": []
+    },
+    {
+      "id": "s1-r18",
+      "description": "Sulfuric Acid Dropper Bottle 5.25N",
+      "productUrl": "https://www.hach.com/p-sulfuric-acid-standard-solution-19-2-n-100-ml-mdb/244953",
+      "status": "needs-review",
+      "attempts": [
+        {
+          "error": "Workbook concentration and linked product concentration disagree"
+        }
+      ]
+    },
+    {
+      "id": "s1-r17",
+      "description": "Waffle Print Tissues",
+      "productUrl": "https://us.vwr.com/store/product/7467424/ultimate-professional-tissue-towels-tidi",
+      "status": "unavailable",
+      "attempts": [
+        {
+          "url": "https://www.nwsci.com/itemdetail/?itemCode=VAN%2F40101-003",
+          "error": "No product image with matching SKU metadata"
+        },
+        {
+          "url": "https://www.labplanet.com/tidi-towels-disp-3ply-13x19-cs500-918101.html",
+          "error": "No product image with matching SKU metadata"
+        },
+        {
+          "url": "https://us.vwr.com/store/product/7467424/ultimate-professional-tissue-towels-tidi",
+          "error": "No product image with matching SKU metadata"
+        }
+      ]
+    },
+    {
+      "id": "s1-r40",
+      "description": "Black 5 mil Nitrile Gloves LG",
+      "productUrl": "https://us.vwr.com/store/product?keyword=76307-466",
+      "status": "unavailable",
+      "attempts": [
+        {
+          "url": "https://www.nwsci.com/itemdetail/?itemCode=VAN%2F76307-466",
+          "error": "No product image with matching SKU metadata"
+        },
+        {
+          "url": "https://www.vwr.com/us/en/product/27315705/vwr-nitrile-examination-gloves-black",
+          "error": "No product image with matching SKU metadata"
+        },
+        {
+          "url": "https://us.vwr.com/store/product?keyword=76307-466",
+          "error": "No product image with matching SKU metadata"
+        }
+      ]
+    },
+    {
+      "id": "s1-r41",
+      "description": "Black 5 mil Nitrile Gloves XL",
+      "productUrl": "https://us.vwr.com/store/product?keyword=76307-468",
+      "status": "unavailable",
+      "attempts": [
+        {
+          "url": "https://www.nwsci.com/itemdetail/?itemCode=VAN%2F76307-468",
+          "error": "No product image with matching SKU metadata"
+        },
+        {
+          "url": "https://www.vwr.com/us/en/product/27315705/vwr-nitrile-examination-gloves-black",
+          "error": "No product image with matching SKU metadata"
+        },
+        {
+          "url": "https://us.vwr.com/store/product?keyword=76307-468",
+          "error": "No product image with matching SKU metadata"
+        }
+      ]
+    },
+    {
+      "id": "s1-r44",
+      "description": "Filter Cartridge 10\"",
+      "productUrl": "https://www.evoqua.com/en/evoqua/parts--consumables/cartridge-filter/melt-blown-nominal/fcro-code-f-prefilters/evoqua-roguard-melt-blown-cartridge-prefilter-fcrof1005/",
+      "status": "unavailable",
+      "attempts": [
+        {
+          "url": "https://www.evoqua.com/en/evoqua/parts--consumables/cartridge-filter/melt-blown-nominal/fcro-code-f-prefilters/evoqua-roguard-melt-blown-cartridge-prefilter-fcrof1005/",
+          "error": "HTTP 404"
+        }
+      ]
+    },
+    {
+      "id": "s3-r15",
+      "description": "Sample Bottles",
+      "productUrl": "https://us.vwr.com/store/product?keyword=89094-096",
+      "status": "downloaded",
+      "attempts": []
+    },
+    {
+      "id": "s1-r20",
+      "description": "Alkaline Cyanide Reagent",
+      "productUrl": "https://www.hach.com/alkaline-cyanide-reagent-100-ml-mdb/product?id=7640179498&callback=qs",
+      "status": "unavailable",
+      "attempts": [
+        {
+          "url": "https://www.grainger.com/product/HACH-Alkaline-Cyanide-Reagent-100-897XM1",
+          "error": "HTTP 403"
+        },
+        {
+          "url": "https://www.hexis.com.br/produto/manganes-reagente-alkaline-cyanide-100ml",
+          "error": "No product image with matching SKU metadata"
+        },
+        {
+          "url": "https://cdn.hach.com/7FYZVWYB/at/qp7pjkj34zbqhncmqg85c5kq/23032A1_Potassium_Hydroxide.jpg?auto=webp&quality=85,75&width=578",
+          "error": "Photo filename identifies a different product number"
+        },
+        {
+          "url": "https://cdn.hach.com/7FYZVWYB/at/qp7pjkj34zbqhncmqg85c5kq/23032A1_Potassium_Hydroxide.jpg?auto=webp&quality=85,75&width=578",
+          "error": "Photo filename identifies a different product number"
+        },
+        {
+          "url": "https://sea.hach.com/alkaline-cyanide-reagent-100-ml-mdb/product?id=7640179498&callback=qs",
+          "error": "HTTP 404"
+        },
+        {
+          "url": "https://cdn.hach.com/7FYZVWYB/at/qp7pjkj34zbqhncmqg85c5kq/23032A1_Potassium_Hydroxide.jpg?auto=webp&quality=85,75&width=578",
+          "error": "Photo filename identifies a different product number"
+        }
+      ]
+    }
+  ]
+}

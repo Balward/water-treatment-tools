@@ -1,0 +1,17 @@
+services:
+  operator-inventory:
+    build: .
+    image: operator-inventory:latest
+    container_name: operator-inventory
+    restart: unless-stopped
+    ports:
+      - "3080:3080"
+    environment:
+      TZ: America/Denver
+      SMTP_HOST: ${SMTP_HOST:-mail.privateemail.com}
+      SMTP_PORT: ${SMTP_PORT:-465}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      EMAIL_DEFAULT_TO: ${EMAIL_DEFAULT_TO:-}
+    volumes:
+      - /mnt/user/appdata/operator-inventory:/data

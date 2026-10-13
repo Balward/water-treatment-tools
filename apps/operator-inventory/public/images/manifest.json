@@ -1,0 +1,434 @@
+{
+  "items": {
+    "s1-r30": {
+      "description": "pH Probe",
+      "itemNumber": "DPD1P1",
+      "src": "/images/s1-r30.jpg",
+      "productUrl": "https://sea.hach.com/p-digital-differential-ph-sensors/DPD1P1",
+      "imageUrl": "https://cdn.hach.com/7FYZVWYB/at/5g5z73cb9n2j9mk6m6k5w33r/DPD1P1_snsr-pHD-convert-LCP-RZ.jpg?auto=webp&quality=85,75&width=578",
+      "fetchedAt": "2026-10-10T15:40:13.020Z",
+      "sourceType": "workbook-link",
+      "sourceUrl": "https://www.hach.com/p-digital-differential-ph-sensors/DPD1P1"
+    },
+    "s1-r32": {
+      "description": "Little Giant Pump",
+      "itemNumber": "505723",
+      "src": "/images/s1-r32.jpg",
+      "productUrl": "https://www.amazon.com/dp/B094LV889T?_encoding=UTF8&psc=1&ref=cm_sw_r_cp_ud_dp_PHQ7BB8D7BYQYTYCPZMX_1&ref_=cm_sw_r_cp_ud_dp_PHQ7BB8D7BYQYTYCPZMX_1&social_share=cm_sw_r_cp_ud_dp_PHQ7BB8D7BYQYTYCPZMX_1",
+      "imageUrl": "https://m.media-amazon.com/images/I/51hT0ZEVQ8L._AC_SY300_SX300_QL70_ML2_.jpg",
+      "fetchedAt": "2026-10-10T15:40:15.761Z",
+      "sourceType": "workbook-link",
+      "sourceUrl": "https://a.co/d/07OuE7SB"
+    },
+    "s1-r6": {
+      "description": "pH 4 Buffer Singlets",
+      "itemNumber": "2770020",
+      "src": "/images/s1-r6.jpg",
+      "productUrl": "https://sea.hach.com/p-singlet-single-use-ph-buffer-ph-4-01-pk-20/2770020",
+      "imageUrl": "https://cdn.hach.com/7FYZVWYB/at/b9nthj76pvx73wpppgb6w4mq/2770020_SINGLET_BUFFER_PH401.jpg?auto=webp&quality=85,75&width=578",
+      "fetchedAt": "2026-10-10T15:40:39.040Z",
+      "sourceType": "workbook-link",
+      "sourceUrl": "https://www.hach.com/singlet-single-use-ph-buffer-ph-4-01-pk-20/product?id=7640205066&callback=qs"
+    },
+    "s1-r7": {
+      "description": "pH 7 Buffer Singlets",
+      "itemNumber": "2770120",
+      "src": "/images/s1-r7.jpg",
+      "productUrl": "https://sea.hach.com/p-singlet-single-use-ph-buffer-ph-7-00-pk-20/2770120",
+      "imageUrl": "https://cdn.hach.com/7FYZVWYB/at/n56jphcp3csv495c2qb8s7s/2770120_SINGLET_BUFFER_PH700.jpg?auto=webp&quality=85,75&width=578",
+      "fetchedAt": "2026-10-10T15:40:39.521Z",
+      "sourceType": "workbook-link",
+      "sourceUrl": "https://www.hach.com/singlet-single-use-ph-buffer-ph-7-00-pk-20/product?id=7640205067&callback=qs"
+    },
+    "s1-r8": {
+      "description": "pH 10 Buffer Singlets",
+      "itemNumber": "2770220",
+      "src": "/images/s1-r8.jpg",
+      "productUrl": "https://sea.hach.com/p-singlet-single-use-ph-buffer-ph-10-01-pk-20/2770220",
+      "imageUrl": "https://cdn.hach.com/7FYZVWYB/at/8zms4z4txchgmbb4wwg6rt/2770220_SINGLET_BUFFER_PH1001.jpg?auto=webp&quality=85,75&width=578",
+      "fetchedAt": "2026-10-10T15:40:40.293Z",
+      "sourceType": "workbook-link",
+      "sourceUrl": "https://www.hach.com/singlet-single-use-ph-buffer-ph-10-01-pk-20/product?id=7640205068&callback=qs"
+    },
+    "s1-r13": {
+      "description": "pH Storage Solution",
+      "itemNumber": "2756549",
+      "src": "/images/s1-r13.jpg",
+      "productUrl": "https://sea.hach.com/p-ph-electrode-storage-solution-500-ml/2756549",
+      "imageUrl": "https://cdn.hach.com/7FYZVWYB/at/nx8rs32wb7kfq99hjkc3c9mc/2756549_pH_Electrode_Storage_Solution_500_mL_W.jpg?auto=webp&quality=85,75&width=578",
+      "fetchedAt": "2026-10-10T15:40:41.113Z",
+      "sourceType": "workbook-link",
+      "sourceUrl": "https://www.hach.com/ph-electrode-storage-solution-500-ml/product?id=7640206852&callback=qs"
+    },
+    "s1-r19": {
+      "description": "Asorbic Acid Packets",
+      "itemNumber": "1457799",
+      "src": "/images/s1-r19.jpg",
+      "productUrl": "https://sea.hach.com/p-ascorbic-acid-powder-pillows-pk-100/1457799",
+      "imageUrl": "https://cdn.hach.com/7FYZVWYB/at/5s7h6gptkm39hkj5xpqkj9kq/1457799_Ascorbic_Acid_Powder_Pillows_pk100_W.jpg?auto=webp&quality=85,75&width=578",
+      "fetchedAt": "2026-10-10T15:40:41.757Z",
+      "sourceType": "workbook-link",
+      "sourceUrl": "https://www.hach.com/ascorbic-acid-powder-pillows-pk-100/product?id=7640182873&callback=qs"
+    },
+    "s1-r21": {
+      "description": "PAN Indicator Solution 0.1%",
+      "itemNumber": "2122432",
+      "src": "/images/s1-r21.jpg",
+      "productUrl": "https://sea.hach.com/p-pan-indicator-solution-0-1-100-ml/2122432",
+      "imageUrl": "https://cdn.hach.com/7FYZVWYB/at/6fh4q7ctx5bj7r2k4zvnhv/2122432_PAN_Indicator_Solution_01-Z.jpg?auto=webp&quality=85,75&width=578",
+      "fetchedAt": "2026-10-10T15:40:42.742Z",
+      "sourceType": "workbook-link",
+      "sourceUrl": "https://www.hach.com/pan-indicator-solution-0-1-100-ml/product?id=7640178450&callback=qs"
+    },
+    "s1-r24": {
+      "description": "Ferrozine Iron Reagent",
+      "itemNumber": "230149",
+      "src": "/images/s1-r24.jpg",
+      "productUrl": "https://sea.hach.com/p-ferrozine-iron-reagent-500-ml/230149",
+      "imageUrl": "https://cdn.hach.com/7FYZVWYB/at/272s7hq93cw3gk8xg5fm7/230149_FerroZine-Iron-Reagent-Solution-Z.jpg?auto=webp&quality=85,75&width=578",
+      "fetchedAt": "2026-10-10T15:40:44.599Z",
+      "sourceType": "workbook-link",
+      "sourceUrl": "https://www.hach.com/ferrozine-iron-reagent-500-ml/product?id=7640176728&callback=qs"
+    },
+    "s1-r25": {
+      "description": "Swiftest Free CL2 Reagent Refill Vial",
+      "itemNumber": "21055-60",
+      "src": "/images/s1-r25.jpg",
+      "productUrl": "https://sea.hach.com/p-dpd-free-chlorine-reagent-swiftest-dispenser-refill-vial-approximately-250-tests/2105560",
+      "imageUrl": "https://cdn.hach.com/7FYZVWYB/at/scqm2zr6sxmztbkjvcvqz9z/2105560_Reagent-Refill-Chlorine-Free-DPD-SwifTest-Z.jpg?auto=webp&quality=85,75&width=578",
+      "fetchedAt": "2026-10-10T15:40:44.796Z",
+      "sourceType": "workbook-link",
+      "sourceUrl": "https://www.hach.com/dpd-free-chlorine-reagent-swiftest-dispenser-refill-vial-approximately-250-tests/product?id=7640189161&callback=qs"
+    },
+    "s1-r26": {
+      "description": "Swiftest Total CL2 Reagent Refill Vial",
+      "itemNumber": "21056-60",
+      "src": "/images/s1-r26.jpg",
+      "productUrl": "https://sea.hach.com/p-dpd-total-chlorine-swiftest-dispenser-refill-vial-approximately-250-tests/2105660",
+      "imageUrl": "https://cdn.hach.com/7FYZVWYB/at/ssvs5hhz58pswh7pq3jkgq6v/2105660_Reagent-Refill-Chlorine-Total-DPD-SwifTest-Z.jpg?auto=webp&quality=85,75&width=578",
+      "fetchedAt": "2026-10-10T15:40:45.655Z",
+      "sourceType": "workbook-link",
+      "sourceUrl": "https://www.hach.com/dpd-total-chlorine-swiftest-dispenser-refill-vial-approximately-250-tests/product?id=7640189162&callback=qs"
+    },
+    "s1-r27": {
+      "description": "DPD Free Chlorine Reagent Powder Pillows",
+      "itemNumber": "2105528",
+      "src": "/images/s1-r27.jpg",
+      "productUrl": "https://sea.hach.com/p-dpd-free-chlorine-reagent-powder-pillows-10-ml-pk-1000/2105528",
+      "imageUrl": "https://cdn.hach.com/7FYZVWYB/at/bxp72cntg743k5qcq4tqb5f/2105528-DPD_Free_Chlorine_Reagent_10_mL_1000_pk-W.jpg?auto=webp&quality=85,75&width=578",
+      "fetchedAt": "2026-10-10T15:40:45.958Z",
+      "sourceType": "workbook-link",
+      "sourceUrl": "https://www.hach.com/dpd-free-chlorine-reagent-powder-pillows-10-ml-pk-1000/product?id=7640187690&callback=qs"
+    },
+    "s1-r28": {
+      "description": "DPD Total Chlorine Reagent Powder Pillows",
+      "itemNumber": "2105628",
+      "src": "/images/s1-r28.jpg",
+      "productUrl": "https://sea.hach.com/p-dpd-total-chlorine-reagent-powder-pillows-10-ml-pk-1000/2105628",
+      "imageUrl": "https://cdn.hach.com/7FYZVWYB/at/nv3psmr7jbcbgfgn3k9xs5z/2105628-DPD_Total_Chlorine_Reagent_10_mL_1000_pk-W.jpg?auto=webp&quality=85,75&width=578",
+      "fetchedAt": "2026-10-10T15:40:46.713Z",
+      "sourceType": "workbook-link",
+      "sourceUrl": "https://www.hach.com/dpd-total-chlorine-reagent-powder-pillows-10-ml-pk-1000/product?id=7640187692"
+    },
+    "s1-r33": {
+      "description": "Turb. Vials",
+      "itemNumber": "LZY834",
+      "src": "/images/s1-r33.jpg",
+      "productUrl": "https://sea.hach.com/p-replacement-vial-for-tu5300sc-and-tu5400sc-online-laser-turbidimeter/LZY834",
+      "imageUrl": "https://cdn.hach.com/7FYZVWYB/at/qcmfrj3hpwr58cbsf63gwbtb/LZY834-Cell-Process-TU5-Z.jpg?auto=webp&quality=85,75&width=578",
+      "fetchedAt": "2026-10-10T15:40:47.749Z",
+      "sourceType": "workbook-link",
+      "sourceUrl": "https://www.hach.com/replacement-vial-for-tu5300sc-and-tu5400sc-online-laser-turbidimeter/product?id=25133179965&callback=qs"
+    },
+    "s1-r34": {
+      "description": "Chlorine Reagent Set",
+      "itemNumber": "25569-00",
+      "src": "/images/s1-r34.jpg",
+      "productUrl": "https://sea.hach.com/p-free-chlorine-reagent-set-for-chlorine-analyzer-cl17-cl17sc/2556900",
+      "imageUrl": "https://cdn.hach.com/7FYZVWYB/at/xjjgjngk88sgh4kqjgkkzrb/2556900_Free_Chlorine_Solution.jpg?auto=webp&quality=85,75&width=578",
+      "fetchedAt": "2026-10-10T15:40:48.385Z",
+      "sourceType": "workbook-link",
+      "sourceUrl": "https://www.hach.com/free-chlorine-reagent-set-for-chlorine-analyzer-cl17-cl17sc/product?id=7640295440&callback=qs"
+    },
+    "s1-r35": {
+      "description": "Turbidimeter Desicant Cartridge",
+      "itemNumber": "LZY876",
+      "src": "/images/s1-r35.jpg",
+      "productUrl": "https://sea.hach.com/p-desiccant-cartridge-for-tu5300sc-and-tu5400sc-laser-turbidimeter/LZY876",
+      "imageUrl": "https://cdn.hach.com/7FYZVWYB/at/3sh36vkgfn6hpnmqhf3p828/LZY876_Cartridge-Desiccant-TU5x00sc-RZ.jpg?auto=webp&quality=85,75&width=578",
+      "fetchedAt": "2026-10-10T15:40:48.837Z",
+      "sourceType": "workbook-link",
+      "sourceUrl": "https://www.hach.com/desiccant-cartridge-for-tu5300sc-and-tu5400sc-laser-turbidimeter/product?id=25067768684&callback=qs"
+    },
+    "s1-r36": {
+      "description": "Turb. Wiper",
+      "itemNumber": "LZY915",
+      "src": "/images/s1-r36.jpg",
+      "productUrl": "https://sea.hach.com/p-replacement-wiper-for-mechanical-cleaning-unit-tu5300sc-and-tu5400sc/LZY915",
+      "imageUrl": "https://cdn.hach.com/7FYZVWYB/at/mcg6knq7jnf3t7bnv447vn/LZY915-Head-Wiper-TU5-Z.jpg?auto=webp&quality=85,75&width=578",
+      "fetchedAt": "2026-10-10T15:40:49.234Z",
+      "sourceType": "workbook-link",
+      "sourceUrl": "https://www.hach.com/replacement-wiper-for-mechanical-cleaning-unit-tu5300sc-and-tu5400sc/product?id=30245369826&callback=qs"
+    },
+    "s1-r37": {
+      "description": "CL-17 Tubing Kit - Pre-Assembled",
+      "itemNumber": "8560400",
+      "src": "/images/s1-r37.jpg",
+      "productUrl": "https://sea.hach.com/p-cl17sc-tubing-kit-pre-assembled/8560400",
+      "imageUrl": "https://cdn.hach.com/7FYZVWYB/at/xwxp55hf7njm53g2jxjtphx/8560400_CL17sc_Tubing_Kit_2.jpg?auto=webp&quality=85,75&width=578",
+      "fetchedAt": "2026-10-10T15:40:49.809Z",
+      "sourceType": "workbook-link",
+      "sourceUrl": "https://www.hach.com/cl17sc-tubing-kit-pre-assembled/product?id=57579845186&callback=qs"
+    },
+    "s1-r22": {
+      "description": "Salt Bridge Solution",
+      "itemNumber": "25M1A1025-115",
+      "src": "/images/s1-r22.jpg",
+      "productUrl": "https://www.hach.com/standard-cell-solution-concentrated-ph-7-0-buffer-equi-transferrant-500-ml/product?id=22245343843&callback=qs",
+      "imageUrl": "https://cdn.hach.com/7FYZVWYB/at/bp99kc3tqjptx9wj4rgpx7cg/25M1A1025115_pHBffr7-Z.jpg?auto=webp&quality=85,75&width=578",
+      "sourceType": "user-provided",
+      "sourceUrl": "https://cdn.hach.com/7FYZVWYB/at/bp99kc3tqjptx9wj4rgpx7cg/25M1A1025115_pHBffr7-Z.jpg?auto=webp&quality=85,75&width=578",
+      "fetchedAt": "2026-10-11T01:54:59.112Z"
+    },
+    "s1-r23": {
+      "description": "RoVer Rust Remover",
+      "itemNumber": "30001",
+      "src": "/images/s1-r23.jpg",
+      "productUrl": "https://www.hach.com/rover-rust-remover-454-g/product?id=7640185956&callback=qs",
+      "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ3NdvcjwmyO5-L1S4yZN32xvBtuVZGwF-rlzt_RINY5ISc3oqvNfE9aLUA&s=10",
+      "sourceType": "user-provided",
+      "sourceUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ3NdvcjwmyO5-L1S4yZN32xvBtuVZGwF-rlzt_RINY5ISc3oqvNfE9aLUA&s=10",
+      "fetchedAt": "2026-10-11T01:59:30.926Z"
+    },
+    "s1-r29": {
+      "description": "Salt Bridge for DPD1P1 PEEK",
+      "itemNumber": "SB-P1SV",
+      "src": "/images/s1-r29.jpg",
+      "productUrl": "https://www.hach.com/salt-bridge-peek-pvdf-junctions-for-phd-sensor/product?id=7639989985&callback=qs",
+      "imageUrl": "https://cdn.hach.com/7FYZVWYB/at/tqbg28938sqsqpgtfqv4qc4/SB-P1SV-010_SaltBridge-RZ1.jpg?auto=webp&quality=85,75&width=578",
+      "sourceType": "user-provided",
+      "sourceUrl": "https://cdn.hach.com/7FYZVWYB/at/tqbg28938sqsqpgtfqv4qc4/SB-P1SV-010_SaltBridge-RZ1.jpg?auto=webp&quality=85,75&width=578",
+      "fetchedAt": "2026-10-11T02:00:08.123Z"
+    },
+    "s3-r14": {
+      "description": "Pipettes",
+      "itemNumber": "16001-186",
+      "src": "/images/s3-r14.jpg",
+      "productUrl": "https://www.opticsplanet.com/vwr-disposable-transfer-pipets-p200-60vwr.html",
+      "imageUrl": "https://www.opticsplanet.com/i/200-200-ffffff/opplanet-vwr-disposable-transfer-pipets-p200-60vwr.jpg",
+      "fetchedAt": "2026-10-10T19:36:42.059Z",
+      "sourceType": "additional-search"
+    },
+    "s1-r9": {
+      "description": "pH 7.00 Buffer",
+      "itemNumber": "BDH5050-4L",
+      "src": "/images/s1-r9.jpg",
+      "productUrl": "https://us.vwr.com/store/product?keyword=BDH5050-4L",
+      "imageUrl": "https://cdn.prod.website-files.com/5ec959f99359c2ff953a4353/5f188cac3cc8e72bae091341_100000345.jpeg",
+      "sourceType": "user-provided",
+      "sourceUrl": "https://cdn.prod.website-files.com/5ec959f99359c2ff953a4353/5f188cac3cc8e72bae091341_100000345.jpeg",
+      "fetchedAt": "2026-10-11T01:39:32.124Z"
+    },
+    "s1-r10": {
+      "description": "pH 10.01 Buffer",
+      "itemNumber": "BDH5076-4L",
+      "src": "/images/s1-r10.jpg",
+      "productUrl": "https://www.avantorsciences.com/us/en/product/NA1301668/ph-reference-standard-buffers-vwr-chemicals-bdh?isCatNumSearch=true&searchedCatalogNumber=BDH5076-4L",
+      "imageUrl": "https://cdn.prod.website-files.com/5ec959f99359c2ff953a4353/5f188cac3cc8e72bae091341_100000345.jpeg",
+      "sourceType": "user-provided",
+      "sourceUrl": "https://cdn.prod.website-files.com/5ec959f99359c2ff953a4353/5f188cac3cc8e72bae091341_100000345.jpeg",
+      "fetchedAt": "2026-10-11T01:40:00.106Z"
+    },
+    "s1-r16": {
+      "description": "Kim Wipes",
+      "itemNumber": "82003-820",
+      "src": "/images/s1-r16.jpg",
+      "productUrl": "https://us.vwr.com/store/product?keyword=82003-820",
+      "imageUrl": "https://digitalassets.avantorsciences.com/adaptivemedia/rendition?id=dd3dab057f7e3b24a99a5439162527febad8f6ac&vid=a5843b49408c22a8ee3aa9225be22009eb494137&prid=original&clid=SAPDAM",
+      "sourceType": "user-provided",
+      "sourceUrl": "https://digitalassets.avantorsciences.com/adaptivemedia/rendition?id=dd3dab057f7e3b24a99a5439162527febad8f6ac&vid=a5843b49408c22a8ee3aa9225be22009eb494137&prid=original&clid=SAPDAM",
+      "fetchedAt": "2026-10-11T01:47:54.486Z"
+    },
+    "s3-r15": {
+      "description": "Sample Bottles",
+      "itemNumber": "89094-096",
+      "src": "/images/s3-r15.jpg",
+      "productUrl": "https://www.nwsci.com/itemdetail/?itemCode=VAN%2F89094-096",
+      "imageUrl": "https://www.nwsci.com/ecomm_images/items/medium/all_27_72_4762772.jpg",
+      "fetchedAt": "2026-10-10T19:37:31.413Z",
+      "sourceType": "additional-search"
+    },
+    "s1-r5": {
+      "description": "Methyl Purple Indicator",
+      "itemNumber": "101202-868",
+      "src": "/images/s1-r5.jpg",
+      "productUrl": "https://us.vwr.com/store/product?keyword=101202-868",
+      "imageUrl": "https://assets.fishersci.com/TFS-Assets/CCG/Ricca-Chemical-Company/product-images/General120C.jpg-650.jpg",
+      "sourceType": "user-provided",
+      "sourceUrl": "https://assets.fishersci.com/TFS-Assets/CCG/Ricca-Chemical-Company/product-images/General120C.jpg-650.jpg",
+      "fetchedAt": "2026-10-11T02:42:17.554Z",
+      "note": "User selected this generic Ricca bottle image as a reference for Methyl Purple Indicator."
+    },
+    "s1-r11": {
+      "description": "Sulfuric Acid, 0.02N",
+      "itemNumber": "101223-530",
+      "src": "/images/s1-r11.webp",
+      "productUrl": "https://us.vwr.com/store/product?keyword=101223-530",
+      "imageUrl": "https://cdn11.bigcommerce.com/s-3yvzqa/images/stencil/1280x1280/products/57033/291978/GHS_Cubitainer__06030.1680878603.jpg?c=2",
+      "sourceType": "user-provided",
+      "sourceUrl": "https://cdn11.bigcommerce.com/s-3yvzqa/images/stencil/1280x1280/products/57033/291978/GHS_Cubitainer__06030.1680878603.jpg?c=2",
+      "fetchedAt": "2026-10-11T01:43:00.608Z"
+    },
+    "s1-r12": {
+      "description": "EDTA Tritant 0.01M",
+      "itemNumber": "RC270025",
+      "src": "/images/s1-r12.jpg",
+      "productUrl": "https://www.avantorsciences.com/us/en/product/NA1264937/edta-disodium-salt-00100-m-m100-in-aqueous-solution-analytical-reagent",
+      "imageUrl": "https://digitalassets.avantorsciences.com/adaptivemedia/rendition?id=869cf8c624aaa318712a9ee900dbe12148a85334&vid=5b43a335bfcd23b2870e8d9b02a23e9c3daa0c44&prid=original&clid=SAPDAM",
+      "sourceType": "user-provided",
+      "sourceUrl": "https://digitalassets.avantorsciences.com/adaptivemedia/rendition?id=869cf8c624aaa318712a9ee900dbe12148a85334&vid=5b43a335bfcd23b2870e8d9b02a23e9c3daa0c44&prid=original&clid=SAPDAM",
+      "fetchedAt": "2026-10-11T01:43:57.893Z"
+    },
+    "s1-r14": {
+      "description": "Large 3 mil gloves",
+      "itemNumber": "76457-134",
+      "src": "/images/s1-r14.jpg",
+      "productUrl": "https://us.vwr.com/store/catalog/product.jsp?catalog_number=76457-134",
+      "imageUrl": "https://digitalassets.avantorsciences.com/adaptivemedia/rendition/id_29cec8016b43c2a80256c4428b2a6c14b8d6bd22/vid_cd2a200512d32ca9a54dee6c400e9ca84f49d4d1/prid_original/clid_SAPDAM",
+      "sourceType": "user-provided",
+      "sourceUrl": "https://digitalassets.avantorsciences.com/adaptivemedia/rendition/id_29cec8016b43c2a80256c4428b2a6c14b8d6bd22/vid_cd2a200512d32ca9a54dee6c400e9ca84f49d4d1/prid_original/clid_SAPDAM",
+      "fetchedAt": "2026-10-11T01:46:07.523Z"
+    },
+    "s1-r15": {
+      "description": "XL 3 mil gloves",
+      "itemNumber": "76457-136",
+      "src": "/images/s1-r15.jpg",
+      "productUrl": "https://us.vwr.com/store/catalog/product.jsp?catalog_number=76457-136",
+      "imageUrl": "https://digitalassets.avantorsciences.com/adaptivemedia/rendition/id_29cec8016b43c2a80256c4428b2a6c14b8d6bd22/vid_cd2a200512d32ca9a54dee6c400e9ca84f49d4d1/prid_original/clid_SAPDAM",
+      "sourceType": "user-provided",
+      "sourceUrl": "https://digitalassets.avantorsciences.com/adaptivemedia/rendition/id_29cec8016b43c2a80256c4428b2a6c14b8d6bd22/vid_cd2a200512d32ca9a54dee6c400e9ca84f49d4d1/prid_original/clid_SAPDAM",
+      "fetchedAt": "2026-10-11T01:47:13.364Z"
+    },
+    "s1-r17": {
+      "description": "Waffle Print Tissues",
+      "itemNumber": "40101-003",
+      "src": "/images/s1-r17.jpg",
+      "productUrl": "https://us.vwr.com/store/product/7467424/ultimate-professional-tissue-towels-tidi",
+      "imageUrl": "https://digitalassets.avantorsciences.com/adaptivemedia/rendition/id_d972ca789fae77b0465f96468c2ec07fe1ef6b0e/vid_cd5f8eb216033d4da5ae9b5d88ea1da5adbaf1d4/prid_original/clid_SAPDAM",
+      "sourceType": "user-provided",
+      "sourceUrl": "https://digitalassets.avantorsciences.com/adaptivemedia/rendition/id_d972ca789fae77b0465f96468c2ec07fe1ef6b0e/vid_cd5f8eb216033d4da5ae9b5d88ea1da5adbaf1d4/prid_original/clid_SAPDAM",
+      "fetchedAt": "2026-10-11T01:48:49.103Z"
+    },
+    "s1-r18": {
+      "description": "Sulfuric Acid Dropper Bottle 5.25N",
+      "itemNumber": "244953",
+      "src": "/images/s1-r18.jpg",
+      "productUrl": "https://cdn.hach.com/7FYZVWYB/at/9j6xhm8q9v59sc8vxtfbc9p/Bottles-1L-Assorted-grp-Z_V2.jpg?auto=webp&quality=85,75&width=578",
+      "imageUrl": "https://cdn.hach.com/7FYZVWYB/at/9j6xhm8q9v59sc8vxtfbc9p/Bottles-1L-Assorted-grp-Z_V2.jpg?auto=webp&quality=85,75&width=578",
+      "sourceType": "user-provided",
+      "sourceUrl": "https://cdn.hach.com/7FYZVWYB/at/9j6xhm8q9v59sc8vxtfbc9p/Bottles-1L-Assorted-grp-Z_V2.jpg?auto=webp&quality=85,75&width=578",
+      "fetchedAt": "2026-10-11T01:51:46.366Z",
+      "note": "User confirmed 5.25N and selected this packaging photo; workbook product link describes a different concentration."
+    },
+    "s1-r20": {
+      "description": "Alkaline Cyanide Reagent",
+      "itemNumber": "2122332",
+      "src": "/images/s1-r20.jpg",
+      "productUrl": "https://www.hach.com/alkaline-cyanide-reagent-100-ml-mdb/product?id=7640179498&callback=qs",
+      "imageUrl": "https://cdn.hach.com/7FYZVWYB/at/qp7pjkj34zbqhncmqg85c5kq/23032A1_Potassium_Hydroxide.jpg?auto=webp&quality=85,75&width=578",
+      "sourceType": "user-provided",
+      "sourceUrl": "https://cdn.hach.com/7FYZVWYB/at/qp7pjkj34zbqhncmqg85c5kq/23032A1_Potassium_Hydroxide.jpg?auto=webp&quality=85,75&width=578",
+      "fetchedAt": "2026-10-11T01:54:16.997Z",
+      "note": "User explicitly selected this supplier packaging photo for Alkaline Cyanide Reagent after reviewing its label."
+    },
+    "s1-r31": {
+      "description": "CL-17 Colorimeter",
+      "itemNumber": "NA",
+      "src": "/images/s1-r31.jpg",
+      "productUrl": "https://cdn.hach.com/7FYZVWYB/at/ptq6ws3jc3zq44k23hmsp/CL17sc_Front_Face_3-W.jpg?auto=webp&quality=85,75&width=578",
+      "imageUrl": "https://cdn.hach.com/7FYZVWYB/at/ptq6ws3jc3zq44k23hmsp/CL17sc_Front_Face_3-W.jpg?auto=webp&quality=85,75&width=578",
+      "sourceType": "user-provided",
+      "sourceUrl": "https://cdn.hach.com/7FYZVWYB/at/ptq6ws3jc3zq44k23hmsp/CL17sc_Front_Face_3-W.jpg?auto=webp&quality=85,75&width=578",
+      "fetchedAt": "2026-10-11T02:02:14.890Z",
+      "note": "User selected a CL17sc analyzer photo as a reference for the CL-17 Colorimeter part."
+    },
+    "s1-r38": {
+      "description": "Crush Tube Large",
+      "itemNumber": "A3-SNKL",
+      "allowedItemNumbers": ["A3-SNKL-T"],
+      "src": "/images/s1-r38.webp",
+      "productUrl": "https://supplyline.com/images/detailed/266/BWI-IMG_A3-Spare-Tubing-030_6yo7-8o-1.webp",
+      "imageUrl": "https://supplyline.com/images/detailed/266/BWI-IMG_A3-Spare-Tubing-030_6yo7-8o-1.webp",
+      "sourceType": "user-provided",
+      "sourceUrl": "https://supplyline.com/images/detailed/266/BWI-IMG_A3-Spare-Tubing-030_6yo7-8o-1.webp",
+      "fetchedAt": "2026-10-11T02:03:07.136Z"
+    },
+    "s1-r39": {
+      "description": "Crush Tube Small",
+      "itemNumber": "N/A",
+      "allowedItemNumbers": ["A3-SNF-T"],
+      "src": "/images/s1-r39.jpg",
+      "productUrl": "https://cdn11.bigcommerce.com/s-2481b/images/stencil/original/products/54462/337947/BWA16T__52081.1780927324.jpg?c=2",
+      "imageUrl": "https://cdn11.bigcommerce.com/s-2481b/images/stencil/original/products/54462/337947/BWA16T__52081.1780927324.jpg?c=2",
+      "sourceType": "user-provided",
+      "sourceUrl": "https://cdn11.bigcommerce.com/s-2481b/images/stencil/original/products/54462/337947/BWA16T__52081.1780927324.jpg?c=2",
+      "fetchedAt": "2026-10-11T02:04:15.461Z"
+    },
+    "s1-r40": {
+      "description": "Black 5 mil Nitrile Gloves LG",
+      "itemNumber": "76307-466",
+      "src": "/images/s1-r40.jpg",
+      "productUrl": "https://us.vwr.com/store/product?keyword=76307-466",
+      "imageUrl": "https://digitalassets.avantorsciences.com/adaptivemedia/rendition/id_29cec8016b43c2a80256c4428b2a6c14b8d6bd22/vid_cd2a200512d32ca9a54dee6c400e9ca84f49d4d1/prid_original/clid_SAPDAM",
+      "sourceType": "user-provided",
+      "sourceUrl": "https://digitalassets.avantorsciences.com/adaptivemedia/rendition/id_29cec8016b43c2a80256c4428b2a6c14b8d6bd22/vid_cd2a200512d32ca9a54dee6c400e9ca84f49d4d1/prid_original/clid_SAPDAM",
+      "fetchedAt": "2026-10-11T02:04:55.854Z",
+      "note": "User selected the Large 3 mil gloves photo as a reference for Black 5 mil Nitrile Gloves, Large."
+    },
+    "s1-r41": {
+      "description": "Black 5 mil Nitrile Gloves XL",
+      "itemNumber": "76307-468",
+      "src": "/images/s1-r41.jpg",
+      "productUrl": "https://us.vwr.com/store/product?keyword=76307-468",
+      "imageUrl": "https://digitalassets.avantorsciences.com/adaptivemedia/rendition/id_29cec8016b43c2a80256c4428b2a6c14b8d6bd22/vid_cd2a200512d32ca9a54dee6c400e9ca84f49d4d1/prid_original/clid_SAPDAM",
+      "sourceType": "user-provided",
+      "sourceUrl": "https://digitalassets.avantorsciences.com/adaptivemedia/rendition/id_29cec8016b43c2a80256c4428b2a6c14b8d6bd22/vid_cd2a200512d32ca9a54dee6c400e9ca84f49d4d1/prid_original/clid_SAPDAM",
+      "fetchedAt": "2026-10-11T02:05:17.100Z",
+      "note": "User selected the 3 mil gloves photo as a reference for Black 5 mil Nitrile Gloves, XL."
+    },
+    "s1-r42": {
+      "description": "Hydrogen Peroxide",
+      "itemNumber": "N/A",
+      "src": "/images/s1-r42.jpg",
+      "productUrl": "https://m.media-amazon.com/images/I/71h23AlEWcL.jpg",
+      "imageUrl": "https://m.media-amazon.com/images/I/71h23AlEWcL.jpg",
+      "sourceType": "user-provided",
+      "sourceUrl": "https://m.media-amazon.com/images/I/71h23AlEWcL.jpg",
+      "fetchedAt": "2026-10-11T02:05:51.588Z"
+    },
+    "s1-r43": {
+      "description": "Vinegar",
+      "itemNumber": "N/A",
+      "src": "/images/s1-r43.jpg",
+      "productUrl": "https://www.russellfeed.com/cdn/shop/files/vine30-128.webp?v=1773941097",
+      "imageUrl": "https://www.russellfeed.com/cdn/shop/files/vine30-128.webp?v=1773941097",
+      "sourceType": "user-provided",
+      "sourceUrl": "https://www.russellfeed.com/cdn/shop/files/vine30-128.webp?v=1773941097",
+      "fetchedAt": "2026-10-11T02:06:13.665Z",
+      "allowedItemNumbers": [
+        "VINE30-128"
+      ]
+    },
+    "s1-r44": {
+      "description": "Filter Cartridge 10\"",
+      "itemNumber": "W2T159719",
+      "src": "/images/s1-r44.jpg",
+      "productUrl": "https://www.evoqua.com/en/evoqua/parts--consumables/cartridge-filter/melt-blown-nominal/fcro-code-f-prefilters/evoqua-roguard-melt-blown-cartridge-prefilter-fcrof1005/",
+      "imageUrl": "https://m.media-amazon.com/images/I/81umJS2FD1L._AC_SL1500_.jpg",
+      "sourceType": "user-provided",
+      "sourceUrl": "https://m.media-amazon.com/images/I/81umJS2FD1L._AC_SL1500_.jpg",
+      "fetchedAt": "2026-10-11T02:07:38.420Z"
+    }
+  },
+  "updatedAt": "2026-10-11T02:42:17.555Z"
+}

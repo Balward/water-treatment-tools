@@ -4,6 +4,8 @@ A collection of focused, single-page web apps that help operators analyze data, 
 
 ## App directory
 
+- `apps/operator-inventory/` - Docker-ready supplies inventory with location selection, dated operator counts, automatic draft saves, PAR flags, and inventory history. See its README for Unraid setup.
+
 - `apps/dashboard-new/` - Alternate dashboard with a fresh visual layout and links to the same app suite.
 
 - `apps/dashboard/` – Launch pad with city branding and links to every tool.

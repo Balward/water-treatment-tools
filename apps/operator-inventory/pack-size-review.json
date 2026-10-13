@@ -1,0 +1,838 @@
+{
+  "convention": "Contents / package, using mL, L, g, lowercase package names and comma-separated quantities. Single-piece supplies use 1 plus the item type. PAR and inventory counts are unchanged; count-size labels are renamed only with user confirmation. User-confirmed Cubetainer count-label aliases describe the same single container; no numeric conversion.",
+  "workbook": "Operators Inventory - ALL.xlsx",
+  "items": [
+    {
+      "id": "s1-r5",
+      "description": "Methyl Purple Indicator",
+      "itemNumber": "101202-868",
+      "countSize": "Bottle",
+      "original": "1BTL/500mL",
+      "label": "500 mL / bottle",
+      "workbook": {
+        "caseSize": "1BTL/500mL",
+        "description": "Methyl Purple Indicator",
+        "id": "s1-r5",
+        "countSize": "Bottle"
+      },
+      "evidence": "Original workbook; formatting only, no supplier verification claimed.",
+      "review": null
+    },
+    {
+      "id": "s1-r6",
+      "description": "pH 4 Buffer Singlets",
+      "itemNumber": "2770020",
+      "countSize": "Case",
+      "original": "1cs/20pk",
+      "label": "20 singlets / box (20 mL each)",
+      "workbook": {
+        "caseSize": "1cs/20pk",
+        "description": "pH 4 Buffer Singlets",
+        "id": "s1-r6",
+        "countSize": "Case"
+      },
+      "evidence": "https://www.hach.com/p-singlet-single-use-ph-buffer/2770020; user confirmed one counted pack contains 20 singlets.",
+      "review": null,
+      "countLabel": "Box",
+      "previousCountLabels": [
+        "Pack"
+      ],
+      "userConfirmation": "User requested Box instead of Pack to distinguish the box of 20 singlets from individual packets."
+    },
+    {
+      "id": "s1-r7",
+      "description": "pH 7 Buffer Singlets",
+      "itemNumber": "2770120",
+      "countSize": "Case",
+      "original": "1cs/20pk",
+      "label": "20 singlets / box (20 mL each)",
+      "workbook": {
+        "caseSize": "1cs/20pk",
+        "description": "pH 7 Buffer Singlets",
+        "id": "s1-r7",
+        "countSize": "Case"
+      },
+      "evidence": "https://www.hach.com/p-singlet-single-use-ph-buffer/2770120; user confirmed one counted pack contains 20 singlets.",
+      "review": null,
+      "countLabel": "Box",
+      "previousCountLabels": [
+        "Pack"
+      ],
+      "userConfirmation": "User requested Box instead of Pack to distinguish the box of 20 singlets from individual packets."
+    },
+    {
+      "id": "s1-r8",
+      "description": "pH 10 Buffer Singlets",
+      "itemNumber": "2770220",
+      "countSize": "Case",
+      "original": "1cs/20pk",
+      "label": "20 singlets / box (20 mL each)",
+      "workbook": {
+        "caseSize": "1cs/20pk",
+        "description": "pH 10 Buffer Singlets",
+        "id": "s1-r8",
+        "countSize": "Case"
+      },
+      "evidence": "https://cdn.hach.com/7FYZVWYB/at/5nqxxwsvpjx4nzfjwv7b66v/DOC0225380435_2ed.pdf; user confirmed one counted pack contains 20 singlets.",
+      "review": null,
+      "countLabel": "Box",
+      "previousCountLabels": [
+        "Pack"
+      ],
+      "userConfirmation": "User requested Box instead of Pack to distinguish the box of 20 singlets from individual packets."
+    },
+    {
+      "id": "s1-r9",
+      "description": "pH 7.00 Buffer",
+      "itemNumber": "BDH5050-4L",
+      "countSize": "Case",
+      "original": "1ea/4Ltr",
+      "label": "4 L / cubetainer",
+      "workbook": {
+        "caseSize": "1ea/4Ltr",
+        "description": "pH 7.00 Buffer",
+        "id": "s1-r9",
+        "countSize": "Case"
+      },
+      "evidence": "User confirmed that one counted container is one cubetainer; volume from workbook.",
+      "review": null,
+      "countLabel": "Cubetainer"
+    },
+    {
+      "id": "s1-r10",
+      "description": "pH 10.01 Buffer",
+      "itemNumber": "BDH5076-4L",
+      "countSize": "Case",
+      "original": "1ea/4Ltr",
+      "label": "4 L / cubetainer",
+      "workbook": {
+        "caseSize": "1ea/4Ltr",
+        "description": "pH 10.01 Buffer",
+        "id": "s1-r10",
+        "countSize": "Case"
+      },
+      "evidence": "User confirmed that one counted container is one cubetainer; volume from workbook.",
+      "review": null,
+      "countLabel": "Cubetainer"
+    },
+    {
+      "id": "s1-r11",
+      "description": "Sulfuric Acid, 0.02N",
+      "itemNumber": "101223-530",
+      "countSize": "Bag in Box",
+      "original": "1ea/4Ltr",
+      "label": "4 L / cubetainer",
+      "workbook": {
+        "caseSize": "1ea/4Ltr",
+        "description": "Sulfuric Acid, 0.02N",
+        "id": "s1-r11",
+        "countSize": "Bag in Box"
+      },
+      "evidence": "User confirmed that one counted container is one cubetainer; volume from workbook.",
+      "review": null,
+      "countLabel": "Cubetainer"
+    },
+    {
+      "id": "s1-r12",
+      "description": "EDTA Tritant 0.01M",
+      "itemNumber": "RC270025",
+      "countSize": "Bag in Box",
+      "original": "1ea/10Ltr",
+      "label": "10 L / cubetainer",
+      "workbook": {
+        "caseSize": "1ea/10Ltr",
+        "description": "EDTA Tritant 0.01M",
+        "id": "s1-r12",
+        "countSize": "Bag in Box"
+      },
+      "evidence": "User confirmed that one counted container is one cubetainer; volume from workbook.",
+      "review": null,
+      "countLabel": "Cubetainer"
+    },
+    {
+      "id": "s1-r13",
+      "description": "pH Storage Solution",
+      "itemNumber": "2756549",
+      "countSize": "Bottle",
+      "original": "1ea/1BTL",
+      "label": "500 mL / bottle",
+      "workbook": {
+        "caseSize": "1ea/1BTL",
+        "description": "pH Storage Solution",
+        "id": "s1-r13",
+        "countSize": "Bottle"
+      },
+      "evidence": "https://it.hach.com/soluzione-per-la-conservazione-di-elettrodi-per-ph-500-ml/product?id=25142671249",
+      "review": null
+    },
+    {
+      "id": "s1-r14",
+      "description": "Large 3 mil gloves",
+      "itemNumber": "76457-134",
+      "countSize": "Case",
+      "original": "2000/cs",
+      "label": "10 boxes / case (250 gloves / box; 2,500 total)",
+      "workbook": {
+        "caseSize": "2000/cs",
+        "description": "Large 3 mil gloves",
+        "id": "s1-r14",
+        "countSize": "Case"
+      },
+      "evidence": "https://www.vwr.com/us/en/product/33546580/vwr-ultra-light-nitrile-examination-gloves-black; quantities confirmed by user from actual cases.",
+      "review": null,
+      "confirmedDescription": "Nitrile Gloves - 3 mil - Large"
+    },
+    {
+      "id": "s1-r15",
+      "description": "XL 3 mil gloves",
+      "itemNumber": "76457-136",
+      "countSize": "Case",
+      "original": "2000/cs",
+      "label": "10 boxes / case (225 gloves / box; 2,250 total)",
+      "workbook": {
+        "caseSize": "2000/cs",
+        "description": "XL 3 mil gloves",
+        "id": "s1-r15",
+        "countSize": "Case"
+      },
+      "evidence": "https://www.vwr.com/us/en/product/33546580/vwr-ultra-light-nitrile-examination-gloves-black; quantities confirmed by user from actual cases.",
+      "review": null,
+      "confirmedDescription": "Nitrile Gloves - 3 mil - XL"
+    },
+    {
+      "id": "s1-r16",
+      "description": "Kim Wipes",
+      "itemNumber": "82003-820",
+      "countSize": "Case",
+      "original": "16800/cs",
+      "label": "60 boxes / case (280 wipes / box; 16,800 total)",
+      "workbook": {
+        "caseSize": "16800/cs",
+        "description": "Kim Wipes",
+        "id": "s1-r16",
+        "countSize": "Case"
+      },
+      "evidence": "https://media.vwr.com/interactive/publications/vwr_healthcare_clinical_catalog_2012-2014/files/assets/basic-html/page778.html; user confirmed 60 boxes per case and 280 wipes per box.",
+      "review": null
+    },
+    {
+      "id": "s1-r17",
+      "description": "Waffle Print Tissues",
+      "itemNumber": "40101-003",
+      "countSize": "Case",
+      "original": "500/cs",
+      "label": "500 tissues / case",
+      "workbook": {
+        "caseSize": "500/cs",
+        "description": "Waffle Print Tissues",
+        "id": "s1-r17",
+        "countSize": "Case"
+      },
+      "evidence": "Original workbook; formatting only, no supplier verification claimed.",
+      "review": null
+    },
+    {
+      "id": "s1-r18",
+      "description": "Sulfuric Acid Dropper Bottle 5.25N",
+      "itemNumber": "244953",
+      "countSize": "Bottle",
+      "original": "1BTL/1L",
+      "label": "1 L / bottle",
+      "workbook": {
+        "caseSize": "1BTL/1L",
+        "description": "Sulfuric Acid Dropper Bottle 5.25N",
+        "id": "s1-r18",
+        "countSize": "Bottle"
+      },
+      "evidence": "User confirmed 5.25N and 1 L bottle.",
+      "review": null
+    },
+    {
+      "id": "s1-r19",
+      "description": "Asorbic Acid Packets",
+      "itemNumber": "1457799",
+      "countSize": "Bag of 100 ea",
+      "original": "1pk/100ea",
+      "label": "100 packets / bag",
+      "workbook": {
+        "caseSize": "1pk/100ea",
+        "description": "Asorbic Acid Packets",
+        "id": "s1-r19",
+        "countSize": "Bag of 100 ea"
+      },
+      "evidence": "Original workbook; formatting only, no supplier verification claimed.",
+      "review": null
+    },
+    {
+      "id": "s1-r20",
+      "description": "Alkaline Cyanide Reagent",
+      "itemNumber": "2122332",
+      "countSize": "Bottle",
+      "original": "1BTL/100mL",
+      "label": "100 mL / bottle",
+      "workbook": {
+        "caseSize": "1BTL/100mL",
+        "description": "Alkaline Cyanide Reagent",
+        "id": "s1-r20",
+        "countSize": "Bottle"
+      },
+      "evidence": "Original workbook; formatting only, no supplier verification claimed.",
+      "review": null
+    },
+    {
+      "id": "s1-r21",
+      "description": "PAN Indicator Solution 0.1%",
+      "itemNumber": "2122432",
+      "countSize": "Bottle",
+      "original": "1BTL/100mL",
+      "label": "100 mL / bottle",
+      "workbook": {
+        "caseSize": "1BTL/100mL",
+        "description": "PAN Indicator Solution 0.1%",
+        "id": "s1-r21",
+        "countSize": "Bottle"
+      },
+      "evidence": "Original workbook; formatting only, no supplier verification claimed.",
+      "review": null
+    },
+    {
+      "id": "s1-r22",
+      "description": "Salt Bridge Solution",
+      "itemNumber": "25M1A1025-115",
+      "countSize": "Bottle",
+      "original": "1ea/1BTL",
+      "label": "500 mL / bottle",
+      "workbook": {
+        "caseSize": "1ea/1BTL",
+        "description": "Salt Bridge Solution",
+        "id": "s1-r22",
+        "countSize": "Bottle"
+      },
+      "evidence": "User-supplied Hach photo: label identifies 25M1A1025-115, 500 mL.",
+      "review": null
+    },
+    {
+      "id": "s1-r23",
+      "description": "RoVer Rust Remover",
+      "itemNumber": "30001",
+      "countSize": "Bottle",
+      "original": "1ea/1BTL",
+      "label": "454 g / bottle",
+      "workbook": {
+        "caseSize": "1ea/1BTL",
+        "description": "RoVer Rust Remover",
+        "id": "s1-r23",
+        "countSize": "Bottle"
+      },
+      "evidence": "https://www.hach.com/p-rover-rust-remover-454-g/30001",
+      "review": null
+    },
+    {
+      "id": "s1-r24",
+      "description": "Ferrozine Iron Reagent",
+      "itemNumber": "230149",
+      "countSize": "Bottle",
+      "original": "1BTL/500mL",
+      "label": "500 mL / bottle",
+      "workbook": {
+        "caseSize": "1BTL/500mL",
+        "description": "Ferrozine Iron Reagent",
+        "id": "s1-r24",
+        "countSize": "Bottle"
+      },
+      "evidence": "Original workbook; formatting only, no supplier verification claimed.",
+      "review": null
+    },
+    {
+      "id": "s1-r25",
+      "description": "Swiftest Free CL2 Reagent Refill Vial",
+      "itemNumber": "21055-60",
+      "countSize": "Vial",
+      "original": "1ea/1vial",
+      "label": "Approx. 250 tests / vial",
+      "workbook": {
+        "caseSize": "1ea/1vial",
+        "description": "Swiftest Free CL2 Reagent Refill Vial",
+        "id": "s1-r25",
+        "countSize": "Vial"
+      },
+      "evidence": "https://www.hach.com/p-dpd-free-chlorine-reagent-swiftest-dispenser-refill-vial-approximately-250-tests/2105560",
+      "review": null
+    },
+    {
+      "id": "s1-r26",
+      "description": "Swiftest Total CL2 Reagent Refill Vial",
+      "itemNumber": "21056-60",
+      "countSize": "Vial",
+      "original": "1ea/1vial",
+      "label": "Approx. 250 tests / vial",
+      "workbook": {
+        "caseSize": "1ea/1vial",
+        "description": "Swiftest Total CL2 Reagent Refill Vial",
+        "id": "s1-r26",
+        "countSize": "Vial"
+      },
+      "evidence": "https://www.hach.com/p-dpd-total-chlorine-swiftest-dispenser-refill-vial-approximately-250-tests/2105660",
+      "review": null
+    },
+    {
+      "id": "s1-r27",
+      "description": "DPD Free Chlorine Reagent Powder Pillows",
+      "itemNumber": "2105528",
+      "countSize": "1000 ea Bottle",
+      "original": "1pk/1000ea",
+      "label": "1,000 powder pillows / bottle",
+      "workbook": {
+        "caseSize": "1pk/1000ea",
+        "description": "DPD Free Chlorine Reagent Powder Pillows",
+        "id": "s1-r27",
+        "countSize": "1000 ea Bottle"
+      },
+      "evidence": "Original workbook; formatting only, no supplier verification claimed.",
+      "review": null
+    },
+    {
+      "id": "s1-r28",
+      "description": "DPD Total Chlorine Reagent Powder Pillows",
+      "itemNumber": "2105628",
+      "countSize": "1000 ea Bottle",
+      "original": "1pk/1000ea",
+      "label": "1,000 powder pillows / bottle",
+      "workbook": {
+        "caseSize": "1pk/1000ea",
+        "description": "DPD Total Chlorine Reagent Powder Pillows",
+        "id": "s1-r28",
+        "countSize": "1000 ea Bottle"
+      },
+      "evidence": "Original workbook; formatting only, no supplier verification claimed.",
+      "review": null
+    },
+    {
+      "id": "s1-r29",
+      "description": "Salt Bridge for DPD1P1 PEEK",
+      "itemNumber": "SB-P1SV",
+      "countSize": "Each",
+      "original": "1ea/1BRG",
+      "label": "1 bridge",
+      "workbook": {
+        "caseSize": "1ea/1BRG",
+        "description": "Salt Bridge for DPD1P1 PEEK",
+        "id": "s1-r29",
+        "countSize": "Each"
+      },
+      "evidence": "Original workbook; formatting only, no supplier verification claimed.",
+      "review": null
+    },
+    {
+      "id": "s1-r30",
+      "description": "pH Probe",
+      "itemNumber": "DPD1P1",
+      "countSize": "Each",
+      "original": "1ea",
+      "label": "1 probe",
+      "workbook": {
+        "caseSize": "1ea",
+        "description": "pH Probe",
+        "id": "s1-r30",
+        "countSize": "Each"
+      },
+      "evidence": "Original workbook; formatting only, no supplier verification claimed.",
+      "review": null
+    },
+    {
+      "id": "s1-r31",
+      "description": "CL-17 Colorimeter",
+      "itemNumber": "NA",
+      "countSize": "Each",
+      "original": "1ea",
+      "label": "1 colorimeter",
+      "workbook": {
+        "caseSize": "1ea",
+        "description": "CL-17 Colorimeter",
+        "id": "s1-r31",
+        "countSize": "Each"
+      },
+      "evidence": "Original workbook; formatting only, no supplier verification claimed.",
+      "review": null
+    },
+    {
+      "id": "s1-r32",
+      "description": "Little Giant Pump",
+      "itemNumber": "505723",
+      "countSize": "Each",
+      "original": "1ea/1BRG",
+      "label": "1 pump",
+      "workbook": {
+        "caseSize": "1ea/1BRG",
+        "description": "Little Giant Pump",
+        "id": "s1-r32",
+        "countSize": "Each"
+      },
+      "evidence": "Original workbook; formatting only, no supplier verification claimed.",
+      "review": null
+    },
+    {
+      "id": "s1-r33",
+      "description": "Turb. Vials",
+      "itemNumber": "LZY834",
+      "countSize": "Vial",
+      "original": "1ea/1vial",
+      "label": "1 vial",
+      "workbook": {
+        "caseSize": "1ea/1vial",
+        "description": "Turb. Vials",
+        "id": "s1-r33",
+        "countSize": "Vial"
+      },
+      "evidence": "Original workbook; formatting only, no supplier verification claimed.",
+      "review": null
+    },
+    {
+      "id": "s1-r34",
+      "description": "Chlorine Reagent Set",
+      "itemNumber": "25569-00",
+      "countSize": "Bag of 3 Bottles",
+      "original": "1cs/1Kit",
+      "label": "3 bottles / set",
+      "workbook": {
+        "caseSize": "1cs/1Kit",
+        "description": "Chlorine Reagent Set",
+        "id": "s1-r34",
+        "countSize": "Bag of 3 Bottles"
+      },
+      "evidence": "Original workbook; formatting only, no supplier verification claimed.",
+      "review": null
+    },
+    {
+      "id": "s1-r35",
+      "description": "Turbidimeter Desicant Cartridge",
+      "itemNumber": "LZY876",
+      "countSize": "Each",
+      "original": "1ea/1ctr",
+      "label": "1 cartridge",
+      "workbook": {
+        "caseSize": "1ea/1ctr",
+        "description": "Turbidimeter Desicant Cartridge",
+        "id": "s1-r35",
+        "countSize": "Each"
+      },
+      "evidence": "Original workbook; formatting only, no supplier verification claimed.",
+      "review": null
+    },
+    {
+      "id": "s1-r36",
+      "description": "Turb. Wiper",
+      "itemNumber": "LZY915",
+      "countSize": "Each",
+      "original": "1ea/1wpr",
+      "label": "1 wiper",
+      "workbook": {
+        "caseSize": "1ea/1wpr",
+        "description": "Turb. Wiper",
+        "id": "s1-r36",
+        "countSize": "Each"
+      },
+      "evidence": "Original workbook; formatting only, no supplier verification claimed.",
+      "review": null
+    },
+    {
+      "id": "s1-r37",
+      "description": "CL-17 Tubing Kit - Pre-Assembled",
+      "itemNumber": "8560400",
+      "countSize": "Each",
+      "original": "1ea/1BRG",
+      "label": "1 tubing kit",
+      "workbook": {
+        "caseSize": "1ea/1BRG",
+        "description": "CL-17 Tubing Kit - Pre-Assembled",
+        "id": "s1-r37",
+        "countSize": "Each"
+      },
+      "evidence": "Original workbook; formatting only, no supplier verification claimed.",
+      "review": null
+    },
+    {
+      "id": "s1-r38",
+      "description": "Crush Tube Large",
+      "itemNumber": "A3-SNKL",
+      "countSize": "Each",
+      "original": "10/pk",
+      "label": "10 tubes / pack",
+      "workbook": {
+        "caseSize": "10/pk",
+        "description": "Crush Tube Large",
+        "id": "s1-r38",
+        "countSize": "Each"
+      },
+      "evidence": "Original workbook; formatting only, no supplier verification claimed.",
+      "review": null,
+      "confirmedItemNumber": "A3-SNKL-T",
+      "userConfirmation": "User confirmed the large crush tube product number on 2026-10-11."
+    },
+    {
+      "id": "s1-r39",
+      "description": "Crush Tube Small",
+      "itemNumber": "N/A",
+      "countSize": "Each",
+      "original": "10/pk",
+      "label": "10 tubes / pack",
+      "workbook": {
+        "caseSize": "10/pk",
+        "description": "Crush Tube Small",
+        "id": "s1-r39",
+        "countSize": "Each"
+      },
+      "evidence": "Original workbook; formatting only, no supplier verification claimed.",
+      "review": null,
+      "confirmedItemNumber": "A3-SNF-T",
+      "userConfirmation": "User confirmed the small crush tube product number on 2026-10-11."
+    },
+    {
+      "id": "s1-r40",
+      "description": "Black 5 mil Nitrile Gloves LG",
+      "itemNumber": "76307-466",
+      "countSize": "Case",
+      "original": "1000/cs",
+      "label": "1,000 gloves / case",
+      "workbook": {
+        "caseSize": "1000/cs",
+        "description": "Black 5 mil Nitrile Gloves LG",
+        "id": "s1-r40",
+        "countSize": "Case"
+      },
+      "evidence": "Original workbook; formatting only, no supplier verification claimed.",
+      "review": null,
+      "confirmedDescription": "Black Nitrile Gloves - 5 mil - Large"
+    },
+    {
+      "id": "s1-r41",
+      "description": "Black 5 mil Nitrile Gloves XL",
+      "itemNumber": "76307-468",
+      "countSize": "Case",
+      "original": "1000/cs",
+      "label": "1,000 gloves / case",
+      "workbook": {
+        "caseSize": "1000/cs",
+        "description": "Black 5 mil Nitrile Gloves XL",
+        "id": "s1-r41",
+        "countSize": "Case"
+      },
+      "evidence": "Original workbook; formatting only, no supplier verification claimed.",
+      "review": null,
+      "confirmedDescription": "Black Nitrile Gloves - 5 mil - XL"
+    },
+    {
+      "id": "s1-r42",
+      "description": "Hydrogen Peroxide",
+      "itemNumber": "N/A",
+      "countSize": "Bottle",
+      "original": "1 ea",
+      "label": "16 fl oz / bottle",
+      "workbook": {
+        "caseSize": "1 ea",
+        "description": "Hydrogen Peroxide",
+        "id": "s1-r42",
+        "countSize": "Bottle"
+      },
+      "evidence": "Original workbook; formatting only, no supplier verification claimed.",
+      "review": null,
+      "userConfirmation": "User confirmed 16 fl oz per bottle on 2026-10-11. No model number inferred from the Amazon link.",
+      "productUrl": "https://www.amazon.com/dp/B07VBZ9384"
+    },
+    {
+      "id": "s1-r43",
+      "description": "Vinegar",
+      "itemNumber": "N/A",
+      "countSize": "Bottle",
+      "original": "1 ea",
+      "label": "1 gallon / bottle",
+      "workbook": {
+        "caseSize": "1 ea",
+        "description": "Vinegar",
+        "id": "s1-r43",
+        "countSize": "Bottle"
+      },
+      "evidence": "User confirmed 1 gallon per bottle and model VINE30-128.",
+      "review": null,
+      "confirmedItemNumber": "VINE30-128"
+    },
+    {
+      "id": "s1-r44",
+      "description": "Filter Cartridge 10\"",
+      "itemNumber": "W2T159719",
+      "countSize": "Each",
+      "original": "1 ea",
+      "label": "1 cartridge",
+      "workbook": {
+        "caseSize": "1 ea",
+        "description": "Filter Cartridge 10\"",
+        "id": "s1-r44",
+        "countSize": "Each"
+      },
+      "evidence": "Original workbook; formatting only, no supplier verification claimed.",
+      "review": null
+    }
+  ],
+  "unknown": [
+    {
+      "id": "s2-r5",
+      "description": "Toilet Paper",
+      "status": "No pack size in workbook; left unspecified."
+    },
+    {
+      "id": "s2-r6",
+      "description": "Tri Fold Paper Towel",
+      "status": "No pack size in workbook; left unspecified."
+    },
+    {
+      "id": "s2-r7",
+      "description": "Tissues",
+      "status": "No pack size in workbook; left unspecified."
+    },
+    {
+      "id": "s2-r8",
+      "description": "Small Trash Bags 13 gallon",
+      "status": "No pack size in workbook; left unspecified."
+    },
+    {
+      "id": "s2-r9",
+      "description": "Large Trash Bags 40-45 gallon",
+      "status": "No pack size in workbook; left unspecified."
+    },
+    {
+      "id": "s2-r10",
+      "description": "Jumbo Black Trash Bags 55 gallon",
+      "status": "No pack size in workbook; left unspecified."
+    },
+    {
+      "id": "s2-r11",
+      "description": "Dryer Sheets",
+      "status": "No pack size in workbook; left unspecified."
+    },
+    {
+      "id": "s2-r12",
+      "description": "Laundry Soap",
+      "status": "No pack size in workbook; left unspecified."
+    },
+    {
+      "id": "s2-r13",
+      "description": "Hand Soap",
+      "status": "No pack size in workbook; left unspecified."
+    },
+    {
+      "id": "s2-r14",
+      "description": "Paper Plates",
+      "status": "No pack size in workbook; left unspecified."
+    },
+    {
+      "id": "s2-r15",
+      "description": "Paper Bowls",
+      "status": "No pack size in workbook; left unspecified."
+    },
+    {
+      "id": "s2-r16",
+      "description": "Coffee",
+      "status": "No pack size in workbook; left unspecified."
+    },
+    {
+      "id": "s2-r17",
+      "description": "Coffee Filters",
+      "status": "No pack size in workbook; left unspecified."
+    },
+    {
+      "id": "s2-r18",
+      "description": "Sugar",
+      "status": "No pack size in workbook; left unspecified."
+    },
+    {
+      "id": "s2-r19",
+      "description": "Creamer",
+      "status": "No pack size in workbook; left unspecified."
+    },
+    {
+      "id": "s2-r20",
+      "description": "Hot Tea",
+      "status": "No pack size in workbook; left unspecified."
+    },
+    {
+      "id": "s2-r21",
+      "description": "Sponges",
+      "status": "No pack size in workbook; left unspecified."
+    },
+    {
+      "id": "s2-r22",
+      "description": "Dish Soap",
+      "status": "No pack size in workbook; left unspecified."
+    },
+    {
+      "id": "s3-r5",
+      "description": "Polymer #1",
+      "status": "No pack size in workbook; left unspecified."
+    },
+    {
+      "id": "s3-r6",
+      "description": "Polymer #2",
+      "status": "No pack size in workbook; left unspecified."
+    },
+    {
+      "id": "s3-r7",
+      "description": "Mineral Oil",
+      "status": "No pack size in workbook; left unspecified."
+    },
+    {
+      "id": "s3-r8",
+      "description": "Mineral Spirits",
+      "status": "No pack size in workbook; left unspecified."
+    },
+    {
+      "id": "s3-r9",
+      "description": "Pam Spray",
+      "status": "No pack size in workbook; left unspecified."
+    },
+    {
+      "id": "s3-r10",
+      "description": "Food Safe Axel Grease",
+      "status": "No pack size in workbook; left unspecified."
+    },
+    {
+      "id": "s3-r11",
+      "description": "White Rags",
+      "status": "No pack size in workbook; left unspecified."
+    },
+    {
+      "id": "s3-r12",
+      "description": "Paper Towels",
+      "status": "No pack size in workbook; left unspecified."
+    },
+    {
+      "id": "s3-r13",
+      "description": "Sample Pads for OEM",
+      "status": "No pack size in workbook; left unspecified."
+    },
+    {
+      "id": "s3-r14",
+      "description": "Pipettes",
+      "status": "No pack size in workbook; left unspecified."
+    },
+    {
+      "id": "s3-r15",
+      "description": "Sample Bottles",
+      "status": "No pack size in workbook; left unspecified."
+    },
+    {
+      "id": "s3-r16",
+      "description": "Hand Soap",
+      "status": "No pack size in workbook; left unspecified."
+    },
+    {
+      "id": "s3-r17",
+      "description": "Dish Soap",
+      "status": "No pack size in workbook; left unspecified."
+    },
+    {
+      "id": "s3-r18",
+      "description": "Lense Wipes",
+      "status": "No pack size in workbook; left unspecified."
+    }
+  ]
+}
