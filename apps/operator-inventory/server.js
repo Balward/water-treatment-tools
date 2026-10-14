@@ -10,7 +10,7 @@ const { createMailer, buildReportEmail, validAddress } = require('./email');
 const worksheets = [
   { id: 'operating', name: 'Operating Supplies', sourceSheet: 1 },
   { id: 'janitorial', name: 'Janitorial Supplies', sourceSheet: 2 },
-  { id: 'dewatering', name: 'Dewatering Inventory', sourceSheet: 3 }
+  { id: 'dewatering', name: 'Dewatering Supplies', sourceSheet: 3 }
 ];
 
 function createApp({ dataDir = process.env.DATA_DIR || path.join(__dirname, 'data'), mailer = createMailer() } = {}) {
@@ -29,6 +29,36 @@ function createApp({ dataDir = process.env.DATA_DIR || path.join(__dirname, 'dat
     fs.renameSync(temp, file);
     state = next;
   };
+  const itemKey = item => {
+    item = packSizes.normalize(item);
+    return JSON.stringify([item.id,item.description,item.itemNumber,item.company,item.countSize]);
+  };
+  function queueCompletedInventories(next) {
+    const processed = new Set(next.queuedInventoryIds || []);
+    const entries = [...(next.orderList || [])];
+    let changed = false, processedNew = false;
+    for (const worksheet of worksheets) {
+      const latest = next.inventories.filter(run => run.worksheet === worksheet.id && run.status === 'complete').sort((a,b) => b.date.localeCompare(a.date) || (b.completedAt || b.updatedAt).localeCompare(a.completedAt || a.updatedAt))[0];
+      if (!latest) continue;
+      const newLatest = !processed.has(latest.id);
+      // Older reports must not become new purchases if newer history is deleted.
+      for (const completed of next.inventories.filter(run => run.worksheet === worksheet.id && run.status === 'complete')) {
+        if (!processed.has(completed.id)) { processed.add(completed.id); processedNew = true; }
+      }
+      if (!newLatest) continue;
+      for (const original of latest.items) {
+        const count = latest.counts[original.id];
+        if (typeof original.par !== 'number' || typeof count !== 'number' || count > original.par) continue;
+        const item = packSizes.normalize(original), key = itemKey(item);
+        const index = entries.findIndex(entry => itemKey(entry.item) === key);
+        const reference = {item,inventoryId:latest.id,inventoryDate:latest.date,operator:latest.operator,worksheet:latest.worksheet,inventoryStatus:latest.status,onHand:count};
+        if (index >= 0) entries[index] = {...entries[index],...reference};
+        else entries.push({id:randomUUID(),quantity:null,orderUnit:item.countSize || 'Each',notes:'',addedAt:new Date().toISOString(),...reference});
+        changed = true;
+      }
+    }
+    return processedNew ? {...next,queuedInventoryIds:[...processed],orderList:entries,orderListRevision:(next.orderListRevision || 0) + (changed ? 1 : 0)} : next;
+  }
   // Remove the old combined records from persisted storage on upgrade.
   const retained = state.inventories.filter(run => run.worksheet !== 'legacy' && new Set(run.items.map(item => item.sourceSheet)).size <= 1);
   const removed = state.inventories.length - retained.length;
@@ -36,6 +66,8 @@ function createApp({ dataDir = process.env.DATA_DIR || path.join(__dirname, 'dat
     persist({ ...state, inventories: retained });
     console.log(`Removed ${removed} old combined inventories.`);
   }
+  const queued = queueCompletedInventories(state);
+  if (queued !== state) persist(queued);
   const fail = (status, message) => { throw Object.assign(new Error(message), { status }); };
   function metadata(body) {
     if (typeof body.operator !== 'string' || !body.operator.trim() || body.operator.trim().length > 100) fail(400, 'Enter an operator name (up to 100 characters).');
@@ -61,6 +93,67 @@ function createApp({ dataDir = process.env.DATA_DIR || path.join(__dirname, 'dat
       if (route === '/api/health' && req.method === 'GET') return json(200, { ok: true });
       if (route === '/api/email-config' && req.method === 'GET') return json(200, { enabled:mailer.enabled, defaultTo:mailer.defaultTo });
       if (route === '/api/catalog' && req.method === 'GET') return json(200, { ...currentCatalog(), worksheets, images:imageManifest.items });
+      const orderList = () => ({items:state.orderList || [],revision:state.orderListRevision || 0,orders:state.orderHistory || []});
+      if (route === '/api/order-list' && req.method === 'GET') return json(200, orderList());
+      const orderHistoryMatch = route.match(/^\/api\/order-history\/([a-f0-9-]+)$/);
+      if (orderHistoryMatch && req.method === 'DELETE') {
+        let origin;
+        try { origin = new URL(req.headers.origin); } catch { fail(403,'Delete orders from the inventory app.'); }
+        if (!['http:','https:'].includes(origin.protocol) || origin.host !== req.headers.host) fail(403,'Delete orders from the inventory app.');
+        const body = await bodyOf(req);
+        if (body.revision !== (state.orderListRevision || 0)) fail(409,'Orders changed on another phone. Refresh Order History and try again.');
+        if (!(state.orderHistory || []).some(order => order.id === orderHistoryMatch[1])) fail(404,'This order is no longer in history.');
+        persist({...state,orderHistory:state.orderHistory.filter(order => order.id !== orderHistoryMatch[1]),orderListRevision:(state.orderListRevision || 0) + 1});
+        return json(200,orderList());
+      }
+      const listMatch = route.match(/^\/api\/order-list\/([a-f0-9-]+)$/);
+      if ((['/api/order-list','/api/order-list/ordered'].includes(route) && req.method === 'POST') || (listMatch && ['PATCH','DELETE'].includes(req.method))) {
+        let origin;
+        try { origin = new URL(req.headers.origin); } catch { fail(403,'Manage the order list from the inventory app.'); }
+        if (!['http:','https:'].includes(origin.protocol) || origin.host !== req.headers.host) fail(403,'Manage the order list from the inventory app.');
+        const body = await bodyOf(req), current = orderList();
+        if (body.revision !== current.revision) fail(409,'The order list changed on another phone. Refresh it and try again.');
+        if (route === '/api/order-list/ordered') {
+          metadata(body);
+          if (!Array.isArray(body.ids) || !body.ids.length || body.ids.length > 500 || new Set(body.ids).size !== body.ids.length || body.ids.some(id => typeof id !== 'string')) fail(400,'Select the items you ordered.');
+          const selected = body.ids.map(id => current.items.find(entry => entry.id === id));
+          if (selected.some(entry => !entry)) fail(409,'A selected item is no longer on the list. Refresh and review your selection.');
+          if (selected.some(entry => typeof entry.quantity !== 'number' || !Number.isFinite(entry.quantity) || entry.quantity <= 0 || !entry.orderUnit?.trim())) fail(400,'Set a quantity and purchasing unit for every selected item first.');
+          if (typeof body.reference !== 'string' || body.reference.length > 200) fail(400,'Order reference must be up to 200 characters.');
+          const order = {id:randomUUID(),date:body.date,operator:body.operator.trim(),reference:body.reference.trim(),recordedAt:new Date().toISOString(),items:selected};
+          persist({...state,orderList:current.items.filter(entry => !body.ids.includes(entry.id)),orderListRevision:current.revision + 1,orderHistory:[order,...(state.orderHistory || [])]});
+          return json(201,orderList());
+        }
+        if (req.method === 'PATCH') {
+          const existing = current.items.find(entry => entry.id === listMatch[1]);
+          if (!existing) fail(404,'This item is no longer on the order list.');
+          if (body.quantity !== null && (typeof body.quantity !== 'number' || !Number.isFinite(body.quantity) || body.quantity <= 0 || body.quantity > 1000000)) fail(400,'Enter a quantity greater than zero and no more than 1,000,000, or leave it blank.');
+          if (typeof body.orderUnit !== 'string' || !body.orderUnit.trim() || body.orderUnit.trim().length > 80) fail(400,'Enter the purchasing unit (up to 80 characters).');
+          if (typeof body.notes !== 'string' || body.notes.length > 1000) fail(400,'Order notes must be up to 1,000 characters.');
+          const updated = {...existing,quantity:body.quantity,orderUnit:body.orderUnit.trim(),notes:body.notes.trim(),updatedAt:new Date().toISOString()};
+          persist({...state,orderList:current.items.map(entry => entry.id === updated.id ? updated : entry),orderListRevision:current.revision + 1});
+          return json(200,orderList());
+        }
+        if (req.method === 'DELETE') {
+          if (!current.items.some(entry => entry.id === listMatch[1])) fail(404,'This item is no longer on the order list.');
+          persist({...state,orderList:current.items.filter(entry => entry.id !== listMatch[1]),orderListRevision:current.revision + 1});
+          return json(200,orderList());
+        }
+        const inventory = state.inventories.find(run => run.id === body.inventoryId);
+        if (!inventory) fail(404,'Inventory was not found.');
+        if (inventory.revision !== body.inventoryRevision) fail(409,'This inventory changed. Reopen Order Needed before adding items.');
+        const original = inventory.items.find(item => item.id === body.itemId);
+        if (!original) fail(404,'Item was not found in this inventory.');
+        const count = inventory.counts[original.id];
+        if (original.par !== null && !(typeof count === 'number' && count <= original.par)) fail(400,'Only items at or below PAR or marked for manual review can be added.');
+        const item = packSizes.normalize(original);
+        const sameItem = entry => entry.item.id === item.id && entry.item.description === item.description && entry.item.itemNumber === item.itemNumber && entry.item.company === item.company && entry.item.countSize === item.countSize;
+        if ((state.orderHistory || []).some(order => order.items.some(entry => entry.inventoryId === inventory.id && sameItem(entry)))) fail(409,'This item was already recorded as ordered from this inventory.');
+        if (current.items.some(sameItem)) return json(200,{...current,alreadyAdded:true});
+        const entry = {id:randomUUID(),item,quantity:null,orderUnit:item.countSize || 'Each',notes:'',addedAt:new Date().toISOString(),inventoryId:inventory.id,inventoryDate:inventory.date,operator:inventory.operator,worksheet:inventory.worksheet,inventoryStatus:inventory.status,onHand:typeof count === 'number' ? count : null};
+        persist({...state,orderList:[...current.items,entry],orderListRevision:current.revision + 1});
+        return json(201,orderList());
+      }
       const itemMatch = route.match(/^\/api\/catalog\/items\/([a-z0-9-]+)$/);
       if ((route === '/api/catalog/items' && req.method === 'POST') || (itemMatch && ['PATCH','DELETE'].includes(req.method))) {
         let origin;
@@ -97,7 +190,7 @@ function createApp({ dataDir = process.env.DATA_DIR || path.join(__dirname, 'dat
       if (route === '/api/inventories' && req.method === 'POST') {
         const body = await bodyOf(req); metadata(body);
         const worksheet = worksheets.find(w => w.id === body.worksheet);
-        if (!worksheet) fail(400, 'Choose Operating Supplies, Janitorial Supplies, or Dewatering Inventory.');
+        if (!worksheet) fail(400, 'Choose Operating Supplies, Janitorial Supplies, or Dewatering Supplies.');
         const items = structuredClone(currentCatalog().items.filter(i => i.sourceSheet === worksheet.sourceSheet));
         if (!items.length) fail(400,'This worksheet has no items. Add items before starting inventory.');
         const previous = state.inventories.filter(r => r.worksheet === worksheet.id && r.status === 'complete').sort((a,b) => b.date.localeCompare(a.date) || (b.completedAt || b.updatedAt).localeCompare(a.completedAt || a.updatedAt))[0];
@@ -167,7 +260,7 @@ function createApp({ dataDir = process.env.DATA_DIR || path.join(__dirname, 'dat
           if (body.status === 'complete' && current.items.some(i => counts[i.id] === undefined)) fail(400, 'Count every item before completing inventory. Use 0 for items with no stock.');
           const updated = { ...current, counts, status: body.status || current.status, revision: current.revision + 1, updatedAt: new Date().toISOString() };
           if (updated.status === 'complete') updated.completedAt = updated.updatedAt;
-          persist({ ...state, inventories: state.inventories.map(r => r.id === updated.id ? updated : r) }); return json(200, updated);
+          persist(queueCompletedInventories({ ...state, inventories: state.inventories.map(r => r.id === updated.id ? updated : r) })); return json(200, updated);
         }
       }
       if (route.startsWith('/api/')) return json(404, { error: 'Endpoint not found.' });

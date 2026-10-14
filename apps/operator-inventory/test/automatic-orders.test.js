@@ -1,0 +1,54 @@
+const {test}=require('node:test');
+const assert=require('node:assert/strict');
+const fs=require('node:fs'),os=require('node:os'),path=require('node:path');
+const {createApp}=require('../server');
+const catalog=require('../catalog.json');
+
+test('completed inventories fill the backlog and ordering a selection preserves unselected items',async t=>{
+ const dataDir=fs.mkdtempSync(path.join(os.tmpdir(),'inventory-auto-orders-'));
+ const items=catalog.items.filter(item=>['s1-r6','s1-r7','s1-r8'].includes(item.id));
+ const fixture=(id,date,counts)=>({id,worksheet:'operating',date,operator:'Staff',status:'complete',revision:1,updatedAt:date+'T12:00:00Z',completedAt:date+'T12:00:00Z',items,counts});
+ fs.writeFileSync(path.join(dataDir,'inventories.json'),JSON.stringify({inventories:[fixture('older','2026-10-01',{'s1-r6':0,'s1-r7':0,'s1-r8':0}),fixture('latest','2026-10-14',{'s1-r6':0,'s1-r7':1,'s1-r8':50})]}));
+ let server,base;
+ async function start(){server=createApp({dataDir,mailer:{enabled:false}});await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));base='http://127.0.0.1:'+server.address().port;}
+ async function request(route,method='GET',body,origin=base){const r=await fetch(base+route,{method,headers:{'Content-Type':'application/json',Origin:origin},...(body?{body:JSON.stringify(body)}:{})});return {status:r.status,data:await r.json()};}
+ await start();t.after(async()=>{await new Promise(resolve=>server.close(resolve));fs.rmSync(dataDir,{recursive:true,force:true});});
+ let list=(await request('/api/order-list')).data;
+ assert.deepEqual(list.items.map(entry=>entry.item.id),['s1-r6','s1-r7'],'Upgrade uses the latest completed worksheet, not obsolete low counts');
+ assert.ok(list.items.every(entry=>entry.quantity===null),'Quantities to buy are not inferred');
+ const selected=list.items[0],unselected=list.items[1];
+ const order={revision:list.revision,ids:[selected.id],operator:'Buyer',date:'2026-10-14',reference:'HACH-123'};
+ assert.equal((await request('/api/order-list/ordered','POST',order)).status,400,'A purchase quantity is required');
+ list=(await request('/api/order-list/'+selected.id,'PATCH',{revision:list.revision,quantity:2,orderUnit:'Box',notes:'Buy this now'})).data;
+ list=(await request('/api/order-list/'+unselected.id,'PATCH',{revision:list.revision,quantity:4,orderUnit:'Box',notes:'Wait for a larger order'})).data;
+ order.revision=list.revision;
+ assert.equal((await request('/api/order-list/ordered','POST',order,'https://other.example')).status,403);
+ assert.equal((await request('/api/order-list/ordered','POST',{...order,ids:[selected.id,selected.id]})).status,400);
+ assert.equal((await request('/api/order-list/ordered','POST',{...order,date:'2026-02-30'})).status,400);
+ assert.equal((await request('/api/order-list/ordered','POST',{...order,operator:''})).status,400);
+ const placed=await request('/api/order-list/ordered','POST',order);assert.equal(placed.status,201);list=placed.data;
+ assert.equal(list.items.length,1);assert.equal(list.items[0].id,unselected.id);assert.equal(list.items[0].notes,'Wait for a larger order');assert.equal(list.items[0].quantity,4);
+ assert.equal(list.orders.length,1);assert.equal(list.orders[0].items[0].quantity,2);assert.equal(list.orders[0].reference,'HACH-123');
+ assert.equal((await request('/api/order-list/ordered','POST',order)).status,409,'A repeated request cannot record the same order twice');
+ await new Promise(resolve=>server.close(resolve));await start();list=(await request('/api/order-list')).data;
+ assert.equal(list.items.length,1,'Startup does not re-add items ordered from an already processed inventory');assert.equal(list.orders.length,1);
+ let run=(await request('/api/inventories','POST',{worksheet:'operating',operator:'Staff',date:'2026-10-21'})).data;
+ const counts=Object.fromEntries(run.items.map(item=>[item.id,['s1-r6','s1-r7'].includes(item.id)?0:999]));
+ await request('/api/inventories/'+run.id,'PATCH',{revision:run.revision,counts});
+ assert.equal((await request('/api/order-list')).data.items.length,1,'Drafts do not fill the backlog');
+ run=(await request('/api/inventories/'+run.id)).data;
+ await request('/api/inventories/'+run.id,'PATCH',{revision:run.revision,status:'complete',counts:{}});
+ list=(await request('/api/order-list')).data;
+ assert.equal(list.items.length,2,'A new completed inventory adds new needs');
+ const kept=list.items.find(entry=>entry.id===unselected.id);assert.equal(kept.notes,'Wait for a larger order');assert.equal(kept.quantity,4);assert.equal(kept.inventoryId,run.id);
+ assert.equal(list.items.filter(entry=>entry.item.id==='s1-r7').length,1,'Repeated low counts do not duplicate pending purchases');
+ assert.equal(list.orders.length,1,'Ordered history remains independent of the next inventory');
+ const beforeDelete=list.items.map(entry=>entry.id);
+ const orderId=list.orders[0].id;
+ assert.equal((await request('/api/order-history/'+orderId,'DELETE',{revision:list.revision},'https://other.example')).status,403);
+ assert.equal((await request('/api/order-history/'+orderId,'DELETE',{revision:list.revision-1})).status,409);
+ const deleted=await request('/api/order-history/'+orderId,'DELETE',{revision:list.revision});assert.equal(deleted.status,200);
+ assert.equal(deleted.data.orders.length,0);assert.deepEqual(deleted.data.items.map(entry=>entry.id),beforeDelete,'Deleting order history does not change the backlog');
+ await new Promise(resolve=>server.close(resolve));await start();
+ assert.equal((await request('/api/order-list')).data.orders.length,0,'Order deletion persists across restart');
+});

@@ -3,7 +3,7 @@ WORKDIR /app
 ENV NODE_ENV=production PORT=3080 DATA_DIR=/data
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev --ignore-scripts && npm cache clean --force
-COPY server.js email.js catalog.json ./
+COPY server.js reset-history.js email.js catalog.json ./
 COPY public ./public
 RUN mkdir /data && chown node:node /data
 USER node

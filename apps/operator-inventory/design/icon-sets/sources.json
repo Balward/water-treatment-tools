@@ -1,0 +1,13 @@
+{
+  "lucide-gauge.svg": "https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/gauge.svg",
+  "lucide-broom.svg": "https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/brush-cleaning.svg",
+  "phosphor-gauge.svg": "https://raw.githubusercontent.com/phosphor-icons/core/main/assets/regular/gauge.svg",
+  "phosphor-broom.svg": "https://raw.githubusercontent.com/phosphor-icons/core/main/assets/regular/broom.svg",
+  "phosphor-bold-gauge.svg": "https://raw.githubusercontent.com/phosphor-icons/core/main/assets/bold/gauge-bold.svg",
+  "phosphor-bold-broom.svg": "https://raw.githubusercontent.com/phosphor-icons/core/main/assets/bold/broom-bold.svg",
+  "material-gauge.svg": "https://raw.githubusercontent.com/google/material-design-icons/master/src/av/speed/materialicons/24px.svg",
+  "material-broom.svg": "https://raw.githubusercontent.com/google/material-design-icons/master/src/maps/cleaning_services/materialicons/24px.svg",
+  "LICENSE-lucide.txt": "https://raw.githubusercontent.com/lucide-icons/lucide/main/LICENSE",
+  "LICENSE-phosphor.txt": "https://raw.githubusercontent.com/phosphor-icons/core/main/LICENSE",
+  "LICENSE-material.txt": "https://raw.githubusercontent.com/google/material-design-icons/master/LICENSE"
+}

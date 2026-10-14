@@ -27,7 +27,7 @@ try {
         Invoke-Checked 'npm.cmd' @('test')
     }
     New-Item -ItemType Directory -Force -Path (Split-Path $archive -Parent) | Out-Null
-    $files = @('Dockerfile','.dockerignore','.gitignore','.env.example','package.json','package-lock.json','server.js','email.js','catalog.json','compose.yaml','public','test','README.md','UNRAID-SETUP.md','import-workbook.ps1','scrape-images.js','import-image.js','image-sources.json','image-import-report.json','pack-size-review.json','deploy.ps1','deploy-unraid.sh')
+    $files = @('Dockerfile','.dockerignore','.gitignore','.env.example','package.json','package-lock.json','server.js','reset-history.js','reset-unraid.sh','email.js','catalog.json','compose.yaml','public','test','README.md','UNRAID-SETUP.md','import-workbook.ps1','scrape-images.js','import-image.js','image-sources.json','image-import-report.json','pack-size-review.json','deploy.ps1','deploy-unraid.sh')
     Invoke-Checked 'tar' (@('-czf',$archive,'-C',$appRoot) + $files)
     if ($PackageOnly) { Write-Host "Package ready: $archive"; return }
     $target = "${User}@${Server}"

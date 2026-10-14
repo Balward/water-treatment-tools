@@ -1,6 +1,6 @@
 # Operator Inventory
 
-A phone-focused web app seeded from `Operators Inventory - ALL.xlsx`. Home offers **Operating Supplies** (40 items), **Janitorial Supplies** (18 items), and **Dewatering Inventory** (14 items). Only the first three worksheets are imported; the final two order worksheets are ignored completely. The interface stays in a single phone-width column, including on a desktop.
+A responsive mobile and desktop web app seeded from `Operators Inventory - ALL.xlsx`. Home offers **Operating Supplies** (40 items), **Janitorial Supplies** (18 items), and **Dewatering Supplies** (14 items). Only the first three worksheets are imported; the final two order worksheets are ignored completely. Phones keep the single-column mobile interface, including in landscape. Other browsers use a wider desktop workspace at 900px and above, with sidebar navigation, multiple card columns, and centered dialogs. Narrow desktop windows use the compact interface. Detection combines phone browser identification and touch/screen information; resizing updates the layout without changing inventory data.
 
 Under **New Inventory**, tap a worksheet, choose a date and enter your name. Each inventory contains only that worksheet's items and locations. New count fields start blank. Each card shows **Previous** from the latest completed inventory of the same worksheet (by inventory date, then completion time), where the description, count size, and location still match. Drafts are ignored as reference sources. Type today's quantity using the decimal keyboard. Previous quantities are references only; there are no arrow or copy buttons. Use the keyboard's **Next** key to move to the next item. The app fits its height to the visible screen while editing, scrolls the focused field above the keyboard, and temporarily hides the bottom navigation when the keyboard reduces the available space. The location picker stops sticking while the keyboard is open; progress counters remain at the top. A blank is uncounted; an explicitly entered zero is counted. Previous quantities alone never advance progress or satisfy completion. Existing drafts keep their saved counts; create a new inventory to use the blank-field workflow. Counts save automatically, and the completed source record remains unchanged. The top counters and compact bottom navigation stay outside the content scroll area. Items stay in worksheet order, with no search field. Completing requires every current item count and makes the record read-only. Counts at or below PAR are flagged for review; this version does not place orders.
 
@@ -103,7 +103,7 @@ This replaces that item's photo, validates the image format and size, and tags i
 
 ## Appearance
 
-The mobile UI defaults to charcoal dark mode with restrained Northglenn teal (#00677F), green (#84BD00), gold (#F2A900), and red-orange (#CF4520) accents. Use the Light mode / Dark mode button in the bottom dock to switch; the preference is saved on that browser. Neutral cards keep product photos and quantities easy to read.
+The UI defaults to a high-contrast light design with white surfaces, dark text, restrained Northglenn teal (#00677F), and a dark navigation dock. Operations and Janitorial use the existing Phosphor Regular gauge and broom icons (MIT license included in public/licenses). Dewatering uses the selected matching custom rotary fan press outline inspired by the provided equipment photo. Charcoal dark mode remains available. Use the Light mode / Dark mode button in the bottom dock to switch; the preference is saved on that browser. Neutral cards keep product photos and quantities easy to read.
 
 ## Manage inventory items
 
@@ -118,6 +118,22 @@ The header uses the supplied City of Northglenn horizontal logo on a white backg
 ## Automated deployment
 
 Run `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\apps\operator-inventory\deploy.ps1` from the repository root to test, package, upload, and rebuild on Unraid. Add `-PackageOnly` to package without contacting the server. See UNRAID-SETUP.md for prerequisites and backup behavior.
+
+## Ordering backlog
+
+The dock includes a separate Order History screen (shipping-box icon). Delete order asks for confirmation and removes only the recorded order, without restoring items to the active backlog or altering inventory history.
+
+For an explicit full history reset on Unraid, run `bash /mnt/user/appdata/operator-inventory-source/reset-unraid.sh` after deploying. This stops the app, backs up inventories.json inside the data volume's backups folder, clears inventory runs, the pending order list, order history, and processed inventory references, then restarts and verifies the app. Catalog item configurations and catalog revision are preserved; photos, product links, environment settings, and email configuration are not removed. Resets are never run automatically during deployment or startup.
+
+Completing an inventory automatically adds every counted item at or below numeric PAR to the shared Order List. Drafts do not add items automatically. On upgrade, the latest completed inventory for each worksheet fills the backlog; obsolete older reports do not add old needs. Manual-review items with no numeric PAR still need an explicit Add to List decision because the app cannot infer whether they need purchasing.
+
+The backlog is grouped by the saved product-page destination when available (HACH, VWR/Avantor, Amazon, or the linked domain). Entries without a link use their existing supplier label. The links remain the purchasing destinations. Repeated low-stock items update their inventory reference while retaining the same backlog entry, quantity, purchasing unit, notes, and original added date. Items remain pending until staff mark them ordered or explicitly remove them; a later above-PAR count does not silently remove a deferred purchase.
+
+Check Ordering now on the items being purchased. Selection is local to the current page session, so unselected suppliers can remain in the backlog for weeks. Edit order details sets the purchase quantity, purchasing unit, and notes; quantities begin blank and are never inferred from PAR. The purchase unit may differ from the counting unit, with no automatic conversion. Review selected (globally or within a supplier) creates a checklist for only those items. Print / Save PDF is available once all selected items have quantities; phones use stacked review details and printing uses a table. Printing does not submit or record an order.
+
+After placing a purchase, Mark selected ordered asks for date, name, and an optional order reference. Confirmation atomically moves only those selected items into Ordered history. Unselected items stay in the backlog with their notes and quantities. Recorded orders retain item snapshots, links, quantities, and source inventory details. Restarting does not re-add the same processed inventory's purchases. A later completed inventory can flag the item again; receiving and shipment tracking are not implemented.
+
+The backlog, processed inventory IDs, and ordered history are saved with inventories in inventories.json and included in existing Docker volume backups. Revision checks prevent stale edits and duplicate order confirmations from overwriting another phone's changes. No inventory counts are changed by ordering actions.
 
 ## Pack-size convention
 

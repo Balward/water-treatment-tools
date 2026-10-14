@@ -1,0 +1,51 @@
+const {test}=require('node:test');
+const assert=require('node:assert/strict');
+const fs=require('node:fs'),os=require('node:os'),path=require('node:path');
+const {createApp}=require('../server');
+
+test('shared order list validates sources, deduplicates, protects revisions and survives restart and inventory deletion',async t=>{
+ const dataDir=fs.mkdtempSync(path.join(os.tmpdir(),'inventory-order-list-'));
+ let server,base;
+ async function start(){server=createApp({dataDir,mailer:{enabled:false}});await new Promise(r=>server.listen(0,'127.0.0.1',r));base='http://127.0.0.1:'+server.address().port;}
+ async function request(route,method='GET',body,origin=base){const response=await fetch(base+route,{method,headers:{'Content-Type':'application/json',Origin:origin},...(body ? {body:JSON.stringify(body)} : {})});return {status:response.status,data:await response.json()};}
+ await start();t.after(async()=>{await new Promise(r=>server.close(r));fs.rmSync(dataDir,{recursive:true,force:true});});
+ assert.deepEqual((await request('/api/order-list')).data,{items:[],revision:0,orders:[]});
+ let run=(await request('/api/inventories','POST',{worksheet:'operating',operator:'Test',date:'2026-10-13'})).data;
+ const first=run.items.find(i=>i.id==='s1-r7');
+ const body={revision:0,inventoryId:run.id,inventoryRevision:run.revision,itemId:first.id};
+ assert.equal((await request('/api/order-list','POST',body,'https://other.example')).status,403);
+ assert.equal((await request('/api/order-list','POST',body)).status,400,'Uncounted numeric PAR item cannot be added');
+ run=(await request('/api/inventories/'+run.id,'PATCH',{revision:run.revision,counts:{[first.id]:0,'s1-r6':99}})).data;
+ body.inventoryRevision=run.revision;
+ assert.equal((await request('/api/order-list','POST',{...body,inventoryRevision:0})).status,409);
+ assert.equal((await request('/api/order-list','POST',{...body,itemId:'missing'})).status,404);
+ assert.equal((await request('/api/order-list','POST',{...body,itemId:'s1-r6'})).status,400,'Above PAR cannot be added');
+ const added=await request('/api/order-list','POST',body);assert.equal(added.status,201);
+ const entry=added.data.items[0];assert.equal(entry.item.description,first.description);assert.equal(entry.onHand,0);assert.equal(entry.operator,'Test');
+ assert.equal(entry.quantity,null,'Purchase quantity is not inferred from PAR');assert.equal(entry.orderUnit,'Box');assert.equal(entry.notes,'');
+ const duplicate=await request('/api/order-list','POST',{...body,revision:1});assert.equal(duplicate.status,200);assert.equal(duplicate.data.items.length,1);assert.equal(duplicate.data.revision,1);assert.equal(duplicate.data.alreadyAdded,true);
+ let later=(await request('/api/inventories','POST',{worksheet:'operating',operator:'Second operator',date:'2026-10-20'})).data;
+ later=(await request('/api/inventories/'+later.id,'PATCH',{revision:later.revision,counts:{[first.id]:1}})).data;
+ const acrossWeeks=await request('/api/order-list','POST',{revision:1,inventoryId:later.id,inventoryRevision:later.revision,itemId:first.id});
+ assert.equal(acrossWeeks.data.items.length,1,'The same supply is not duplicated by a later inventory');
+ assert.equal(acrossWeeks.data.items[0].onHand,0,'Original source reference remains available');
+ assert.equal(acrossWeeks.data.alreadyAdded,true);
+ assert.equal((await request('/api/order-list/'+entry.id,'DELETE',{revision:0})).status,409);
+ await request('/api/inventories/'+run.id,'DELETE',{revision:run.revision});
+ assert.equal((await request('/api/order-list')).data.items.length,1,'Saved list keeps its source snapshot after inventory deletion');
+ await new Promise(r=>server.close(r));await start();
+ assert.equal((await request('/api/order-list')).data.items[0].id,entry.id,'List persists across server restarts');
+ const edit={revision:1,quantity:3,orderUnit:'Box',notes:' Verify with maintenance. '};
+ assert.equal((await request('/api/order-list/'+entry.id,'PATCH',edit,'https://other.example')).status,403);
+ for(const quantity of [-1,0,'3',1000001])assert.equal((await request('/api/order-list/'+entry.id,'PATCH',{...edit,quantity})).status,400);
+ assert.equal((await request('/api/order-list/'+entry.id,'PATCH',{...edit,orderUnit:''})).status,400);
+ assert.equal((await request('/api/order-list/'+entry.id,'PATCH',{...edit,notes:'a'.repeat(1001)})).status,400);
+ const updated=await request('/api/order-list/'+entry.id,'PATCH',edit);assert.equal(updated.status,200);assert.equal(updated.data.revision,2);
+ assert.equal(updated.data.items[0].quantity,3);assert.equal(updated.data.items[0].notes,'Verify with maintenance.');
+ assert.equal(updated.data.items[0].onHand,0,'Purchase quantity does not change the inventory reference');
+ assert.equal(updated.data.items[0].item.productUrl,first.productUrl,'Ordering destination is preserved');
+ assert.equal((await request('/api/order-list/'+entry.id,'PATCH',{...edit,notes:'Other phone'})).status,409,'Stale edits cannot overwrite another purchase update');
+ await new Promise(r=>server.close(r));await start();
+ assert.equal((await request('/api/order-list')).data.items[0].quantity,3,'Order details survive restart');
+ const removed=await request('/api/order-list/'+entry.id,'DELETE',{revision:2});assert.equal(removed.status,200);assert.equal(removed.data.items.length,0);assert.equal(removed.data.revision,3);
+});
