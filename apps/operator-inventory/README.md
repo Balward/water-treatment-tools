@@ -103,23 +103,27 @@ This replaces that item's photo, validates the image format and size, and tags i
 
 ## Appearance
 
-The UI defaults to a high-contrast light design with white surfaces, dark text, restrained Northglenn teal (#00677F), and a dark navigation dock. Operations and Janitorial use the existing Phosphor Regular gauge and broom icons (MIT license included in public/licenses). Dewatering uses the selected matching custom rotary fan press outline inspired by the provided equipment photo. Charcoal dark mode remains available. Use the Light mode / Dark mode button in the bottom dock to switch; the preference is saved on that browser. Neutral cards keep product photos and quantities easy to read.
+The UI uses a high-contrast light design with white surfaces, dark text, restrained Northglenn teal (#00677F), and a dark navigation dock. Operations and Janitorial use the existing Phosphor Regular gauge and broom icons (MIT license included in public/licenses). Dewatering uses the selected matching custom rotary fan press outline inspired by the provided equipment photo. Neutral cards keep product photos and quantities easy to read.
 
 ## Manage inventory items
 
-On Home, tap Manage items and choose a worksheet. Edit an existing item, or tap Add item. Enter a name, location (select an existing location for the worksheet, or choose Add new location and enter its name), and count size. PAR accepts decimals; leave it blank for manual replenishment review. Supplier, product number, pack size, replenishment note, and product-page link are optional. Remove asks for confirmation. New items appear at the end of the worksheet catalog, grouped by their location during counting.
+Open Management, choose Manage items, and choose a worksheet. Edit an existing item, or tap Add item. Enter a name, location (select an existing location for the worksheet, or choose Add new location and enter its name), and count size. PAR accepts decimals; leave it blank for manual replenishment review. Supplier, product number, pack size, replenishment note, and product-page link are optional. Remove asks for confirmation. New items appear at the end of the worksheet catalog, grouped by their location during counting.
 
 Changes apply to new inventories only. Existing drafts, completed inventories, counts, and order reports retain their saved item snapshots. Item changes are saved in /data/inventories.json alongside inventory records, so the existing Unraid volume preserves them through container rebuilds. After the first edit, the saved catalog takes precedence over the bundled workbook catalog. Back up this data file to preserve both counts and item settings.
 
-Anyone who can access the app can manage items; separate administrator accounts have not been added. Editing an item name or product number can hide its existing photo because photos require matching catalog metadata. Photo uploads are not part of this screen yet.
+Anyone who can access the app can manage items; separate administrator accounts have not been added. Renaming an item retains its photo while the item ID and product number match. Changing the product number hides a mismatched photo; items without a usable product number still require a matching name. Photo uploads are not part of this screen yet.
 
-The header uses the supplied City of Northglenn horizontal logo on a white background in both themes, with Water Treatment Facility identification. The original logo is stored in public/branding/northglenn-logo.png and included in the Docker image.
+The header uses the supplied City of Northglenn horizontal logo on a white background, with Water Treatment Facility identification. The original logo is stored in public/branding/northglenn-logo.png and included in the Docker image.
 
 ## Automated deployment
 
 Run `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\apps\operator-inventory\deploy.ps1` from the repository root to test, package, upload, and rebuild on Unraid. Add `-PackageOnly` to package without contacting the server. See UNRAID-SETUP.md for prerequisites and backup behavior.
 
 ## Ordering backlog
+
+Add item on the Order List opens a shared catalog picker with search by item name, product number, or supplier. It accepts any configured catalog item regardless of PAR or whether an inventory exists. Quantity may be left blank for later; units and notes save with the entry. Duplicate pending items are disabled in the picker and rejected by the API. These additions have a manual source, without inventing an on-hand count or inventory date.
+
+Each order in Order History also has Add item, using the same picker. This records a missing purchase on that existing order and requires a positive quantity purchased. Existing order date, buyer, and reference are retained, and an update timestamp is recorded. It does not submit a purchase, change inventory, or alter the active backlog. Duplicate line items on the same recorded order are rejected. Both actions use shared revision checks to prevent overwriting another browser's changes.
 
 The dock includes a separate Order History screen (shipping-box icon). Delete order asks for confirmation and removes only the recorded order, without restoring items to the active backlog or altering inventory history.
 
@@ -134,6 +138,18 @@ Check Ordering now on the items being purchased. Selection is local to the curre
 After placing a purchase, Mark selected ordered asks for date, name, and an optional order reference. Confirmation atomically moves only those selected items into Ordered history. Unselected items stay in the backlog with their notes and quantities. Recorded orders retain item snapshots, links, quantities, and source inventory details. Restarting does not re-add the same processed inventory's purchases. A later completed inventory can flag the item again; receiving and shipment tracking are not implemented.
 
 The backlog, processed inventory IDs, and ordered history are saved with inventories in inventories.json and included in existing Docker volume backups. Revision checks prevent stale edits and duplicate order confirmations from overwriting another phone's changes. No inventory counts are changed by ordering actions.
+
+## Management and printed bin cards
+
+Open **Management** from the navigation tab. **Manage items** retains the worksheet picker and add/edit/remove actions. Operating Supplies items also have **Print card** for replacing one label. Janitorial and Dewatering items do not have printing actions.
+
+**Print bin cards** lists only current Operating Supplies items. Search by name, supplier, or product number; check individual items, **Select all**, or **Clear selection**. Searching preserves selections outside the filtered results. Select all selects the whole Operating Supplies worksheet. **Preview & print selected** opens a separate preview using the latest saved catalog details, without creating an inventory or changing counts. Printing is restricted to current Operating Supplies items even if the preview URL contains other item IDs. Deleted or moved items are omitted with a warning.
+
+Cards use the approved option 4 layout at **4 × 1¾ inches**, with the larger photo at left, supplier/product number/PAR in the middle, and product QR at right. PAR includes its counting unit; there is no separate count-size field. Pack details stay on one line, using extra width below the photo when needed. Approved local product photos are used only while their identity matches the current item. Missing photos, product numbers, supplier details, pack sizes, or product links are flagged; missing photos and links receive placeholders. QR codes are generated locally with the bundled MIT-licensed library; no third-party QR service receives product information. Amazon tracking is removed while retaining the same product identifier.
+
+Review the preview, then use **Print / Save PDF**. Six cards fit each landscape Letter sheet. Print at **100% / Actual size**, disable browser headers/footers, and cut along the card borders. Each sheet includes a 1-inch scale check. Test an insert and QR scanning through the physical holder before printing a batch. **Refresh saved details** reloads catalog edits in an already-open preview. Text that cannot fit is flagged and disables the print button until corrected; no text is silently truncated.
+
+Run `node test/bin-card-browser.js` for the optional headless Chrome integration check covering management navigation, selection, individual/batch previews, latest saved edits, card dimensions, print styles, and worksheet restrictions. It uses isolated temporary data; screenshots go to the ignored `preview/` folder.
 
 ## Pack-size convention
 

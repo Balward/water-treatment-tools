@@ -3,6 +3,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const imageManifest = require('./public/images/manifest.json');
 const packSizes = require('./public/pack-sizes');
+const productImages = require('./public/product-images');
 const validAddress = value => typeof value === 'string' && value.length <= 254 && /^[a-z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)+$/i.test(value);
 const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 function buildReportEmail(inventory, worksheetName) {
@@ -18,9 +19,9 @@ function buildReportEmail(inventory, worksheetName) {
   const photos = new Map();
   function itemPhoto(item) {
     if (photos.has(item.id)) return photos.get(item.id);
-    const photo = imageManifest.items[item.id];
+    const photo = productImages.find(item,imageManifest.items);
     let html = '';
-    if (photo && ['workbook-link','user-provided'].includes(photo.sourceType) && packSizes.normalize({...photo,id:item.id}).description === item.description && (photo.itemNumber === item.itemNumber || photo.allowedItemNumbers?.includes(item.itemNumber)) && /^\/images\/s[123]-r\d+\.(jpg|png|webp|gif)$/.test(photo.src)) {
+    if (photo) {
       try {
         const content = fs.readFileSync(path.join(__dirname,'public',photo.src.slice(1)));
         const ext = path.extname(photo.src).slice(1);

@@ -1,0 +1,281 @@
+{
+  "source": "repository catalog",
+  "total": 72,
+  "missingPhotos": [
+    "s2-r5",
+    "s2-r6",
+    "s2-r7",
+    "s2-r8",
+    "s2-r9",
+    "s2-r10",
+    "s2-r11",
+    "s2-r12",
+    "s2-r13",
+    "s2-r14",
+    "s2-r15",
+    "s2-r16",
+    "s2-r17",
+    "s2-r18",
+    "s2-r19",
+    "s2-r20",
+    "s2-r21",
+    "s2-r22",
+    "s3-r5",
+    "s3-r6",
+    "s3-r7",
+    "s3-r8",
+    "s3-r9",
+    "s3-r10",
+    "s3-r11",
+    "s3-r12",
+    "s3-r13",
+    "s3-r14",
+    "s3-r15",
+    "s3-r16",
+    "s3-r17",
+    "s3-r18"
+  ],
+  "missingLinks": [
+    "s2-r5",
+    "s2-r6",
+    "s2-r7",
+    "s2-r8",
+    "s2-r9",
+    "s2-r10",
+    "s2-r11",
+    "s2-r12",
+    "s2-r13",
+    "s2-r14",
+    "s2-r15",
+    "s2-r16",
+    "s2-r17",
+    "s2-r18",
+    "s2-r19",
+    "s2-r20",
+    "s2-r21",
+    "s2-r22",
+    "s3-r5",
+    "s3-r6",
+    "s3-r7",
+    "s3-r8",
+    "s3-r9",
+    "s3-r10",
+    "s3-r11",
+    "s3-r12",
+    "s3-r13",
+    "s3-r16",
+    "s3-r17",
+    "s3-r18"
+  ],
+  "missingNumbers": [
+    "s1-r42",
+    "s2-r5",
+    "s2-r6",
+    "s2-r7",
+    "s2-r8",
+    "s2-r9",
+    "s2-r10",
+    "s2-r11",
+    "s2-r12",
+    "s2-r13",
+    "s2-r14",
+    "s2-r15",
+    "s2-r16",
+    "s2-r17",
+    "s2-r18",
+    "s2-r19",
+    "s2-r20",
+    "s2-r21",
+    "s2-r22",
+    "s3-r5",
+    "s3-r6",
+    "s3-r7",
+    "s3-r8",
+    "s3-r9",
+    "s3-r10",
+    "s3-r11",
+    "s3-r12",
+    "s3-r13",
+    "s3-r16",
+    "s3-r17",
+    "s3-r18"
+  ],
+  "qrModules": [
+    {
+      "id": "s1-r5",
+      "modules": 33
+    },
+    {
+      "id": "s1-r6",
+      "modules": 41
+    },
+    {
+      "id": "s1-r7",
+      "modules": 41
+    },
+    {
+      "id": "s1-r8",
+      "modules": 41
+    },
+    {
+      "id": "s1-r9",
+      "modules": 33
+    },
+    {
+      "id": "s1-r10",
+      "modules": 53
+    },
+    {
+      "id": "s1-r11",
+      "modules": 33
+    },
+    {
+      "id": "s1-r12",
+      "modules": 49
+    },
+    {
+      "id": "s1-r13",
+      "modules": 41
+    },
+    {
+      "id": "s1-r14",
+      "modules": 37
+    },
+    {
+      "id": "s1-r15",
+      "modules": 37
+    },
+    {
+      "id": "s1-r16",
+      "modules": 33
+    },
+    {
+      "id": "s1-r17",
+      "modules": 37
+    },
+    {
+      "id": "s1-r18",
+      "modules": 37
+    },
+    {
+      "id": "s1-r19",
+      "modules": 41
+    },
+    {
+      "id": "s1-r20",
+      "modules": 41
+    },
+    {
+      "id": "s1-r21",
+      "modules": 41
+    },
+    {
+      "id": "s1-r22",
+      "modules": 49
+    },
+    {
+      "id": "s1-r23",
+      "modules": 37
+    },
+    {
+      "id": "s1-r24",
+      "modules": 37
+    },
+    {
+      "id": "s1-r25",
+      "modules": 49
+    },
+    {
+      "id": "s1-r26",
+      "modules": 49
+    },
+    {
+      "id": "s1-r27",
+      "modules": 45
+    },
+    {
+      "id": "s1-r28",
+      "modules": 41
+    },
+    {
+      "id": "s1-r29",
+      "modules": 41
+    },
+    {
+      "id": "s1-r30",
+      "modules": 33
+    },
+    {
+      "id": "s1-r31",
+      "modules": 45
+    },
+    {
+      "id": "s1-r32",
+      "modules": 25
+    },
+    {
+      "id": "s1-r33",
+      "modules": 49
+    },
+    {
+      "id": "s1-r34",
+      "modules": 45
+    },
+    {
+      "id": "s1-r35",
+      "modules": 45
+    },
+    {
+      "id": "s1-r36",
+      "modules": 49
+    },
+    {
+      "id": "s1-r37",
+      "modules": 41
+    },
+    {
+      "id": "s1-r38",
+      "modules": 41
+    },
+    {
+      "id": "s1-r39",
+      "modules": 45
+    },
+    {
+      "id": "s1-r40",
+      "modules": 33
+    },
+    {
+      "id": "s1-r41",
+      "modules": 33
+    },
+    {
+      "id": "s1-r42",
+      "modules": 29
+    },
+    {
+      "id": "s1-r43",
+      "modules": 37
+    },
+    {
+      "id": "s1-r44",
+      "modules": 53
+    },
+    {
+      "id": "s3-r14",
+      "modules": 33
+    },
+    {
+      "id": "s3-r15",
+      "modules": 33
+    }
+  ],
+  "layout": {
+    "total": 72,
+    "sheets": 12,
+    "images": true,
+    "multiline": 0,
+    "widePack": 3,
+    "overflow": []
+  }
+}

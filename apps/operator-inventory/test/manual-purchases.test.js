@@ -1,0 +1,35 @@
+const {test}=require('node:test');
+const assert=require('node:assert/strict');
+const fs=require('node:fs'),os=require('node:os'),path=require('node:path');
+const {createApp}=require('../server');
+test('manual purchases ignore PAR and history additions update only the chosen recorded order',async t=>{
+ const dataDir=fs.mkdtempSync(path.join(os.tmpdir(),'inventory-manual-purchases-'));
+ const server=createApp({dataDir,mailer:{enabled:false}});await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
+ t.after(async()=>{await new Promise(resolve=>server.close(resolve));fs.rmSync(dataDir,{recursive:true,force:true});});
+ const base='http://127.0.0.1:'+server.address().port;
+ async function request(route,method='GET',body,origin=base){const r=await fetch(base+route,{method,headers:{'Content-Type':'application/json',Origin:origin},...(body?{body:JSON.stringify(body)}:{})});return {status:r.status,data:await r.json()};}
+ const manual={revision:0,itemId:'s1-r7',quantity:null,orderUnit:'Box',notes:'Order early for the next shipment'};
+ assert.equal((await request('/api/order-list/manual','POST',manual,'https://other.example')).status,403);
+ assert.equal((await request('/api/order-list/manual','POST',{...manual,itemId:'missing'})).status,404);
+ assert.equal((await request('/api/order-list/manual','POST',{...manual,quantity:-1})).status,400);
+ const added=await request('/api/order-list/manual','POST',manual);assert.equal(added.status,201);
+ let list=added.data;assert.equal(list.items[0].source,'manual');assert.equal(list.items[0].inventoryDate,null);assert.equal(list.items[0].onHand,null);
+ assert.equal((await request('/api/inventories')).data.length,0,'No inventory is required for a manual purchase');
+ assert.equal((await request('/api/order-list/manual','POST',{...manual,revision:list.revision})).status,409,'A duplicate manual item is blocked');
+ const entry=list.items[0];
+ list=(await request('/api/order-list/'+entry.id,'PATCH',{revision:list.revision,quantity:2,orderUnit:'Box',notes:manual.notes})).data;
+ list=(await request('/api/order-list/ordered','POST',{revision:list.revision,ids:[entry.id],date:'2026-10-14',operator:'Buyer',reference:'ORDER-1'})).data;
+ const order=list.orders[0];
+ list=(await request('/api/order-list/manual','POST',{...manual,revision:list.revision,itemId:'s1-r6',quantity:5})).data;
+ const pendingBefore=structuredClone(list.items);
+ const append={revision:list.revision,itemId:'s1-r6',quantity:3,orderUnit:'Box',notes:'Missed when entering the original purchase'};
+ const route='/api/order-history/'+order.id+'/items';
+ assert.equal((await request(route,'POST',{...append,quantity:null})).status,400,'Recorded purchases require a quantity');
+ assert.equal((await request(route,'POST',{...append,revision:0})).status,409);
+ assert.equal((await request(route,'POST',append,'https://other.example')).status,403);
+ const result=await request(route,'POST',append);assert.equal(result.status,201);list=result.data;
+ assert.equal(list.orders[0].items.length,2);assert.equal(list.orders[0].items[1].quantity,3);assert.equal(list.orders[0].reference,'ORDER-1');assert.equal(list.orders[0].operator,'Buyer');
+ assert.deepEqual(list.items,pendingBefore,'Adding to a recorded order does not silently remove or change pending purchases');
+ assert.equal((await request(route,'POST',{...append,revision:list.revision})).status,409);
+ assert.equal((await request('/api/inventories')).data.length,0,'Manual ordering never creates or changes inventory counts');
+});

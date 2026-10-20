@@ -59,17 +59,14 @@ async function main() {
     await until('document.querySelector(".city-logo").complete && document.querySelector(".city-logo").naturalWidth > 0');
     assert.ok(await evaluate('document.querySelector(".facility-name").textContent.includes("Water Treatment Facility")'));
     assert.equal(await evaluate('getComputedStyle(document.querySelector(".welcome")).backgroundColor'),'rgb(255, 255, 255)','Light design is the default');
-    await evaluate('document.getElementById("theme-toggle").click()');
-    assert.equal(await evaluate('document.documentElement.dataset.theme'),'dark');
-    assert.equal(await evaluate('getComputedStyle(document.querySelector(".welcome")).backgroundColor'),'rgb(21, 27, 32)');
-    await evaluate('window.__reloadPending = true');
-    await evaluate('window.__reloadPending = true'); await call('Page.reload'); await until('window.__reloadPending !== true && document.readyState === "complete"');
-    await until('window.__reloadPending !== true && document.readyState === "complete"');
-    await until('document.documentElement.dataset.theme !== undefined');
-    await until('document.querySelectorAll("[data-worksheet]").length === 3');
-    assert.equal(await evaluate('document.documentElement.dataset.theme'),'dark','Theme survives reload');
-    await evaluate('document.getElementById("theme-toggle").click()');
-    assert.equal(await evaluate('document.documentElement.dataset.theme'),'light');
+    assert.equal(await evaluate('document.getElementById("theme-toggle")'),null,'Theme switching has been removed');
+    assert.equal(await evaluate('getComputedStyle(document.documentElement).colorScheme'),'light');
+    await evaluate('localStorage.setItem("inventory-theme","dark");window.__reloadPending=true');
+    await call('Page.reload');
+    await until('window.__reloadPending !== true && document.querySelectorAll("[data-worksheet]").length === 3');
+    assert.equal(await evaluate('getComputedStyle(document.querySelector(".welcome")).backgroundColor'),'rgb(255, 255, 255)','Old saved preferences cannot restore dark mode');
+    assert.equal(await evaluate('document.documentElement.hasAttribute("data-theme")'),false);
+    assert.equal(await evaluate('document.querySelectorAll(".bottom-nav button").length'),5);
     assert.equal(await evaluate('getComputedStyle(document.querySelector(".bottom-nav")).position'),'static','Navigation belongs to the app layout');
     async function checkDockOnScroll() {
       const top = await evaluate('document.querySelector(".bottom-nav").getBoundingClientRect().top');
@@ -104,7 +101,7 @@ async function main() {
     }
     await start('janitorial',18);
     assert.equal(await evaluate('document.querySelectorAll("[data-adjust], [data-use-previous], #arrow-step").length'),0,'Entry controls are keyboard-only');
-    assert.equal(await evaluate('document.querySelector("input[type=search]")'),null,'Search removed');
+    assert.equal(await evaluate('document.querySelector("#workspace input[type=search]")'),null,'Counting screens do not have item search');
     assert.equal(await evaluate('document.querySelector("[data-id]").dataset.id'),'s2-r5','Items stay in worksheet order');
     assert.equal(await evaluate('document.querySelectorAll(".item-card").length'),9);
     await checkDockOnScroll();
@@ -257,7 +254,7 @@ async function main() {
     await until(`!document.getElementById('delete-dialog').open && document.querySelectorAll('[data-open]').length===${beforeDelete-2}`);
     await evaluate('document.getElementById("nav-home").click()');
     await until('!document.getElementById("home-view").hidden');
-    await evaluate('document.getElementById("manage-items").click()');
+    await evaluate('document.getElementById("nav-manage").click()');
     await until('!document.getElementById("item-manager").hidden');
     for (const width of [320,390,430]) { await viewport(width); await checkWidth(); }
     await viewport(390);
@@ -417,6 +414,32 @@ async function main() {
     assert.equal(await evaluate('document.documentElement.dataset.layout'),'mobile','A phone stays mobile even with a wide landscape viewport');
     assert.ok(await evaluate('document.querySelector(".phone-app").getBoundingClientRect().width <= 480'));
     await call('Emulation.setUserAgentOverride',{userAgent:desktopAgent});
+    // The same picker adds above-PAR catalog items to the backlog or an existing order.
+    await viewport(390);
+    await evaluate("document.getElementById('nav-order-list').click()");
+    await until("!document.getElementById('order-list-view').hidden");
+    const pendingBeforeManual=await evaluate('orderList.items.length');
+    await evaluate("document.getElementById('add-manual-item').click()");
+    await until("document.getElementById('add-purchase-dialog').open");
+    await evaluate("document.getElementById('purchase-search').value='2770220';document.getElementById('purchase-search').dispatchEvent(new Event('input',{bubbles:true}));document.getElementById('purchase-item').value='s1-r8';document.getElementById('purchase-item').dispatchEvent(new Event('change'));document.getElementById('purchase-quantity').value='2';document.getElementById('purchase-notes').value='Order early';document.getElementById('add-purchase-form').requestSubmit()");
+    await until("!document.getElementById('add-purchase-dialog').open && !listBusy");
+    assert.equal(await evaluate('orderList.items.length'),pendingBeforeManual+1,'Manual additions are independent of PAR');
+    assert.ok(await evaluate("orderList.items.some(entry=>entry.item.id==='s1-r8' && entry.source==='manual' && entry.quantity===2)"));
+    await evaluate("selectedOrders.clear();renderOrderList();var pick=orderList.items.find(entry=>entry.item.id==='s1-r8');document.querySelector('[data-order-select=\"'+pick.id+'\"]').click();document.getElementById('mark-selected-ordered').click()");
+    await until("document.getElementById('ordered-dialog').open");
+    await evaluate("document.getElementById('ordered-by').value='Browser buyer';document.getElementById('ordered-reference').value='MANUAL-TEST';document.getElementById('ordered-form').requestSubmit()");
+    await until("!document.getElementById('ordered-dialog').open && !listBusy");
+    await evaluate("document.getElementById('nav-order-history').click()");
+    await until("!document.getElementById('order-history-view').hidden");
+    await evaluate("document.querySelector('[data-add-history-item]').click()");
+    await until("document.getElementById('add-purchase-dialog').open");
+    assert.ok(await evaluate("document.getElementById('purchase-quantity').required"),'Recorded order additions require a purchase quantity');
+    await evaluate("document.getElementById('purchase-search').value='BDH5050';document.getElementById('purchase-search').dispatchEvent(new Event('input',{bubbles:true}));document.getElementById('purchase-item').value='s1-r9';document.getElementById('purchase-item').dispatchEvent(new Event('change'));document.getElementById('purchase-quantity').value='1';document.getElementById('purchase-notes').value='Missing original line item'");
+    await screenshot('add-item-to-order-mobile');
+    await evaluate("document.getElementById('add-purchase-form').requestSubmit()");
+    await until("!document.getElementById('add-purchase-dialog').open && !listBusy");
+    assert.equal(await evaluate('orderList.orders[0].items.length'),2);
+    assert.equal(await evaluate('orderList.items.length'),pendingBeforeManual,'Adding to recorded history does not change the active backlog');
     await evaluate("notifySuccess('Saved for notification check')");
     assert.equal(await evaluate("document.getElementById('notice').dataset.kind"),'success');
     await until("document.getElementById('notice').hidden");
@@ -425,6 +448,12 @@ async function main() {
     assert.ok(await evaluate("!document.getElementById('notice').hidden && document.getElementById('notice').textContent.includes('Save failed')"),'A success timer must not dismiss a newer error');
     await evaluate("document.querySelector('.dismiss-notice').click()");
     assert.ok(await evaluate("document.getElementById('notice').hidden"),'Notification can be dismissed manually');
+    // Latest completion is specific to each worksheet, independent of drafts.
+    await evaluate("window.originalRecords=records;records=[{worksheet:'operating',status:'complete',date:'2026-10-10',updatedAt:'2026-10-10T12:00:00Z'},{worksheet:'operating',status:'complete',date:'2026-10-14',updatedAt:'2026-10-14T12:00:00Z'},{worksheet:'operating',status:'draft',date:'2026-10-15',updatedAt:'2026-10-15T12:00:00Z'},{worksheet:'janitorial',status:'complete',date:'2026-10-11',updatedAt:'2026-10-11T12:00:00Z'}];renderHome()");
+    assert.equal(await evaluate("document.querySelector('[data-worksheet=\"operating\"] time').dateTime"),'2026-10-14');
+    assert.equal(await evaluate("document.querySelector('[data-worksheet=\"janitorial\"] time').dateTime"),'2026-10-11');
+    assert.equal(await evaluate("document.querySelector('[data-worksheet=\"dewatering\"] .worksheet-last-count').textContent"),'No completed inventory yet');
+    await evaluate('records=window.originalRecords;renderHome()');
     assert.equal(errors.length,0,'No browser runtime exceptions');
     console.log('Browser checks passed: mobile 320/390/430px, desktop 1024/1366px, narrow-window adaptation, phone landscape detection, inventory and order-list workflows.');
   } finally {

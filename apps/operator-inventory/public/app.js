@@ -9,18 +9,6 @@ function updateLayout() {
 }
 updateLayout();
 window.addEventListener('resize',updateLayout);
-function setTheme(theme) {
-  document.documentElement.dataset.theme = theme;
-  const light = theme === 'light';
-  $('theme-label').textContent = light ? 'Dark mode' : 'Light mode';
-  $('theme-toggle').setAttribute('aria-label', light ? 'Switch to dark mode' : 'Switch to light mode');
-  document.querySelector('meta[name="theme-color"]').content = light ? '#ffffff' : '#151b20';
-  try { localStorage.setItem('inventory-theme',theme); } catch { /* Storage may be unavailable. */ }
-}
-let initialTheme = 'light';
-try { const savedTheme = localStorage.getItem('inventory-theme'); if (['light','dark'].includes(savedTheme)) initialTheme = savedTheme; } catch { /* Use the default. */ }
-setTheme(initialTheme);
-$('theme-toggle').addEventListener('click', () => setTheme(document.documentElement.dataset.theme === 'light' ? 'dark' : 'light'));
 let catalog, run = null, selectedWorksheet = '', locationName = '', mode = 'home', records = [];
 let pending = {}, inFlight = {}, timer, saving = false, conflict = false, completing = false, navigating = false;
 const invalid = new Set(), invalidValues = {};
@@ -81,6 +69,10 @@ function orderProductLink(item) {
   const url = productPage(item), number = item.itemNumber && item.itemNumber !== 'N/A' ? '#' + item.itemNumber : '';
   return url ? '<a href="' + escapeHtml(url) + '" target="_blank" rel="noopener noreferrer">' + escapeHtml(number || 'Open product page') + '</a>' : escapeHtml(number) + ' <span class="missing-product-link">Product link not available</span>';
 }
+function purchaseReference(entry) {
+  if (!entry.inventoryDate) return 'Added manually. No inventory count is associated with this item.';
+  return 'On hand when flagged: <strong>' + escapeHtml(entry.onHand ?? 'Not counted') + '</strong> / PAR: ' + escapeHtml(entry.item.par ?? entry.item.parNote) + '<br>Counted in ' + escapeHtml(entry.item.countSize) + '<br>' + escapeHtml(worksheetName(entry.worksheet)) + ' / ' + escapeHtml(prettyDate(entry.inventoryDate)) + ' / ' + escapeHtml(entry.operator || '') + (entry.inventoryStatus === 'draft' ? ' (Draft)' : '');
+}
 function renderOrderList() {
   for (const id of selectedOrders) if (!orderList.items.some(entry => entry.id === id)) selectedOrders.delete(id);
   $('order-list-count').textContent = orderList.items.length ? ' (' + orderList.items.length + ')' : '';
@@ -89,14 +81,14 @@ function renderOrderList() {
   $('review-all-orders').hidden = !orderList.items.length;
   $('order-list-items').innerHTML = orderList.items.length ? groupedOrders(orderList.items).map(group => '<section class="supplier-group"><div class="supplier-heading"><h2>' + escapeHtml(group.supplier) + ' <small>' + group.entries.length + (group.entries.length === 1 ? ' item' : ' items') + '</small></h2><button class="text-button" type="button" data-review-supplier="' + escapeHtml(group.key) + '">Review selected &rarr;</button></div>' + group.entries.map(entry => {
     const item = entry.item;
-    return '<article class="report-item' + (selectedOrders.has(entry.id) ? ' selected-for-order' : '') + '"><label class="order-pick"><input type="checkbox" data-order-select="' + entry.id + '" ' + (selectedOrders.has(entry.id) ? 'checked' : '') + '><span>Ordering now</span></label><div class="report-item-top">' + productPhoto(item) + '<h3>' + escapeHtml(item.description) + '</h3></div><p class="report-detail">' + orderProductLink(item) + '</p><div class="purchase-quantity ' + (!orderReady(entry) ? 'needs-quantity' : '') + '"><span>Quantity to order</span><strong>' + escapeHtml(entry.quantity ?? 'Not set') + ' <small>' + escapeHtml(purchaseUnit(entry)) + '</small></strong>' + (item.caseSize ? '<p>' + escapeHtml(item.caseSize) + '</p>' : '') + '</div>' + (entry.notes ? '<p class="purchase-notes">' + escapeHtml(entry.notes) + '</p>' : '') + '<button class="edit-order-button" data-edit-order="' + entry.id + '" type="button" ' + (listBusy ? 'disabled' : '') + '>Edit order details</button><details class="inventory-reference"><summary>Inventory reference</summary><p class="report-note">On hand when added: <strong>' + escapeHtml(entry.onHand ?? 'Not counted') + '</strong> / PAR: ' + escapeHtml(item.par ?? item.parNote) + '<br>Counted in ' + escapeHtml(item.countSize) + '<br>' + escapeHtml(worksheetName(entry.worksheet)) + ' / ' + escapeHtml(prettyDate(entry.inventoryDate)) + ' / ' + escapeHtml(entry.operator) + (entry.inventoryStatus === 'draft' ? ' (Draft)' : '') + '</p></details><button class="remove-list-button" data-remove-list="' + entry.id + '" type="button" ' + (listBusy ? 'disabled' : '') + '>Remove from List</button></article>';
+    return '<article class="report-item' + (selectedOrders.has(entry.id) ? ' selected-for-order' : '') + '"><label class="order-pick"><input type="checkbox" data-order-select="' + entry.id + '" ' + (selectedOrders.has(entry.id) ? 'checked' : '') + '><span>Ordering now</span></label><div class="report-item-top">' + productPhoto(item) + '<h3>' + escapeHtml(item.description) + '</h3></div><p class="report-detail">' + orderProductLink(item) + '</p><div class="purchase-quantity ' + (!orderReady(entry) ? 'needs-quantity' : '') + '"><span>Quantity to order</span><strong>' + escapeHtml(entry.quantity ?? 'Not set') + ' <small>' + escapeHtml(purchaseUnit(entry)) + '</small></strong>' + (item.caseSize ? '<p>' + escapeHtml(item.caseSize) + '</p>' : '') + '</div>' + (entry.notes ? '<p class="purchase-notes">' + escapeHtml(entry.notes) + '</p>' : '') + '<button class="edit-order-button" data-edit-order="' + entry.id + '" type="button" ' + (listBusy ? 'disabled' : '') + '>Edit order details</button><details class="inventory-reference"><summary>Source</summary><p class="report-note">' + purchaseReference(entry) + '</p></details><button class="remove-list-button" data-remove-list="' + entry.id + '" type="button" ' + (listBusy ? 'disabled' : '') + '>Remove from List</button></article>';
   }).join('') + '</section>').join('') : '<div class="empty">Your order list is empty.<br>Complete an inventory to automatically add items at or below PAR.</div>';
   updateListButtons();
   updateOrderSelection();
   renderOrderedHistory();
 }
 function renderOrderedHistory() {
-  $('past-order-items').innerHTML = (orderList.orders || []).length ? orderList.orders.map(order => '<article class="past-order"><h3>' + escapeHtml(prettyDate(order.date)) + ' / ' + escapeHtml(order.operator) + '</h3>' + (order.reference ? '<p>' + escapeHtml(order.reference) + '</p>' : '') + groupedOrders(order.items).map(group => '<h4>' + escapeHtml(group.supplier) + '</h4><ul>' + group.entries.map(entry => '<li><strong>' + escapeHtml(entry.quantity) + ' ' + escapeHtml(purchaseUnit(entry)) + '</strong> / ' + escapeHtml(entry.item.description) + ' ' + orderProductLink(entry.item) + '</li>').join('') + '</ul>').join('') + '<button class="delete-order-button" data-delete-order="' + order.id + '" type="button">Delete order</button></article>').join('') : '<div class="empty">No orders recorded yet.</div>';
+  $('past-order-items').innerHTML = (orderList.orders || []).length ? orderList.orders.map(order => '<article class="past-order"><h3>' + escapeHtml(prettyDate(order.date)) + ' / ' + escapeHtml(order.operator) + '</h3>' + (order.reference ? '<p>' + escapeHtml(order.reference) + '</p>' : '') + groupedOrders(order.items).map(group => '<h4>' + escapeHtml(group.supplier) + '</h4><ul>' + group.entries.map(entry => '<li><strong>' + escapeHtml(entry.quantity) + ' ' + escapeHtml(purchaseUnit(entry)) + '</strong> / ' + escapeHtml(entry.item.description) + ' ' + orderProductLink(entry.item) + (entry.notes ? '<p class="purchase-notes">' + escapeHtml(entry.notes) + '</p>' : '') + '</li>').join('') + '</ul>').join('') + '<button class="add-history-item" data-add-history-item="' + order.id + '" type="button">+ Add item</button><button class="delete-order-button" data-delete-order="' + order.id + '" type="button">Delete order</button></article>').join('') : '<div class="empty">No orders recorded yet.</div>';
 }
 $('order-list-items').addEventListener('change', event => {
   const checkbox = event.target.closest('[data-order-select]'); if (!checkbox) return;
@@ -197,6 +189,63 @@ $('print-order-review').addEventListener('click', async () => {
 });
 $('nav-order-list').addEventListener('click', () => navigate('order-list'));
 $('nav-order-history').addEventListener('click', () => navigate('order-history'));
+let purchaseTargetOrder = null, purchasePickerRevision = 0;
+function pickerAlreadyAdded(item) {
+  const entries = purchaseTargetOrder ? purchaseTargetOrder.items : orderList.items;
+  return entries.some(entry => entry.item.id === item.id && InventoryPackSizes.normalize(entry.item).description === item.description && entry.item.itemNumber === item.itemNumber && entry.item.company === item.company && InventoryPackSizes.countSize(entry.item) === item.countSize);
+}
+function updatePurchasePicker() {
+  const previous = $('purchase-item').value, query = $('purchase-search').value.trim().toLowerCase();
+  const items = catalog.items.filter(item => [item.description,item.itemNumber,item.company].some(value => String(value || '').toLowerCase().includes(query)));
+  $('purchase-item').innerHTML = '<option value="">Choose an item</option>' + items.map(item => '<option value="' + escapeHtml(item.id) + '" ' + (pickerAlreadyAdded(item) ? 'disabled' : '') + '>' + escapeHtml(item.description + (item.itemNumber && item.itemNumber !== 'N/A' ? ' / #' + item.itemNumber : '') + (pickerAlreadyAdded(item) ? ' (Already added)' : '')) + '</option>').join('');
+  if (items.some(item => item.id === previous && !pickerAlreadyAdded(item))) $('purchase-item').value = previous;
+  updatePurchasePreview();
+}
+function updatePurchasePreview() {
+  const item = catalog.items.find(item => item.id === $('purchase-item').value);
+  $('purchase-item-preview').innerHTML = item ? '<div class="report-item-top">' + productPhoto(item) + '<div><strong>' + escapeHtml(item.description) + '</strong><p class="report-detail">' + orderProductLink(item) + '</p><p class="report-note">Pack: ' + escapeHtml(item.caseSize || 'Not specified') + '</p></div></div>' : '';
+}
+async function openPurchasePicker(orderId = null) {
+  if (listBusy) return;
+  listBusy = true;
+  try {
+    const [latestCatalog] = await Promise.all([api('/api/catalog'),refreshOrderList()]);
+    catalog = latestCatalog;
+    purchaseTargetOrder = orderId ? orderList.orders.find(order => order.id === orderId) : null;
+    if (orderId && !purchaseTargetOrder) throw new Error('This order was deleted. Refresh Order History.');
+    purchasePickerRevision = orderList.revision;
+    $('add-purchase-title').textContent = purchaseTargetOrder ? 'Add item to order' : 'Add to Order List';
+    $('add-purchase-context').textContent = purchaseTargetOrder ? 'Record a missing purchase on ' + prettyDate(purchaseTargetOrder.date) + (purchaseTargetOrder.reference ? ' / ' + purchaseTargetOrder.reference : '') + '. This updates history only; it does not place a purchase or remove pending items.' : 'Choose any catalog item, regardless of PAR or whether inventory has been taken.';
+    $('purchase-search').value = ''; $('purchase-quantity').value = ''; $('purchase-unit').value = ''; $('purchase-notes').value = '';
+    $('purchase-quantity').required = Boolean(purchaseTargetOrder);
+    $('purchase-quantity-label').textContent = purchaseTargetOrder ? 'Quantity purchased' : 'Quantity to order (optional)';
+    $('add-purchase-error').textContent = ''; updatePurchasePicker();
+    $('add-purchase-dialog').showModal();
+  } finally { listBusy = false; renderOrderList(); }
+}
+$('add-manual-item').addEventListener('click', () => openPurchasePicker().catch(error => notify(error.message)));
+$('past-order-items').addEventListener('click', event => {
+  const button = event.target.closest('[data-add-history-item]');
+  if (button) openPurchasePicker(button.dataset.addHistoryItem).catch(error => notify(error.message));
+});
+$('purchase-search').addEventListener('input',updatePurchasePicker);
+$('purchase-item').addEventListener('change', () => {
+  const item = catalog.items.find(item => item.id === $('purchase-item').value);
+  $('purchase-unit').value = item?.countSize || '';
+  updatePurchasePreview();
+});
+$('cancel-purchase-item').addEventListener('click', () => { if (!listBusy) $('add-purchase-dialog').close(); });
+$('add-purchase-dialog').addEventListener('cancel', event => { if (listBusy) event.preventDefault(); });
+$('add-purchase-form').addEventListener('submit', async event => {
+  event.preventDefault(); if (listBusy) return;
+  listBusy = true; $('save-purchase-item').disabled = true; $('cancel-purchase-item').disabled = true;
+  try {
+    const route = purchaseTargetOrder ? '/api/order-history/' + purchaseTargetOrder.id + '/items' : '/api/order-list/manual';
+    orderList = await api(route,{method:'POST',body:JSON.stringify({revision:purchasePickerRevision,itemId:$('purchase-item').value,quantity:$('purchase-quantity').value === '' ? null : Number($('purchase-quantity').value),orderUnit:$('purchase-unit').value,notes:$('purchase-notes').value})});
+    $('add-purchase-dialog').close(); notifySuccess(purchaseTargetOrder ? 'Item added to the recorded order.' : 'Item added to the order list.');
+  } catch (error) { $('add-purchase-error').textContent = error.message; }
+  finally { listBusy = false; $('save-purchase-item').disabled = false; $('cancel-purchase-item').disabled = false; renderOrderList(); }
+});
 $('refresh-order-history').addEventListener('click', () => refreshOrderList().catch(error => notify(error.message)));
 let deleteOrderTarget = null, deleteOrderRevision = 0;
 $('past-order-items').addEventListener('click', event => {
@@ -327,7 +376,9 @@ function renderHome() {
   $('worksheets').innerHTML = catalog.worksheets.map(w => {
     const items = catalog.items.filter(i => i.sourceSheet === w.sourceSheet);
     const places = new Set(items.map(i => i.location)).size;
-    return `<button class="worksheet-card" data-worksheet="${w.id}"><span class="worksheet-icon" aria-hidden="true">${icons[w.id]}</span><span><strong>${escapeHtml(w.name)}</strong><small>${items.length} supplies · ${places} ${places === 1 ? 'location' : 'locations'}</small></span><span class="worksheet-arrow" aria-hidden="true">→</span></button>`;
+    const latest = records.filter(record => record.worksheet === w.id && record.status === 'complete').sort((a,b) => b.date.localeCompare(a.date) || b.updatedAt.localeCompare(a.updatedAt))[0];
+    const lastCompleted = latest ? `Last completed: <time datetime="${escapeHtml(latest.date)}">${escapeHtml(prettyDate(latest.date))}</time>` : 'No completed inventory yet';
+    return `<button class="worksheet-card" data-worksheet="${w.id}"><span class="worksheet-icon" aria-hidden="true">${icons[w.id]}</span><span><strong>${escapeHtml(w.name)}</strong><small>${items.length} supplies · ${places} ${places === 1 ? 'location' : 'locations'}</small><small class="worksheet-last-count">${lastCompleted}</small></span><span class="worksheet-arrow" aria-hidden="true">→</span></button>`;
   }).join('');
 }
 function renderHistory() {
@@ -390,7 +441,7 @@ async function history() {
   const request = ++historyRequest;
   const latest = await api('/api/inventories');
   if (request !== historyRequest) return;
-  records = latest; renderHistory();
+  records = latest; renderHistory(); renderHome();
 }
 function showMode(next) {
   mode = next;
@@ -402,7 +453,7 @@ function showMode(next) {
   $('order-list-view').hidden = next !== 'order-list';
   $('order-history-view').hidden = next !== 'order-history';
   $('order-review-view').hidden = next !== 'order-review';
-  for (const name of ['home', 'history', 'order-list', 'order-history']) { const button = $('nav-' + name); if (next === name || (next === 'report' && name === 'history') || (next === 'order-review' && name === 'order-list')) button.setAttribute('aria-current', 'page'); else button.removeAttribute('aria-current'); }
+  for (const name of ['home', 'history', 'order-list', 'order-history', 'manage']) { const button = $('nav-' + name); if (next === name || (next === 'report' && name === 'history') || (next === 'order-review' && name === 'order-list')) button.setAttribute('aria-current', 'page'); else button.removeAttribute('aria-current'); }
   renderHistory(); $('app-scroll').scrollTo({ top:0, behavior:'instant' });
 }
 function renderOverview() {
@@ -431,8 +482,8 @@ function renderOverview() {
 }
 function productPhoto(item) {
   if (!SHOW_PRODUCT_IMAGES) return '';
-  const photo = catalog.images?.[item.id];
-  if (!photo || !['workbook-link','user-provided'].includes(photo.sourceType) || InventoryPackSizes.normalize({...photo,id:item.id}).description !== item.description || (photo.itemNumber !== item.itemNumber && !photo.allowedItemNumbers?.includes(item.itemNumber))) return '';
+  const photo = InventoryProductImages.find(item,catalog.images);
+  if (!photo) return '';
   return '<a class="product-photo" href="' + escapeHtml(photo.productUrl) + '" target="_blank" rel="noopener noreferrer" aria-label="Supplier photo and details: ' + escapeHtml(item.description) + '"><img src="' + escapeHtml(photo.src) + '" alt="' + escapeHtml(item.description) + ' supplier photo" width="72" height="72" loading="lazy" decoding="async"><span>Supplier photo</span></a>';
 }
 function renderItems() {
@@ -683,10 +734,45 @@ init();
 // Catalog management uses revisions so one phone cannot overwrite another's edits.
 let editingItem = null, removingItem = null, itemRevision = 0, itemBusy = false;
 const itemFields = ['description','countSize','parNote','company','itemNumber','caseSize','productUrl'];
+const selectedBinCards = new Set();
+function openBinCardPreview(ids) {
+  const allowed = new Set(InventoryBinCards.items(catalog).map(i => i.id));
+  const selected = ids.filter(id => allowed.has(id));
+  if (!selected.length) return;
+  const query = new URLSearchParams();
+  selected.forEach(id => query.append('id',id));
+  window.open('./bin-cards.html?' + query.toString(),'_blank','noopener,noreferrer');
+}
+function updateBinCardSelection() {
+  const items = InventoryBinCards.items(catalog);
+  const allowed = new Set(items.map(i => i.id));
+  for (const id of selectedBinCards) if (!allowed.has(id)) selectedBinCards.delete(id);
+  $('bin-card-selection').textContent = selectedBinCards.size + ' of ' + items.length + ' items selected';
+  $('print-selected-bin-cards').disabled = !selectedBinCards.size;
+  $('clear-bin-cards').disabled = !selectedBinCards.size;
+  $('select-all-bin-cards').disabled = !items.length || selectedBinCards.size === items.length;
+}
+function renderBinCardPicker() {
+  updateBinCardSelection();
+  const search = $('bin-card-search').value.trim().toLowerCase();
+  const items = InventoryBinCards.items(catalog).filter(i => [i.description,i.company,i.itemNumber].some(value => String(value || '').toLowerCase().includes(search)));
+  $('bin-card-list').innerHTML = items.length ? items.map(item => {
+    const issues = InventoryBinCards.details(item,catalog.images).issues;
+    return '<label class="bin-card-choice"><input type="checkbox" data-bin-card="' + escapeHtml(item.id) + '"' + (selectedBinCards.has(item.id) ? ' checked' : '') + '><span><strong>' + escapeHtml(item.description) + '</strong><small>' + escapeHtml([item.company,item.itemNumber].filter(Boolean).join(' · ')) + '</small>' + (issues.length ? '<small class="bin-card-warning">' + escapeHtml(issues.join(' · ')) + '</small>' : '') + '</span></label>';
+  }).join('') : '<div class="empty">No matching Operating Supplies items.</div>';
+}
+function managementSection(section) {
+  $('manage-items-panel').hidden = section !== 'items';
+  $('bin-cards-panel').hidden = section !== 'cards';
+  $('manage-items-tab').setAttribute('aria-pressed',String(section === 'items'));
+  $('print-bin-cards-tab').setAttribute('aria-pressed',String(section === 'cards'));
+  if (section === 'cards') renderBinCardPicker();
+}
 function renderManager() {
   const worksheet = catalog.worksheets.find(w => w.id === $('manager-worksheet').value);
   const items = catalog.items.filter(item => item.sourceSheet === worksheet?.sourceSheet);
-  $('manager-list').innerHTML = items.length ? items.map(item => '<article class="manager-card"><h2>' + escapeHtml(item.description) + '</h2><p>' + escapeHtml(item.location) + ' &middot; ' + escapeHtml(item.countSize) + ' &middot; PAR: ' + escapeHtml(item.par === null ? 'As needed' : item.par) + '</p><div class="manager-actions"><button type="button" data-edit-item="' + item.id + '">Edit</button><button type="button" data-remove-item="' + item.id + '">Remove</button></div></article>').join('') : '<div class="empty">No items in this worksheet. Add an item to get started.</div>';
+  $('manager-list').innerHTML = items.length ? items.map(item => '<article class="manager-card"><h2>' + escapeHtml(item.description) + '</h2><p>' + escapeHtml(item.location) + ' &middot; ' + escapeHtml(item.countSize) + ' &middot; PAR: ' + escapeHtml(item.par === null ? 'As needed' : item.par) + '</p><div class="manager-actions"><button type="button" data-edit-item="' + item.id + '">Edit</button>' + (worksheet.id === 'operating' ? '<button type="button" data-print-bin-card="' + escapeHtml(item.id) + '">Print card</button>' : '') + '<button type="button" data-remove-item="' + item.id + '">Remove</button></div></article>').join('') : '<div class="empty">No items in this worksheet. Add an item to get started.</div>';
+  renderBinCardPicker();
 }
 function updateNewLocation(focus = false) {
   const adding = $('item-location').value === '__new_location__';
@@ -703,7 +789,7 @@ function itemLocations(selected = '') {
   updateNewLocation();
 }
 async function openManager() {
-  if (navigating) return;
+  if (navigating || completing) return;
   navigating = true;
   try {
     await flush(); catalog = await api('/api/catalog'); renderHome();
@@ -714,7 +800,19 @@ async function openManager() {
   } catch (error) { notify(error.message); }
   finally { navigating = false; }
 }
-$('manage-items').addEventListener('click',openManager);
+$('nav-manage').addEventListener('click',openManager);
+$('manage-items-tab').addEventListener('click',() => managementSection('items'));
+$('print-bin-cards-tab').addEventListener('click',() => managementSection('cards'));
+$('bin-card-search').addEventListener('input',renderBinCardPicker);
+$('bin-card-list').addEventListener('change',event => {
+  const checkbox = event.target.closest('[data-bin-card]');
+  if (!checkbox) return;
+  if (checkbox.checked) selectedBinCards.add(checkbox.dataset.binCard); else selectedBinCards.delete(checkbox.dataset.binCard);
+  updateBinCardSelection();
+});
+$('select-all-bin-cards').addEventListener('click',() => { InventoryBinCards.items(catalog).forEach(i => selectedBinCards.add(i.id)); renderBinCardPicker(); });
+$('clear-bin-cards').addEventListener('click',() => { selectedBinCards.clear(); renderBinCardPicker(); });
+$('print-selected-bin-cards').addEventListener('click',() => openBinCardPreview([...selectedBinCards]));
 $('manager-back').addEventListener('click',() => navigate('home'));
 $('manager-worksheet').addEventListener('change',renderManager);
 $('item-worksheet').addEventListener('change',() => itemLocations($('item-location').value));
@@ -744,6 +842,8 @@ $('item-form').addEventListener('submit',async event => {
   finally { itemBusy = false; $('save-item').disabled = false; }
 });
 $('manager-list').addEventListener('click',event => {
+  const print = event.target.closest('[data-print-bin-card]');
+  if (print) { openBinCardPreview([print.dataset.printBinCard]); return; }
   const edit = event.target.closest('[data-edit-item]'), remove = event.target.closest('[data-remove-item]');
   if (edit) editItem(catalog.items.find(i => i.id === edit.dataset.editItem));
   if (remove) {

@@ -16,7 +16,7 @@ const worksheets = [
 function createApp({ dataDir = process.env.DATA_DIR || path.join(__dirname, 'data'), mailer = createMailer() } = {}) {
   let sendingEmail = false, nextEmailAt = 0;
   const releaseHash = createHash('sha256');
-  for (const name of ['server.js', 'email.js', 'catalog.json', 'public/images/manifest.json', 'public/index.html', 'public/styles.css', 'public/app.js', 'public/pack-sizes.js', 'public/branding/northglenn-logo.png']) releaseHash.update(fs.readFileSync(path.join(__dirname, name)));
+  for (const name of ['server.js', 'email.js', 'catalog.json', 'public/images/manifest.json', 'public/index.html', 'public/styles.css', 'public/app.js', 'public/pack-sizes.js', 'public/product-images.js', 'public/bin-cards.js', 'public/bin-cards.html', 'public/bin-cards.css', 'public/bin-card-print.js', 'public/vendor/qrcode.js', 'public/branding/northglenn-logo.png']) releaseHash.update(fs.readFileSync(path.join(__dirname, name)));
   const release = releaseHash.digest('hex').slice(0, 12);
   fs.mkdirSync(dataDir, { recursive: true });
   const file = path.join(dataDir, 'inventories.json');
@@ -95,6 +95,29 @@ function createApp({ dataDir = process.env.DATA_DIR || path.join(__dirname, 'dat
       if (route === '/api/catalog' && req.method === 'GET') return json(200, { ...currentCatalog(), worksheets, images:imageManifest.items });
       const orderList = () => ({items:state.orderList || [],revision:state.orderListRevision || 0,orders:state.orderHistory || []});
       if (route === '/api/order-list' && req.method === 'GET') return json(200, orderList());
+      const appendOrderMatch = route.match(/^\/api\/order-history\/([a-f0-9-]+)\/items$/);
+      if (req.method === 'POST' && (route === '/api/order-list/manual' || appendOrderMatch)) {
+        let origin;
+        try { origin = new URL(req.headers.origin); } catch { fail(403,'Add items from the inventory app.'); }
+        if (!['http:','https:'].includes(origin.protocol) || origin.host !== req.headers.host) fail(403,'Add items from the inventory app.');
+        const body = await bodyOf(req), current = orderList();
+        if (body.revision !== current.revision) fail(409,'Orders changed in another browser. Cancel, refresh, and try again.');
+        const order = appendOrderMatch && current.orders.find(order => order.id === appendOrderMatch[1]);
+        if (appendOrderMatch && !order) fail(404,'This order is no longer in history.');
+        const item = currentCatalog().items.find(item => item.id === body.itemId);
+        if (!item) fail(404,'This item is no longer in the catalog.');
+        const destination = order ? order.items : current.items;
+        if (destination.some(entry => itemKey(entry.item) === itemKey(item))) fail(409,order ? 'This item is already on this order.' : 'This item is already on the order list. Edit its order details instead.');
+        if ((order && body.quantity === null) || (body.quantity !== null && (typeof body.quantity !== 'number' || !Number.isFinite(body.quantity) || body.quantity <= 0 || body.quantity > 1000000))) fail(400,order ? 'Enter the quantity purchased (greater than zero).' : 'Enter a positive quantity or leave it blank.');
+        if (typeof body.orderUnit !== 'string' || !body.orderUnit.trim() || body.orderUnit.trim().length > 80) fail(400,'Enter the purchasing unit (up to 80 characters).');
+        if (typeof body.notes !== 'string' || body.notes.length > 1000) fail(400,'Notes must be up to 1,000 characters.');
+        const entry = {id:randomUUID(),item:structuredClone(item),source:'manual',quantity:body.quantity,orderUnit:body.orderUnit.trim(),notes:body.notes.trim(),addedAt:new Date().toISOString(),inventoryId:null,inventoryDate:null,operator:null,worksheet:worksheets.find(worksheet => worksheet.sourceSheet === item.sourceSheet)?.id || null,onHand:null};
+        if (order) {
+          const updated = {...order,items:[...order.items,entry],updatedAt:new Date().toISOString()};
+          persist({...state,orderHistory:current.orders.map(old => old.id === updated.id ? updated : old),orderListRevision:current.revision + 1});
+        } else persist({...state,orderList:[...current.items,entry],orderListRevision:current.revision + 1});
+        return json(201,orderList());
+      }
       const orderHistoryMatch = route.match(/^\/api\/order-history\/([a-f0-9-]+)$/);
       if (orderHistoryMatch && req.method === 'DELETE') {
         let origin;
@@ -266,6 +289,7 @@ function createApp({ dataDir = process.env.DATA_DIR || path.join(__dirname, 'dat
       if (route.startsWith('/api/')) return json(404, { error: 'Endpoint not found.' });
       if (!['GET', 'HEAD'].includes(req.method)) return json(405, { error: 'Method not allowed.' });
       const assets = { '/': 'index.html', '/index.html': 'index.html', '/app.js': 'app.js', '/pack-sizes.js':'pack-sizes.js', '/styles.css': 'styles.css', '/branding/northglenn-logo.png':'branding/northglenn-logo.png' };
+      for (const asset of ['product-images.js','bin-cards.html','bin-cards.js','bin-cards.css','bin-card-print.js','vendor/qrcode.js','licenses/qrcode-MIT.txt']) assets['/' + asset] = asset;
       // Only filenames in the imported manifest are exposed, never arbitrary paths.
       for (const photo of Object.values(imageManifest.items)) {
         if (/^\/images\/s[123]-r\d+\.(jpg|png|webp|gif)$/.test(photo.src)) assets[photo.src] = photo.src.slice(1);
@@ -275,7 +299,7 @@ function createApp({ dataDir = process.env.DATA_DIR || path.join(__dirname, 'dat
       const imageType = { '.jpg':'image/jpeg', '.png':'image/png', '.webp':'image/webp', '.gif':'image/gif' }[path.extname(asset)];
       res.writeHead(200, { 'Content-Type': imageType || (asset.endsWith('.css') ? 'text/css; charset=utf-8' : asset.endsWith('.js') ? 'text/javascript; charset=utf-8' : 'text/html; charset=utf-8'), 'Cache-Control': 'no-store', 'X-Inventory-Version': release, 'X-Content-Type-Options': 'nosniff', 'Content-Security-Policy': "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; frame-ancestors 'self'" });
       let content = fs.readFileSync(path.join(__dirname, 'public', asset));
-      if (asset === 'index.html') content = content.toString('utf8').replace(/(href|src)="\.\/(styles\.css|app\.js|pack-sizes\.js)(?:\?[^\"]*)?"/g, (_, attr, name) => `${attr}="./${name}?v=${release}"`);
+      if (asset.endsWith('.html')) content = content.toString('utf8').replace(/(href|src)="\.\/([\w/-]+\.(?:css|js))(?:\?[^\"]*)?"/g, (_, attr, name) => `${attr}="./${name}?v=${release}"`);
       res.end(req.method === 'HEAD' ? undefined : content);
     } catch (error) {
       if (!error.status) console.error(error);
