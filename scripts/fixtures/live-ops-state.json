@@ -1,0 +1,475 @@
+{
+  "updatedAt": "2026-10-13T19:37:00Z",
+  "equipment": [
+    {
+      "id": "filters-filter-1",
+      "name": "Filter 1",
+      "groupKey": "filters",
+      "groupLabel": "Filters",
+      "status": "warning",
+      "note": "Front surface wash arm submerged in media.",
+      "swMaintenanceComplete": true,
+      "swMaintenanceYear": 2026,
+      "updatedBy": "Blaine",
+      "updatedAt": "2026-03-31T11:36:19.292Z",
+      "changeLog": [
+        {
+          "timestamp": "2026-03-31T11:36:19.292Z",
+          "updatedBy": "Blaine",
+          "changes": [
+            {
+              "field": "status",
+              "label": "Status",
+              "from": "Out of Service",
+              "to": "Maintenance Ongoing"
+            }
+          ]
+        },
+        {
+          "timestamp": "2026-03-30T12:02:05.708Z",
+          "updatedBy": "Blaine",
+          "changes": [
+            {
+              "field": "note",
+              "label": "Notes",
+              "from": "Effluent actuator needs replacement",
+              "to": "Effluent actuator needs to be tested again. Operator was unable to get flow with filter running."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "filters-filter-2",
+      "name": "Filter 2",
+      "groupKey": "filters",
+      "groupLabel": "Filters",
+      "status": "operational",
+      "note": "",
+      "swMaintenanceComplete": true,
+      "swMaintenanceYear": 2026,
+      "updatedBy": "operator",
+      "updatedAt": "2026-02-28T03:34:06.576Z",
+      "changeLog": []
+    },
+    {
+      "id": "filters-filter-3",
+      "name": "Filter 3",
+      "groupKey": "filters",
+      "groupLabel": "Filters",
+      "status": "operational",
+      "note": "",
+      "swMaintenanceComplete": true,
+      "swMaintenanceYear": 2026,
+      "updatedBy": "operator",
+      "updatedAt": "2026-02-28T03:34:03.548Z",
+      "changeLog": []
+    },
+    {
+      "id": "filters-filter-4",
+      "name": "Filter 4",
+      "groupKey": "filters",
+      "groupLabel": "Filters",
+      "status": "operational",
+      "note": "",
+      "swMaintenanceComplete": true,
+      "swMaintenanceYear": 2026,
+      "updatedBy": "Kaiden",
+      "updatedAt": "2026-02-28T03:18:34.661Z",
+      "changeLog": []
+    },
+    {
+      "id": "filters-filter-5",
+      "name": "Filter 5",
+      "groupKey": "filters",
+      "groupLabel": "Filters",
+      "status": "operational",
+      "note": "",
+      "swMaintenanceComplete": true,
+      "swMaintenanceYear": 2026,
+      "updatedBy": "Blaine",
+      "updatedAt": "2026-02-28T04:37:50.026Z",
+      "changeLog": []
+    },
+    {
+      "id": "filters-filter-6",
+      "name": "Filter 6",
+      "groupKey": "filters",
+      "groupLabel": "Filters",
+      "status": "operational",
+      "note": "",
+      "swMaintenanceComplete": true,
+      "swMaintenanceYear": 2026,
+      "updatedBy": "Blaine",
+      "updatedAt": "2026-04-02T01:16:14.582Z",
+      "changeLog": [
+        {
+          "timestamp": "2026-04-02T01:16:14.582Z",
+          "updatedBy": "Blaine",
+          "changes": [
+            {
+              "field": "status",
+              "label": "Status",
+              "from": "Maintenance Ongoing",
+              "to": "Online"
+            }
+          ]
+        },
+        {
+          "timestamp": "2026-03-31T11:35:53.964Z",
+          "updatedBy": "Blaine",
+          "changes": [
+            {
+              "field": "status",
+              "label": "Status",
+              "from": "Online",
+              "to": "Maintenance Ongoing"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "filters-filter-7",
+      "name": "Filter 7",
+      "groupKey": "filters",
+      "groupLabel": "Filters",
+      "status": "operational",
+      "note": "",
+      "swMaintenanceComplete": true,
+      "swMaintenanceYear": 2026,
+      "updatedBy": "Blaine",
+      "updatedAt": "2026-04-02T01:16:21.435Z",
+      "changeLog": [
+        {
+          "timestamp": "2026-04-02T01:16:21.435Z",
+          "updatedBy": "Blaine",
+          "changes": [
+            {
+              "field": "status",
+              "label": "Status",
+              "from": "Warning",
+              "to": "Online"
+            },
+            {
+              "field": "note",
+              "label": "Notes",
+              "from": "Influent valve slow",
+              "to": "No notes"
+            }
+          ]
+        },
+        {
+          "timestamp": "2026-03-31T11:21:17.022Z",
+          "updatedBy": "Blaine",
+          "changes": [
+            {
+              "field": "status",
+              "label": "Status",
+              "from": "Online",
+              "to": "Warning"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "filters-filter-8",
+      "name": "Filter 8",
+      "groupKey": "filters",
+      "groupLabel": "Filters",
+      "status": "out-of-service",
+      "note": "Pinhole leak in backwash supply line. Keep isolated until the repair is complete and the line has been checked by maintenance.",
+      "swMaintenanceComplete": true,
+      "swMaintenanceYear": null,
+      "updatedBy": "Blaine",
+      "updatedAt": "2026-02-28T04:26:28.687Z",
+      "changeLog": []
+    },
+    {
+      "id": "low-zone-pumps-lz1b",
+      "name": "LZ1B",
+      "groupKey": "low-zone-pumps",
+      "groupLabel": "Low Zone Pumps",
+      "status": "operational",
+      "note": "",
+      "swMaintenanceComplete": false,
+      "swMaintenanceYear": null,
+      "updatedBy": "Blaine",
+      "updatedAt": "2026-02-28T01:20:45.358Z",
+      "changeLog": []
+    },
+    {
+      "id": "low-zone-pumps-lz2b",
+      "name": "LZ2B",
+      "groupKey": "low-zone-pumps",
+      "groupLabel": "Low Zone Pumps",
+      "status": "operational",
+      "note": "",
+      "swMaintenanceComplete": false,
+      "swMaintenanceYear": null,
+      "updatedBy": "Blaine",
+      "updatedAt": "2026-02-28T01:20:47.189Z",
+      "changeLog": []
+    },
+    {
+      "id": "low-zone-pumps-lz3b",
+      "name": "LZ3B",
+      "groupKey": "low-zone-pumps",
+      "groupLabel": "Low Zone Pumps",
+      "status": "operational",
+      "note": "",
+      "swMaintenanceComplete": false,
+      "swMaintenanceYear": null,
+      "updatedBy": "Kaiden",
+      "updatedAt": "2026-02-28T01:59:23.732Z",
+      "changeLog": []
+    },
+    {
+      "id": "low-zone-pumps-lz4b",
+      "name": "LZ4B",
+      "groupKey": "low-zone-pumps",
+      "groupLabel": "Low Zone Pumps",
+      "status": "operational",
+      "note": "",
+      "swMaintenanceComplete": false,
+      "swMaintenanceYear": null,
+      "updatedBy": "Blaine",
+      "updatedAt": "2026-03-30T12:01:23.066Z",
+      "changeLog": [
+        {
+          "timestamp": "2026-03-30T12:01:23.066Z",
+          "updatedBy": "Blaine",
+          "changes": [
+            {
+              "field": "status",
+              "label": "Status",
+              "from": "Maintenance Ongoing",
+              "to": "Online"
+            }
+          ]
+        },
+        {
+          "timestamp": "2026-03-30T12:01:10.301Z",
+          "updatedBy": "Blaine",
+          "changes": [
+            {
+              "field": "note",
+              "label": "Notes",
+              "from": "Here is a note to test logging.",
+              "to": "No notes"
+            }
+          ]
+        },
+        {
+          "timestamp": "2026-03-30T12:00:10.030Z",
+          "updatedBy": "Blaine",
+          "changes": [
+            {
+              "field": "note",
+              "label": "Notes",
+              "from": "No notes",
+              "to": "Here is a note to test logging."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "low-zone-pumps-lz1a",
+      "name": "LZ1A",
+      "groupKey": "low-zone-pumps",
+      "groupLabel": "Low Zone Pumps",
+      "status": "offline",
+      "note": "",
+      "swMaintenanceComplete": false,
+      "swMaintenanceYear": null,
+      "updatedBy": "Blaine",
+      "updatedAt": "2026-03-02T00:34:02.299Z",
+      "changeLog": []
+    },
+    {
+      "id": "low-zone-pumps-lz2a",
+      "name": "LZ2A",
+      "groupKey": "low-zone-pumps",
+      "groupLabel": "Low Zone Pumps",
+      "status": "offline",
+      "note": "",
+      "swMaintenanceComplete": false,
+      "swMaintenanceYear": null,
+      "updatedBy": "Blaine",
+      "updatedAt": "2026-03-02T00:34:11.190Z",
+      "changeLog": []
+    },
+    {
+      "id": "low-zone-pumps-lz3a",
+      "name": "LZ3A",
+      "groupKey": "low-zone-pumps",
+      "groupLabel": "Low Zone Pumps",
+      "status": "offline",
+      "note": "",
+      "swMaintenanceComplete": false,
+      "swMaintenanceYear": null,
+      "updatedBy": "Blaine",
+      "updatedAt": "2026-03-02T00:34:46.054Z",
+      "changeLog": []
+    },
+    {
+      "id": "high-zone-pumps-hz-1",
+      "name": "HZ 1",
+      "groupKey": "high-zone-pumps",
+      "groupLabel": "High Zone Pumps",
+      "status": "out-of-service",
+      "note": "Packing bad, OFF at HOA.",
+      "swMaintenanceComplete": false,
+      "swMaintenanceYear": null,
+      "updatedBy": "Blaine",
+      "updatedAt": "2026-02-28T01:20:54.240Z",
+      "changeLog": []
+    },
+    {
+      "id": "high-zone-pumps-hz-2",
+      "name": "HZ 2",
+      "groupKey": "high-zone-pumps",
+      "groupLabel": "High Zone Pumps",
+      "status": "operational",
+      "note": "",
+      "swMaintenanceComplete": false,
+      "swMaintenanceYear": null,
+      "updatedBy": "Blaine",
+      "updatedAt": "2026-02-28T01:20:56.032Z",
+      "changeLog": []
+    },
+    {
+      "id": "high-zone-pumps-hz-3",
+      "name": "HZ 3",
+      "groupKey": "high-zone-pumps",
+      "groupLabel": "High Zone Pumps",
+      "status": "operational",
+      "note": "",
+      "swMaintenanceComplete": false,
+      "swMaintenanceYear": null,
+      "updatedBy": "Blaine",
+      "updatedAt": "2026-02-28T01:20:58.018Z",
+      "changeLog": []
+    },
+    {
+      "id": "high-zone-pumps-hz-4",
+      "name": "HZ 4",
+      "groupKey": "high-zone-pumps",
+      "groupLabel": "High Zone Pumps",
+      "status": "operational",
+      "note": "",
+      "swMaintenanceComplete": false,
+      "swMaintenanceYear": null,
+      "updatedBy": "Blaine",
+      "updatedAt": "2026-02-28T03:58:07.005Z",
+      "changeLog": []
+    },
+    {
+      "id": "booster-pumps-booster-1",
+      "name": "Booster 1",
+      "groupKey": "booster-pumps",
+      "groupLabel": "Booster Pumps",
+      "status": "operational",
+      "note": "",
+      "swMaintenanceComplete": false,
+      "swMaintenanceYear": null,
+      "updatedBy": "Kaiden",
+      "updatedAt": "2026-02-28T01:48:14.817Z",
+      "changeLog": []
+    },
+    {
+      "id": "booster-pumps-booster-2",
+      "name": "Booster 2",
+      "groupKey": "booster-pumps",
+      "groupLabel": "Booster Pumps",
+      "status": "operational",
+      "note": "",
+      "swMaintenanceComplete": false,
+      "swMaintenanceYear": null,
+      "updatedBy": "Kaiden",
+      "updatedAt": "2026-02-28T01:48:17.142Z",
+      "changeLog": []
+    },
+    {
+      "id": "booster-pumps-booster-3",
+      "name": "Booster 3",
+      "groupKey": "booster-pumps",
+      "groupLabel": "Booster Pumps",
+      "status": "out-of-service",
+      "note": "",
+      "swMaintenanceComplete": false,
+      "swMaintenanceYear": null,
+      "updatedBy": "system",
+      "updatedAt": "2026-02-27T12:56:27.584Z",
+      "changeLog": []
+    },
+    {
+      "id": "booster-pumps-jockey",
+      "name": "Jockey",
+      "groupKey": "booster-pumps",
+      "groupLabel": "Booster Pumps",
+      "status": "operational",
+      "note": "",
+      "swMaintenanceComplete": false,
+      "swMaintenanceYear": null,
+      "updatedBy": "Kaiden",
+      "updatedAt": "2026-02-28T01:48:21.936Z",
+      "changeLog": []
+    },
+    {
+      "id": "reclaim-pumps-north-reclaim-pump",
+      "name": "North Reclaim",
+      "groupKey": "reclaim-pumps",
+      "groupLabel": "Reclaim Pumps",
+      "status": "operational",
+      "note": "",
+      "swMaintenanceComplete": false,
+      "swMaintenanceYear": null,
+      "updatedBy": "Kaiden",
+      "updatedAt": "2026-02-28T02:31:17.455Z",
+      "changeLog": []
+    },
+    {
+      "id": "reclaim-pumps-south-reclaim-pump",
+      "name": "South Reclaim",
+      "groupKey": "reclaim-pumps",
+      "groupLabel": "Reclaim Pumps",
+      "status": "operational",
+      "note": "",
+      "swMaintenanceComplete": false,
+      "swMaintenanceYear": null,
+      "updatedBy": "Kaiden",
+      "updatedAt": "2026-02-28T02:31:19.840Z",
+      "changeLog": []
+    },
+    {
+      "id": "waste-pumps-north-waste-pump",
+      "name": "North Waste",
+      "groupKey": "waste-pumps",
+      "groupLabel": "Waste Pumps",
+      "status": "operational",
+      "note": "",
+      "swMaintenanceComplete": false,
+      "swMaintenanceYear": null,
+      "updatedBy": "Kaiden",
+      "updatedAt": "2026-02-28T02:31:22.896Z",
+      "changeLog": []
+    },
+    {
+      "id": "waste-pumps-south-waste-pump",
+      "name": "South Waste",
+      "groupKey": "waste-pumps",
+      "groupLabel": "Waste Pumps",
+      "status": "warning",
+      "note": "Will only run in hand. No SCADA control.",
+      "swMaintenanceComplete": false,
+      "swMaintenanceYear": null,
+      "updatedBy": "Kaiden",
+      "updatedAt": "2026-02-28T02:31:25.660Z",
+      "changeLog": []
+    }
+  ],
+  "comments": []
+}

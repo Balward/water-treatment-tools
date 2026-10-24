@@ -1,0 +1,13 @@
+/* Northglenn Operations theme v1. Shared by inventory, equipment, and home. */
+@font-face{font-family:Inter;src:url('./Inter-VariableFont_opsz,wght.ttf') format('truetype');font-style:normal;font-weight:100 900;font-display:swap}
+:root{
+  --ops-font-family:Inter,"Segoe UI",sans-serif;
+  --ops-weight-body:400;--ops-weight-label:500;--ops-weight-control:600;--ops-weight-heading:700;
+  --ops-size-title:38px;--ops-size-section:24px;--ops-size-subheading:20px;--ops-size-card:16px;--ops-size-body:14px;--ops-size-small:12px;--ops-size-label:11px;
+  --ops-color-ink:#172127;--ops-color-muted:#576b77;--ops-color-accent:#00677f;--ops-color-canvas:#eef2f4;--ops-color-surface:#fff;--ops-color-line:#bdcbd1;--ops-color-soft:#edf5f7;
+  --ops-radius-small:6px;--ops-radius-card:8px;--ops-space-1:4px;--ops-space-2:8px;--ops-space-3:12px;--ops-space-4:16px;--ops-space-6:24px;--ops-space-8:32px;
+  --ops-sidebar-width:222px;--ops-sidebar-row-height:54px;--ops-sidebar-padding:32px 14px 24px;--ops-sidebar-row-gap:6px;
+}
+html body{font-family:var(--ops-font-family);font-synthesis:none}
+button,input,select,textarea{font-family:inherit}
+@media(max-width:600px){:root{--ops-size-title:32px}}

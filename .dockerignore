@@ -28,6 +28,14 @@ lib-cov
 
 # Dependency directories
 node_modules/
+**/node_modules/
+**/.env
+**/.env.backup
+deployment/
+preview/
+apps/operator-inventory/
+**/design/
+**/preview/
 
 # Optional npm cache directory
 .npm

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MWAT Calculator - Design Mockup</title>
+  <link rel="stylesheet" href="../../../shared/operations/theme.css" />
+  <link rel="stylesheet" href="../../../shared/operations/navigation.css">
+  <link rel="stylesheet" href="mockup.css">
+  <link rel="icon" href="../../../assets/logos/favicon.png">
+  <script src="../../../shared/operations/navigation.js" defer></script>
+</head>
+<body data-ops-app="mwat">
+  <a class="skip-link" href="#main">Skip To Calculator</a><header class="site-header"><a class="brand" href="../../dashboard/dashboard.html" aria-label="Operations Home"><img src="../../../assets/logos/northglenn-horizontal.png" alt="City of Northglenn" width="300" height="69"></a><div class="facility"><strong>Water Treatment Facility</strong><span>WASTEWATER TREATMENT</span></div><button data-ops-menu type="button" aria-label="Open Applications Menu">Apps</button></header><div class="workspace"><aside class="sidebar" aria-label="Calculator sections"><p class="nav-caption">YOUR WORKSPACE</p><nav aria-label="On This Page"><a class="nav-item" href="#inputs" aria-current="location"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V3m-5 5 5-5 5 5M4 16v5h16v-5"/></svg></span><span>Upload Records</span></a><a class="nav-item" href="#summarySection"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M10 4v16"/></svg></span><span>Data Snapshot</span></a><a class="nav-item" href="#resultsSection"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M10 4v16"/></svg></span><span>Monthly Highlights</span></a><a class="nav-item" href="#windowsSection"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M10 4v16"/></svg></span><span>Weekly Averages</span></a><a class="nav-item" href="#dailySection"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M10 4v16"/></svg></span><span>Daily Detail</span></a></nav></aside>
+  <main class="page" id="main" tabindex="-1">
+    <p class="preview-note">Design Preview &middot; Existing CSV-to-report workflow</p>
+    <header class="hero">
+      <span class="hero__overline">Wastewater Treatment</span>
+      <h1>MWAT &amp; Daily Max Temperature</h1>
+      <p class="hero__lede">
+        Upload overlapping temperature exports and instantly report seven-day MWAT and daily peak temperatures for the month.
+      </p>
+    </header>
+
+    <section class="card card--inputs" id="inputs">
+      <div class="card__header">
+        <h2>Upload Temperature Records</h2>
+        <p>Provide the overlapping CSV exports that cover the full month of interest.</p>
+      </div>
+      <div class="input-grid">
+        <label class="input-group">
+          <span>CSV file 1</span>
+          <input type="file" id="csvFile1" accept=".csv" />
+        </label>
+        <label class="input-group">
+          <span>CSV file 2</span>
+          <input type="file" id="csvFile2" accept=".csv" />
+        </label>
+        <label class="input-group">
+          <span>Month to report</span>
+          <select id="monthSelect">
+            <option value="" selected disabled>Select month</option>
+          </select>
+        </label>
+        <label class="input-group">
+          <span>Monitoring location</span>
+          <select id="locationSelect">
+            <option value="" selected disabled>Select location</option>
+            <option value="001">001</option>
+            <option value="004">004</option>
+            <option value="007">007</option>
+            <option value="UV">UV</option>
+            <option value="UST1A">UST1A</option>
+          </select>
+        </label>
+      </div>
+      <div id="dischargeTypeContainer" class="input-group hidden">
+        <span>Discharge type</span>
+        <div class="radio-group" role="radiogroup" aria-label="Discharge type">
+          <label class="radio">
+            <input type="radio" name="dischargeType" value="continuous" />
+            <span>Continuous discharge</span>
+          </label>
+          <label class="radio">
+            <input type="radio" name="dischargeType" value="intermittent" />
+            <span>Intermittent discharge</span>
+          </label>
+        </div>
+      </div>
+      <div id="intermittentContainer" class="intermittent hidden" aria-live="polite">
+        <div class="input-grid input-grid--periods">
+          <label class="input-group">
+            <span>Discharge start</span>
+            <input type="datetime-local" id="periodStart" />
+          </label>
+          <label class="input-group">
+            <span>Discharge stop</span>
+            <input type="datetime-local" id="periodEnd" />
+          </label>
+        </div>
+        <div class="intermittent__actions">
+          <button type="button" id="addPeriodButton" class="button button--subtle">Add discharge period</button>
+        </div>
+        <p id="periodError" class="input-error hidden" role="alert"></p>
+        <ul id="periodList" class="period-list hidden" aria-live="polite"></ul>
+      </div>
+      <div class="card__actions">
+        <button id="processButton" class="button" disabled>Run calculations</button>
+        <p class="note">
+          Column B must contain the timestamp and column C the recorded temperature (°C). Header rows are ignored and
+          all other columns are safely discarded.
+        </p>
+      </div>
+      <div id="messages" role="status" aria-live="polite"></div>
+    </section>
+
+    <section id="summarySection" class="card hidden">
+      <div class="card__header">
+        <h2>Data Snapshot</h2>
+        <p>A quick look at the merged records before reviewing results.</p>
+      </div>
+      <dl class="summary">
+        <div>
+          <dt>Total records processed</dt>
+          <dd id="recordCount">0</dd>
+        </div>
+        <div>
+          <dt>Unique days with data</dt>
+          <dd id="dayCount">0</dd>
+        </div>
+        <div>
+          <dt>Data range</dt>
+          <dd id="dateRange">&mdash;</dd>
+        </div>
+      </dl>
+    </section>
+
+    <section id="resultsSection" class="card hidden">
+      <div class="card__header">
+        <h2>Monthly Highlights</h2>
+        <p>The MWAT highlights the highest seven-day rolling average with at least four days in the selected month, and
+          the daily maximum follows the two-hour rolling average guidance.</p>
+      </div>
+      <div class="card__actions card__actions--inline">
+        <button id="exportPdfButton" class="button button--subtle hidden" type="button" disabled>
+          Export results as PDF
+        </button>
+      </div>
+      <div id="metricsPanel" class="metric-grid hidden">
+        <article class="metric metric--mwat">
+          <h3 class="metric__title">Maximum Weekly Average Temperature</h3>
+          <p class="metric__value" id="mwatValue">&mdash;</p>
+          <p class="metric__detail" id="mwatRange"></p>
+          <p class="metric__note" id="mwatContext"></p>
+        </article>
+        <article class="metric metric--daily">
+          <h3 class="metric__title">Daily Maximum (2-Hr Mean)</h3>
+          <p class="metric__value" id="dailyMaxValue">&mdash;</p>
+          <p class="metric__detail" id="dailyMaxRange"></p>
+          <p class="metric__note" id="dailyMaxContext"></p>
+        </article>
+      </div>
+    </section>
+
+    <section id="windowsSection" class="card hidden">
+      <div class="card__header">
+        <h2>Maximum Weekly Average Temperature</h2>
+        <p>Seven-day windows require consecutive daily averages and qualify when at least four days fall within the selected month. The top qualifying window is highlighted.</p>
+      </div>
+      <div id="windowTableContainer" class="table-group table-group--mwat"></div>
+    </section>
+
+    <section id="dailySection" class="card hidden">
+      <div class="card__header">
+        <h2>Daily Temperature Detail</h2>
+        <p>Daily averages require at least three readings per day. Only days in the selected month are displayed. Two-hour
+          windows need eight consecutive 15-minute samples to contribute to the daily maximum.</p>
+      </div>
+      <div id="dailyTableContainer" class="table-group table-group--daily"></div>
+    </section>
+  </main>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+  <script src="../script.js"></script>
+  <script src="mockup.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+

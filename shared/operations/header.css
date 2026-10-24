@@ -1,0 +1,21 @@
+/* Common app banner. Keep sizing here instead of in individual app adapters. */
+.ops-home-link{display:block;color:inherit;text-decoration:none}.ops-home-link:focus-visible{outline:3px solid #008cab;outline-offset:4px}
+:root{--ops-header-height:112px;--ops-header-logo-width:290px;--ops-header-padding:20px 40px;--ops-header-gap:40px}
+:root body[data-ops-app] :is(.site-header,.topbar){box-sizing:border-box;display:grid;grid-template-columns:var(--ops-header-logo-width) minmax(0,1fr) auto;grid-template-rows:1fr;align-items:center;gap:var(--ops-header-gap);height:var(--ops-header-height);min-height:var(--ops-header-height);padding:var(--ops-header-padding);border-bottom:1px solid var(--ops-color-line);background:#fff;flex:none}
+:root body[data-ops-app] :is(.site-header,.topbar) .brand{grid-column:1;grid-row:1;display:block;width:var(--ops-header-logo-width);max-width:100%;min-width:0;margin:0;padding:0}
+:root body[data-ops-app] :is(.site-header,.topbar) .brand img{display:block;width:100%;max-width:100%;height:auto;max-height:68px;object-fit:contain;object-position:left center;margin:0}
+:root body[data-ops-app] :is(.site-header,.topbar) :is(.facility,.facility-name){grid-column:2;grid-row:1;margin:0;padding:0 0 0 32px;border-left:1px solid var(--ops-color-line);color:var(--ops-color-ink);text-align:left;font:700 20px/1.4 var(--ops-font-family);letter-spacing:-.4px}
+:root body[data-ops-app] :is(.site-header,.topbar) .facility strong{font:inherit;letter-spacing:inherit}
+:root body[data-ops-app] :is(.site-header,.topbar) :is(.facility,.facility-name) span{display:block;margin-top:6px;color:var(--ops-color-muted);font:600 10px/1.4 var(--ops-font-family);letter-spacing:1.4px}
+:root body[data-ops-app] :is(.site-header,.topbar)>[data-ops-menu]{grid-column:3;grid-row:1;margin:0;justify-self:end}
+@media(min-width:801px) and (max-width:1200px){:root{--ops-header-logo-width:250px;--ops-header-padding:20px 28px;--ops-header-gap:28px}:root body[data-ops-app] :is(.site-header,.topbar) :is(.facility,.facility-name){padding-left:24px;font-size:18px}}
+@media(max-width:800px){
+  :root{--ops-header-height:144px;--ops-header-logo-width:clamp(150px,47vw,190px);--ops-header-padding:20px;--ops-header-gap:16px 12px}
+  :root body[data-ops-app] :is(.site-header,.topbar){grid-template-columns:minmax(0,1fr) auto;grid-template-rows:44px 43px}
+  :root body[data-ops-app] :is(.site-header,.topbar) .brand img{max-height:44px}
+  :root body[data-ops-app] :is(.site-header,.topbar) :is(.facility,.facility-name){grid-column:1/-1;grid-row:2;border:0;padding:0;font-size:16px;order:initial}
+  :root body[data-ops-app] :is(.site-header,.topbar)>[data-ops-menu]{grid-column:2}
+}
+
+/* The app shell must not constrain the shared banner on larger screens. */
+:root[data-layout] .phone-app{width:100%;max-width:none;margin:0;box-shadow:none}

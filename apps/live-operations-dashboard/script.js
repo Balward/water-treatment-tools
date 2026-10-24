@@ -27,6 +27,7 @@
   const hoverPopupMeta = document.getElementById('hoverPopupMeta');
   const generalCommentsForm = document.getElementById('generalCommentsForm');
   const generalCommentInput = document.getElementById('generalCommentInput');
+  const generalCommentPinned = document.getElementById('generalCommentPinned');
   const generalCommentsMode = document.getElementById('generalCommentsMode');
   const submitCommentButton = document.getElementById('submitCommentButton');
   const cancelCommentEditButton = document.getElementById('cancelCommentEditButton');
@@ -42,7 +43,7 @@
   const operatorNameStorageKey = 'live-ops-operator-name';
   const displayMode = new URLSearchParams(window.location.search).get('mode');
   const statusOptionsList = [
-    { value: 'operational', label: 'Online' },
+    { value: 'operational', label: 'In service' },
     { value: 'warning', label: 'Warning' },
     { value: 'offline', label: 'Offline' },
     { value: 'out-of-service', label: 'Out of Service' },
@@ -103,6 +104,10 @@
     }
     return window.confirm('You have unsaved sidebar edits. Discard them?');
   }
+  document.addEventListener('operations:before-navigate', event => {
+    if(!confirmDiscardPendingChanges())event.preventDefault();
+    else if(commentDrawer.classList.contains('is-open') && generalCommentInput.value.trim() && !window.confirm('Leave without saving this comment?'))event.preventDefault();
+  });
 
   function formatTimestamp(isoValue) {
     if (!isoValue) {
@@ -169,6 +174,7 @@
             message: typeof comment.message === 'string' ? comment.message.trim() : '',
             author: typeof comment.author === 'string' && comment.author.trim() ? comment.author.trim() : 'operator',
             updatedAt: typeof comment.updatedAt === 'string' ? comment.updatedAt : null,
+            pinned: comment.pinned === true,
           }))
           .filter((comment) => comment.id && comment.message)
         : [],
@@ -216,15 +222,17 @@
   }
 
   function setConnectivity(isConnected) {
-    const label = isConnected ? 'Live sync on' : 'Reconnecting';
+    const label = isConnected ? 'Connected To Board' : 'Reconnecting';
     syncStatus.classList.toggle('sync-dot--online', isConnected);
     syncStatus.classList.toggle('sync-dot--offline', !isConnected);
     syncStatus.setAttribute('aria-label', label);
     syncStatus.title = label;
+    document.dispatchEvent(new CustomEvent('live-ops:connection', { detail: { connected: isConnected } }));
   }
 
   function updateLastUpdated() {
     lastUpdated.textContent = `Last updated: ${formatTimestamp(liveState?.updatedAt)}`;
+    document.dispatchEvent(new CustomEvent('live-ops:state', { detail: liveState }));
   }
 
   function groupEquipment(equipment) {
@@ -282,6 +290,7 @@
 
     editingCommentId = comment?.id || null;
     generalCommentInput.value = comment?.message || '';
+    if (generalCommentPinned) generalCommentPinned.checked = comment?.pinned === true;
     setCommentFormState();
     commentDrawer.classList.add('is-open');
     commentDrawer.setAttribute('aria-hidden', 'false');
@@ -321,8 +330,18 @@
   function buildCommentCard(comment) {
     const card = commentTemplate.content.firstElementChild.cloneNode(true);
     card.dataset.commentId = comment.id;
+    card.dataset.pinned = String(comment.pinned === true);
+    if (comment.pinned) {
+      const label = document.createElement('span'); label.className = 'comment-pin-label'; label.textContent = 'Pinned';
+      card.querySelector('.comment-card-meta').prepend(label);
+    }
     card.querySelector('.comment-card-author').textContent = comment.author || 'operator';
-    card.querySelector('.comment-card-date').textContent = formatTimestamp(comment.updatedAt);
+    const timestamp = card.querySelector('.comment-card-date');
+    const date = new Date(comment.updatedAt || NaN);
+    timestamp.textContent = Number.isFinite(date.getTime())
+      ? date.toLocaleString(undefined, {month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}) : '--';
+    timestamp.title = formatTimestamp(comment.updatedAt);
+    if (Number.isFinite(date.getTime())) timestamp.dateTime = date.toISOString();
     card.querySelector('.comment-card-message').textContent = comment.message;
     return card;
   }
@@ -343,7 +362,7 @@
       return;
     }
 
-    for (const comment of comments) {
+    for (const comment of [...comments].sort((a,b) => Number(b.pinned) - Number(a.pinned))) {
       generalCommentsList.appendChild(buildCommentCard(comment));
     }
   }
@@ -564,7 +583,7 @@
       (item) => isInServiceStatus(normalizeStatus(item.status, item.inService))
     ).length;
     groupNode.querySelector('.group-title').textContent = group.label;
-    groupNode.querySelector('.group-stats').textContent = `${onlineCount} / ${group.equipment.length} online`;
+    groupNode.querySelector('.group-stats').textContent = `${onlineCount} / ${group.equipment.length} in service`;
 
     const defaultGrid = groupNode.querySelector('.card-grid');
     if (group.key === 'low-zone-pumps') {
@@ -779,6 +798,20 @@
         continue;
       }
 
+      if (group.key === 'high-zone-pumps') {
+        const boosterGroup = grouped.find((item) => item.key === 'booster-pumps');
+        if (boosterGroup) {
+          const pumpGroupsRow = document.createElement('div');
+          pumpGroupsRow.className = 'paired-groups-row pump-groups-row';
+          pumpGroupsRow.appendChild(buildGroupNode(group));
+          pumpGroupsRow.appendChild(buildGroupNode(boosterGroup));
+          equipmentContainer.appendChild(pumpGroupsRow);
+          renderedGroupKeys.add(group.key);
+          renderedGroupKeys.add(boosterGroup.key);
+          continue;
+        }
+      }
+
       if (group.key === 'reclaim-pumps') {
         const wasteGroup = grouped.find((item) => item.key === 'waste-pumps');
         if (wasteGroup) {
@@ -822,7 +855,7 @@
         const onlineCount = group.equipment.filter(
           (item) => isInServiceStatus(normalizeStatus(item.status, item.inService))
         ).length;
-        titleNode.querySelector('.group-stats').textContent = `${onlineCount} / ${group.equipment.length} online`;
+        titleNode.querySelector('.group-stats').textContent = `${onlineCount} / ${group.equipment.length} in service`;
       }
     }
 
@@ -879,7 +912,7 @@
       const response = await fetch(`${API_BASE}/comments`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message, updatedBy }),
+        body: JSON.stringify({ message, updatedBy, ...(generalCommentPinned ? { pinned: generalCommentPinned.checked } : {}) }),
       });
 
       if (!response.ok) {
@@ -898,7 +931,7 @@
       const response = await fetch(`${API_BASE}/comments/${encodeURIComponent(commentId)}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message, updatedBy }),
+        body: JSON.stringify({ message, updatedBy, pinned: generalCommentPinned?.checked === true }),
       });
 
       if (!response.ok) {
@@ -1234,31 +1267,45 @@
     renderAll();
   }
 
+  let stream = null, lastContact = 0, lastReconnect = 0;
   function connectStream() {
-    const stream = new EventSource(`${API_BASE}/stream`);
-
-    stream.addEventListener('open', () => {
-      setConnectivity(true);
-    });
-
-    stream.addEventListener('snapshot', (event) => {
-      liveState = normalizeState(JSON.parse(event.data));
-      if (!equipmentContainer.children.length) {
-        renderAll();
-        return;
-      }
-      syncFromState();
-    });
-
-    stream.addEventListener('state-updated', (event) => {
-      liveState = normalizeState(JSON.parse(event.data));
-      syncFromState();
-    });
-
-    stream.addEventListener('error', () => {
-      setConnectivity(false);
-    });
+    stream?.close();
+    lastReconnect = Date.now();
+    stream = new EventSource(API_BASE + '/stream');
+    const activeStream = stream;
+    const contact = () => {
+      if (stream !== activeStream) return false;
+      lastContact = Date.now(); setConnectivity(true); return true;
+    };
+    stream.addEventListener('open', contact);
+    stream.addEventListener('heartbeat', contact);
+    const receive = event => {
+      if (stream !== activeStream) return;
+      try {
+        const next = normalizeState(JSON.parse(event.data));
+        if (!next || !Array.isArray(next.equipment)) throw new Error('Invalid equipment snapshot');
+        liveState = next;
+        if (!equipmentContainer.querySelector('.equipment-card')) renderAll();
+        else syncFromState();
+        contact();
+      } catch (error) { console.error(error); setConnectivity(false); }
+    };
+    stream.addEventListener('snapshot', receive);
+    stream.addEventListener('state-updated', receive);
+    stream.addEventListener('error', () => { if (stream === activeStream) setConnectivity(false); });
   }
+  window.addEventListener('online', connectStream);
+  window.addEventListener('offline', () => { stream?.close(); setConnectivity(false); });
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && navigator.onLine && Date.now() - lastContact > 30000) connectStream();
+  });
+  window.addEventListener('pagehide', () => { stream?.close(); stream = null; });
+  window.addEventListener('pageshow', event => { if (event.persisted) connectStream(); });
+  setInterval(() => {
+    if (navigator.onLine && Date.now() - lastContact > 65000 && Date.now() - lastReconnect > 15000) {
+      setConnectivity(false); connectStream();
+    }
+  }, 10000);
 
   async function init() {
     applyDisplayMode();
@@ -1266,15 +1313,17 @@
     setCommentFormState();
     try {
       await loadInitialState();
-      connectStream();
       setConnectivity(true);
     } catch (error) {
       console.error(error);
       setConnectivity(false);
-      equipmentContainer.innerHTML = '<p class="card" style="padding:1rem;">Live dashboard API is not reachable. Start the Node server on port 3001 to enable collaboration.</p>';
+      equipmentContainer.innerHTML = '<p class="card" style="padding:1rem;">Equipment data is unavailable. Reconnecting automatically.</p>';
       if (generalCommentsList) {
-        generalCommentsList.innerHTML = '<p class="comments-empty">Live dashboard API is not reachable. Comments are unavailable until the Node server is running.</p>';
+        generalCommentsList.innerHTML = '<p class="comments-empty">Comments are unavailable. Reconnecting automatically.</p>';
       }
+    } finally {
+      // EventSource retries automatically, including after an initial API failure.
+      connectStream();
     }
   }
 

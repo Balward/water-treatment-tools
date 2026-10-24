@@ -1,218 +1,42 @@
-<!DOCTYPE html>
+﻿<!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Detention Time | Plant Flow</title>
-    <link rel="icon" type="image/png" href="/assets/logos/favicon.png" />
-    <link rel="stylesheet" href="../../global-styles.css?v=1757369234" />
-    <link rel="stylesheet" crossorigin href="./assets/index-Blg8mCHw.css" />
-    <link rel="stylesheet" href="./styles.css" />
-  </head>
-  <body>
-    <nav class="global-nav" aria-label="Global navigation">
-      <a class="global-nav__brand" href="/" data-rel-href="../dashboard/dashboard.html">
-        <picture class="global-nav__logo-picture">
-          <source srcset="../../assets/logos/logo-square-dark.png" media="(max-width: 640px)" />
-          <img class="global-nav__logo" src="../../assets/logos/logo-horizontal-dark.png" alt="City of Northglenn" />
-        </picture>
-        <div class="global-nav__brand-text">
-          <span class="global-nav__overline">Utilities</span>
-          <span class="global-nav__title">Treatment Operations &amp; Training Portal</span>
-        </div>
-      </a>
-      <button class="global-nav__menu-toggle" type="button" aria-expanded="false" aria-controls="globalNavMenu">
-        <span class="global-nav__menu-toggle-label">Menu</span>
-        <span class="global-nav__menu-toggle-icon" aria-hidden="true"></span>
-      </button>
-      <ul class="global-nav__menu" id="globalNavMenu">
-        <li class="global-nav__item">
-          <a class="global-nav__link" href="/" data-rel-href="../dashboard/dashboard.html">Home</a>
-        </li>
-        <li class="global-nav__item global-nav__item--dropdown">
-          <button class="global-nav__link global-nav__toggle" type="button" aria-expanded="false">
-            Water Treatment
-            <span class="global-nav__caret" aria-hidden="true"></span>
-          </button>
-          <div class="global-nav__dropdown" role="menu">
-            <a class="global-nav__dropdown-link" href="/robojar-analyzer/" data-rel-href="../robojar-analyzer/index.html" role="menuitem">
-              RoboJar Analyzer
-            </a>
-            <a
-              class="global-nav__dropdown-link"
-              href="/sodium-hypochlorite-calculator/"
-              data-rel-href="../sodium-hypochlorite-calculator/index.html"
-              role="menuitem"
-            >
-              Sodium Hypochlorite Calculator
-            </a>
-            <a class="global-nav__dropdown-link" href="/alum-hydrometer-conversion/" data-rel-href="../alum-hydrometer-conversion/index.html" role="menuitem">
-              Alum Hydrometer Conversion
-            </a>
-            <a class="global-nav__dropdown-link" href="/dose-predictor/" data-rel-href="../dose-predictor/index.html" role="menuitem">
-              Permanganate Dose Predictor
-            </a>
-            <a
-              class="global-nav__dropdown-link global-nav__link--active"
-              href="/plant-flow/"
-              data-rel-href="../plant-flow/index.html"
-              role="menuitem"
-              aria-current="page"
-            >
-              Detention Time
-            </a>
-            <a class="global-nav__dropdown-link" href="/water-data-explorer/" data-rel-href="../water-data-explorer/index.html" role="menuitem">
-              Water Data Explorer
-            </a>
-          </div>
-        </li>
-        <li class="global-nav__item global-nav__item--dropdown">
-          <button class="global-nav__link global-nav__toggle" type="button" aria-expanded="false">
-            Wastewater Treatment
-            <span class="global-nav__caret" aria-hidden="true"></span>
-          </button>
-          <div class="global-nav__dropdown" role="menu">
-            <a class="global-nav__dropdown-link" href="/mwat-calculator/" data-rel-href="../mwat-calculator/index.html" role="menuitem">
-              MWAT &amp; DM Calculator
-            </a>
-            <a class="global-nav__dropdown-link" href="/nh4-loading/" data-rel-href="../nh4-loading/index.html" role="menuitem">
-              NH3 Loading Insight
-            </a>
-          </div>
-        </li>
-        <li class="global-nav__item global-nav__item--dropdown global-nav__item--align-end">
-          <button class="global-nav__link global-nav__toggle" type="button" aria-expanded="false">
-            Training
-            <span class="global-nav__caret" aria-hidden="true"></span>
-          </button>
-          <div class="global-nav__dropdown" role="menu">
-            <a class="global-nav__dropdown-link" href="/regulation-100-study/" data-rel-href="../regulation-100-study/index.html" role="menuitem">
-              Regulation 100 Study Guide
-            </a>
-            <a class="global-nav__dropdown-link" href="/video-tutorials/" data-rel-href="../video-tutorials/index.html" role="menuitem">
-              Water Treatment Class A Training Videos
-            </a>
-            <a class="global-nav__dropdown-link" href="/water-treatment-flashcards/" data-rel-href="../water-treatment-flashcards/index.html" role="menuitem">
-              Water Treatment Flashcards
-            </a>
-          </div>
-        </li>
-      </ul>
-    </nav>
-
-    <main>
-      <div id="root"></div>
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Plant Flow &amp; Detention Time</title>
+  <link rel="icon" href="../../assets/logos/favicon.png">
+  <link rel="stylesheet" href="../../shared/operations/theme.css">
+  <link rel="stylesheet" href="../../shared/operations/navigation.css">
+  <link rel="stylesheet" href="operations.css?v=20261022-plant1">
+  <script src="../../shared/operations/navigation.js" defer></script>
+  <script src="operations.js?v=20261022-plant1" defer></script>
+</head>
+<body data-ops-app="detention">
+  <a class="skip-link" href="#main">Skip To Plant Flow</a>
+  <header class="site-header">
+    <a class="brand" href="../dashboard/dashboard.html" aria-label="Operations Home"><img src="../../assets/logos/northglenn-horizontal.png" alt="City of Northglenn" width="300" height="69"></a>
+    <div class="facility"><strong>Water Treatment Facility</strong><span>WATER TREATMENT</span></div>
+    <button data-ops-menu type="button" aria-label="Open Applications Menu">Apps</button>
+  </header>
+  <div class="workspace">
+    <aside class="sidebar" aria-label="Plant flow sections">
+      <p class="nav-caption">YOUR WORKSPACE</p>
+      <nav aria-label="On This Page">
+        <a class="nav-item" href="#overview" aria-current="location"><span aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 12h18M7 8l4 4-4 4M16 4v4m0 8v4"/></svg></span><span>Flow Overview</span></a>
+        <a class="nav-item" href="#process"><span aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 4h6v6H3zM15 14h6v6h-6zM9 7h9v7M6 10v7h9"/></svg></span><span>Process Train</span></a>
+        <a class="nav-item" href="#chemicals"><span aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 3h8M10 3v7l-6 9a1 1 0 0 0 1 2h14a1 1 0 0 0 1-2l-6-9V3M7 16h10"/></svg></span><span>Chemical Travel</span></a>
+      </nav>
+    </aside>
+    <main id="main" class="flow-page" tabindex="-1">
+      <header class="intro"><div><p class="eyebrow">WATER TREATMENT</p><h1>Plant Flow &amp; Detention Time</h1><p class="lede">Follow the treatment train. Adjust flow and available units to explore detention times.</p></div></header>
+      <p class="preview-note">Compare flow and unit availability scenarios. Selections in this calculator do not change equipment status.</p>
+      <section id="overview" class="overview" aria-label="Flow overview">
+        <div class="panel flow-control"><div class="section-heading"><h2>Plant Flow</h2><button id="reset" class="quiet" type="button">Reset Defaults</button></div><div class="flow-entry"><label for="flow-number">Flow Rate</label><div><input id="flow-number" type="number" min="0" max="14" step="0.1" value="3.5"><span>MGD</span></div><p id="gpm">2,431 gpm</p></div><label class="sr-only" for="flow-range">Adjust Plant Flow</label><input id="flow-range" type="range" min="0" max="14" step="0.1" value="3.5"><div class="range-labels"><span>0 MGD</span><span>14 MGD</span></div><p id="flow-message" role="status">Change the flow rate or toggle a unit below.</p></div>
+        <div class="panel total-card"><p class="eyebrow">TOTAL DETENTION</p><output id="total" aria-live="polite">—</output><p>Across All Available Stages</p><div class="total-meta"><span><strong id="online-count">16 / 16</strong> Units In Service</span><span><strong id="online-volume">4.104</strong> MG Available</span></div><div id="timeline-inspector" class="timeline-inspector"><div id="timeline" class="timeline" role="group" aria-label="Process stage detention times"></div><div id="timeline-detail" class="timeline-detail" role="tooltip" hidden></div></div><p class="timeline-note">Hover, focus, or tap a segment for stage details and chemical travel times.</p></div>
+      </section>
+      <section id="process" aria-labelledby="process-heading"><div class="section-heading"><div><h2 id="process-heading">Process Train</h2><p>Toggle units to include or exclude their volume in this scenario.</p></div><div class="legend"><span><i class="on-dot"></i>In Service</span><span><i class="off-dot"></i>Offline</span></div></div><div id="stages" class="stages"></div></section>
+      <section id="chemicals" class="panel" aria-labelledby="chemical-heading"><div class="section-heading"><div><h2 id="chemical-heading">Chemical Travel Times</h2><p>Estimated time from each injection point through filtration and the clearwells.</p></div></div><div class="table-wrap" tabindex="0" role="region" aria-labelledby="chemical-heading"><table><thead><tr><th>Chemical</th><th>Injection Point</th><th>Through Filters</th><th>Through Clearwells</th></tr></thead><tbody id="chemical-rows"></tbody></table></div></section>
+      <footer><p>City of Northglenn · Water Treatment Facility</p><p>Calculated Scenario &middot; Not Live Plant Data</p></footer>
     </main>
-
-    <!-- Inline help modal for quick guidance -->
-    <button class="help-launch" type="button" aria-haspopup="dialog" aria-controls="helpModal" aria-expanded="false" title="Open help">
-      ?
-      <span class="sr-only">Open help</span>
-    </button>
-    <div class="help-modal" id="helpModal" role="dialog" aria-modal="true" aria-hidden="true">
-      <div class="help-modal__surface">
-        <header class="help-modal__header">
-          <h2>How this app works</h2>
-          <button class="help-close" type="button" aria-label="Close help">×</button>
-        </header>
-        <div class="help-modal__body">
-          <ol>
-            <li>Adjust plant flow with the slider; detention times update instantly.</li>
-            <li>Tap any basin button to toggle that unit in/out of service.</li>
-            <li>The banner shows total detention; hover badges for per-stage detail.</li>
-            <li>Injection chips show where each chemical enters the train.</li>
-            <li>Toggle filters individually; clarifiers and floc basins respect parallel loading.</li>
-            <li>Use the help “?” button anytime for a quick refresher on controls.</li>
-          </ol>
-        </div>
-      </div>
-    </div>
-
-    <script type="module" crossorigin src="./assets/index-jDXMqWz2.js"></script>
-    <script>
-      (() => {
-        const globalNav = document.querySelector(".global-nav");
-        if (!globalNav) return;
-
-        const globalNavMenu = globalNav.querySelector(".global-nav__menu");
-        const globalNavMenuToggle = globalNav.querySelector(".global-nav__menu-toggle");
-        const navToggles = Array.from(globalNav.querySelectorAll(".global-nav__toggle"));
-
-        function closeDropdownMenus() {
-          navToggles.forEach((toggle) => {
-            const item = toggle.closest(".global-nav__item--dropdown");
-            if (item) {
-              item.classList.remove("global-nav__item--open");
-            }
-            toggle.setAttribute("aria-expanded", "false");
-          });
-        }
-
-        function setMobileMenuOpen(isOpen) {
-          if (!globalNavMenu || !globalNavMenuToggle) return;
-          globalNav.classList.toggle("global-nav--menu-open", isOpen);
-          globalNavMenuToggle.setAttribute("aria-expanded", String(isOpen));
-          document.body.classList.toggle("has-mobile-nav-open", isOpen);
-        }
-
-        if (globalNavMenuToggle && globalNavMenu) {
-          globalNavMenuToggle.addEventListener("click", (event) => {
-            event.stopPropagation();
-            const shouldOpen = !globalNav.classList.contains("global-nav--menu-open");
-            setMobileMenuOpen(shouldOpen);
-          });
-        }
-
-        navToggles.forEach((toggle) => {
-          toggle.addEventListener("click", (event) => {
-            event.stopPropagation();
-            const item = toggle.closest(".global-nav__item--dropdown");
-            if (!item) return;
-            const isOpen = item.classList.contains("global-nav__item--open");
-            closeDropdownMenus();
-            if (!isOpen) {
-              item.classList.add("global-nav__item--open");
-              toggle.setAttribute("aria-expanded", "true");
-            }
-          });
-        });
-
-        document.addEventListener("click", () => {
-          closeDropdownMenus();
-          setMobileMenuOpen(false);
-        });
-      })();
-
-      // Lightweight help modal controls
-      (() => {
-        const launch = document.querySelector(".help-launch");
-        const modal = document.getElementById("helpModal");
-        const closeBtn = modal?.querySelector(".help-close");
-        if (!launch || !modal || !closeBtn) return;
-
-        const open = () => {
-          modal.setAttribute("aria-hidden", "false");
-          launch.setAttribute("aria-expanded", "true");
-          closeBtn.focus();
-        };
-        const close = () => {
-          modal.setAttribute("aria-hidden", "true");
-          launch.setAttribute("aria-expanded", "false");
-          launch.focus();
-        };
-
-        launch.addEventListener("click", (e) => {
-          e.stopPropagation();
-          modal.getAttribute("aria-hidden") === "true" ? open() : close();
-        });
-        closeBtn.addEventListener("click", close);
-        modal.addEventListener("click", (e) => {
-          if (e.target === modal) close();
-        });
-        document.addEventListener("keydown", (e) => {
-          if (e.key === "Escape" && modal.getAttribute("aria-hidden") === "false") close();
-        });
-      })();
-    </script>
-  </body>
+  </div>
+</body>
 </html>

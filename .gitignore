@@ -19,6 +19,9 @@ logs/
 
 # Docker volumes
 data/
+deployment/
+preview/
+.last-deployment
 
 # OS files
 .DS_Store

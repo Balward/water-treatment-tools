@@ -103,6 +103,8 @@ This replaces that item's photo, validates the image format and size, and tags i
 
 ## Appearance
 
+Typography and the header Apps menu use the shared [Operations design system](../../docs/operations-design-system.md). Inter is hosted locally, and the menu provides links back to Operations Home and the other tools. Switching apps uses inventory's existing save/validation flow; invalid or conflicting counts prevent navigation. Theme assets are synchronized from `shared/operations/` during deployment.
+
 The UI uses a high-contrast light design with white surfaces, dark text, restrained Northglenn teal (#00677F), and a dark navigation dock. Operations and Janitorial use the existing Phosphor Regular gauge and broom icons (MIT license included in public/licenses). Dewatering uses the selected matching custom rotary fan press outline inspired by the provided equipment photo. Neutral cards keep product photos and quantities easy to read.
 
 ## Manage inventory items
@@ -116,6 +118,8 @@ Anyone who can access the app can manage items; separate administrator accounts 
 The header uses the supplied City of Northglenn horizontal logo on a white background, with Water Treatment Facility identification. The original logo is stored in public/branding/northglenn-logo.png and included in the Docker image.
 
 ## Automated deployment
+
+The repository-wide entry point is now `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\deploy.ps1 -Target Inventory` from the repository root. Omit `-Target Inventory` to update both containers. It calls this app's existing deployer; source/data paths and the inventory URL are unchanged. See [shared deployment instructions](../../docs/deployment.md).
 
 Run `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\apps\operator-inventory\deploy.ps1` from the repository root to test, package, upload, and rebuild on Unraid. Add `-PackageOnly` to package without contacting the server. See UNRAID-SETUP.md for prerequisites and backup behavior.
 

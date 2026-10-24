@@ -17,6 +17,7 @@ function createApp({ dataDir = process.env.DATA_DIR || path.join(__dirname, 'dat
   let sendingEmail = false, nextEmailAt = 0;
   const releaseHash = createHash('sha256');
   for (const name of ['server.js', 'email.js', 'catalog.json', 'public/images/manifest.json', 'public/index.html', 'public/styles.css', 'public/app.js', 'public/pack-sizes.js', 'public/product-images.js', 'public/bin-cards.js', 'public/bin-cards.html', 'public/bin-cards.css', 'public/bin-card-print.js', 'public/vendor/qrcode.js', 'public/branding/northglenn-logo.png']) releaseHash.update(fs.readFileSync(path.join(__dirname, name)));
+  for (const name of ["operations-theme.css","shared/operations/theme.css","shared/operations/navigation.css","shared/operations/header.css","shared/operations/navigation.js","shared/operations/Inter-VariableFont_opsz,wght.ttf","shared/operations/Inter-LICENSE.txt"]) releaseHash.update(fs.readFileSync(path.join(__dirname, 'public', name)));
   const release = releaseHash.digest('hex').slice(0, 12);
   fs.mkdirSync(dataDir, { recursive: true });
   const file = path.join(dataDir, 'inventories.json');
@@ -290,13 +291,14 @@ function createApp({ dataDir = process.env.DATA_DIR || path.join(__dirname, 'dat
       if (!['GET', 'HEAD'].includes(req.method)) return json(405, { error: 'Method not allowed.' });
       const assets = { '/': 'index.html', '/index.html': 'index.html', '/app.js': 'app.js', '/pack-sizes.js':'pack-sizes.js', '/styles.css': 'styles.css', '/branding/northglenn-logo.png':'branding/northglenn-logo.png' };
       for (const asset of ['product-images.js','bin-cards.html','bin-cards.js','bin-cards.css','bin-card-print.js','vendor/qrcode.js','licenses/qrcode-MIT.txt']) assets['/' + asset] = asset;
+      for (const asset of ["operations-theme.css","shared/operations/theme.css","shared/operations/navigation.css","shared/operations/header.css","shared/operations/navigation.js","shared/operations/Inter-VariableFont_opsz,wght.ttf","shared/operations/Inter-LICENSE.txt"]) assets['/' + asset] = asset;
       // Only filenames in the imported manifest are exposed, never arbitrary paths.
       for (const photo of Object.values(imageManifest.items)) {
         if (/^\/images\/s[123]-r\d+\.(jpg|png|webp|gif)$/.test(photo.src)) assets[photo.src] = photo.src.slice(1);
       }
       if (!assets[route]) return json(404, { error: 'Page not found.' });
       const asset = assets[route];
-      const imageType = { '.jpg':'image/jpeg', '.png':'image/png', '.webp':'image/webp', '.gif':'image/gif' }[path.extname(asset)];
+      const imageType = { '.jpg':'image/jpeg', '.png':'image/png', '.webp':'image/webp', '.gif':'image/gif', '.ttf':'font/ttf', '.txt':'text/plain; charset=utf-8' }[path.extname(asset)];
       res.writeHead(200, { 'Content-Type': imageType || (asset.endsWith('.css') ? 'text/css; charset=utf-8' : asset.endsWith('.js') ? 'text/javascript; charset=utf-8' : 'text/html; charset=utf-8'), 'Cache-Control': 'no-store', 'X-Inventory-Version': release, 'X-Content-Type-Options': 'nosniff', 'Content-Security-Policy': "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; frame-ancestors 'self'" });
       let content = fs.readFileSync(path.join(__dirname, 'public', asset));
       if (asset.endsWith('.html')) content = content.toString('utf8').replace(/(href|src)="\.\/([\w/-]+\.(?:css|js))(?:\?[^\"]*)?"/g, (_, attr, name) => `${attr}="./${name}?v=${release}"`);

@@ -57,6 +57,21 @@ async function main() {
     await viewport(390); await call('Page.navigate',{url:base});
     await until('document.querySelectorAll("[data-worksheet]").length === 3');
     await until('document.querySelector(".city-logo").complete && document.querySelector(".city-logo").naturalWidth > 0');
+    await evaluate('document.fonts.ready');
+    assert.ok(await evaluate('document.fonts.check("16px Inter")&&getComputedStyle(document.body).fontFamily.startsWith("Inter")'));
+    const font=await fetch(base+'/shared/operations/Inter-VariableFont_opsz,wght.ttf');assert.ok(font.ok);assert.equal(font.headers.get('content-type'),'font/ttf');
+    for(const width of [320,390,430,1024]){
+      await viewport(width);await evaluate('document.querySelector("[data-ops-menu]").click()');
+      assert.equal(await evaluate('document.querySelector(".topbar").getBoundingClientRect().height'),width<=800?144:112,'Common banner height at '+width);
+      assert.ok(await evaluate('document.getElementById("opsAppMenu").open'));
+      assert.equal(await evaluate('document.querySelector(".ops-app-menu [aria-current=page]").dataset.opsDestination'),'inventory');
+      assert.equal(await evaluate('document.querySelectorAll(".ops-app-menu [data-ops-destination]").length'),14);
+      assert.equal(await evaluate('document.querySelector(".ops-app-menu [data-ops-destination=home]").href'),'https://water.gibbhub.io/?v=operations-home-20261021');
+      assert.ok(await evaluate('(()=>{const b=document.getElementById("opsAppMenu").getBoundingClientRect();return b.left>=0&&b.right<=innerWidth&&b.top===0&&b.bottom<=innerHeight})()'),'Shared menu fits '+width);
+      await evaluate('document.querySelector(".ops-app-menu-close").click();new Promise(r=>requestAnimationFrame(r))');
+    }
+    await viewport(390);
+
     assert.ok(await evaluate('document.querySelector(".facility-name").textContent.includes("Water Treatment Facility")'));
     assert.equal(await evaluate('getComputedStyle(document.querySelector(".welcome")).backgroundColor'),'rgb(255, 255, 255)','Light design is the default');
     assert.equal(await evaluate('document.getElementById("theme-toggle")'),null,'Theme switching has been removed');
@@ -133,7 +148,13 @@ async function main() {
     await evaluate(`delete visualViewport.height;document.activeElement.blur();visualViewport.dispatchEvent(new Event('resize'))`);
     await until(`!document.body.classList.contains('keyboard-open')`);
     await checkDockOnScroll();
+
+    await evaluate("var countField=document.querySelector('[data-id]');countField.value='-1';countField.dispatchEvent(new Event('input',{bubbles:true}));");
+    assert.equal(await evaluate("(async()=>{const waits=[];document.dispatchEvent(new CustomEvent('operations:before-navigate',{cancelable:true,detail:{url:'https://water.gibbhub.io/',waitUntil:p=>waits.push(p)}}));return (await Promise.all(waits)).every(value=>value!==false)})()"),false,'Invalid counts block cross-app navigation');
     await evaluate(`const field=document.querySelector('[data-id]');field.focus();field.value='0.5';field.dispatchEvent(new Event('input',{bubbles:true}));field.blur()`);
+    assert.equal(await evaluate("(async()=>{const waits=[];document.dispatchEvent(new CustomEvent('operations:before-navigate',{cancelable:true,detail:{url:'https://water.gibbhub.io/',waitUntil:p=>waits.push(p)}}));return (await Promise.all(waits)).every(value=>value!==false)})()"),true,'Cross-app navigation waits for valid counts to save');
+    assert.ok(await evaluate("Object.keys(pending).length===0&&!saving"));
+
     await until(`document.getElementById('save-status').textContent === 'All changes saved'`);
     assert.equal(await evaluate(`document.getElementById('stat-counted').textContent`),'1');
     await evaluate(`document.getElementById('location-select').value='Kitchen';document.getElementById('location-select').dispatchEvent(new Event('change',{bubbles:true}))`);
@@ -412,7 +433,7 @@ async function main() {
     await evaluate('window.__reloadPending=true'); await evaluate('window.__reloadPending = true'); await call('Page.reload'); await until('window.__reloadPending !== true && document.readyState === "complete"');
     await until('window.__reloadPending !== true && document.querySelectorAll("[data-worksheet]").length === 3');
     assert.equal(await evaluate('document.documentElement.dataset.layout'),'mobile','A phone stays mobile even with a wide landscape viewport');
-    assert.ok(await evaluate('document.querySelector(".phone-app").getBoundingClientRect().width <= 480'));
+    assert.equal(await evaluate('document.querySelector(".phone-app").getBoundingClientRect().width'),1024,'Phone landscape retains mobile navigation with a full-width banner');
     await call('Emulation.setUserAgentOverride',{userAgent:desktopAgent});
     // The same picker adds above-PAR catalog items to the backlog or an existing order.
     await viewport(390);
@@ -462,7 +483,13 @@ async function main() {
     await new Promise(resolve => server.close(resolve));
     // Chrome may need time to release its temporary profile on Windows.
     await new Promise(resolve => setTimeout(resolve,500));
-    fs.rmSync(temp,{recursive:true,force:true,maxRetries:5,retryDelay:200});
+    try {
+      fs.rmSync(temp,{recursive:true,force:true,maxRetries:5,retryDelay:200});
+    } catch (error) {
+      // A lingering Chrome process can lock its profile; preserve any test failure.
+      if (!['EPERM','EBUSY'].includes(error.code)) throw error;
+      console.warn('Chrome still has the temporary browser profile locked; cleanup skipped.');
+    }
   }
 }
 main().catch(error => { console.error(error); process.exitCode=1; });

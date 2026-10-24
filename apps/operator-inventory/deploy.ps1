@@ -20,6 +20,8 @@ if (-not $PackageOnly) {
 }
 Push-Location $appRoot
 try {
+    $themeSync = Join-Path $repoRoot 'scripts\sync-operations-theme.cjs'
+    if (Test-Path -LiteralPath $themeSync) { Invoke-Checked 'node' @($themeSync) }
     if (-not $SkipTests) {
         if (-not (Test-Path -LiteralPath (Join-Path $appRoot 'node_modules\nodemailer'))) {
             Invoke-Checked 'npm.cmd' @('ci','--ignore-scripts')

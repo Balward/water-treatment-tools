@@ -6,8 +6,6 @@ A collection of focused, single-page web apps that help operators analyze data, 
 
 - `apps/operator-inventory/` - Docker-ready supplies inventory with location selection, dated operator counts, automatic draft saves, PAR flags, and inventory history. See its README for Unraid setup.
 
-- `apps/dashboard-new/` - Alternate dashboard with a fresh visual layout and links to the same app suite.
-
 - `apps/dashboard/` – Launch pad with city branding and links to every tool.
 - `apps/plant-flow/` – Interactive detention-time model; toggle basins, adjust flow, and see chemical travel times and cumulative detention. Mobile-friendly with in-app help.
 - `apps/robojar-analyzer/` – Analyze RoboJar particle reports; charts, stats, forecasting, export to PNG/PDF.
@@ -23,7 +21,9 @@ A collection of focused, single-page web apps that help operators analyze data, 
 
 ## Quick use
 
-1. Open `apps/dashboard/index.html` in a browser to navigate the suite, or open any app’s `index.html` directly.
+For Unraid updates, use the root `deploy.ps1` command for both the suite and inventory, or select `-Target Suite` / `-Target Inventory`. See [deployment instructions](docs/deployment.md) for backups, health checks, and rollback.
+
+1. Serve the repository root with a local web server and open `apps/dashboard/dashboard.html` to navigate the suite.
 2. Use `sample-data/` for quick demos where provided (e.g., RoboJar Analyzer).
 3. Most apps are client-side only; no backend is required.
 
@@ -39,6 +39,8 @@ npm start   # runs claude-proxy-server.js
 Environment: copy `.env.template` to `.env` and set required keys. The proxy is not needed for normal static use.
 
 ## Design system
+
+Operations Home, Equipment Status Board, and Supply Inventory now use the shared [Operations design system](docs/operations-design-system.md): locally hosted Inter, common theme tokens, and the text-based Apps menu. The canonical source is `shared/operations/`; deployments synchronize it into the standalone inventory package. The remaining apps will be migrated individually.
 
 - Shared styles: `global-styles.css` plus app-specific `styles.css`.
 - Icons/logos: `assets/logos/`.
@@ -56,6 +58,12 @@ nginx.conf            sample reverse-proxy/static hosting config
 claude-proxy-server.js optional Express proxy
 package.json          proxy dependencies/scripts
 ```
+
+## Local checks
+
+Run `npm run check:ui` to check the Operations apps and the retained MWAT/NH4 mockups. Checks run serially against localhost and temporary data; they do not deploy or edit production data. Chrome must be installed (set `CHROME_PATH` for a nondefault location), and chart/workbook libraries require internet access.
+
+To run a subset, use names such as `npm run check:ui -- home headers` or `npm run check:ui -- mwat nh4`. Browser setup, static serving, DevTools handling, and temporary-profile cleanup live in `scripts/lib/browser-check.cjs`. See [legacy asset retention](docs/legacy-assets.md) before deleting old scripts, styles, bundles, or fonts.
 
 ## Contributing and customization
 

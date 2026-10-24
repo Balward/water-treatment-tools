@@ -6,7 +6,7 @@ const fs = require('fs');
 const path = require('path');
 
 const app = express();
-const PORT = 3001;
+const PORT = Number(process.env.PORT) || 3001;
 
 // API keys from environment variables
 const CLAUDE_API_KEY = process.env.CLAUDE_API_KEY || "YOUR_CLAUDE_API_KEY_HERE";
@@ -20,7 +20,7 @@ console.log('OpenAI API Key loaded:', OPENAI_API_KEY ? `${OPENAI_API_KEY.substri
 app.use(cors());
 app.use(express.json());
 
-const dataDirectory = path.join(__dirname, 'data');
+const dataDirectory = process.env.LIVE_OPS_DATA_DIR || path.join(__dirname, 'data');
 const liveOpsStatePath = path.join(dataDirectory, 'live-ops-state.json');
 const liveOpsClients = new Set();
 let writeQueue = Promise.resolve();
@@ -335,6 +335,7 @@ function normalizeLoadedState(rawState) {
         return {
           id: rawId,
           message,
+          pinned: comment?.pinned === true,
           author: sanitizeUpdatedBy(comment?.author),
           updatedAt: typeof comment?.updatedAt === 'string' ? comment.updatedAt : fallbackState.updatedAt,
         };
@@ -387,6 +388,7 @@ app.get('/api/live-ops/stream', (req, res) => {
 
   const keepAlive = setInterval(() => {
     res.write(': ping\n\n');
+    sendSseEvent(res, 'heartbeat', { timestamp: new Date().toISOString() });
   }, 25000);
 
   req.on('close', () => {
@@ -499,6 +501,7 @@ app.post('/api/live-ops/comments', async (req, res) => {
   const comment = {
     id: `comment-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
     message,
+    pinned: req.body?.pinned === true,
     author: sanitizeUpdatedBy(req.body?.updatedBy),
     updatedAt: now,
   };
@@ -539,6 +542,7 @@ app.put('/api/live-ops/comments/:commentId', async (req, res) => {
   const updatedComment = {
     ...liveOpsState.comments[commentIndex],
     message,
+    pinned: typeof req.body?.pinned === "boolean" ? req.body.pinned : liveOpsState.comments[commentIndex].pinned === true,
     author: sanitizeUpdatedBy(req.body?.updatedBy),
     updatedAt: now,
   };

@@ -6,20 +6,12 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <meta http-equiv="Last-Modified" content="Mon, 09 Sep 2025 00:00:00 GMT" />
     <title>Water Data Explorer</title>
-    <!-- Fallback style to force AI provider selector visible even if old CSS is cached -->
-    <style>
-      /* legacy toggle fallbacks no longer shown, keep minimal overrides */
-      .ai-provider-selector { display: none !important; }
-      .ai-provider-selector-fallback { display: none !important; }
-    </style>
-    <link rel="preload" href="../../assets/fonts/source-sans-pro/SourceSansPro-Regular.otf" as="font" type="font/otf" crossorigin />
-    <link rel="preload" href="../../assets/fonts/source-sans-pro/SourceSansPro-Semibold.otf" as="font" type="font/otf" crossorigin />
-    <link rel="preload" href="../../assets/fonts/helvetica-neue/OpenType TTF Pro/HelveticaNeueLTPro-MdEx.ttf" as="font" type="font/ttf" crossorigin />
     <link rel="icon" type="image/png" href="../../assets/logos/favicon.png" />
-    <link rel="stylesheet" href="../../global-styles.css?v=20260204a" />
-    <link rel="stylesheet" href="styles.css?v=20260204a" />
+    <link rel="stylesheet" href="../../shared/operations/theme.css">
+    <link rel="stylesheet" href="../../shared/operations/navigation.css">
+    <link rel="stylesheet" href="operations.css?v=20261022-explorer1">
+    <script src="../../shared/operations/navigation.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
@@ -27,90 +19,26 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   </head>
-  <body>
-    <nav class="global-nav" aria-label="Global navigation">
-      <a class="global-nav__brand" href="/" data-rel-href="../dashboard/dashboard.html">
-        <picture class="global-nav__logo-picture"><source srcset="../../assets/logos/logo-square-dark.png" media="(max-width: 640px)" /><img class="global-nav__logo" src="../../assets/logos/logo-horizontal-dark.png" alt="City of Northglenn" /></picture>
-        <div class="global-nav__brand-text">
-          <span class="global-nav__overline">Utilities</span>
-          <span class="global-nav__title">Treatment Operations &amp; Training Portal</span>
-        </div>
-      </a>
-      <button class="global-nav__menu-toggle" type="button" aria-expanded="false" aria-controls="globalNavMenu">
-        <span class="global-nav__menu-toggle-label">Menu</span>
-        <span class="global-nav__menu-toggle-icon" aria-hidden="true"></span>
-      </button>
-      <ul class="global-nav__menu" id="globalNavMenu">
-        <li class="global-nav__item">
-          <a class="global-nav__link" href="/" data-rel-href="../dashboard/dashboard.html">Home</a>
-        </li>
-        <li class="global-nav__item global-nav__item--dropdown">
-          <button class="global-nav__link global-nav__toggle" type="button" aria-expanded="false">
-            Water Treatment
-            <span class="global-nav__caret" aria-hidden="true"></span>
+  <body data-ops-app="explorer">
+    <a class="skip-link" href="#mainContent">Skip To Analysis</a><header class="site-header"><a class="brand" href="../dashboard/dashboard.html" aria-label="Operations Home"><img src="../../assets/logos/northglenn-horizontal.png" alt="City of Northglenn" width="300" height="69"></a><div class="facility"><strong>Water Treatment Facility</strong><span>WATER TREATMENT</span></div><button data-ops-menu type="button" aria-label="Open Applications Menu">Apps</button></header><div class="workspace"><aside class="sidebar" aria-label="Explorer analysis"><p class="nav-caption">YOUR WORKSPACE</p>        <nav class="tab-navigation" aria-label="Analysis Views">
+          <button class="nav-item tab active" aria-pressed="true" type="button" data-tab="correlation" onclick="switchTab('correlation')">
+            <span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="16" r="2"/><circle cx="12" cy="11" r="2"/><circle cx="17" cy="6" r="2"/></svg></span>
+            Correlation
           </button>
-          <div class="global-nav__dropdown" role="menu">
-            <a class="global-nav__dropdown-link" href="/robojar-analyzer/" data-rel-href="../robojar-analyzer/index.html" role="menuitem">
-              RoboJar Analyzer
-            </a>
-            <a class="global-nav__dropdown-link" href="/sodium-hypochlorite-calculator/" data-rel-href="../sodium-hypochlorite-calculator/index.html" role="menuitem">
-              Sodium Hypochlorite Calculator
-            </a>
-            <a class="global-nav__dropdown-link" href="/alum-hydrometer-conversion/" data-rel-href="../alum-hydrometer-conversion/index.html" role="menuitem">
-              Alum Hydrometer Conversion
-            </a>
-            <a class="global-nav__dropdown-link" href="/dose-predictor/" data-rel-href="../dose-predictor/index.html" role="menuitem">
-              Permanganate Dose Predictor
-            </a>
-            <a class="global-nav__dropdown-link" href="/plant-flow/" data-rel-href="../plant-flow/index.html" role="menuitem">
-              Detention Time
-            </a>
-            <a
-              class="global-nav__dropdown-link global-nav__link--active"
-              href="/water-data-explorer/"
-              data-rel-href="../water-data-explorer/index.html"
-              role="menuitem"
-              aria-current="page"
-            >
-              Water Data Explorer
-            </a>
-          </div>
-        </li>
-        <li class="global-nav__item global-nav__item--dropdown">
-          <button class="global-nav__link global-nav__toggle" type="button" aria-expanded="false">
-            Wastewater Treatment
-            <span class="global-nav__caret" aria-hidden="true"></span>
+          <button class="nav-item tab" aria-pressed="false" type="button" data-tab="timeseries" onclick="switchTab('timeseries')">
+            <span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 19h18M4 15l5-7 5 5 6-9"/></svg></span>
+            Time Series
           </button>
-          <div class="global-nav__dropdown" role="menu">
-            <a class="global-nav__dropdown-link" href="/mwat-calculator/" data-rel-href="../mwat-calculator/index.html" role="menuitem">
-              MWAT &amp; DM Calculator
-            </a>
-            <a class="global-nav__dropdown-link" href="/nh4-loading/" data-rel-href="../nh4-loading/index.html" role="menuitem">
-              NH3 Loading Insight
-            </a>
-          </div>
-        </li>
-        <li class="global-nav__item global-nav__item--dropdown global-nav__item--align-end">
-          <button class="global-nav__link global-nav__toggle" type="button" aria-expanded="false">
-            Training
-            <span class="global-nav__caret" aria-hidden="true"></span>
+          <button class="nav-item tab" aria-pressed="false" type="button" data-tab="distribution" onclick="switchTab('distribution')">
+            <span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 19h18M6 19v-5h4v5m0 0V6h4v13m0 0v-9h4v9"/></svg></span>
+            Distribution
           </button>
-          <div class="global-nav__dropdown" role="menu">
-            <a class="global-nav__dropdown-link" href="/regulation-100-study/" data-rel-href="../regulation-100-study/index.html" role="menuitem">
-              Regulation 100 Study Guide
-            </a>
-            <a class="global-nav__dropdown-link" href="/video-tutorials/" data-rel-href="../video-tutorials/index.html" role="menuitem">
-              Water Treatment Class A Training Videos
-            </a>
-            <a class="global-nav__dropdown-link" href="/water-treatment-flashcards/" data-rel-href="../water-treatment-flashcards/index.html" role="menuitem">
-              Water Treatment Flashcards
-            </a>
-          </div>
-        </li>
-      </ul>
-    </nav>
-
-    <main id="mainContent" class="page explorer-page hidden">
+          <button class="nav-item tab" aria-pressed="false" type="button" data-tab="optimization" onclick="switchTab('optimization')">
+            <span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="m12 12 9-9"/></svg></span>
+            Optimization
+          </button>
+        </nav></aside>
+    <main id="mainContent" class="page explorer-page" tabindex="-1">
       <header class="hero">
         <span class="hero__overline">Water Treatment</span>
         <h1>Water Data Explorer</h1>
@@ -119,42 +47,23 @@
         </p>
       </header>
 
-      <section class="card dataset-card">
+      <section class="card dataset-card"><div class="dataset-heading"><div><p class="eyebrow">CURRENT DATASET</p><h2>Plant Water Quality</h2><p class="dataset-source">Historical workbook: Streaming_Current_Data.xlsx</p></div><button class="btn" id="reloadData" type="button">Reload Data</button></div><div id="loadingScreen" class="loading-card" role="status"><p id="loadingText">Loading workbook...</p><div class="progress-track"><div id="progressFill"></div></div></div><p id="loadError" role="alert" hidden></p>
         <div id="headerDataInfo" class="dataset-info header-dataset-info hidden">
           <p class="dataset-placeholder">Dataset details will appear once data is loaded.</p>
         </div>
       </section>
 
       <section class="card explorer-shell">
-        <nav class="tab-navigation">
-          <button class="tab active" type="button" data-tab="correlation" onclick="switchTab('correlation')">
-            <img src="/assets/icons/correlation.png" alt="" class="tab-icon" />
-            Correlation
-          </button>
-          <button class="tab" type="button" data-tab="timeseries" onclick="switchTab('timeseries')">
-            <img src="/assets/icons/time-series.png" alt="" class="tab-icon" />
-            Time Series
-          </button>
-          <button class="tab" type="button" data-tab="distribution" onclick="switchTab('distribution')">
-            <img src="/assets/icons/distribution.png" alt="" class="tab-icon" />
-            Distribution
-          </button>
-          <button class="tab" type="button" data-tab="optimization" onclick="switchTab('optimization')">
-            <img src="/assets/icons/optimization.png?v=2" alt="" class="tab-icon" />
-            Optimization
-          </button>
-        </nav>
+
 
         <section id="correlation-tab" class="tab-content active">
           <div class="unified-analysis-card">
             <div class="card-header">
               <h3>Correlation Analysis</h3>
               <div class="header-buttons">
-                <button class="help-toggle-btn" type="button" onclick="toggleHelp('correlation-help')" title="Show/Hide Help">
-                  ℹ️ Help
+                <button class="help-toggle-btn" type="button" onclick="toggleHelp('correlation-help')" title="Show/Hide Help">Help
                 </button>
-                <button class="export-pdf-btn" type="button" onclick="exportChartToPDF('correlation')" title="Export Chart as PDF">
-                  📄 Export PDF
+                <button class="export-pdf-btn" type="button" onclick="exportChartToPDF('correlation')" title="Export Chart as PDF">Export PDF
                 </button>
               </div>
               <p id="correlation-help" class="instruction-text">
@@ -187,9 +96,9 @@
 
             <div class="chart-section">
               <div class="chart-container">
-                <h4 id="correlationTitle">Select variables to view correlation</h4>
+                <h4 id="correlationTitle">Select Variables To View Correlation</h4>
                 <p id="correlationSubtitle" class="chart-subtitle"></p>
-                <canvas id="correlationChart"></canvas>
+                <div class="plot-area"><canvas id="correlationChart"></canvas></div>
                 <div class="empty-state" id="correlationEmpty">
                   <p>
                     🔍 Choose X and Y axis variables above to explore correlations between water treatment parameters.
@@ -205,11 +114,9 @@
             <div class="card-header">
               <h3>Time Series Analysis</h3>
               <div class="header-buttons">
-                <button class="help-toggle-btn" type="button" onclick="toggleHelp('timeseries-help')" title="Show/Hide Help">
-                  ℹ️ Help
+                <button class="help-toggle-btn" type="button" onclick="toggleHelp('timeseries-help')" title="Show/Hide Help">Help
                 </button>
-                <button class="export-pdf-btn" type="button" onclick="exportChartToPDF('timeseries')" title="Export Chart as PDF">
-                  📄 Export PDF
+                <button class="export-pdf-btn" type="button" onclick="exportChartToPDF('timeseries')" title="Export Chart as PDF">Export PDF
                 </button>
               </div>
               <p id="timeseries-help" class="instruction-text">
@@ -320,8 +227,8 @@
 
             <div class="chart-section">
               <div class="chart-container">
-                <h4 id="timeSeriesTitle">Variables over Time</h4>
-                <canvas id="timeSeriesChart"></canvas>
+                <h4 id="timeSeriesTitle">Variables Over Time</h4>
+                <div class="plot-area"><canvas id="timeSeriesChart"></canvas></div><div class="chart-tools"><p>Scroll over the chart to zoom; drag to pan.</p><button class="btn" id="resetTimeZoom" type="button">Reset Zoom</button></div>
                 <p class="chart-zoom-hint">💡 Scroll to zoom, drag to pan, double-click to reset</p>
               </div>
             </div>
@@ -333,11 +240,9 @@
             <div class="card-header">
               <h3>Distribution Analysis</h3>
               <div class="header-buttons">
-                <button class="help-toggle-btn" type="button" onclick="toggleHelp('distribution-help')" title="Show/Hide Help">
-                  ℹ️ Help
+                <button class="help-toggle-btn" type="button" onclick="toggleHelp('distribution-help')" title="Show/Hide Help">Help
                 </button>
-                <button class="export-pdf-btn" type="button" onclick="exportChartToPDF('distribution')" title="Export Chart as PDF">
-                  📄 Export PDF
+                <button class="export-pdf-btn" type="button" onclick="exportChartToPDF('distribution')" title="Export Chart as PDF">Export PDF
                 </button>
               </div>
               <p id="distribution-help" class="instruction-text">
@@ -380,8 +285,8 @@
                 <div id="distributionStats"></div>
               </div>
               <div class="chart-container">
-                <h4 id="distributionTitle">Select variable to view distribution</h4>
-                <canvas id="distributionChart"></canvas>
+                <h4 id="distributionTitle">Select Variable To View Distribution</h4>
+                <div class="plot-area"><canvas id="distributionChart"></canvas></div>
               </div>
             </div>
           </div>
@@ -392,11 +297,9 @@
             <div class="card-header">
               <h3>Optimization Analysis</h3>
               <div class="header-buttons">
-                <button class="help-toggle-btn" type="button" onclick="toggleHelp('optimization-help')" title="Show/Hide Help">
-                  ℹ️ Help
+                <button class="help-toggle-btn" type="button" onclick="toggleHelp('optimization-help')" title="Show/Hide Help">Help
                 </button>
-                <button class="export-pdf-btn" type="button" onclick="exportChartToPDF('optimization')" title="Export Chart as PDF">
-                  📄 Export PDF
+                <button class="export-pdf-btn" type="button" onclick="exportChartToPDF('optimization')" title="Export Chart as PDF">Export PDF
                 </button>
               </div>
               <p id="optimization-help" class="instruction-text">
@@ -409,7 +312,7 @@
             <div class="ai-insights-panel" id="aiInsightsPanel" style="display: none">
                 <div class="ai-insights-header">
                   <div class="ai-header-top">
-                    <h4>🤖 AI Correlation Insights</h4>
+                    <h4>AI Correlation Insights</h4>
                     <div class="ai-provider-pill">
                       <label class="provider-pill">
                         <input type="radio" name="aiProvider" value="claude" checked />
@@ -439,8 +342,7 @@
                     type="button"
                     onclick="explainCorrelation()"
                     style="display: none"
-                  >
-                    🤖 Explain This Correlation
+                  >Explain This Correlation
                   </button>
                 </div>
               </div>
@@ -472,11 +374,11 @@
               <div class="chart-container">
                 <div class="chart-header">
                   <div class="chart-title-section">
-                    <h4 id="optimizationTitle">Select target variable for optimization analysis</h4>
+                    <h4 id="optimizationTitle">Select Target Variable For Optimization Analysis</h4>
                     <p id="optimizationSubtitle" class="chart-subtitle"></p>
                   </div>
                 </div>
-                <canvas id="optimizationChart"></canvas>
+                <div class="plot-area"><canvas id="optimizationChart"></canvas></div>
               </div>
             </div>
           </div>
@@ -487,18 +389,19 @@
         <p>&copy; 2025 Water Data Explorer</p>
         <span class="footer-status">
           <span class="status-dot"></span>
-          Live analytics powered by Water Treatment Tools
+          Historical Workbook Analysis
         </span>
       </footer>
     </main>
+    </div>
 
     <div id="notificationContainer" class="notification-container"></div>
 
-    <div id="explanationModal" class="modal" style="display: none">
+    <div id="explanationModal" class="modal" style="display: none" role="dialog" aria-modal="true" aria-labelledby="explanationTitle">
       <div class="modal-content">
         <div class="modal-header">
-          <h3>💡 Correlation Explanation</h3>
-          <span class="close" onclick="closeExplanationModal()">&times;</span>
+          <h3 id="explanationTitle">Correlation Explanation</h3>
+          <button class="close" type="button" onclick="closeExplanationModal()" aria-label="Close Explanation">&times;</button>
         </div>
         <div class="modal-body">
           <div class="correlation-info">
@@ -523,135 +426,9 @@
       </div>
     </div>
 
-    <script>
-      (function () {
-        const globalNav = document.querySelector(".global-nav");
-        const globalNavMenu = globalNav ? globalNav.querySelector(".global-nav__menu") : null;
-        const globalNavMenuToggle = globalNav ? globalNav.querySelector(".global-nav__menu-toggle") : null;
-        const navToggles = Array.from(document.querySelectorAll(".global-nav__toggle"));
-
-        if (globalNav) {
-          const shouldUseFallbackLinks = window.location.protocol === "file:" || window.location.pathname.includes("/apps/");
-
-          if (shouldUseFallbackLinks) {
-            const fallbackLinks = document.querySelectorAll("[data-rel-href]");
-            fallbackLinks.forEach((link) => {
-              const relHref = link.getAttribute("data-rel-href");
-              if (relHref) {
-                link.setAttribute("href", relHref);
-              }
-            });
-          }
-        }
-
-        function closeDropdownMenus() {
-          navToggles.forEach((toggle) => {
-            const item = toggle.closest(".global-nav__item--dropdown");
-            if (item) {
-              item.classList.remove("global-nav__item--open");
-            }
-            toggle.setAttribute("aria-expanded", "false");
-          });
-        }
-
-        function setMobileMenuOpen(isOpen) {
-          if (!globalNav || !globalNavMenu || !globalNavMenuToggle) {
-            return;
-          }
-
-          globalNav.classList.toggle("global-nav--menu-open", isOpen);
-          globalNavMenuToggle.setAttribute("aria-expanded", String(isOpen));
-          document.body.classList.toggle("has-mobile-nav-open", isOpen);
-
-          if (!isOpen) {
-            closeDropdownMenus();
-          }
-        }
-
-        function closeMobileMenu() {
-          setMobileMenuOpen(false);
-        }
-
-        if (globalNav && globalNavMenu && globalNavMenuToggle) {
-          globalNavMenuToggle.addEventListener("click", (event) => {
-            event.stopPropagation();
-            const shouldOpen = !globalNav.classList.contains("global-nav--menu-open");
-            setMobileMenuOpen(shouldOpen);
-          });
-
-          globalNavMenu.addEventListener("click", (event) => {
-            const target = event.target;
-            if (target instanceof HTMLAnchorElement) {
-              closeMobileMenu();
-            }
-          });
-
-          window.addEventListener("resize", () => {
-            if (window.innerWidth > 720) {
-              closeMobileMenu();
-            }
-          });
-        }
-
-        navToggles.forEach((toggle) => {
-          toggle.setAttribute("aria-expanded", "false");
-          toggle.addEventListener("click", (event) => {
-            event.stopPropagation();
-            const item = toggle.closest(".global-nav__item--dropdown");
-            if (!item) {
-              return;
-            }
-
-            const isOpen = item.classList.contains("global-nav__item--open");
-            closeDropdownMenus();
-            if (!isOpen) {
-              item.classList.add("global-nav__item--open");
-              toggle.setAttribute("aria-expanded", "true");
-            }
-          });
-        });
-
-        document.addEventListener("click", (event) => {
-          if (!(event.target instanceof Node)) {
-            return;
-          }
-
-          const clickedWithinDropdown = navToggles.some((toggle) => {
-            const item = toggle.closest(".global-nav__item--dropdown");
-            return item && item.contains(event.target);
-          });
-
-          if (!clickedWithinDropdown) {
-            closeDropdownMenus();
-          }
-
-          if (globalNav && !globalNav.contains(event.target)) {
-            closeMobileMenu();
-          }
-        });
-
-        document.addEventListener("keydown", (event) => {
-          if (event.key === "Escape") {
-            closeDropdownMenus();
-            closeMobileMenu();
-          }
-        });
-      })();
-    </script>
-    <script src="script.js?v=20260204a"></script>
-    <script>
-      // Remove any legacy provider badge (e.g., "ChatGPT • GPT-4") that may linger from cached builds
-      document.addEventListener("DOMContentLoaded", () => {
-        const header = document.querySelector(".ai-header-top");
-        if (!header) return;
-        header.querySelectorAll("button, a, span, div").forEach((el) => {
-          if (el.textContent && el.textContent.toLowerCase().includes("chatgpt")) {
-            el.remove();
-          }
-        });
-      });
-    </script>
-  </body>
+<script src="operations.js?v=20261022-explorer1"></script>
+    <script src="operations-ui.js?v=20261022-explorer1"></script>
+</body>
 </html>
 
 

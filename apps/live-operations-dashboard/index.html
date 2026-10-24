@@ -3,24 +3,31 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Asset Status Board</title>
+    <title>Equipment Status Board</title>
     <link rel="icon" type="image/png" href="/assets/logos/favicon.png" />
     <link rel="stylesheet" href="../../global-styles.css" />
-    <link rel="stylesheet" href="./styles.css?v=20260331-dark-mode-only-1" />
+    <link rel="stylesheet" href="./styles.css?v=20261024-commenthover1" />
+    <link rel="stylesheet" href="./wall-ui.css?v=20261024-commenthover1" />
+    <link rel="stylesheet" href="/shared/operations/theme.css?v=20261024-commenthover1" />
+    <link rel="stylesheet" href="/shared/operations/navigation.css?v=20261024-commenthover1" />
+    <link rel="stylesheet" href="./operations-theme.css?v=20261024-commenthover1" />
+    <link rel="stylesheet" href="./desktop-layout.css?v=20261024-commenthover1" />
+    <link rel="stylesheet" href="./wall-readability.css?v=20261024-commenthover1" />
+    <script src="/shared/operations/navigation.js?v=20261024-commenthover1" defer></script>
   </head>
-  <body>
+  <body data-ops-app="equipment">
     <main class="ops-page">
-      <header class="ops-header card">
+      <header class="ops-header card" id="equipmentBoardHeader">
         <div class="ops-brand">
-          <img
+          <a class="ops-home-link" href="/" aria-label="Operations Home"><img
             id="opsLogo"
             src="/assets/logos/logo-horizontal-dark.png"
-            alt="Water Treatment Tools"
+            alt="City of Northglenn"
             class="ops-logo"
-          />
+          /></a>
           <div class="ops-titles">
             <p class="eyebrow">Water Treatment Facility</p>
-            <h1>Asset Status Board</h1>
+            <h1>Equipment Status Board</h1>
             <div class="sync-row sync-row--title">
               <span
                 id="syncStatus"
@@ -32,18 +39,22 @@
               <span id="lastUpdated" class="last-updated"
                 >Last updated: --</span
               >
+              <span id="wallSyncTime">Last connection check: awaiting data</span>
             </div>
+            <p id="connectionAlert" class="connection-alert" role="status" hidden></p>
           </div>
         </div>
-        <div class="header-qr" aria-label="Scan me to edit">
+        <div class="wall-tools"><a class="header-qr" href="https://water.gibbhub.io/live-operations-dashboard/" aria-label="Open Equipment Status Board Editor">
           <img
-            src="/assets/qrcodes/qr1.png"
-            alt="QR code to edit dashboard"
+            src="/assets/qrcodes/equipment-status-edit.svg?v=20261024-commenthover1"
+            alt="Scan to open the Equipment Status Board editor"
             class="header-qr-image"
           />
-          <span class="header-qr-text">Scan Me To Edit</span>
-        </div>
+          <span class="header-qr-text">Scan to<br>edit on mobile</span>
+        </a><button data-ops-menu type="button" aria-label="Open Applications Menu">Apps</button></div>
       </header>
+
+      <section id="statusLegend" class="status-legend" aria-label="Equipment totals and status legend"></section>
 
       <section
         id="equipmentContainer"
@@ -62,8 +73,9 @@
           <p class="comments-board-subtitle">
             Shared notes for equipment issues, observations, and follow-ups.
           </p>
+          <span id="wallCommentCount" class="wall-comment-count"></span>
         </header>
-
+        <p id="commentsOverflowHint" class="comments-overflow-hint" hidden>More comments below &darr;</p>
         <div
           id="generalCommentsList"
           class="comments-list"
@@ -185,6 +197,7 @@
               maxlength="2000"
               placeholder="Add a general comment about equipment, operations, or follow-up work..."
             ></textarea>
+            <label class="wall-check" for="generalCommentPinned"><input type="checkbox" id="generalCommentPinned" /> Pin On Wall Display</label>
           </section>
         </form>
 
@@ -210,7 +223,14 @@
           <p class="drawer-meta">Comments are shared live across the dashboard.</p>
         </footer>
       </aside>
+      <footer class="wall-footer"><div class="wall-footer-info"><p id="recentEquipmentChange" role="status">No recent equipment changes.</p><p class="wall-source-note">Operator-reported availability &middot; In-service totals include warnings &middot; Moving border = changed within 2 min</p><span id="compactConnectionStatus" role="status"></span></div><button type="button" id="wallHeaderToggle" aria-controls="equipmentBoardHeader" aria-expanded="true">Hide Header</button></footer>
     </main>
+
+<dialog id="equipmentReadDialog" aria-labelledby="equipmentReadTitle">
+      <div class="wall-dialog-top"><h2 id="equipmentReadTitle"></h2><button type="button" data-wall-close aria-label="Close equipment details">×</button></div>
+      <p id="equipmentReadStatus"></p><p id="equipmentReadNote" class="wall-full-note"></p><p id="equipmentReadMaintenance"></p><p id="equipmentReadMeta"></p>
+      <p>Scan the header QR code to edit on your phone.</p>
+    </dialog>
 
     <template id="groupTemplate">
       <section class="group card">
@@ -243,7 +263,7 @@
           <header class="comment-card-header">
             <div class="comment-card-meta">
               <p class="comment-card-author"></p>
-              <p class="comment-card-date"></p>
+              <time class="comment-card-date"></time>
             </div>
             <div class="comment-card-actions">
               <button
@@ -253,11 +273,7 @@
                 aria-label="Edit comment"
                 title="Edit comment"
               >
-                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                  <path
-                    d="M4 17.25V20h2.75L17.81 8.94l-2.75-2.75zM19.92 7.53a.996.996 0 000-1.41l-2.04-2.04a.996.996 0 10-1.41 1.41l2.04 2.04a.996.996 0 001.41 0z"
-                  ></path>
-                </svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m16 3 5 5M4 20l4-1L21 6a2.1 2.1 0 0 0-3-3L5 16l-1 4Z"/></svg>
               </button>
               <button
                 class="comment-icon-button comment-icon-button--danger"
@@ -266,11 +282,7 @@
                 aria-label="Delete comment"
                 title="Delete comment"
               >
-                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                  <path
-                    d="M6 7h12l-1 13H7L6 7zm3-3h6l1 2h4v2H4V6h4l1-2z"
-                  ></path>
-                </svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7M14 10v7"/></svg>
               </button>
             </div>
           </header>
@@ -286,7 +298,9 @@
       <p id="hoverPopupMeta" class="hover-popup-meta"></p>
     </aside>
 
-    <script src="./script.js?v=20260329-hover-popup-pop-cache10"></script>
+    <script src="./wall-ui.js?v=20261024-commenthover1"></script>
+    <script src="./wall-comments.js?v=20261024-commenthover1"></script>
+    <script src="./script.js?v=20261024-commenthover1"></script>
   </body>
 </html>
 

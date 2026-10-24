@@ -550,8 +550,17 @@ async function navigate(next) {
   catch (error) { if (!Object.keys(pending).length) notify(error.message); }
   finally { navigating = false; render(); }
 }
+// The shared app switcher waits for the same save path as in-app navigation.
+document.addEventListener('operations:before-navigate', event => {
+  event.detail.waitUntil((async () => {
+    if(navigating || completing || listBusy || itemBusy || sendingReport || deleting)return false;
+    navigating=true;render();
+    try { await flush(); return true; }
+    catch(error){ notify(error.message); return false; }
+    finally { navigating=false;render(); }
+  })());
+});
 function selectLocation(name) { locationName = name; render(); }
-$('brand-home').addEventListener('click', () => navigate('home'));
 $('back-home').addEventListener('click', () => navigate('home'));
 $('nav-home').addEventListener('click', () => navigate('home'));
 $('nav-history').addEventListener('click', () => navigate('history'));

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NH3 Loading Insight - Design Mockup</title>
+    <base href="../" />
+    <link rel="icon" type="image/png" href="../../assets/logos/favicon.png" />
+    <link rel="stylesheet" href="../../shared/operations/theme.css" />
+    <link rel="stylesheet" href="../../shared/operations/navigation.css" />
+    <script src="../../shared/operations/navigation.js" defer></script>
+    <link rel="stylesheet" href="design/mockup.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/2.0.1/chartjs-plugin-zoom.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+  </head>
+  <body data-ops-app="loading">
+<a class="skip-link" href="#main">Skip To Loading Analysis</a><header class="site-header"><a class="brand" href="../dashboard/dashboard.html" aria-label="Operations Home"><img src="../../assets/logos/northglenn-horizontal.png" alt="City of Northglenn" width="300" height="69"></a><div class="facility"><strong>Water Treatment Facility</strong><span>WASTEWATER TREATMENT</span></div><button data-ops-menu type="button" aria-label="Open Applications Menu">Apps</button></header><div class="workspace"><aside class="sidebar" aria-label="Loading analysis sections"><p class="nav-caption">YOUR WORKSPACE</p><nav aria-label="On This Page"><a class="nav-item" href="design/mockup.html#controls" aria-current="location"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V3m-5 5 5-5 5 5M4 16v5h16v-5"/></svg></span><span>Get Started</span></a><a class="nav-item" href="design/mockup.html#summary"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M10 4v16"/></svg></span><span>Dataset Summary</span></a><a class="nav-item" href="design/mockup.html#charts"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M10 4v16"/></svg></span><span>Trend And Exceedances</span></a><a class="nav-item" href="design/mockup.html#hours"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M10 4v16"/></svg></span><span>Hot Hours</span></a><a class="nav-item" href="design/mockup.html#preview"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M10 4v16"/></svg></span><span>Dataset Preview</span></a></nav></aside>
+  <main class="page" id="main" tabindex="-1">
+<p class="preview-note">Design Preview &middot; Existing Workbook-To-Analysis Workflow</p>
+      <header class="hero">
+        <span class="hero__overline">Wastewater Treatment</span>
+        <h1>NH3 Loading Insight</h1>
+        <p class="hero__lede">
+          Compare weekday and weekend loading patterns, test threshold scenarios, and pinpoint the hours driving ammonia exceedances.
+        </p>
+      </header>
+
+      <section class="card nh4-controls" id="controls" aria-labelledby="controlsTitle">
+        <div class="card__header">
+          <div>
+            <h2 id="controlsTitle">Get Started</h2>
+            <p>Upload a workbook or launch the demo dataset to explore NH3 loading patterns.</p>
+          </div>
+        </div>
+        <div class="controls-grid">
+          <div class="control-block">
+            <h3>Import Data</h3>
+            <p>Accepts the standard format where timestamps begin in A4 and NH3 loading (lbs/day) in B4.</p>
+            <label class="file-input" for="fileInput">
+              <input id="fileInput" type="file" accept=".xlsx,.xls" />
+              <span class="file-label">Choose Excel file</span>
+            </label>
+            <button id="useDemoButton" class="btn btn--ghost" type="button">Use demo dataset</button>
+            <p id="loadStatus" class="load-status" role="status" aria-live="polite"></p>
+          </div>
+          <div class="control-block">
+            <h3>Threshold Scenario</h3>
+            <p>Select the base average and adjust the exceedance multiplier.</p>
+            <div class="control-field">
+              <label for="baseAverageSelect">Base average</label>
+              <select id="baseAverageSelect">
+                <option value="overall" selected>Overall dataset average</option>
+                <option value="weekday">Weekday average</option>
+                <option value="weekend">Weekend average</option>
+              </select>
+            </div>
+            <div class="threshold-highlight" aria-live="polite">
+              <div class="threshold-highlight__item">
+                <span class="threshold-highlight__label">Base average</span>
+                <span id="thresholdBaseValue" class="threshold-highlight__value">—</span>
+              </div>
+              <div class="threshold-highlight__item">
+                <span class="threshold-highlight__label">Adjusted threshold</span>
+                <span id="thresholdAdjustedValue" class="threshold-highlight__value">—</span>
+              </div>
+            </div>
+            <div class="control-field threshold-field">
+              <label for="thresholdSlider">Exceedance multiplier</label>
+              <div class="threshold-inputs">
+                <input id="thresholdSlider" type="range" min="0.8" max="2" step="0.05" value="1.0" />
+                <input id="thresholdNumber" type="number" min="0.5" max="2.5" step="0.05" value="1.0" />
+              </div>
+              <p class="threshold-detail">
+                Current threshold: <span id="thresholdValue">—</span> lbs/day (<span id="thresholdPercent">100%</span> of base)
+              </p>
+            </div>
+            <div class="control-field date-range-field">
+              <label for="startDateInput">Date range</label>
+              <div class="date-range">
+                <div class="date-range__inputs">
+                  <input id="startDateInput" type="date" name="startDate" />
+                  <span class="date-range__separator" aria-hidden="true">to</span>
+                  <input id="endDateInput" type="date" name="endDate" />
+                </div>
+                <button id="resetDateRange" class="btn btn--ghost btn--sm" type="button">Reset</button>
+              </div>
+              <p id="dateRangeHint" class="control-hint">Load data to enable range selection.</p>
+            </div>
+            <div class="control-field">
+              <label for="weekdayToggle" class="toggle">
+                <input id="weekdayToggle" type="checkbox" checked />
+                <span>Include weekdays</span>
+              </label>
+              <label for="weekendToggle" class="toggle">
+                <input id="weekendToggle" type="checkbox" checked />
+                <span>Include weekends</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card nh4-summary" id="summary" aria-labelledby="summaryTitle">
+        <div class="card__header">
+          <div>
+            <h2 id="summaryTitle">Dataset Summary</h2>
+            <p>Key stats contrasting weekday and weekend performance for the loaded dataset.</p>
+          </div>
+        </div>
+        <div class="summary-meta">
+          <div class="summary-stat">
+            <span class="summary-label">Records</span>
+            <span id="totalRecords" class="summary-value">—</span>
+          </div>
+          <div class="summary-stat">
+            <span class="summary-label">Overall Avg</span>
+            <span id="overallAverage" class="summary-value">—</span>
+          </div>
+          <div class="summary-stat">
+            <span class="summary-label">Weekday Avg</span>
+            <span id="weekdayAverage" class="summary-value">—</span>
+          </div>
+          <div class="summary-stat">
+            <span class="summary-label">Weekend Avg</span>
+            <span id="weekendAverage" class="summary-value">—</span>
+          </div>
+        </div>
+        <div class="summary-grid">
+          <div class="summary-card">
+            <h3>Weekday Span</h3>
+            <p id="weekdayRange" class="summary-detail">—</p>
+          </div>
+          <div class="summary-card">
+            <h3>Weekend Span</h3>
+            <p id="weekendRange" class="summary-detail">—</p>
+          </div>
+          <div class="summary-card">
+            <h3>Peak Value</h3>
+            <p id="peakValue" class="summary-detail">—</p>
+          </div>
+          <div class="summary-card">
+            <h3>Latest Sample</h3>
+            <p id="latestSample" class="summary-detail">—</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="card nh4-visuals" id="charts" aria-labelledby="chartsTitle">
+        <div class="card__header">
+          <div>
+            <h2 id="chartsTitle">Trend And Exceedances</h2>
+            <p>Explore daily loading dynamics and see which hours cross the current threshold.</p>
+          </div>
+          <div class="chart-meta">
+            <span id="exceedanceSummary" class="chip">No threshold applied yet</span>
+            <button id="resetZoomButton" class="btn btn--ghost btn--sm" type="button">Reset zoom</button>
+          </div>
+        </div>
+        <div class="chart-grid">
+          <div class="chart-panel">
+            <header class="chart-header">
+              <h3>NH3 Time Series</h3>
+              <p>Weekend periods are shaded alongside the scenario threshold overlay.</p>
+            </header>
+            <div id="timeSeriesTooltip" class="chart-tooltip chart-tooltip--hidden" role="status" aria-live="polite"></div>
+            <canvas id="timeSeriesChart" height="320"></canvas>
+          </div>
+          <div class="chart-panel">
+            <header class="chart-header">
+              <h3>Hourly Exceedances</h3>
+              <p>Number of samples per hour beating the current threshold.</p>
+            </header>
+            <canvas id="hourlyBarChart" height="320"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <section class="card nh4-hours" id="hours" aria-labelledby="hoursTitle">
+        <div class="card__header">
+          <div>
+            <h2 id="hoursTitle">Hot Hours</h2>
+            <p>Hours ranked by exceedance frequency and average loading.</p>
+          </div>
+        </div>
+        <div class="hours-grid">
+          <div class="hours-table">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Hour</th>
+                  <th scope="col">Exceedances</th>
+                  <th scope="col">Share of records</th>
+                  <th scope="col">Avg loading</th>
+                </tr>
+              </thead>
+              <tbody id="hourTableBody">
+                <tr>
+                  <td colspan="4" class="hours-placeholder">Import data to populate hour analytics.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <aside class="hours-notes">
+            <h3>Notes</h3>
+            <ul>
+              <li>Hours reference the timestamp hour in 24-hour format.</li>
+              <li>Share compares exceedance counts to all samples in that hour.</li>
+              <li>Average loading recalculates using the subset matching your weekday/weekend filters.</li>
+            </ul>
+          </aside>
+        </div>
+      </section>
+
+      <section class="card nh4-preview" id="preview" aria-labelledby="previewTitle">
+        <div class="card__header">
+          <div>
+            <h2 id="previewTitle">Dataset Preview</h2>
+            <p>First 15 rows for quick validation of timestamp alignment.</p>
+          </div>
+        </div>
+        <div class="preview-table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Timestamp</th>
+            <th scope="col">NH3 loading (lbs/day)</th>
+                <th scope="col">Week segment</th>
+              </tr>
+            </thead>
+            <tbody id="previewTableBody">
+              <tr>
+                <td colspan="3" class="preview-placeholder">Waiting for data…</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <footer class="page-footer">
+        <p>&copy; 2025 Water Treatment Tools</p>
+        <p>Built to support daily process decisions at the Wastewater Treatment Facility.</p>
+      </footer>
+    </main></div>
+
+    <script src="design/mockup.js" defer></script>
+    <script src="script.js?v=1757369234" defer></script>
+  </body>
+</html>
+
+
+
+
+
+
+
+
+
+

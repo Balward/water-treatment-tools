@@ -1,12 +1,12 @@
 # Multi-stage build for both Node.js proxy and static files
-FROM node:18-alpine as node-stage
+FROM node:24-alpine AS node-stage
 
 # Set working directory for Node.js app
 WORKDIR /app
 
 # Copy package.json and install dependencies
-COPY package.json ./
-RUN npm install --production
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev
 
 # Copy .env template (actual .env will be mounted or passed via environment)
 COPY .env.template ./.env.template
@@ -31,6 +31,7 @@ RUN rm -rf /usr/share/nginx/html/*
 # Copy the entire project structure
 COPY apps/ ./apps/
 COPY assets/ ./assets/
+COPY shared/ ./shared/
 COPY docs/ ./docs/
 COPY sample-data/ ./sample-data/
 COPY README.md ./
@@ -42,6 +43,7 @@ COPY apps/dashboard/dashboard.css ./dashboard.css
 
 # Create nginx configuration
 COPY nginx.conf /etc/nginx/nginx.conf
+RUN nginx -t
 
 # Create startup script
 RUN echo '#!/bin/sh' > /start.sh && \
