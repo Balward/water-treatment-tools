@@ -18,7 +18,9 @@ console.log('OpenAI API Key loaded:', OPENAI_API_KEY ? `${OPENAI_API_KEY.substri
 
 // Middleware
 app.use(cors());
+app.use('/api/application-review',express.json({limit:'5mb'}));
 app.use(express.json());
+require('./application-review-api')(app);
 
 const dataDirectory = process.env.LIVE_OPS_DATA_DIR || path.join(__dirname, 'data');
 const liveOpsStatePath = path.join(dataDirectory, 'live-ops-state.json');

@@ -1,0 +1,17 @@
+(function(root){
+'use strict';
+const teams=['Water Treatment','Wastewater Treatment','Maintenance','Laboratory Services'];
+const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const states=[['AL','Alabama'],['AK','Alaska'],['AZ','Arizona'],['AR','Arkansas'],['CA','California'],['CO','Colorado'],['CT','Connecticut'],['DE','Delaware'],['DC','District of Columbia'],['FL','Florida'],['GA','Georgia'],['HI','Hawaii'],['ID','Idaho'],['IL','Illinois'],['IN','Indiana'],['IA','Iowa'],['KS','Kansas'],['KY','Kentucky'],['LA','Louisiana'],['ME','Maine'],['MD','Maryland'],['MA','Massachusetts'],['MI','Michigan'],['MN','Minnesota'],['MS','Mississippi'],['MO','Missouri'],['MT','Montana'],['NE','Nebraska'],['NV','Nevada'],['NH','New Hampshire'],['NJ','New Jersey'],['NM','New Mexico'],['NY','New York'],['NC','North Carolina'],['ND','North Dakota'],['OH','Ohio'],['OK','Oklahoma'],['OR','Oregon'],['PA','Pennsylvania'],['RI','Rhode Island'],['SC','South Carolina'],['SD','South Dakota'],['TN','Tennessee'],['TX','Texas'],['UT','Utah'],['VT','Vermont'],['VA','Virginia'],['WA','Washington'],['WV','West Virginia'],['WI','Wisconsin'],['WY','Wyoming'],['AS','American Samoa'],['GU','Guam'],['MP','Northern Mariana Islands'],['PR','Puerto Rico'],['VI','US Virgin Islands']];
+const countryCodes='AD AE AF AG AI AL AM AO AQ AR AS AT AU AW AX AZ BA BB BD BE BF BG BH BI BJ BL BM BN BO BQ BR BS BT BV BW BY BZ CA CC CD CF CG CH CI CK CL CM CN CO CR CU CV CW CX CY CZ DE DJ DK DM DO DZ EC EE EG EH ER ES ET FI FJ FK FM FO FR GA GB GD GE GF GG GH GI GL GM GN GP GQ GR GS GT GU GW GY HK HM HN HR HT HU ID IE IL IM IN IO IQ IR IS IT JE JM JO JP KE KG KH KI KM KN KP KR KW KY KZ LA LB LC LI LK LR LS LT LU LV LY MA MC MD ME MF MG MH MK ML MM MN MO MP MQ MR MS MT MU MV MW MX MY MZ NA NC NE NF NG NI NL NO NP NR NU NZ OM PA PE PF PG PH PK PL PM PN PR PS PT PW PY QA RE RO RS RU RW SA SB SC SD SE SG SH SI SJ SK SL SM SN SO SR SS ST SV SX SY SZ TC TD TF TG TH TJ TK TL TM TN TO TR TT TV TW TZ UA UG UM US UY UZ VA VC VE VG VI VN VU WF WS YE YT ZA ZM ZW'.split(' ');
+const names=new Intl.DisplayNames(['en'],{type:'region'});
+const countryName=code=>code==='US'?'USA':names.of(code)||code;
+const countries=countryCodes.map(code=>[code,countryName(code)]).sort((a,b)=>a[0]==='US'?-1:b[0]==='US'?1:a[1].localeCompare(b[1]));
+const team=value=>({'Water':'Water Treatment','Wastewater':'Wastewater Treatment','Laboratory':'Laboratory Services'}[value]||value);
+function period(month,year){if(!Number.isInteger(month)||month<1||month>12||!Number.isInteger(year)||year<2000||year>2100)throw Error('Choose a valid month and year (2000–2100).');return {month,year};}
+function currentPeriod(now=new Date()){const parts=new Intl.DateTimeFormat('en-US',{timeZone:'America/Denver',month:'numeric',year:'numeric'}).formatToParts(now);return {month:Number(parts.find(p=>p.type==='month').value),year:Number(parts.find(p=>p.type==='year').value)};}
+function title(position,selectedTeam,month,year){period(month,year);return `${position.trim()} - ${selectedTeam} - ${months[month-1]} ${year}`;}
+function location(applicant){const code=applicant.country||'US';return code==='US'?(applicant.state?applicant.state+', USA':'USA'):countryName(code);}
+const api={teams,months,states,countryCodes,countries,countryName,team,period,currentPeriod,title,location};
+if(typeof module==='object'&&module.exports)module.exports=api;else root.ApplicationReviewReference=api;
+})(typeof globalThis!=='undefined'?globalThis:this);

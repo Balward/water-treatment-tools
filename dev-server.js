@@ -43,6 +43,7 @@ const ROUTES = {
     '/dashboard/': '/apps/dashboard/dashboard.html',
     
     // App routes
+    '/application-review/': '/apps/application-review/index.html',
     '/robojar-analyzer/': '/apps/robojar-analyzer/index.html',
     '/dose-predictor/': '/apps/dose-predictor/index.html',
     '/regulation-100-study/': '/apps/regulation-100-study/index.html',
@@ -98,6 +99,11 @@ function handleRequest(req, res) {
     
     console.log(`${req.method} ${pathname}`);
     
+    if (pathname.startsWith('/api/application-review')) {
+        const upstream=http.request({hostname:'127.0.0.1',port:Number(process.env.API_PORT)||3001,path:req.url,method:req.method,headers:req.headers},response=>{res.writeHead(response.statusCode,response.headers);response.pipe(res);});
+        upstream.on('error',()=>{res.writeHead(503,{'Content-Type':'application/json'});res.end(JSON.stringify({error:'Start the API with npm start to use shared application reviews.'}));});
+        req.pipe(upstream);return;
+    }
     // Handle preflight OPTIONS requests
     if (req.method === 'OPTIONS') {
         res.writeHead(200, {
@@ -122,7 +128,7 @@ function handleRequest(req, res) {
     }
     
     // Check if it's a direct file request
-    if (pathname.startsWith('/apps/') || 
+    if (pathname.startsWith('/apps/') || pathname.startsWith('/shared/') ||
         pathname.startsWith('/assets/') || 
         pathname.startsWith('/sample-data/') || 
         pathname.startsWith('/docs/') ||

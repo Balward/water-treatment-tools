@@ -13,6 +13,10 @@ COPY .env.template ./.env.template
 
 # Copy the proxy server
 COPY claude-proxy-server.js ./
+COPY application-review-api.js ./
+COPY apps/application-review/model.js ./apps/application-review/model.js
+COPY apps/application-review/reference-data.js ./apps/application-review/reference-data.js
+COPY apps/application-review/hiring-reviews.js ./apps/application-review/hiring-reviews.js
 
 # Production stage with nginx + node
 FROM nginx:alpine
