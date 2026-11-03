@@ -30,14 +30,6 @@ For shared records, start `npm start` for the API and `node dev-server.js` for t
 
 ## Workflow
 
-Results use a compact summary strip, expandable reviewer completion details, alternating rows, and sticky table headings. At widths of 700px or less, each applicant becomes a labeled card with no horizontal table scrolling. Completion details show assigned names and completion status only; they never reveal recommendations or notes before the selected reviewer saves a vote.
-
-Review dialogs keep save actions visible below the scrolling content. Saved answers have Previous/Next navigation in surname order, limited to the selected reviewer's voted applicants. Navigating past an edited answer retains a draft rather than publishing it.
-
-Unsaved votes and comments are kept in local browser storage per hiring review, applicant ID, and reviewer name. Reopening the applicant restores the draft, labeled **Unsaved Draft**. Drafts are device-local, do not affect progress, and do not reveal peer results. A successful explicit Save publishes the answer and removes its draft. **Discard Draft** restores the saved answer. If the shared answer changed since the draft began, the shared answer stays visible and restoring the older draft requires an explicit action. Storage failures display a warning and retain the existing unsaved-change prompts. Drafts are not included in shared backups or printouts.
-
-Run `node scripts/check-application-review-flow.cjs` for draft recovery, isolation, stale-answer handling, save actions, navigation, and responsive Results checks using temporary synthetic data.
-
 Page introductions use the review title and relevant task guidance without a repeated Northglenn Operations overline or a second team/position subtitle. The position selector shows the review title directly, without prepending the team again. The same redundant introduction branding has been removed from the other themed Operations apps and the shared application menu.
 
 **Results** is a reviewer-facing, read-only candidate table with search, sorting, scores, ranks, and printable results. Applicant details opened here expose no voting form, editing, deletion, archive, selection, transfer, creation, or settings actions. Existing result-hiding rules still apply: results require the selected reviewer's own saved vote, and ranks require all their active applicants to be reviewed. The completion shortcut opens this overview.

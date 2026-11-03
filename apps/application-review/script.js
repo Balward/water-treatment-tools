@@ -39,12 +39,12 @@ function applyArchiveState(){
   $('add-applicant').hidden=view!=='dashboard'||archived;
   $('bulk-add-applicants').hidden=view!=='dashboard'||archived;
   $('bulk-edit-applicants').hidden=view!=='dashboard'||archived;
-  $('vote-form').hidden=view==='overview';$('review-footer').hidden=view==='overview';
+  $('vote-form').hidden=view==='overview';
   $('applicants-heading').textContent=view==='overview'?'Candidate Results':'Applicants At A Glance';
   $('new-hiring-review').hidden=!managementUnlocked||!['dashboard','setup','sets'].includes(view);
   $('setup-reminder').hidden=view==='overview'||state.reviewers.some(Boolean);
   document.querySelectorAll('#empty button').forEach(button=>button.hidden=view==='overview');$('empty').querySelector('h3').textContent=view==='overview'?'No Applicants Yet':'Your Next Team Starts Here';$('empty').querySelector('p').textContent=view==='overview'?'There are no applicants in this review.':'Add your first applicant, or import the workbook to continue the existing review.';
-  document.querySelectorAll('#setup-form input,#setup-form select,#setup-form button,#vote-form input,#vote-form textarea,#vote-form button,#review-footer button,#import,#load-test-applicants,#archived-list button,#applicant-form input,#applicant-form textarea,#applicant-form button[type=submit]').forEach(control=>control.disabled=archived);
+  document.querySelectorAll('#setup-form input,#setup-form select,#setup-form button,#vote-form input,#vote-form textarea,#vote-form button,#import,#load-test-applicants,#archived-list button,#applicant-form input,#applicant-form textarea,#applicant-form button[type=submit]').forEach(control=>control.disabled=archived);
   for(const id of ['edit-applicant','archive-applicant','delete-applicant'])$(id).hidden=view!=='dashboard'||archived;
   document.querySelectorAll('#applicants [data-delete]').forEach(control=>control.hidden=archived||view!=='dashboard');
   $('overview-mode').hidden=view!=='overview';
@@ -54,7 +54,6 @@ function applyArchiveState(){
   document.querySelectorAll('#applicants .applicant-notes-row').forEach(row=>row.hidden=view!=='overview'||!detailedOverview);
   document.querySelectorAll('#applicants [data-select-applicant],#select-all-applicants').forEach(control=>{control.disabled=archived||view!=='dashboard';control.hidden=view!=='dashboard';});
   updateApplicantSelection();
-  updateAnswerNavigation();
   document.querySelectorAll('#bulk-rows tr').forEach(row=>{row.querySelector('[data-field=state]').disabled=archived||row.querySelector('[data-field=country]').value!=='US';});
 }
 async function request(options,route='/api/application-review/sets/'+encodeURIComponent(activeSetId)){const response=await fetch(route,{cache:'no-store',...options});if(!response.ok){let data;try{data=await response.json();}catch{}throw Error(data?.error||'Unable to reach shared review storage. Start the API and refresh.');}return response.json();}
@@ -80,10 +79,7 @@ async function save(action){
   finally{controls(false);}
 }
 function badge(row){return `<span class="badge ${row.status==='Complete'?'complete':row.status==='Pending'?'pending':''}">${esc(row.status)}</span>`;}
-function votes(row){return canReveal(row)?`<div class="vote-row"><span class="vote-yes">${row.tally.Yes} Yes</span><span class="vote-maybe">${row.tally.Maybe} Maybe</span><span class="vote-no">${row.tally.No} No</span></div>`:'<span class="result-locked" aria-label="Save your recommendation to view votes">&mdash;</span>';}
-function completionDetails(a){
-  return `<details class="completion-details"><summary aria-label="Reviewer completion for ${esc(a.name)}">${badge(a)}<small>${a.count} Of ${a.required??state.reviewers.filter(Boolean).length} Reviews <span aria-hidden="true">&#9662;</span></small></summary><ul>${state.reviewers.map((name,i)=>name?`<li><span>${esc(name)}</span><strong>${a.reviews[i]?.vote?'Complete':'Not Finished'}</strong></li>`:'').join('')}</ul></details>`;
-}
+function votes(row){return canReveal(row)?`<div class="vote-row"><span class="vote-yes">${row.tally.Yes} Yes</span><span class="vote-maybe">${row.tally.Maybe} Maybe</span><span class="vote-no">${row.tally.No} No</span></div>`:'<span class="badge">Vote To View</span>';}
 function overviewNotes(applicant){
   if(!canReveal(applicant))return '<p class="overview-notes-hidden">Save your own vote for this applicant to see reviewer notes.</p>';
   return '<div class="applicant-notes-grid" aria-label="Reviewer notes for '+esc(applicant.name)+'">'+state.reviewers.map((name,slot)=>{
@@ -106,7 +102,7 @@ function render(){
   let list=filter==='archived'?state.applicants.filter(a=>a.archived).map(a=>({...a,score:null,rank:null,count:0,status:'Archived',tally:{Yes:0,Maybe:0,No:0}})):rows.filter(a=>filter==='all'||a.status===filter);
   list=list.filter(a=>[a.id,a.name,a.licenses,a.state,reference.location(a)].join(' ').toLowerCase().includes(query));
   list.sort((a,b)=>$('sort').value==='lastName'?model.compareLastName(a,b):$('sort').value==='name'?a.name.localeCompare(b.name):$('sort').value==='id'?a.id.localeCompare(b.id):$('sort').value==='progress'?a.count-b.count||a.name.localeCompare(b.name):(a.rank??Infinity)-(b.rank??Infinity)||a.name.localeCompare(b.name));
-  $('applicants').innerHTML=list.map(a=>`<tr class="applicant-summary-row"><td data-label="Rank">${canRank?(a.rank??'&#8212;'):'&#8212;'}</td><td data-label="Applicant"><div class="applicant-choice"><input type="checkbox" data-select-applicant="${a.id}" aria-label="Select ${esc(a.name)}" ${selectedApplicants.has(a.id)?'checked':''}><button class="candidate-name" data-open="${a.id}">${esc(a.name)}</button></div><small>${a.id} · ${esc(reference.location(a))}</small><small>${esc(a.licenses||'No Certifications Recorded')}</small></td><td data-label="Requested Wage">${money(a.wage)}</td><td data-label="Review Progress">${completionDetails(a)}</td><td data-label="Interview Votes">${votes(a)}</td><td data-label="Total Points"><span class="score ${canReveal(a)?'':'result-locked'}" ${canReveal(a)?'':'aria-label="Score hidden until your recommendation is saved"'}>${canReveal(a)?(a.score??'&#8212;'):'&mdash;'}</span>${canReveal(a)&&a.score!==null&&a.status!=='Complete'?'<small>Partial Points</small>':''}</td><td data-label="Actions"><button data-open="${a.id}" aria-label="Open ${esc(a.name)}">Open &rarr;</button> <button class="danger" data-delete="${a.id}" aria-label="Delete ${esc(a.name)}">Delete</button></td></tr><tr class="applicant-notes-row" hidden><td colspan="7">${overviewNotes(a)}</td></tr>`).join('');
+  $('applicants').innerHTML=list.map(a=>`<tr class="applicant-summary-row"><td>${canRank?(a.rank??'&#8212;'):'&#8212;'}</td><td><div class="applicant-choice"><input type="checkbox" data-select-applicant="${a.id}" aria-label="Select ${esc(a.name)}" ${selectedApplicants.has(a.id)?'checked':''}><button class="candidate-name" data-open="${a.id}">${esc(a.name)}</button></div><small>${a.id} · ${esc(reference.location(a))}</small><small>${esc(a.licenses||'No Certifications Recorded')}</small></td><td>${money(a.wage)}</td><td>${badge(a)}<div class="review-progress" aria-hidden="true">${state.reviewers.filter(Boolean).map((_,i)=>`<i class="${i<a.count?'filled':''}"></i>`).join('')}</div><small>${a.count} Of ${a.required??state.reviewers.filter(Boolean).length} Reviews</small></td><td>${votes(a)}</td><td><span class="score">${canReveal(a)?(a.score??'&#8212;'):'Hidden'}</span>${canReveal(a)&&a.score!==null&&a.status!=='Complete'?'<small>Partial Points</small>':''}</td><td><button data-open="${a.id}" aria-label="Open ${esc(a.name)}">Open &rarr;</button> <button class="danger" data-delete="${a.id}" aria-label="Delete ${esc(a.name)}">Delete</button></td></tr><tr class="applicant-notes-row" hidden><td colspan="7">${overviewNotes(a)}</td></tr>`).join('');
   $('results-count').textContent=`${list.length} Applicant${list.length===1?'':'s'} Shown`;$('empty').hidden=state.applicants.some(a=>!a.archived)||filter==='archived';
   if(!list.length&&$('empty').hidden)$('applicants').innerHTML='<tr><td colspan="7">No applicants match this view.</td></tr>';
   if(!setupDirty)renderSetup();
@@ -123,7 +119,7 @@ function updateTitle(prefix){const position=$(prefix+'-position').value.trim(),t
 function updateApplicantCountry(){const us=$('applicant-country').value==='US';$('applicant-state-field').hidden=!us;$('applicant-state').disabled=!us;if(!us)$('applicant-state').value='';}
 function renderHiringReviews(){
   $('hiring-review').innerHTML=directory.sets.filter(set=>!set.archived||set.id===activeSetId).map(set=>`<option value="${esc(set.id)}">${set.archived?'Archived / ':''}${esc(set.title)}</option>`).join('');$('hiring-review').value=activeSetId;
-
+  
   $('hiring-review-list').innerHTML=directory.sets.filter(set=>$('show-archived-reviews').checked||!set.archived).map(set=>`<article class="hiring-card"><header><p class="eyebrow">${esc(set.team||'TEAM NOT SET')}</p>${set.archived?'<span class="badge">Archived</span>':set.id===activeSetId?'<span class="badge complete">Selected</span>':''}</header><h3>${esc(set.title)}</h3><p>${esc(set.position||'Add a team and position in Review Setup.')}</p><div class="hiring-counts"><span><strong>${set.applicants}</strong> Applicants</span><span><strong>${set.complete}</strong> Fully Reviewed</span></div><p class="muted">${esc(set.reviewers.filter(Boolean).join(', ')||'Reviewers Not Assigned')}</p><div class="actions"><button type="button" data-set-open="${esc(set.id)}">Open Hiring Review &rarr;</button><button type="button" data-set-archive="${esc(set.id)}" data-restore-set="${set.archived?'true':'false'}">${set.archived?'Restore':'Archive'} Review</button></div></article>`).join('')||'<p class="muted">No active hiring reviews. Select Show Archived Reviews to restore one, or create a new review.</p>';
 }
 async function archiveHiringReview(id,archived){
@@ -194,7 +190,7 @@ function switchView(next){
   $('main').focus({preventScroll:true});window.scrollTo({top:0});
   applyArchiveState();
 }
-function closeDialog(dialog){if(busy)return;if(dialog.id==='review-dialog'&&dirty&&retainDraft())dirty=false;if(dirty&&!confirm('Discard your unsaved changes?'))return;dirty=false;dialog.close();}
+function closeDialog(dialog){if(busy)return;if(dirty&&!confirm('Discard your unsaved changes?'))return;dirty=false;dialog.close();}
 function openApplicant(id=null){
   if(!requestManagement())return;
   if(activeMeta?.archived){message('Restore this hiring review before editing applicants.',true);return;}
@@ -288,7 +284,7 @@ function openReview(id,preferred,fromGuide=false){
   $('guided-progress').textContent=`${state.reviewers[reviewerSlot()]} · Applicant ${position} Of ${all.length} · ${remaining} Remaining`;
   $('save-review').hidden=guided;$('save-next').hidden=!guided;$('skip-applicant').hidden=!guided;
   $('save-next').textContent=remaining===1?'Save & Finish':'Save & Next Applicant';
-  updateAnswerNavigation();if(!$('review-dialog').open)$('review-dialog').showModal();$('review-dialog').querySelector('.dialog-content').scrollTop=0;
+  dirty=false;if(!$('review-dialog').open)$('review-dialog').showModal();
 }
 function renderPerspectives(){
   const a=state.applicants.find(a=>a.id===selected),value=$('review-slot').value;
@@ -306,51 +302,7 @@ function renderPerspectives(){
     return `<article class="shared-review" style="--review-color:${v==='Yes'?'#84bd00':v==='Maybe'?'#f2a900':v==='No'?'#a62d3c':'#9fb3bd'}"><header><strong>${esc(name||'Reviewer '+(i+1)+' — Not Assigned')}</strong><span class="badge ${v==='Yes'?'vote-yes':v==='Maybe'?'vote-maybe':v==='No'?'vote-no':''}">${visible?esc(v||'Not Reviewed'):'Vote Hidden'}</span></header><p>${visible?esc(r?.notes||'No Notes Yet'):'Notes Hidden Until Your Vote Is Saved'}</p>${r&&visible?`<small>${esc(stamp(r.updatedAt))}${r.reviewerName?' · '+esc(r.reviewerName):''}</small>`:''}</article>`;
   }).join('');
 }
-const draftPrefix='northglenn-review-draft-v1:';
-let pendingDraft=null,loadedReviewBase='';
-function draftKey(){return slot===null||!state.reviewers[slot]?null:draftPrefix+JSON.stringify([activeSetId,selected,state.reviewers[slot]]);}
-function savedReviewBase(){return JSON.stringify(state.applicants.find(a=>a.id===selected)?.reviews[slot]||null);}
-function draftNotice(text,restore=false){$('draft-status').hidden=!text;$('draft-message').textContent=text;$('restore-draft').hidden=!restore;}
-function retainDraft(){
-  if(!dirty||view==='overview'||activeMeta?.archived)return false;
-  const key=draftKey();if(!key)return false;
-  try{
-    localStorage.setItem(key,JSON.stringify({vote:document.querySelector('[name=vote]:checked').value,notes:$('review-notes').value,base:loadedReviewBase,updatedAt:Date.now()}));
-    draftNotice('Unsaved Draft - kept on this device. Select Save to share your review.');return true;
-  }catch{draftNotice('Draft could not be kept on this device. Save before leaving.');return false;}
-}
-function removeDraft(){const key=draftKey();try{if(key)localStorage.removeItem(key);}catch{}pendingDraft=null;draftNotice('');}
-function fillDraft(draft){$('review-notes').value=draft.notes;document.querySelectorAll('[name=vote]').forEach(input=>input.checked=input.value===draft.vote);dirty=true;pendingDraft=null;draftNotice('Unsaved Draft - restored from this device. Select Save to share your review.');}
-function loadReview(){
-  const value=$('review-slot').value,review=state.applicants.find(a=>a.id===selected)?.reviews[value];
-  $('review-notes').value=review?.notes||'';document.querySelectorAll('[name=vote]').forEach(input=>input.checked=input.value===(review?.vote||''));
-  $('review-error').textContent=value===''?'Assign reviewers in Review Setup, then choose your name.':'';
-  dirty=false;pendingDraft=null;loadedReviewBase=savedReviewBase();draftNotice('');
-  if(view!=='overview'&&!activeMeta?.archived&&draftKey())try{
-    const draft=JSON.parse(localStorage.getItem(draftKey()));
-    if(draft&&typeof draft.notes==='string'&&['','Yes','Maybe','No'].includes(draft.vote)){
-      if(draft.base===loadedReviewBase)fillDraft(draft);
-      else{pendingDraft=draft;draftNotice('An older draft is on this device. The saved review has changed; restore it only if you want to replace the saved answer.',true);}
-    }
-  }catch{}
-  renderPerspectives();updateAnswerNavigation();
-}
-function savedAnswers(){return state?state.applicants.filter(a=>!a.archived&&model.canReveal(a,reviewerSlot())).sort(model.compareLastName):[];}
-function updateAnswerNavigation(){
-  const list=savedAnswers(),index=list.findIndex(a=>a.id===selected),visible=view==='review'&&!guided&&index>=0;
-  $('answer-navigation').hidden=!visible;
-  $('previous-answer').disabled=busy||index<=0;$('next-answer').disabled=busy||index<0||index>=list.length-1;
-  $('answer-position').textContent=visible?`Answer ${index+1} Of ${list.length}`:'';
-}
-function moveAnswer(direction){
-  if(busy)return;const list=savedAnswers(),index=list.findIndex(a=>a.id===selected),target=list[index+direction];if(!target)return;
-  if(dirty&&!retainDraft()&&!confirm('Discard unsaved changes and continue?'))return;
-  openReview(target.id,reviewerSlot());$('detail-title').focus();
-}
-$('previous-answer').onclick=()=>moveAnswer(-1);$('next-answer').onclick=()=>moveAnswer(1);
-$('restore-draft').onclick=()=>{if(pendingDraft){fillDraft(pendingDraft);retainDraft();}};
-$('discard-draft').onclick=()=>{if(confirm('Discard the draft on this device and use the saved answer?')){removeDraft();loadReview();}};
-$('vote-form').addEventListener('input',event=>{if(event.target.id==='review-slot')return;dirty=true;retainDraft();});
+function loadReview(){const value=$('review-slot').value,review=state.applicants.find(a=>a.id===selected)?.reviews[value];$('review-notes').value=review?.notes||'';document.querySelectorAll('[name=vote]').forEach(input=>input.checked=input.value===(review?.vote||''));$('review-error').textContent=value===''?'Assign reviewers in Review Setup, then choose your name.':'';dirty=false;renderPerspectives();}
 function download(filename,body,type='application/json'){const url=URL.createObjectURL(new Blob([body],{type})),link=document.createElement('a');link.href=url;link.download=filename;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 function backup(){download('application-review-'+activeSetId+'-'+new Date().toISOString().slice(0,10)+'.json',JSON.stringify({...state,hiringReview:activeMeta},null,2));}
 function print(id){
@@ -407,18 +359,18 @@ function nextGuided(){
   if(queue.length)openReview(queue[0],reviewerSlot(),true);else finishGuide();
 }
 $('start-reviews').onclick=()=>{if(busy||reviewerSlot()===null||activeMeta?.archived)return;queue=model.summarize(state).filter(a=>!model.canReveal(a,reviewerSlot())).sort(model.compareLastName).map(a=>a.id);nextGuided();};
-$('skip-applicant').onclick=()=>{if(busy)return;if(dirty&&!retainDraft()&&!confirm('Skip this applicant and discard your unsaved changes?'))return;queue=queue.filter(id=>id!==selected);dirty=false;nextGuided();};
+$('skip-applicant').onclick=()=>{if(busy)return;if(dirty&&!confirm('Skip this applicant and discard your unsaved changes?'))return;queue=queue.filter(id=>id!==selected);dirty=false;nextGuided();};
 document.addEventListener('click',event=>{const open=event.target.closest('[data-open]');if(open)openReview(open.dataset.open,open.dataset.slot===undefined?undefined:Number(open.dataset.slot));const close=event.target.closest('[data-close]');if(close)closeDialog(close.closest('dialog'));});
 for(const dialog of [$('applicant-dialog'),$('review-dialog'),$('hiring-dialog'),$('bulk-dialog'),$('move-dialog')]){dialog.addEventListener('cancel',event=>{event.preventDefault();closeDialog(dialog);});dialog.addEventListener('input',event=>{if(event.target.id!=='review-slot')dirty=true;});}
 $('applicant-form').onsubmit=async event=>{event.preventDefault();if(await save({type:'applicant',id:editing,firstName:$('applicant-first-name').value,lastName:$('applicant-last-name').value,country:$('applicant-country').value,state:$('applicant-state').value,wage:$('applicant-wage').value===''?null:Number($('applicant-wage').value),licenses:$('applicant-licenses').value})){dirty=false;$('applicant-dialog').close();}};
-$('review-slot').addEventListener('change',()=>{if(dirty&&!retainDraft()&&!confirm('Discard unsaved changes before switching reviewer?')){$('review-slot').value=String(slot);return;}slot=$('review-slot').value===''?null:Number($('review-slot').value);$('my-reviewer').value=$('review-slot').value;rememberReviewer();showPerspectives=false;render();loadReview();});
+$('review-slot').addEventListener('change',()=>{if(dirty&&!confirm('Discard unsaved changes before switching reviewer?')){$('review-slot').value=String(slot);return;}slot=$('review-slot').value===''?null:Number($('review-slot').value);$('my-reviewer').value=$('review-slot').value;rememberReviewer();showPerspectives=false;render();loadReview();});
 $('vote-form').onsubmit=async event=>{
   event.preventDefault();if($('review-slot').value===''){$('review-error').textContent='Choose a named reviewer first.';return;}
   const advance=guided&&event.submitter?.id==='save-next',vote=document.querySelector('[name=vote]:checked').value;
   if(advance&&!vote){$('review-error').textContent='Choose Yes, Maybe, or No before continuing. Use Skip For Now to come back later.';return;}
   const wasGuided=guided;
   if(await save({type:'review',id:selected,slot:Number($('review-slot').value),notes:$('review-notes').value,vote})){
-    removeDraft();dirty=false;if(advance){queue=queue.filter(id=>id!==selected);nextGuided();}else{openReview(selected,Number($('review-slot').value),wasGuided);$('review-error').textContent='Review Saved.';}
+    dirty=false;if(advance){queue=queue.filter(id=>id!==selected);nextGuided();}else{openReview(selected,Number($('review-slot').value),wasGuided);$('review-error').textContent='Review Saved.';}
   }
 };
 $('edit-applicant').onclick=()=>openApplicant(selected);
@@ -486,8 +438,8 @@ async function refresh(initial=false){
   }catch(error){message(error.message,true);if(!state){$('add-applicant').disabled=true;document.querySelectorAll('main section button').forEach(button=>button.disabled=true);}}
 }
 
-$('refresh').onclick=()=>refresh();window.addEventListener('beforeunload',event=>{if((dirty&&!($('review-dialog').open&&retainDraft()))||setupDirty||busy){event.preventDefault();event.returnValue='';}});
-document.addEventListener('operations:before-navigate',event=>{if($('review-dialog').open&&dirty&&retainDraft())dirty=false;if(busy||(dirty||setupDirty)&&!confirm('Leave this page and discard your unsaved changes?'))event.preventDefault();});
+$('refresh').onclick=()=>refresh();window.addEventListener('beforeunload',event=>{if(dirty||setupDirty||busy){event.preventDefault();event.returnValue='';}});
+document.addEventListener('operations:before-navigate',event=>{if(busy||(dirty||setupDirty)&&!confirm('Leave this page and discard your unsaved changes?'))event.preventDefault();});
 setInterval(()=>{if(!local&&state&&!document.hidden)refresh();},60000);
 refresh(true);
 })();
