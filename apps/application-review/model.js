@@ -11,6 +11,7 @@ function nameFields(applicant){
   const parts=name.split(/\s+/);return {firstName:parts.length>1?parts.slice(0,-1).join(' '):name,lastName:parts.length>1?parts.at(-1):''};
 }
 function compareLastName(a,b){return a.lastName.localeCompare(b.lastName,'en',{sensitivity:'base'})||a.firstName.localeCompare(b.firstName,'en',{sensitivity:'base'})||a.id.localeCompare(b.id);}
+function displayName(applicant){const names=nameFields(applicant);return [names.lastName,names.firstName].filter(Boolean).join(', ');}
 function validate(raw){
   if(!raw||raw.version!==1||!Array.isArray(raw.reviewers)||raw.reviewers.length!==4||!Array.isArray(raw.applicants)||raw.applicants.length>2000)throw Error('Invalid application review file.');
   const state=blank();state.title=text(raw.title,'review title',240,true);
@@ -81,6 +82,6 @@ function apply(current,action,now=new Date().toISOString()){
 }
 function canReveal(applicant,slot){return Number.isInteger(slot)&&slot>=0&&slot<4&&votes.includes(applicant.reviews?.[slot]?.vote);}
 function canCompare(state,slot){const active=state.applicants.filter(a=>!a.archived);return active.length>0&&active.every(a=>canReveal(a,slot));}
-const api={blank,validate,summarize,apply,votes,canReveal,canCompare,compareLastName};
+const api={blank,validate,summarize,apply,votes,canReveal,canCompare,compareLastName,displayName};
 if(typeof module==='object'&&module.exports)module.exports=api;else root.ApplicationReview=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

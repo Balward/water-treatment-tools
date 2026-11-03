@@ -39,6 +39,9 @@ test('first and last names support surname sorting, legacy imports, and editing 
   state=model.apply(state,{type:'applicant',id:'APP-001',firstName:'Mary Jane',lastName:'De La Cruz',state:'CO',wage:null,licenses:''});assert.equal(state.applicants[0].name,'Mary Jane De La Cruz');assert.equal(state.applicants[0].reviews[0].notes,'Preserved Notes');
   state=model.apply(state,{type:'applicant',firstName:'Zoe',lastName:'Adams',state:'',wage:null,licenses:''});state=model.apply(state,{type:'applicant',firstName:'Amy',lastName:'Adams',state:'',wage:null,licenses:''});
   assert.deepEqual([...state.applicants].sort(model.compareLastName).map(a=>a.name),['Amy Adams','Zoe Adams','Mary Jane De La Cruz']);
+  assert.equal(model.displayName(state.applicants[0]),'De La Cruz, Mary Jane');
+  assert.equal(model.displayName({name:'Smith, Mary Jane'}),'Smith, Mary Jane');
+  assert.equal(model.displayName({name:'Single'}),'Single');
   assert.throws(()=>model.apply(state,{type:'applicant',firstName:'Only',lastName:'',state:'',wage:null,licenses:''}),/last name/);
   const old=model.blank();old.applicants=[{id:'APP-001',name:'Smith, Mary Jane',state:'CO',wage:null,licenses:'',reviews:{}}];const migrated=model.validate(old);assert.equal(migrated.applicants[0].lastName,'Smith');assert.equal(migrated.applicants[0].firstName,'Mary Jane');assert.equal(model.validate(migrated).applicants[0].name,'Smith, Mary Jane');
 });
@@ -107,7 +110,7 @@ test('printed reviews retain complete notes, label votes, distinguish blank scor
   const notes='Long note '.repeat(800)+'\nLast line <script>test</script>';
   state=model.apply(state,{type:'review',id:'APP-001',slot:0,vote:'Yes',notes});
   const html=report.render(state,null,new Date('2026-10-31T18:00:00Z'),0);
-  assert.match(html,/report-summary-table/);assert.match(html,/report-reviews/);assert.match(html,/report-vote-yes/);assert.match(html,/report-vote-blank/);assert.match(html,/Last line &lt;script&gt;test&lt;\/script&gt;/);assert.match(html,/Flo &lt;Meter&gt;/);assert.ok(!html.includes('<script>'));
+  assert.match(html,/report-summary-table/);assert.match(html,/report-reviews/);assert.match(html,/report-vote-yes/);assert.match(html,/report-vote-blank/);assert.match(html,/Last line &lt;script&gt;test&lt;\/script&gt;/);assert.match(html,/&lt;Meter&gt;, Flo/);assert.ok(!html.includes('<script>'));
   assert.equal((html.match(/Long note /g)||[]).length,800);
   const individual=report.render({...state,hiringReview:{team:'Maintenance',position:'Maintenance Tech'}},'APP-001');assert.ok(!individual.includes('report-summary-table'));assert.ok(individual.includes('Partial Points'));assert.ok(individual.includes('Maintenance / Maintenance Tech'));
 });

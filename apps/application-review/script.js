@@ -82,7 +82,7 @@ function badge(row){return `<span class="badge ${row.status==='Complete'?'comple
 function votes(row){return canReveal(row)?`<div class="vote-row"><span class="vote-yes">${row.tally.Yes} Yes</span><span class="vote-maybe">${row.tally.Maybe} Maybe</span><span class="vote-no">${row.tally.No} No</span></div>`:'<span class="badge">Vote To View</span>';}
 function overviewNotes(applicant){
   if(!canReveal(applicant))return '<p class="overview-notes-hidden">Save your own vote for this applicant to see reviewer notes.</p>';
-  return '<div class="applicant-notes-grid" aria-label="Reviewer notes for '+esc(applicant.name)+'">'+state.reviewers.map((name,slot)=>{
+  return '<div class="applicant-notes-grid" aria-label="Reviewer notes for '+esc(model.displayName(applicant))+'">'+state.reviewers.map((name,slot)=>{
     if(!name)return '';const review=applicant.reviews[slot],vote=review?.vote;
     return `<section class="applicant-note"><header><strong>${esc(name)}</strong><span class="badge ${vote==='Yes'?'vote-yes':vote==='Maybe'?'vote-maybe':vote==='No'?'vote-no':''}">${esc(vote||'Not Reviewed')}</span></header><p class="${review?.notes?'':'no-comment'}">${esc(review?.notes||'No Comment')}</p></section>`;
   }).join('')+'</div>';
@@ -100,9 +100,9 @@ function render(){
   $('setup-reminder').hidden=state.reviewers.some(Boolean);
   const query=$('search').value.trim().toLowerCase(),filter=$('status-filter').value;
   let list=filter==='archived'?state.applicants.filter(a=>a.archived).map(a=>({...a,score:null,rank:null,count:0,status:'Archived',tally:{Yes:0,Maybe:0,No:0}})):rows.filter(a=>filter==='all'||a.status===filter);
-  list=list.filter(a=>[a.id,a.name,a.licenses,a.state,reference.location(a)].join(' ').toLowerCase().includes(query));
-  list.sort((a,b)=>$('sort').value==='lastName'?model.compareLastName(a,b):$('sort').value==='name'?a.name.localeCompare(b.name):$('sort').value==='id'?a.id.localeCompare(b.id):$('sort').value==='progress'?a.count-b.count||a.name.localeCompare(b.name):(a.rank??Infinity)-(b.rank??Infinity)||a.name.localeCompare(b.name));
-  $('applicants').innerHTML=list.map(a=>`<tr class="applicant-summary-row"><td>${canRank?(a.rank??'&#8212;'):'&#8212;'}</td><td><div class="applicant-choice"><input type="checkbox" data-select-applicant="${a.id}" aria-label="Select ${esc(a.name)}" ${selectedApplicants.has(a.id)?'checked':''}><button class="candidate-name" data-open="${a.id}">${esc(a.name)}</button></div><small>${a.id} · ${esc(reference.location(a))}</small><small>${esc(a.licenses||'No Certifications Recorded')}</small></td><td>${money(a.wage)}</td><td>${badge(a)}<div class="review-progress" aria-hidden="true">${state.reviewers.filter(Boolean).map((_,i)=>`<i class="${i<a.count?'filled':''}"></i>`).join('')}</div><small>${a.count} Of ${a.required??state.reviewers.filter(Boolean).length} Reviews</small></td><td>${votes(a)}</td><td><span class="score ${canReveal(a)?'':'score-awaiting'}">${canReveal(a)?(a.score??'&#8212;'):'Awaiting Your Review'}</span>${canReveal(a)&&a.score!==null&&a.status!=='Complete'?'<small class="partial-score-label">Partial Points</small>':''}</td><td><button data-open="${a.id}" aria-label="Open ${esc(a.name)}">Open &rarr;</button> <button class="danger" data-delete="${a.id}" aria-label="Delete ${esc(a.name)}">Delete</button></td></tr><tr class="applicant-notes-row" hidden><td colspan="7">${overviewNotes(a)}</td></tr>`).join('');
+  list=list.filter(a=>[a.id,a.name,model.displayName(a),a.licenses,a.state,reference.location(a)].join(' ').toLowerCase().includes(query));
+  list.sort((a,b)=>$('sort').value==='lastName'?model.compareLastName(a,b):$('sort').value==='name'?model.displayName(a).localeCompare(model.displayName(b)):$('sort').value==='id'?a.id.localeCompare(b.id):$('sort').value==='progress'?a.count-b.count||model.displayName(a).localeCompare(model.displayName(b)):(a.rank??Infinity)-(b.rank??Infinity)||model.displayName(a).localeCompare(model.displayName(b)));
+  $('applicants').innerHTML=list.map(a=>`<tr class="applicant-summary-row"><td>${canRank?(a.rank??'&#8212;'):'&#8212;'}</td><td><div class="applicant-choice"><input type="checkbox" data-select-applicant="${a.id}" aria-label="Select ${esc(model.displayName(a))}" ${selectedApplicants.has(a.id)?'checked':''}><button class="candidate-name" data-open="${a.id}">${esc(model.displayName(a))}</button></div><small>${a.id} · ${esc(reference.location(a))}</small><small>${esc(a.licenses||'No Certifications Recorded')}</small></td><td>${money(a.wage)}</td><td>${badge(a)}<div class="review-progress" aria-hidden="true">${state.reviewers.filter(Boolean).map((_,i)=>`<i class="${i<a.count?'filled':''}"></i>`).join('')}</div><small>${a.count} Of ${a.required??state.reviewers.filter(Boolean).length} Reviews</small></td><td>${votes(a)}</td><td><span class="score ${canReveal(a)?'':'score-awaiting'}">${canReveal(a)?(a.score??'&#8212;'):'Awaiting Your Review'}</span>${canReveal(a)&&a.score!==null&&a.status!=='Complete'?'<small class="partial-score-label">Partial Points</small>':''}</td><td><button data-open="${a.id}" aria-label="Open ${esc(model.displayName(a))}">Open &rarr;</button> <button class="danger" data-delete="${a.id}" aria-label="Delete ${esc(model.displayName(a))}">Delete</button></td></tr><tr class="applicant-notes-row" hidden><td colspan="7">${overviewNotes(a)}</td></tr>`).join('');
   $('results-count').textContent=`${list.length} Applicant${list.length===1?'':'s'} Shown`;$('empty').hidden=state.applicants.some(a=>!a.archived)||filter==='archived';
   if(!list.length&&$('empty').hidden)$('applicants').innerHTML='<tr><td colspan="7">No applicants match this view.</td></tr>';
   if(!setupDirty)renderSetup();
@@ -167,14 +167,14 @@ function renderMyReviews(){
   $('review-completion').textContent='All your reviews are saved. You can edit them below.';
   if(index!==''&&!all.length)$('my-progress').textContent='There are no applicants to review yet.';
   const list=index===''?[]:[...all].sort(model.compareLastName);
-  $('my-list').innerHTML=list.map(a=>`<article><div class="my-review-summary"><strong>${esc(a.name)}</strong><p>${a.id} · ${esc(reference.location(a))} · ${money(a.wage)}</p><p>${esc(a.licenses||'No Certifications Recorded')}</p><span class="badge">${esc(a.reviews[index]?.vote||'Not Reviewed')}</span>${a.reviews[index]?.notes?`<div class="my-review-comment"><span>Your Comments</span><p>${esc(a.reviews[index].notes)}</p></div>`:''}</div><button data-open="${a.id}" data-slot="${index}">${a.reviews[index]?.vote?'Edit My Review':'Review'} &rarr;</button></article>`).join('')||(index!==''?'<p class="notice">There are no applicants to review yet.</p>':'');
+  $('my-list').innerHTML=list.map(a=>`<article><div class="my-review-summary"><strong>${esc(model.displayName(a))}</strong><p>${a.id} · ${esc(reference.location(a))} · ${money(a.wage)}</p><p>${esc(a.licenses||'No Certifications Recorded')}</p><span class="badge">${esc(a.reviews[index]?.vote||'Not Reviewed')}</span>${a.reviews[index]?.notes?`<div class="my-review-comment"><span>Your Comments</span><p>${esc(a.reviews[index].notes)}</p></div>`:''}</div><button data-open="${a.id}" data-slot="${index}">${a.reviews[index]?.vote?'Edit My Review':'Review'} &rarr;</button></article>`).join('')||(index!==''?'<p class="notice">There are no applicants to review yet.</p>':'');
 }
 function renderSetup(){
   $('review-team').innerHTML=teamOptions(activeMeta?.team);$('review-team').value=activeMeta?.team||'';$('review-position').value=activeMeta?.position||'';
   periodFields('review',activeMeta?.month,activeMeta?.year);updateTitle('review');
   $('reviewer-fields').innerHTML=state.reviewers.map((name,i)=>`<label>Reviewer ${i+1}<input data-reviewer="${i}" value="${esc(name)}" maxlength="100" ${state.applicants.some(a=>a.reviews[i]?.vote||a.reviews[i]?.notes)?'readonly':''} placeholder="First And Last Name"></label>`).join('');
   $('point-fields').innerHTML=model.votes.map(v=>`<label>${v} Points<input data-points="${v}" type="number" min="0" max="1000" step="any" required value="${state.points[v]}"></label>`).join('');
-  $('archived-list').innerHTML=state.applicants.filter(a=>a.archived).map(a=>`<article><span><strong>${esc(a.name)}</strong><small> · ${a.id}</small></span><button data-restore="${a.id}" type="button">Restore Applicant</button></article>`).join('')||'<p class="muted">No archived applicants.</p>';
+  $('archived-list').innerHTML=state.applicants.filter(a=>a.archived).map(a=>`<article><span><strong>${esc(model.displayName(a))}</strong><small> · ${a.id}</small></span><button data-restore="${a.id}" type="button">Restore Applicant</button></article>`).join('')||'<p class="muted">No archived applicants.</p>';
 }
 function switchView(next){
   if(['dashboard','setup','sets'].includes(next)&&!requestManagement(next))return;
@@ -273,7 +273,7 @@ function openReview(id,preferred,fromGuide=false){
   guided=fromGuide;showPerspectives=false;
   selected=id;const a=state.applicants.find(a=>a.id===id);if(!a)return;
   if(a.archived){message('This applicant is archived. Restore them in Review Setup to resume reviews.');return;}
-  $('detail-title').textContent=a.name;$('detail-id').textContent=a.id;
+  $('detail-title').textContent=model.displayName(a);$('detail-id').textContent=a.id;
   $('detail-meta').innerHTML=`<h3>Application Details</h3><dl><div><dt>Location</dt><dd>${esc(reference.location(a))}</dd></div><div><dt>Requested Wage</dt><dd>${money(a.wage)}</dd></div><div class="wide"><dt>Licenses / Certifications</dt><dd>${esc(a.licenses||'Not Provided')}</dd></div></dl>`;
   for(const action of ['edit-applicant','archive-applicant','delete-applicant','print-applicant'])$(action).hidden=view!=='dashboard';
   $('review-slot').innerHTML=reviewerOptions();slot=Number.isInteger(preferred)?preferred:reviewerSlot();$('review-slot').value=state.reviewers[slot]?String(slot):'';$('my-reviewer').value=$('review-slot').value;loadReview();
@@ -378,10 +378,10 @@ $('archive-applicant').onclick=async()=>{if(dirty&&!confirm('Discard the unsaved
 async function deleteApplicant(id){
   if(busy||view!=='dashboard')return;
   const applicant=state.applicants.find(a=>a.id===id);if(!applicant)return;
-  if(!confirm(`Delete ${applicant.name} (${applicant.id}) and all their saved notes and votes? This cannot be undone from the applicant list. Use Archive instead to keep their records.`))return;
+  if(!confirm(`Delete ${model.displayName(applicant)} (${applicant.id}) and all their saved notes and votes? This cannot be undone from the applicant list. Use Archive instead to keep their records.`))return;
   if(await save({type:'delete',id})){
     if($('review-dialog').open&&selected===id){dirty=false;$('review-dialog').close();}
-    message(`Deleted ${applicant.name} (${applicant.id}).`);
+    message(`Deleted ${model.displayName(applicant)} (${applicant.id}).`);
   }
 }
 $('delete-applicant').onclick=()=>deleteApplicant(selected);
