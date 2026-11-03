@@ -4,6 +4,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const catalog = require('./catalog.json');
 const sources = require('./image-sources.json');
+const {productUrl:shoppingUrl} = require('./public/product-images');
 const root = path.join(__dirname, 'public', 'images');
 const manifestPath = path.join(root, 'manifest.json');
 const manifest = fs.existsSync(manifestPath) ? JSON.parse(fs.readFileSync(manifestPath, 'utf8')) : { items:{} };
@@ -95,7 +96,7 @@ async function main() {
             if (bytes.length < 500 || bytes.length > 5000000) throw new Error('Unexpected image size');
             const filename = `${item.id}.${ext}`;
             fs.writeFileSync(path.join(root, filename), bytes);
-            manifest.items[item.id] = { description:item.description, itemNumber:item.itemNumber, src:`/images/${filename}`, productUrl:page.url, imageUrl, sourceType:workbookUrls.has(url) ? 'workbook-link' : 'additional-search', sourceUrl:url, fetchedAt:new Date().toISOString() };
+            manifest.items[item.id] = { description:item.description, itemNumber:item.itemNumber, src:`/images/${filename}`, productUrl:shoppingUrl(page.url), imageUrl, sourceType:workbookUrls.has(url) ? 'workbook-link' : 'additional-search', sourceUrl:url, fetchedAt:new Date().toISOString() };
             result.status = 'downloaded'; break;
           } catch (error) { result.attempts.push({ url:imageUrl, error:error.message }); }
         }

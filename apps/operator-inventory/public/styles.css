@@ -73,7 +73,14 @@ dialog{bottom:var(--keyboard-inset,0px)}
 .product-photo img{display:block;width:72px;height:72px;object-fit:contain;background:#fff;border:1px solid #a5b99d;border-radius:10px;padding:5px}
 .product-photo span{display:block;font-size:9px;line-height:1.4;text-align:center;margin-top:4px}
 .product-photo:focus-visible{outline:3px solid #174e42;outline-offset:3px;border-radius:10px}
-.history-controls{display:flex;align-items:center;gap:8px}
+.history-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.history-bottom{flex-wrap:wrap}.history-bottom>span{min-width:0}
+.history-filters{margin-bottom:18px;max-width:360px}.history-filters label{display:block;margin-bottom:7px;font-size:13px;font-weight:600}.history-filters select{width:100%;min-height:44px;font-size:16px}
+.history-card[data-inventory-type]{border-left-width:4px}
+.history-card[data-inventory-type="operating"]{border-left-color:#00677f}
+.history-card[data-inventory-type="chemical"]{border-left-color:#84bd00}
+.history-card[data-inventory-type="janitorial"]{border-left-color:#f2a900}
+.history-card[data-inventory-type="dewatering"]{border-left-color:#62539b}
+.order-type-filters{display:flex;gap:8px;overflow-x:auto;margin:18px 0}.order-type-filters button{flex:none;min-height:44px;padding:10px 18px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--accent);font-size:14px;font-weight:650}.order-type-filters [aria-pressed=true]{background:var(--accent);color:white;border-color:var(--accent)}.report-item.chemical-order{border-left:4px solid #84bd00}.chemical-order-label{color:#537800!important;font-size:10px!important;font-weight:750;letter-spacing:1px;margin:16px 0!important}.chemical-order-metrics{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}.chemical-order-metrics span{font-size:11px;color:var(--muted)}.chemical-order-metrics strong{display:block;font-size:23px;color:var(--text);margin-top:6px}.chemical-order-warning{padding:10px 12px;border-radius:5px;background:var(--warning-bg);color:var(--warning);font-size:12px;line-height:1.6}.chemical-order .report-note{line-height:1.7}
 .history-controls .trash-button{display:grid;place-items:center;width:44px;min-width:44px;height:44px;padding:10px;border:1px solid #d9b4ae;border-radius:10px;background:#fff3f0;color:#9b3024}
 .trash-button svg{width:20px;height:20px}
 .trash-button:focus-visible{outline:3px solid #9b3024;outline-offset:2px}
@@ -251,7 +258,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,.product-photo:foc
 :root[data-layout="desktop"] .welcome h1{font-size:36px}
 :root[data-layout="desktop"] .welcome p:last-of-type{max-width:none;font-size:14px}
 :root[data-layout="desktop"] .welcome-decoration{right:30px;bottom:24px}
-:root[data-layout="desktop"] .worksheet-list{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+:root[data-layout="desktop"] .worksheet-list{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
 :root[data-layout="desktop"] .worksheet-card{min-width:0;gap:12px;padding:20px 14px}
 :root[data-layout="desktop"] .worksheet-card strong{font-size:16px}
 :root[data-layout="desktop"] .worksheet-icon{width:48px;height:56px}
@@ -295,9 +302,10 @@ button:focus-visible,input:focus-visible,select:focus-visible,.product-photo:foc
 .worksheet-card small{font-size:11px;margin-top:6px}
 .worksheet-card:first-child{border-left:4px solid #00677f;padding-left:11px}
 .worksheet-card[data-worksheet="janitorial"]{border-left:4px solid #f2a900;padding-left:11px}
-.worksheet-card[data-worksheet="dewatering"]{border-left:4px solid #84bd00;padding-left:11px}
-:root[data-layout] .worksheet-icon,:root[data-layout] .worksheet-card:nth-child(2) .worksheet-icon,:root[data-layout] .worksheet-card:nth-child(3) .worksheet-icon{width:40px;height:40px;background:none;border:0;border-radius:0;box-shadow:none;color:var(--text)}
-:root[data-layout] .worksheet-icon svg{width:30px;height:30px}
+.worksheet-card[data-worksheet="dewatering"]{border-left:4px solid #62539b;padding-left:11px}
+:root[data-layout] .worksheet-icon,:root[data-layout] .worksheet-card:nth-child(2) .worksheet-icon,:root[data-layout] .worksheet-card:nth-child(3) .worksheet-icon{width:52px;height:52px;background:none;border:0;border-radius:0;box-shadow:none;color:var(--text)}
+:root[data-layout] .worksheet-icon svg{width:44px;height:44px}
+:root[data-layout="desktop"] .worksheet-icon svg{width:52px;height:52px}
 :root[data-layout="desktop"] .worksheet-card{min-height:104px;border-radius:8px}
 :root[data-layout="desktop"] .worksheet-card:first-child{padding-left:11px}
 :root[data-layout="desktop"] .worksheet-card[data-worksheet="janitorial"],:root[data-layout="desktop"] .worksheet-card[data-worksheet="dewatering"]{padding-left:11px}
@@ -419,3 +427,16 @@ button:disabled{cursor:default}
 }
 /* Management and Operating Supplies bin-card selection. */
 .management-tabs{display:flex;gap:8px;margin:22px 0}.management-tabs button,.bin-selection-actions button{font:inherit;min-height:44px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--accent);padding:10px 12px;font-size:13px;font-weight:650}.management-tabs button[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:var(--surface)}.management-tabs button{flex:1}.bin-selection-actions{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}#bin-card-selection{margin:12px 0}#bin-card-list{margin-top:20px}.bin-card-choice{display:flex;align-items:flex-start;gap:12px;padding:16px;margin:0 0 10px;background:var(--surface);border:1px solid var(--line);border-radius:10px;cursor:pointer}.bin-card-choice input{width:22px;min-height:22px;height:22px;flex:none;margin:2px 0 0;accent-color:var(--accent)}.bin-card-choice>span{min-width:0}.bin-card-choice strong{display:block;font-size:15px;line-height:1.4;overflow-wrap:anywhere}.bin-card-choice small{display:block;font-size:12px;line-height:1.5;color:var(--muted);margin-top:6px;overflow-wrap:anywhere}.bin-card-choice .bin-card-warning{color:var(--danger)}.manager-actions{flex-wrap:wrap}.manager-actions button{padding-inline:8px}.bottom-nav #nav-manage small{font-size:9px}@media(max-width:350px){.bottom-nav{padding-inline:2px}.bottom-nav button{padding-inline:1px}.bottom-nav small,.bottom-nav button{font-size:9px}.bottom-nav #nav-manage small{font-size:8px}}:root[data-layout="desktop"] .bottom-nav #nav-manage small{font-size:13px}
+
+.worksheet-card.chemical-worksheet{text-decoration:none;color:var(--text);border-left:4px solid #84bd00;padding-left:11px}.worksheet-card.chemical-worksheet:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+/* Recent inventory cards share the same height, including chemical reports. */
+#history-list .history-card{display:flex;flex-direction:column;min-width:0}
+#history-list .history-card>p{margin-bottom:6px}
+.history-order-summary{font-size:13px;line-height:1.6;color:var(--muted);min-height:22px;margin-bottom:14px;flex:1}
+.history-title{display:flex;align-items:center;gap:10px;min-width:0}.history-title strong{overflow-wrap:anywhere}.history-inventory-icon{display:grid;place-items:center;flex:none;width:36px;height:36px;color:#00677f}.history-inventory-icon svg{display:block;width:32px;height:32px}.history-card[data-inventory-type="chemical"] .history-inventory-icon{color:#537800}.history-card[data-inventory-type="janitorial"] .history-inventory-icon{color:#966700}.history-card[data-inventory-type="dewatering"] .history-inventory-icon{color:#62539b}
+.history-card .report-button[data-order-state=none]{background:var(--success-bg);color:var(--success);border-color:#cad8ac}
+.history-card .report-button[data-order-state=review]{background:var(--warning-bg);color:var(--warning);border-color:#ddc48b}
+.history-card .report-button[data-order-state=draft]{background:var(--field);color:var(--muted)}
+#history-list.recent-inventories{display:grid;grid-auto-rows:1fr;gap:16px}
+#history-list.recent-inventories .history-card{display:flex;flex-direction:column;min-width:0;margin:0}
+#history-list.recent-inventories .history-bottom{margin-top:auto}

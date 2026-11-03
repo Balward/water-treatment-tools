@@ -12,10 +12,11 @@ window.addEventListener('resize',updateLayout);
 let catalog, run = null, selectedWorksheet = '', locationName = '', mode = 'home', records = [];
 let pending = {}, inFlight = {}, timer, saving = false, conflict = false, completing = false, navigating = false;
 const invalid = new Set(), invalidValues = {};
-let deleteTarget = null, deleting = false;
+let deleteTarget = null, deleting = false, editingCompleted = false;
 let historyRequest = 0;
+let chemicalRecords, chemicalHistoryUnavailable = false;
 let emailConfig = { enabled:false, defaultTo:'' }, reportInventory = null, sendingReport = false;
-let orderList = {items:[],revision:0}, listBusy = false, removeListTarget = null;
+let orderList = {items:[],revision:0}, listBusy = false, removeListTarget = null, orderFilter='all';
 const selectedOrders = new Set();
 function updateOrderSelection() {
   const entries = orderList.items.filter(entry => selectedOrders.has(entry.id));
@@ -35,11 +36,11 @@ function updateListButtons() {
     const item = reportInventory?.items.find(item => item.id === button.dataset.addList);
     const added = item && listContains(InventoryPackSizes.normalize(item));
     button.disabled = listBusy || Boolean(added);
-    button.textContent = added ? 'On Order List' : 'Add to List';
+    button.textContent = added ? 'On To Order List' : 'Add to List';
   });
 }
 function productPage(item) {
-  try { const url = new URL(item.productUrl); return ['http:','https:'].includes(url.protocol) && !url.username && !url.password ? url.href : ''; } catch { return ''; }
+  return InventoryProductImages.productUrl(item.productUrl);
 }
 function orderingSupplier(item) {
   const link = productPage(item);
@@ -64,14 +65,20 @@ function groupedOrders(entries) {
   return [...groups.values()].sort((a,b) => a.supplier.localeCompare(b.supplier));
 }
 function purchaseUnit(entry) { return entry.orderUnit || entry.item.countSize || 'Each'; }
-function orderReady(entry) { return typeof entry.quantity === 'number' && Number.isFinite(entry.quantity) && entry.quantity > 0 && Boolean(purchaseUnit(entry).trim()); }
+function orderReady(entry) { return (!entry.chemicalKey||Boolean(entry.deliveryDate&&entry.item.company?.trim())) && typeof entry.quantity === 'number' && Number.isFinite(entry.quantity) && entry.quantity > 0 && Boolean(purchaseUnit(entry).trim()); }
 function orderProductLink(item) {
+  if(item.id?.startsWith('chemical-'))return escapeHtml(item.caseSize||'Chemical delivery');
   const url = productPage(item), number = item.itemNumber && item.itemNumber !== 'N/A' ? '#' + item.itemNumber : '';
   return url ? '<a href="' + escapeHtml(url) + '" target="_blank" rel="noopener noreferrer">' + escapeHtml(number || 'Open product page') + '</a>' : escapeHtml(number) + ' <span class="missing-product-link">Product link not available</span>';
 }
 function purchaseReference(entry) {
+  if(entry.chemicalKey)return 'Chemical Inventory / '+escapeHtml(prettyDate(entry.inventoryDate))+' / '+escapeHtml(entry.operator||'')+'<br>Recorded on hand: '+escapeHtml(entry.onHand)+' gal. Planned delivery: '+escapeHtml(prettyDate(entry.deliveryDate));
   if (!entry.inventoryDate) return 'Added manually. No inventory count is associated with this item.';
   return 'On hand when flagged: <strong>' + escapeHtml(entry.onHand ?? 'Not counted') + '</strong> / PAR: ' + escapeHtml(entry.item.par ?? entry.item.parNote) + '<br>Counted in ' + escapeHtml(entry.item.countSize) + '<br>' + escapeHtml(worksheetName(entry.worksheet)) + ' / ' + escapeHtml(prettyDate(entry.inventoryDate)) + ' / ' + escapeHtml(entry.operator || '') + (entry.inventoryStatus === 'draft' ? ' (Draft)' : '');
+}
+function chemicalOrderDetails(entry){
+  const p=entry.planning,number=value=>typeof value==='number'?value.toLocaleString(undefined,{maximumFractionDigits:1}):'Unavailable';
+  return '<p class="chemical-order-label">CHEMICAL &middot; ORDER DUE</p><div class="chemical-order-metrics"><span>On Hand<strong>'+number(p.gallons)+' gal</strong></span><span>Reorder Level<strong>'+number(p.threshold)+' gal</strong></span></div><p class="report-note">Order by '+escapeHtml(prettyDate(p.orderBy))+' &middot; Expected delivery '+escapeHtml(prettyDate(entry.deliveryDate))+'<br>Recent usage: '+number(p.rate)+' gal/day &middot; '+p.leadDays+'-day delivery notice<br>Based on '+escapeHtml(prettyDate(entry.inventoryDate))+' inventory. Confirm current levels.</p>'+p.warnings.map(text=>'<p class="chemical-order-warning">'+escapeHtml(text)+'</p>').join('');
 }
 function renderOrderList() {
   for (const id of selectedOrders) if (!orderList.items.some(entry => entry.id === id)) selectedOrders.delete(id);
@@ -79,16 +86,19 @@ function renderOrderList() {
   const unfinished = orderList.items.filter(entry => !orderReady(entry)).length;
   $('order-list-summary').textContent = orderList.items.length + (orderList.items.length === 1 ? ' item saved' : ' items saved') + (unfinished ? ' / ' + unfinished + ' need an order quantity.' : '. Quantities are ready for review.');
   $('review-all-orders').hidden = !orderList.items.length;
-  $('order-list-items').innerHTML = orderList.items.length ? groupedOrders(orderList.items).map(group => '<section class="supplier-group"><div class="supplier-heading"><h2>' + escapeHtml(group.supplier) + ' <small>' + group.entries.length + (group.entries.length === 1 ? ' item' : ' items') + '</small></h2><button class="text-button" type="button" data-review-supplier="' + escapeHtml(group.key) + '">Review selected &rarr;</button></div>' + group.entries.map(entry => {
+  const visible=orderList.items.filter(entry=>orderFilter==='all'||(orderFilter==='chemical'?!!entry.chemicalKey:!entry.chemicalKey));
+  document.querySelectorAll('[data-order-filter]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.orderFilter===orderFilter)));
+  $('order-list-items').innerHTML = visible.length ? groupedOrders(visible).map(group => '<section class="supplier-group"><div class="supplier-heading"><h2>' + escapeHtml(group.supplier) + ' <small>' + group.entries.length + (group.entries.length === 1 ? ' item' : ' items') + '</small></h2><button class="text-button" type="button" data-review-supplier="' + escapeHtml(group.key) + '">Review selected &rarr;</button></div>' + group.entries.map(entry => {
     const item = entry.item;
-    return '<article class="report-item' + (selectedOrders.has(entry.id) ? ' selected-for-order' : '') + '"><label class="order-pick"><input type="checkbox" data-order-select="' + entry.id + '" ' + (selectedOrders.has(entry.id) ? 'checked' : '') + '><span>Ordering now</span></label><div class="report-item-top">' + productPhoto(item) + '<h3>' + escapeHtml(item.description) + '</h3></div><p class="report-detail">' + orderProductLink(item) + '</p><div class="purchase-quantity ' + (!orderReady(entry) ? 'needs-quantity' : '') + '"><span>Quantity to order</span><strong>' + escapeHtml(entry.quantity ?? 'Not set') + ' <small>' + escapeHtml(purchaseUnit(entry)) + '</small></strong>' + (item.caseSize ? '<p>' + escapeHtml(item.caseSize) + '</p>' : '') + '</div>' + (entry.notes ? '<p class="purchase-notes">' + escapeHtml(entry.notes) + '</p>' : '') + '<button class="edit-order-button" data-edit-order="' + entry.id + '" type="button" ' + (listBusy ? 'disabled' : '') + '>Edit order details</button><details class="inventory-reference"><summary>Source</summary><p class="report-note">' + purchaseReference(entry) + '</p></details><button class="remove-list-button" data-remove-list="' + entry.id + '" type="button" ' + (listBusy ? 'disabled' : '') + '>Remove from List</button></article>';
-  }).join('') + '</section>').join('') : '<div class="empty">Your order list is empty.<br>Complete an inventory to automatically add items at or below PAR.</div>';
+    return '<article class="report-item'+(entry.chemicalKey?' chemical-order':'') + (selectedOrders.has(entry.id) ? ' selected-for-order' : '') + '"><label class="order-pick"><input type="checkbox" data-order-select="' + entry.id + '" ' + (selectedOrders.has(entry.id) ? 'checked' : '') + '><span>Ordering now</span></label><div class="report-item-top">' + productPhoto(item) + '<h3>' + escapeHtml(item.description) + '</h3></div>'+(entry.chemicalKey?chemicalOrderDetails(entry):'')+'<p class="report-detail">' + orderProductLink(item) + '</p><div class="purchase-quantity ' + (!orderReady(entry) ? 'needs-quantity' : '') + '"><span>Quantity to order</span><strong>' + escapeHtml(entry.quantity ?? 'Not set') + ' <small>' + escapeHtml(purchaseUnit(entry)) + '</small></strong>' + (item.caseSize ? '<p>' + escapeHtml(item.caseSize) + '</p>' : '') + '</div>' + (entry.notes ? '<p class="purchase-notes">' + escapeHtml(entry.notes) + '</p>' : '') + '<button class="edit-order-button" data-edit-order="' + entry.id + '" type="button" ' + (listBusy ? 'disabled' : '') + '>Edit order details</button><details class="inventory-reference"><summary>Source</summary><p class="report-note">' + purchaseReference(entry) + '</p></details><button class="remove-list-button" data-remove-list="' + entry.id + '" type="button" ' + (listBusy ? 'disabled' : '') + '>Remove from List</button></article>';
+  }).join('') + '</section>').join('') : '<div class="empty">No pending items in this view.<br>Complete an inventory to add supplies at PAR or chemicals due for ordering.</div>';
   updateListButtons();
   updateOrderSelection();
   renderOrderedHistory();
 }
+document.querySelectorAll('[data-order-filter]').forEach(button=>button.onclick=()=>{orderFilter=button.dataset.orderFilter;renderOrderList();});
 function renderOrderedHistory() {
-  $('past-order-items').innerHTML = (orderList.orders || []).length ? orderList.orders.map(order => '<article class="past-order"><h3>' + escapeHtml(prettyDate(order.date)) + ' / ' + escapeHtml(order.operator) + '</h3>' + (order.reference ? '<p>' + escapeHtml(order.reference) + '</p>' : '') + groupedOrders(order.items).map(group => '<h4>' + escapeHtml(group.supplier) + '</h4><ul>' + group.entries.map(entry => '<li><strong>' + escapeHtml(entry.quantity) + ' ' + escapeHtml(purchaseUnit(entry)) + '</strong> / ' + escapeHtml(entry.item.description) + ' ' + orderProductLink(entry.item) + (entry.notes ? '<p class="purchase-notes">' + escapeHtml(entry.notes) + '</p>' : '') + '</li>').join('') + '</ul>').join('') + '<button class="add-history-item" data-add-history-item="' + order.id + '" type="button">+ Add item</button><button class="delete-order-button" data-delete-order="' + order.id + '" type="button">Delete order</button></article>').join('') : '<div class="empty">No orders recorded yet.</div>';
+  $('past-order-items').innerHTML = (orderList.orders || []).length ? orderList.orders.map(order => '<article class="past-order"><h3>' + escapeHtml(prettyDate(order.date)) + ' / ' + escapeHtml(order.operator) + '</h3>' + (order.reference ? '<p>' + escapeHtml(order.reference) + '</p>' : '') + groupedOrders(order.items).map(group => '<h4>' + escapeHtml(group.supplier) + '</h4><ul>' + group.entries.map(entry => '<li><strong>' + escapeHtml(entry.quantity) + ' ' + escapeHtml(purchaseUnit(entry)) + '</strong> / ' + escapeHtml(entry.item.description) + ' ' + orderProductLink(entry.item) + (entry.deliveryDate?'<p class="report-note">Expected Delivery: '+escapeHtml(prettyDate(entry.deliveryDate))+'</p>':'')+(entry.notes ? '<p class="purchase-notes">' + escapeHtml(entry.notes) + '</p>' : '') + '</li>').join('') + '</ul>').join('') + '<button class="add-history-item" data-add-history-item="' + order.id + '" type="button">+ Add item</button><button class="delete-order-button" data-delete-order="' + order.id + '" type="button">Delete order</button></article>').join('') : '<div class="empty">No orders recorded yet.</div>';
 }
 $('order-list-items').addEventListener('change', event => {
   const checkbox = event.target.closest('[data-order-select]'); if (!checkbox) return;
@@ -112,6 +122,7 @@ $('mark-selected-ordered').addEventListener('click', () => {
 $('cancel-ordered').addEventListener('click', () => { if (!listBusy) $('ordered-dialog').close(); });
 $('ordered-dialog').addEventListener('cancel', event => { if (listBusy) event.preventDefault(); });
 $('ordered-form').addEventListener('submit', async event => {
+  if(!$('ordered-by').value.trim()){event.preventDefault();$('ordered-error').textContent='Choose an operator from the name list.';$('ordered-by').focus();return;}
   event.preventDefault(); if (listBusy) return;
   listBusy = true; $('confirm-ordered').disabled = true; $('cancel-ordered').disabled = true;
   try {
@@ -133,6 +144,11 @@ function openOrderDetails(entry) {
   $('order-quantity').value = entry.quantity ?? '';
   $('order-unit').value = purchaseUnit(entry);
   $('order-notes').value = entry.notes || '';
+  $('chemical-order-fields').hidden=!entry.chemicalKey;
+  $('chemical-order-supplier').value=entry.chemicalKey?entry.item.company||'':'';
+  $('chemical-order-delivery').value=entry.deliveryDate||'';
+  $('chemical-order-delivery').required=!!entry.chemicalKey;
+  $('chemical-order-delivery').disabled=!entry.chemicalKey;
   $('order-pack-reference').textContent = 'Pack size: ' + (entry.item.caseSize || 'Not specified') + '. Use the purchasing unit shown on the product page.';
   $('order-details-error').textContent = '';
   $('order-details-dialog').showModal();
@@ -153,7 +169,7 @@ $('order-details-form').addEventListener('submit', async event => {
   listBusy = true; $('save-order-details').disabled = true; $('cancel-order-details').disabled = true;
   try {
     const quantity = $('order-quantity').value === '' ? null : Number($('order-quantity').value);
-    orderList = await api('/api/order-list/' + editingOrder.id,{method:'PATCH',body:JSON.stringify({revision:orderDetailsRevision,quantity,orderUnit:$('order-unit').value.trim(),notes:$('order-notes').value})});
+    orderList = await api('/api/order-list/' + editingOrder.id,{method:'PATCH',body:JSON.stringify({revision:orderDetailsRevision,quantity,orderUnit:$('order-unit').value.trim(),notes:$('order-notes').value,...(editingOrder.chemicalKey?{supplier:$('chemical-order-supplier').value,deliveryDate:$('chemical-order-delivery').value}:{})})});
     $('order-details-dialog').close(); notifySuccess('Order details saved.');
   } catch (error) {
     $('order-details-error').textContent = error.message + (error.status === 409 ? ' Your edits are still here. Copy them if needed, then cancel and refresh the list before editing again.' : '');
@@ -166,9 +182,9 @@ function renderPurchaseReview() {
   const groups = groupedOrders(orderList.items.filter(entry => reviewSelection.includes(entry.id))).filter(group => reviewSupplier === null || group.key === reviewSupplier);
   const entries = groups.flatMap(group => group.entries), missing = entries.filter(entry => !orderReady(entry)).length;
   $('order-review-title').textContent = reviewSupplier === null ? 'Review selected items' : (groups[0]?.supplier || 'Supplier') + ' order';
-  $('order-review-summary').textContent = entries.length + (entries.length === 1 ? ' item / ' : ' items / ') + (missing ? missing + ' still need quantities. Return to Order List to finish them before printing.' : 'All quantities set. Check the purchasing units and product pages before buying.');
+  $('order-review-summary').textContent = entries.length + (entries.length === 1 ? ' item / ' : ' items / ') + (missing ? missing + ' still need quantities. Return to To Order List to finish them before printing.' : 'All quantities set. Check the purchasing units and product pages before buying.');
   $('print-order-review').disabled = !entries.length || missing > 0 || entries.length !== reviewSelection.length;
-  $('order-review-items').innerHTML = groups.length ? groups.map(group => '<section class="purchase-review-group"><h2>' + escapeHtml(group.supplier) + '</h2><div class="purchase-table-scroll"><table class="purchase-table"><thead><tr><th scope="col">Item</th><th scope="col">Order quantity</th><th scope="col">Notes</th></tr></thead><tbody>' + group.entries.map(entry => '<tr><td><div class="review-product">' + productPhoto(entry.item) + '<div><strong>' + escapeHtml(entry.item.description) + '</strong><p>' + orderProductLink(entry.item) + '</p><small>' + escapeHtml(entry.item.caseSize || '') + '</small></div></div></td><td><strong class="review-quantity">' + escapeHtml(entry.quantity ?? 'Not set') + '</strong><br>' + escapeHtml(purchaseUnit(entry)) + '</td><td class="purchase-notes">' + escapeHtml(entry.notes || '') + '</td></tr>').join('') + '</tbody></table></div></section>').join('') : '<div class="empty">No items to review.</div>';
+  $('order-review-items').innerHTML = groups.length ? groups.map(group => '<section class="purchase-review-group"><h2>' + escapeHtml(group.supplier) + '</h2><div class="purchase-table-scroll"><table class="purchase-table"><thead><tr><th scope="col">Item</th><th scope="col">Order quantity</th><th scope="col">Notes</th></tr></thead><tbody>' + group.entries.map(entry => '<tr><td><div class="review-product">' + productPhoto(entry.item) + '<div><strong>' + escapeHtml(entry.item.description) + '</strong><p>' + orderProductLink(entry.item) + '</p><small>' + escapeHtml(entry.item.caseSize || '') + '</small>'+(entry.deliveryDate?'<p>Expected Delivery: '+escapeHtml(prettyDate(entry.deliveryDate))+'</p>':'')+'</div></div></td><td><strong class="review-quantity">' + escapeHtml(entry.quantity ?? 'Not set') + '</strong><br>' + escapeHtml(purchaseUnit(entry)) + '</td><td class="purchase-notes">' + escapeHtml(entry.notes || '') + '</td></tr>').join('') + '</tbody></table></div></section>').join('') : '<div class="empty">No items to review.</div>';
 }
 async function openOrderReview(supplier = null) {
   await refreshOrderList(); reviewSupplier = supplier; reviewSelection = orderList.items.filter(entry => selectedOrders.has(entry.id) && (supplier === null || orderingSupplier(entry.item).toLowerCase() === supplier)).map(entry => entry.id);
@@ -212,9 +228,9 @@ async function openPurchasePicker(orderId = null) {
     const [latestCatalog] = await Promise.all([api('/api/catalog'),refreshOrderList()]);
     catalog = latestCatalog;
     purchaseTargetOrder = orderId ? orderList.orders.find(order => order.id === orderId) : null;
-    if (orderId && !purchaseTargetOrder) throw new Error('This order was deleted. Refresh Order History.');
+    if (orderId && !purchaseTargetOrder) throw new Error('This order was deleted. Refresh Placed Orders.');
     purchasePickerRevision = orderList.revision;
-    $('add-purchase-title').textContent = purchaseTargetOrder ? 'Add item to order' : 'Add to Order List';
+    $('add-purchase-title').textContent = purchaseTargetOrder ? 'Add item to order' : 'Add to List';
     $('add-purchase-context').textContent = purchaseTargetOrder ? 'Record a missing purchase on ' + prettyDate(purchaseTargetOrder.date) + (purchaseTargetOrder.reference ? ' / ' + purchaseTargetOrder.reference : '') + '. This updates history only; it does not place a purchase or remove pending items.' : 'Choose any catalog item, regardless of PAR or whether inventory has been taken.';
     $('purchase-search').value = ''; $('purchase-quantity').value = ''; $('purchase-unit').value = ''; $('purchase-notes').value = '';
     $('purchase-quantity').required = Boolean(purchaseTargetOrder);
@@ -366,26 +382,51 @@ function status(item) {
 function prettyDate(date) { return new Date(date + 'T12:00:00').toLocaleDateString(undefined, { month:'short', day:'numeric', year:'numeric' }); }
 function resetEdits() { approvedCounts.clear(); pending = {}; inFlight = {}; invalid.clear(); Object.keys(invalidValues).forEach(id => delete invalidValues[id]); conflict = false; }
 
-function renderHome() {
   // Gauge and broom: Phosphor Regular (MIT). Press: custom matching SVG.
-  const icons = {
+const inventoryIcons = {
   "operating": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M207.06,72.67A111.24,111.24,0,0,0,128,40h-.4C66.07,40.21,16,91,16,153.13V176a16,16,0,0,0,16,16H224a16,16,0,0,0,16-16V152A111.25,111.25,0,0,0,207.06,72.67ZM224,176H119.71l54.76-75.3a8,8,0,0,0-12.94-9.42L99.92,176H32V153.13c0-3.08.15-6.12.43-9.13H56a8,8,0,0,0,0-16H35.27c10.32-38.86,44-68.24,84.73-71.66V80a8,8,0,0,0,16,0V56.33A96.14,96.14,0,0,1,221,128H200a8,8,0,0,0,0,16h23.67c.21,2.65.33,5.31.33,8Z\"/></svg>",
   "janitorial": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M235.5,216.81c-22.56-11-35.5-34.58-35.5-64.8V134.73a15.94,15.94,0,0,0-10.09-14.87L165,110a8,8,0,0,1-4.48-10.34l21.32-53a28,28,0,0,0-16.1-37,28.14,28.14,0,0,0-35.82,16,.61.61,0,0,0,0,.12L108.9,79a8,8,0,0,1-10.37,4.49L73.11,73.14A15.89,15.89,0,0,0,55.74,76.8C34.68,98.45,24,123.75,24,152a111.45,111.45,0,0,0,31.18,77.53A8,8,0,0,0,61,232H232a8,8,0,0,0,3.5-15.19ZM67.14,88l25.41,10.3a24,24,0,0,0,31.23-13.45l21-53c2.56-6.11,9.47-9.27,15.43-7a12,12,0,0,1,6.88,15.92L145.69,93.76a24,24,0,0,0,13.43,31.14L184,134.73V152c0,.33,0,.66,0,1L55.77,101.71A108.84,108.84,0,0,1,67.14,88Zm48,128a87.53,87.53,0,0,1-24.34-42,8,8,0,0,0-15.49,4,105.16,105.16,0,0,0,18.36,38H64.44A95.54,95.54,0,0,1,40,152a85.9,85.9,0,0,1,7.73-36.29l137.8,55.12c3,18,10.56,33.48,21.89,45.16Z\"/></svg>",
   "dewatering": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M8 7H4l-3 6h7M15 5V2h3M11 18l-2 4h12l-2-4\"/><circle cx=\"15\" cy=\"12\" r=\"7\"/><circle cx=\"15\" cy=\"12\" r=\"5\"/><circle cx=\"15\" cy=\"12\" r=\"1\"/><path d=\"M17.00 12.00L20.00 12.00\"/><path d=\"M16.41 13.41L18.54 15.54\"/><path d=\"M15.00 14.00L15.00 17.00\"/><path d=\"M13.59 13.41L11.46 15.54\"/><path d=\"M13.00 12.00L10.00 12.00\"/><path d=\"M13.59 10.59L11.46 8.46\"/><path d=\"M15.00 10.00L15.00 7.00\"/><path d=\"M16.41 10.59L18.54 8.46\"/></svg>"
 };
+inventoryIcons.chemical="<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"><path d=\"M7 3h10v18H7zM7 8h10M7 16h10M10 5h4\"/><path d=\"M3 18h4m10 0h4\"/></svg>";
+function renderHome() {
   $('worksheets').innerHTML = catalog.worksheets.map(w => {
     const items = catalog.items.filter(i => i.sourceSheet === w.sourceSheet);
     const places = new Set(items.map(i => i.location)).size;
     const latest = records.filter(record => record.worksheet === w.id && record.status === 'complete').sort((a,b) => b.date.localeCompare(a.date) || b.updatedAt.localeCompare(a.updatedAt))[0];
     const lastCompleted = latest ? `Last completed: <time datetime="${escapeHtml(latest.date)}">${escapeHtml(prettyDate(latest.date))}</time>` : 'No completed inventory yet';
-    return `<button class="worksheet-card" data-worksheet="${w.id}"><span class="worksheet-icon" aria-hidden="true">${icons[w.id]}</span><span><strong>${escapeHtml(w.name)}</strong><small>${items.length} supplies · ${places} ${places === 1 ? 'location' : 'locations'}</small><small class="worksheet-last-count">${lastCompleted}</small></span><span class="worksheet-arrow" aria-hidden="true">→</span></button>`;
+    return `<button class="worksheet-card" data-worksheet="${w.id}"><span class="worksheet-icon" aria-hidden="true">${inventoryIcons[w.id]}</span><span><strong>${escapeHtml(w.name)}</strong><small>${items.length} supplies · ${places} ${places === 1 ? 'location' : 'locations'}</small><small class="worksheet-last-count">${lastCompleted}</small></span><span class="worksheet-arrow" aria-hidden="true">→</span></button>`;
   }).join('');
+  const latestChemical = chemicalRecords?.slice().sort((a,b) => b.date.localeCompare(a.date))[0];
+  const chemicalDate = chemicalHistoryUnavailable ? 'Latest reading unavailable' : latestChemical ? `Last saved: <time datetime="${escapeHtml(latestChemical.date)}">${escapeHtml(prettyDate(latestChemical.date))}</time>` : chemicalRecords ? 'No saved readings yet' : 'Loading latest reading...';
+  $('worksheets').querySelector('[data-worksheet="operating"]').insertAdjacentHTML('afterend','<a class="worksheet-card chemical-worksheet" href="./chemical-inventory.html"><span class="worksheet-icon" aria-hidden="true">'+inventoryIcons.chemical+'</span><span><strong>Chemical Inventory</strong><small>Tank levels &amp; gallons on hand</small><small class="worksheet-last-count">'+chemicalDate+'</small></span><span class="worksheet-arrow" aria-hidden="true">&rarr;</span></a>');
+}
+function inventoryOrderStatus(record){
+  const chemical=record.worksheet==='chemical',draft=record.status!=='complete';
+  const needed=chemical?record.orderSummary?.needed:Number(record.low||0),review=chemical?(record.orderSummary?.review??1):0;
+  const noun=chemical?'chemical':'item';
+  if(needed>0)return{state:'due',label:(draft?'Draft: ':'')+'Order Needed ('+needed+')',summary:needed+' '+noun+(needed===1?' needs':'s need')+' ordering'+(draft?' (provisional)':'')};
+  if(draft)return{state:'draft',label:'Draft Order Report',summary:'Order status is provisional until completed'};
+  if(review)return{state:'review',label:'Review Order Status',summary:'Readings or recent usage need review'};
+  return{state:'none',label:'No Order Needed',summary:'No '+noun+'s need ordering'};
 }
 function renderHistory() {
-  $('history-title').textContent = mode === 'home' ? 'Recent inventories' : 'Inventory history';
-  const rows = mode === 'home' ? records.slice(0, 3) : records;
-  $('history-list').innerHTML = rows.length ? rows.map(r => `<article class="history-card"><div class="history-top"><strong>${escapeHtml(worksheetName(r.worksheet))}</strong><span class="badge ${r.status === 'complete' ? 'ok' : ''}">${r.status === 'complete' ? 'Completed' : 'Draft'}</span></div><p>${escapeHtml(prettyDate(r.date))} · ${escapeHtml(r.operator)}<br>${r.low} at / below PAR</p><div class="history-bottom"><span>${r.counted} of ${r.total} counted</span><div class="history-controls"><button data-open="${r.id}">${r.status === 'complete' ? 'View' : 'Resume'} →</button><button class="trash-button" data-delete="${r.id}" aria-label="Delete ${escapeHtml(worksheetName(r.worksheet))} inventory from ${escapeHtml(prettyDate(r.date))} by ${escapeHtml(r.operator)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7M14 10v7"/></svg></button></div></div><button class="report-button" data-report="${r.id}">${r.status === 'complete' ? 'Order Needed' : 'Draft order report'} (${r.low})</button></article>`).join('') : '<div class="empty">No inventories yet.<br>Choose a worksheet on Home to start your first count.</div>';
+  $('history-title').textContent = mode === 'home' ? 'Recent Inventories' : 'Inventory History';
+  $('history-filters').hidden=mode!=='history';
+  const selectedType=$('history-type').value;
+  $('history-type').innerHTML='<option value="all">All Inventory Types</option>'+(catalog?.worksheets||[]).map(w=>'<option value="'+escapeHtml(w.id)+'">'+escapeHtml(w.name)+'</option>').join('')+'<option value="chemical">Chemical Inventory</option>';
+  $('history-type').value=selectedType||'all';
+  const all=[...records,...(chemicalRecords||[]).map(record=>({...record,worksheet:'chemical',status:record.status||'complete',updatedAt:record.updatedAt||record.date}))].sort((a,b)=>b.date.localeCompare(a.date)||(b.updatedAt||b.date).localeCompare(a.updatedAt||a.date));
+  $('history-list').classList.toggle('recent-inventories',mode==='home');
+  const rows = mode === 'home' ? [...all.filter(r=>r.status==='draft'),...all.filter(r=>r.status==='complete')].slice(0,4) : all.filter(r=>$('history-type').value==='all'||r.worksheet===$('history-type').value);
+  $('history-list').innerHTML = rows.length ? rows.map(r => {
+    const chemical=r.worksheet==='chemical', name=chemical?'Chemical Inventory':worksheetName(r.worksheet), key=chemical?r.date:r.id;
+    const orderStatus=inventoryOrderStatus(r);
+    const trash='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7M14 10v7"/></svg>';
+    return '<article class="history-card" data-inventory-type="'+escapeHtml(r.worksheet)+'"><div class="history-top"><div class="history-title"><span class="history-inventory-icon" aria-hidden="true">'+(inventoryIcons[r.worksheet]||'')+'</span><strong>'+escapeHtml(name)+'</strong></div><span class="badge '+(r.status==='complete'?'ok':'')+'">'+(r.status==='complete'?'Completed':'Draft')+'</span></div><p>'+escapeHtml(prettyDate(r.date))+' &middot; '+escapeHtml(r.operator)+'</p><div class="history-order-summary">'+escapeHtml(orderStatus.summary)+'</div><div class="history-bottom"><span>'+(chemical?(r.source?'Imported Workbook':r.counted+' of '+r.total+' counted'):r.counted+' of '+r.total+' counted')+'</span><div class="history-controls"><button '+(chemical?'data-chemical-view="'+key+'" data-chemical-resume="'+key+'"':'data-open="'+key+'"')+'>View &rarr;</button><button '+(chemical?'data-chemical-edit':'data-edit')+'="'+key+'">Edit</button><button class="trash-button" '+(chemical?'data-chemical-delete':'data-delete')+'="'+key+'" aria-label="Delete '+escapeHtml(name)+' inventory from '+escapeHtml(prettyDate(r.date))+' by '+escapeHtml(r.operator)+'">'+trash+'</button></div></div>'+'<button class="report-button" data-order-state="'+orderStatus.state+'" '+(chemical?'data-chemical-view="'+key+'"':'data-report="'+r.id+'"')+'>'+escapeHtml(orderStatus.label)+'</button>'+'</article>';
+  }).join('') : mode==='history'&&$('history-type').value!=='all'?'<div class="empty">No inventories found for this inventory type.</div>':'<div class="empty">No inventories yet.<br>Choose a worksheet on Home to start your first count.</div>';
 }
+$('history-type').addEventListener('change',renderHistory);
 function renderOrderReport(inventory) {
   reportInventory = structuredClone(inventory);
   if (!$('report-recipient').value) $('report-recipient').value = emailConfig.defaultTo;
@@ -403,7 +444,7 @@ function renderOrderReport(inventory) {
     item = InventoryPackSizes.normalize(item);
     const count = entered(item) ? inventory.counts[item.id] : 'Not counted';
     const detail = [item.company, item.itemNumber && '#' + item.itemNumber, InventoryPackSizes.format(item) && 'Pack: ' + InventoryPackSizes.format(item)].filter(Boolean).join(' | ');
-    return '<article class="report-item"><div class="report-item-top">' + productPhoto(item) + '<h3>' + escapeHtml(item.description) + '</h3></div><p class="report-location">' + escapeHtml(item.location) + '</p><div class="report-quantities"><span>On hand <strong>' + escapeHtml(count) + '</strong></span><span>' + (manual ? 'Rule <strong>' + escapeHtml(item.parNote || 'As needed') : 'PAR <strong>' + escapeHtml(item.par)) + '</strong></span></div><p class="report-unit">Count size: <strong>' + escapeHtml(InventoryPackSizes.countSize(item) || 'Not specified') + '</strong></p>' + (detail ? '<p class="report-detail">' + escapeHtml(detail) + '</p>' : '') + (manual ? '<button class="add-to-list" data-add-list="' + escapeHtml(item.id) + '" type="button">Add to List</button>' : '<button class="add-to-list" data-open-order-list type="button">View Order List</button>') + '</article>';
+    return '<article class="report-item"><div class="report-item-top">' + productPhoto(item) + '<h3>' + escapeHtml(item.description) + '</h3></div><p class="report-location">' + escapeHtml(item.location) + '</p><div class="report-quantities"><span>On hand <strong>' + escapeHtml(count) + '</strong></span><span>' + (manual ? 'Rule <strong>' + escapeHtml(item.parNote || 'As needed') : 'PAR <strong>' + escapeHtml(item.par)) + '</strong></span></div><p class="report-unit">Count size: <strong>' + escapeHtml(InventoryPackSizes.countSize(item) || 'Not specified') + '</strong></p>' + (detail ? '<p class="report-detail">' + escapeHtml(detail) + '</p>' : '') + (manual ? '<button class="add-to-list" data-add-list="' + escapeHtml(item.id) + '" type="button">Add to List</button>' : '<button class="add-to-list" data-open-order-list type="button">View To Order List</button>') + '</article>';
   }
   $('report-items').innerHTML = needed.length ? needed.map(item => card(item)).join('') : '<div class="empty">No items on the order list.</div>';
   $('report-review').innerHTML = review.length ? '<h2 class="report-review-title">Review as needed</h2><p class="report-note">These items have no numeric PAR. Check whether supplies are needed.</p>' + review.map(item => card(item,true)).join('') : '';
@@ -439,9 +480,9 @@ $('history-list').addEventListener('click', async event => {
 });
 async function history() {
   const request = ++historyRequest;
-  const latest = await api('/api/inventories');
+  const [latest,chemicals] = await Promise.all([api('/api/inventories'),api('/api/chemicals').catch(() => null)]);
   if (request !== historyRequest) return;
-  records = latest; renderHistory(); renderHome();
+  records = latest; chemicalRecords = chemicals?.records; chemicalHistoryUnavailable = !chemicals; renderHistory(); renderHome();
 }
 function showMode(next) {
   mode = next;
@@ -472,7 +513,7 @@ function renderOverview() {
   $('next-location').hidden = isComplete || (canComplete && places.indexOf(locationName) === places.length - 1);
   $('next-location').disabled = completing || conflict;
   $('next-location').textContent = places.indexOf(locationName) < places.length - 1 ? 'Next location →' : 'Find uncounted items →';
-  $('footer-copy').textContent = isComplete ? 'Completed and saved · read-only' : invalid.size ? 'Correct the highlighted counts before finishing.' : `${done} of ${items.length} counted · Blank means uncounted.`;
+  $('footer-copy').textContent = isComplete && editingCompleted ? 'Correcting completed inventory - changes save automatically' : isComplete ? 'Completed and saved · read-only' : invalid.size ? 'Correct the highlighted counts before finishing.' : `${done} of ${items.length} counted · Blank means uncounted.`;
   $('location-select').innerHTML = places.map(name => {
     const group = items.filter(i => i.location === name);
     return `<option value="${escapeHtml(name)}" ${name === locationName ? 'selected' : ''}>${escapeHtml(name)} · ${counted(group)}/${group.length}</option>`;
@@ -494,7 +535,7 @@ function renderItems() {
     i = InventoryPackSizes.normalize(i);
     const [cls, label] = status(i), value = invalid.has(i.id) ? invalidValues[i.id] : countOf(i.id) ?? '';
     const packSize = (InventoryPackSizes.format(i) || '').replace(/\s*\([^)]*\)\s*$/, '').trim();
-    return `<article class="item-card"><div class="item-body"><div class="item-top">${productPhoto(i)}<h2 class="item-name">${escapeHtml(i.description)}</h2><span class="badge ${cls}" data-status="${i.id}">${label}</span></div></div><div class="count-row"><label for="count-${i.id}">How many on hand?<span class="unit-value">${escapeHtml(InventoryPackSizes.countSize(i) || "Count size unspecified")}</span>${packSize ? `<span class="unit-pack-size">${escapeHtml(packSize)}</span>` : ""}</label><div class="quantity-control"><input id="count-${i.id}" class="count-input ${invalid.has(i.id) ? "invalid" : ""}" ${invalid.has(i.id) ? 'aria-invalid="true"' : ""} data-id="${i.id}" aria-label="On hand: ${escapeHtml(i.description)}, ${escapeHtml(InventoryPackSizes.countSize(i) || "count size unspecified")}" type="number" min="0" max="1000000000" step="any" inputmode="decimal" enterkeyhint="next" placeholder="—" value="${escapeHtml(value)}" ${run.status === "complete" || conflict || completing || navigating ? "disabled" : ""}></div></div><div class="item-reference"><div class="previous-count" data-previous="${i.id}">Previous: <strong>${escapeHtml(run.previousCounts?.[i.id] ?? "No record")}</strong></div><div class="par-value">PAR: <strong>${escapeHtml(i.par ?? i.parNote)}</strong></div></div></article>`;
+    return `<article class="item-card"><div class="item-body"><div class="item-top">${productPhoto(i)}<h2 class="item-name">${escapeHtml(i.description)}</h2><span class="badge ${cls}" data-status="${i.id}">${label}</span></div></div><div class="count-row"><label for="count-${i.id}">How many on hand?<span class="unit-value">${escapeHtml(InventoryPackSizes.countSize(i) || "Count size unspecified")}</span>${packSize ? `<span class="unit-pack-size">${escapeHtml(packSize)}</span>` : ""}</label><div class="quantity-control"><input id="count-${i.id}" class="count-input ${invalid.has(i.id) ? "invalid" : ""}" ${invalid.has(i.id) ? 'aria-invalid="true"' : ""} data-id="${i.id}" aria-label="On hand: ${escapeHtml(i.description)}, ${escapeHtml(InventoryPackSizes.countSize(i) || "count size unspecified")}" type="number" min="0" max="1000000000" step="any" inputmode="decimal" enterkeyhint="next" placeholder="—" value="${escapeHtml(value)}" ${(run.status === "complete" && !editingCompleted) || conflict || completing || navigating ? "disabled" : ""}></div></div><div class="item-reference"><div class="previous-count" data-previous="${i.id}">Previous: <strong>${escapeHtml(run.previousCounts?.[i.id] ?? "No record")}</strong></div><div class="par-value">PAR: <strong>${escapeHtml(i.par ?? i.parNote)}</strong></div></div></article>`;
   }).join('') : '<div class="empty">No items in this location.</div>';
 }
 function render() { renderOverview(); renderItems(); }
@@ -504,7 +545,7 @@ async function flush(complete = false) {
   if (saving) { while (saving) await new Promise(resolve => setTimeout(resolve, 40)); }
   if (conflict) throw new Error('This draft changed elsewhere. Your unsaved values remain visible. Reload to get the latest version.');
   if (invalid.size) throw new Error('Correct the highlighted counts before continuing.');
-  if (!run || run.status === 'complete' || (!Object.keys(pending).length && !complete)) return;
+  if (!run || (run.status === 'complete' && !editingCompleted) || (!Object.keys(pending).length && !complete)) return;
   for (const [id, value] of Object.entries(pending)) {
     if (!unusualCount(run.previousCounts?.[id], value) || approvedCounts.get(id) === value) continue;
     // Let the operator finish typing before opening a review sheet.
@@ -529,7 +570,7 @@ async function flush(complete = false) {
   const changes = pending; pending = {}; inFlight = changes; saving = true;
   $('save-status').textContent = 'Saving…'; renderOverview();
   try {
-    run = await api(`/api/inventories/${run.id}`, { method:'PATCH', body:JSON.stringify({ revision:run.revision, counts:changes, ...(complete ? { status:'complete' } : {}) }) });
+    run = await api(`/api/inventories/${run.id}`, { method:'PATCH', body:JSON.stringify({ revision:run.revision, counts:changes, ...(editingCompleted ? {editCompleted:true}:{}), ...(complete ? { status:'complete' } : {}) }) });
     $('save-status').textContent = 'All changes saved'; notify();
   } catch (error) {
     pending = { ...changes, ...pending }; conflict = error.status === 409;
@@ -607,7 +648,7 @@ let fullViewportHeight = window.visualViewport?.height || window.innerHeight;
 let keyboardFrame;
 function editingField() {
   const field = document.activeElement;
-  return field?.matches('input:not([disabled]):not([type=button]):not([type=submit]), textarea') ? field : null;
+  return field?.matches('input:not([disabled]):not([readonly]):not([type=button]):not([type=submit]), textarea:not([readonly])') ? field : null;
 }
 function keepFieldVisible(field) {
   const viewport = window.visualViewport;
@@ -665,36 +706,59 @@ window.addEventListener('resize', scheduleKeyboardLayout);
 window.visualViewport?.addEventListener('resize', scheduleKeyboardLayout);
 window.visualViewport?.addEventListener('scroll', scheduleKeyboardLayout);
 $('worksheets').addEventListener('click', async event => {
-  const button = event.target.closest('[data-worksheet]'); if (!button || navigating) return;
+  const button = event.target.closest('[data-worksheet],.chemical-worksheet'); if (!button) return;
+  event.preventDefault(); if (navigating) return;
   try {
-    await flush(); catalog = await api('/api/catalog'); renderHome(); selectedWorksheet = button.dataset.worksheet;
-    const worksheet = catalog.worksheets.find(w => w.id === selectedWorksheet), items = catalog.items.filter(i => i.sourceSheet === worksheet.sourceSheet);
-    $('new-worksheet-title').textContent = worksheet.name; $('new-worksheet-copy').textContent = `${items.length} supplies to count. Choose a date and enter your name to begin.`;
+    await flush(); catalog = await api('/api/catalog'); await history(); renderHome(); selectedWorksheet = button.classList.contains('chemical-worksheet')?'chemical':button.dataset.worksheet;
+    if(selectedWorksheet==='chemical'){
+      const chemicals=await api('/api/chemicals'),unfinished=chemicals.records.find(record=>record.status==='draft');
+      if(unfinished){window.location.assign('./chemical-inventory.html?date='+encodeURIComponent(unfinished.date));return;}
+    }
+    const unfinished=records.find(record=>record.worksheet===selectedWorksheet&&record.status==='draft');
+    if(unfinished){run=await api('/api/inventories/'+unfinished.id);resetEdits();locationName=run.items.find(item=>run.counts[item.id]===undefined)?.location||run.items[0].location;$('save-status').textContent='All changes saved';notifySuccess('Resumed your unfinished inventory.');showMode('editor');return;}
+    const worksheet = catalog.worksheets.find(w => w.id === selectedWorksheet), items = worksheet?catalog.items.filter(i => i.sourceSheet === worksheet.sourceSheet):[];
+    $('new-worksheet-title').textContent = selectedWorksheet==='chemical'?'Chemical Inventory':worksheet.name; $('new-worksheet-copy').textContent = selectedWorksheet==='chemical'?'Choose a date and enter your name to begin recording chemical readings.':`${items.length} supplies to count. Choose a date and enter your name to begin.`;
     const date = new Date(); date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
     $('inventory-date').value = date.toISOString().slice(0,10); $('operator-name').value = run?.operator || ''; $('form-error').textContent = ''; $('new-dialog').showModal();
   } catch (error) { notify(error.message); }
 });
 $('cancel-new').addEventListener('click', () => $('new-dialog').close());
 $('new-form').addEventListener('submit', async event => {
+  if(!$('operator-name').value.trim()){event.preventDefault();$('form-error').textContent='Choose your name from the operator list.';$('operator-name').focus();return;}
   event.preventDefault(); if (navigating) return; navigating = true; $('start-count').disabled = true;
   try {
     await flush();
+    if(selectedWorksheet==='chemical'){
+      const chemicals=await api('/api/chemicals'),unfinished=chemicals.records.find(record=>record.status==='draft');
+      const date=unfinished?.date||$('inventory-date').value;
+      if(!unfinished){
+        if(chemicals.records.some(record=>record.date===date))throw new Error('A chemical inventory already exists for this date. Choose a different date, or open the saved inventory from History.');
+        await api('/api/chemicals/records/'+encodeURIComponent(date),{method:'PUT',body:JSON.stringify({revision:chemicals.revision,operator:$('operator-name').value,readings:{},notes:'',status:'draft'})});
+      }
+      window.location.assign('./chemical-inventory.html?date='+encodeURIComponent(date));return;
+    }
     run = await api('/api/inventories', { method:'POST', body:JSON.stringify({ worksheet:selectedWorksheet, date:$('inventory-date').value, operator:$('operator-name').value }) });
-    resetEdits(); locationName = run.items[0].location; $('new-dialog').close(); $('save-status').textContent = 'Draft saved'; notify(); showMode('editor'); history().catch(error => notify(error.message));
+    resetEdits(); locationName = run.items.find(item=>run.counts[item.id]===undefined)?.location||run.items[0].location; $('new-dialog').close(); $('save-status').textContent = run.resumed?'Draft resumed':'Draft saved'; notify(); showMode('editor'); if(run.resumed)notifySuccess('Resumed the existing unfinished inventory.');history().catch(error => notify(error.message));
   } catch (error) { $('form-error').textContent = error.message; }
   finally { navigating = false; $('start-count').disabled = false; render(); }
 });
 $('history-list').addEventListener('click', async event => {
-  const trash = event.target.closest('[data-delete]');
+  const trash = event.target.closest('[data-delete],[data-chemical-delete]');
   if (!trash || navigating || deleting) return;
   navigating = true; trash.disabled = true;
   try {
     await flush();
-    deleteTarget = await api('/api/inventories/' + trash.dataset.delete);
-    $('delete-copy').textContent = worksheetName(deleteTarget.worksheet) + ' | ' + prettyDate(deleteTarget.date) + ' | ' + deleteTarget.operator + ' (' + (deleteTarget.status === 'complete' ? 'Completed' : 'Draft') + ')';
+    if(trash.dataset.chemicalDelete){const chemicals=await api('/api/chemicals');deleteTarget={...chemicals.records.find(record=>record.date===trash.dataset.chemicalDelete),worksheet:'chemical',revision:chemicals.revision};}else deleteTarget = await api('/api/inventories/' + trash.dataset.delete);
+    $('delete-copy').textContent = (deleteTarget.worksheet==='chemical'?'Chemical Inventory':worksheetName(deleteTarget.worksheet)) + ' | ' + prettyDate(deleteTarget.date) + ' | ' + deleteTarget.operator + ' (' + (deleteTarget.status === 'complete' ? 'Completed' : 'Draft') + ')';
     $('delete-error').textContent = ''; $('delete-dialog').showModal();
   } catch (error) { notify(error.message); }
   finally { navigating = false; trash.disabled = false; }
+});
+$('history-list').addEventListener('click', async event => {
+  const button=event.target.closest('[data-chemical-view],[data-chemical-edit]');if(!button||navigating)return;
+  navigating=true;
+  try{await flush();window.location.assign('./chemical-inventory.html?date='+encodeURIComponent(button.dataset.chemicalView||button.dataset.chemicalEdit)+'&view='+(button.dataset.chemicalEdit?'edit':'report'));}
+  catch(error){notify(error.message);navigating=false;}
 });
 $('cancel-delete').addEventListener('click', () => $('delete-dialog').close());
 $('delete-dialog').addEventListener('cancel', event => { if (deleting) event.preventDefault(); });
@@ -705,6 +769,7 @@ $('confirm-delete').addEventListener('click', async () => {
   $('confirm-delete').disabled = true; $('cancel-delete').disabled = true; $('delete-error').textContent = '';
   try {
     const id = deleteTarget.id;
+    if(deleteTarget.worksheet==='chemical'){await api('/api/chemicals/records/'+deleteTarget.date,{method:'DELETE',body:JSON.stringify({revision:deleteTarget.revision})});++historyRequest;$('delete-dialog').close();await history();notifySuccess('Inventory deleted.');return;}
     await api('/api/inventories/' + id, { method:'DELETE', body:JSON.stringify({ revision:deleteTarget.revision }) });
     if (run?.id === id) { run = null; resetEdits(); }
     ++historyRequest; // Ignore refreshes that started before this deletion.
@@ -720,9 +785,9 @@ $('confirm-delete').addEventListener('click', async () => {
   }
 });
 $('history-list').addEventListener('click', async event => {
-  const button = event.target.closest('[data-open]'); if (!button || navigating) return;
+  const button = event.target.closest('[data-open],[data-edit]'); if (!button || navigating) return;
   navigating = true; button.disabled = true;
-  try { await flush(); run = await api('/api/inventories/' + button.dataset.open); resetEdits(); locationName = run.items.find(i => run.counts[i.id] === undefined)?.location || run.items[0].location; $('save-status').textContent = run.status === 'complete' ? 'Saved · read-only' : 'All changes saved'; notify(); showMode('editor'); }
+  try { await flush(); run = await api('/api/inventories/' + (button.dataset.open||button.dataset.edit)); editingCompleted=!!button.dataset.edit; resetEdits(); locationName = run.items.find(i => run.counts[i.id] === undefined)?.location || run.items[0].location; $('save-status').textContent = run.status === 'complete' && !editingCompleted ? 'Saved · read-only' : 'All changes saved'; notify(); showMode('editor'); }
   catch (error) { if (!Object.keys(pending).length) notify(error.message); }
   finally { navigating = false; button.disabled = false; render(); }
 });
@@ -733,6 +798,7 @@ $('complete').addEventListener('click', async () => {
   finally { completing = false; render(); }
 });
 $('refresh').addEventListener('click', () => history().catch(error => notify(error.message)));
+window.addEventListener('pageshow', event => { if (event.persisted) history().catch(error => notify(error.message)); });
 window.addEventListener('beforeunload', event => { if (saving || Object.keys(pending).length || invalid.size) { event.preventDefault(); event.returnValue = ''; } });
 async function init() {
   try { [catalog,emailConfig,orderList] = await Promise.all([api('/api/catalog'),api('/api/email-config'),api('/api/order-list')]); renderOrderList(); renderHome(); showMode('home'); await history(); }
@@ -773,14 +839,21 @@ function renderBinCardPicker() {
 function managementSection(section) {
   $('manage-items-panel').hidden = section !== 'items';
   $('bin-cards-panel').hidden = section !== 'cards';
+  $('chemical-settings-panel').hidden = section !== 'chemicals';
   $('manage-items-tab').setAttribute('aria-pressed',String(section === 'items'));
   $('print-bin-cards-tab').setAttribute('aria-pressed',String(section === 'cards'));
+  $('chemical-settings-tab').setAttribute('aria-pressed',String(section === 'chemicals'));
   if (section === 'cards') renderBinCardPicker();
+  if (section === 'chemicals') window.ChemicalSettingsManager.open();
 }
 function renderManager() {
   const worksheet = catalog.worksheets.find(w => w.id === $('manager-worksheet').value);
-  const items = catalog.items.filter(item => item.sourceSheet === worksheet?.sourceSheet);
-  $('manager-list').innerHTML = items.length ? items.map(item => '<article class="manager-card"><h2>' + escapeHtml(item.description) + '</h2><p>' + escapeHtml(item.location) + ' &middot; ' + escapeHtml(item.countSize) + ' &middot; PAR: ' + escapeHtml(item.par === null ? 'As needed' : item.par) + '</p><div class="manager-actions"><button type="button" data-edit-item="' + item.id + '">Edit</button>' + (worksheet.id === 'operating' ? '<button type="button" data-print-bin-card="' + escapeHtml(item.id) + '">Print card</button>' : '') + '<button type="button" data-remove-item="' + item.id + '">Remove</button></div></article>').join('') : '<div class="empty">No items in this worksheet. Add an item to get started.</div>';
+  const all=catalog.items.filter(item=>item.sourceSheet===worksheet?.sourceSheet),location=$('manager-location').value;
+  $('manager-location').innerHTML='<option value="">All Locations</option>'+[...new Set(all.map(item=>item.location))].map(name=>'<option value="'+escapeHtml(name)+'">'+escapeHtml(name)+'</option>').join('');
+  $('manager-location').value=all.some(item=>item.location===location)?location:'';
+  const query=$('manager-search').value.trim().toLowerCase(),items=all.filter(item=>(!$('manager-location').value||item.location===$('manager-location').value)&&(!query||[item.description,item.company,item.itemNumber].some(value=>String(value||'').toLowerCase().includes(query))));
+  $('manager-result-count').textContent=items.length+' of '+all.length+' items';
+  $('manager-list').innerHTML = items.length ? items.map(item => '<article class="manager-card"><h2>' + escapeHtml(item.description) + '</h2><p>' + escapeHtml(item.location) + ' &middot; ' + escapeHtml(item.countSize) + ' &middot; PAR: ' + escapeHtml(item.par === null ? 'As needed' : item.par) + '</p><div class="manager-actions"><button type="button" data-edit-item="' + item.id + '">Edit</button>' + (worksheet.id === 'operating' ? '<button type="button" data-print-bin-card="' + escapeHtml(item.id) + '">Print card</button>' : '') + '<button type="button" data-remove-item="' + item.id + '">Remove</button></div></article>').join('') : '<div class="empty">No matching supply items. Adjust the search or location, or add an item.</div>';
   renderBinCardPicker();
 }
 function updateNewLocation(focus = false) {
@@ -812,6 +885,9 @@ async function openManager() {
 $('nav-manage').addEventListener('click',openManager);
 $('manage-items-tab').addEventListener('click',() => managementSection('items'));
 $('print-bin-cards-tab').addEventListener('click',() => managementSection('cards'));
+$('chemical-settings-tab').addEventListener('click',()=>managementSection('chemicals'));
+$('manager-search').addEventListener('input',renderManager);
+$('manager-location').addEventListener('change',renderManager);
 $('bin-card-search').addEventListener('input',renderBinCardPicker);
 $('bin-card-list').addEventListener('change',event => {
   const checkbox = event.target.closest('[data-bin-card]');

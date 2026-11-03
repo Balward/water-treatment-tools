@@ -4,6 +4,7 @@ const cors = require('cors');
 const fetch = require('node-fetch');
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3001;
@@ -21,6 +22,7 @@ app.use(cors());
 app.use('/api/application-review',express.json({limit:'5mb'}));
 app.use(express.json());
 require('./application-review-api')(app);
+require('./plant-rounds-api')(app);
 
 const dataDirectory = process.env.LIVE_OPS_DATA_DIR || path.join(__dirname, 'data');
 const liveOpsStatePath = path.join(dataDirectory, 'live-ops-state.json');
@@ -161,6 +163,7 @@ function sanitizeChangeLogEntry(entry) {
   }
 
   return {
+    id: typeof entry.id === 'string' && entry.id ? entry.id : crypto.createHash('sha256').update(JSON.stringify([timestamp, updatedBy, changes])).digest('hex'),
     timestamp,
     updatedBy,
     changes,
@@ -194,6 +197,13 @@ function formatStatusLabel(status) {
     default:
       return 'Unknown';
   }
+}
+
+function statusStart(equipment) {
+  if (Object.hasOwn(equipment,'statusSince')) return Number.isFinite(Date.parse(equipment.statusSince)) ? equipment.statusSince : null;
+  const status=sanitizeStatus(equipment.status) || (equipment.inService?'operational':'out-of-service');
+  const transition=sanitizeChangeLog(equipment.changeLog).find(entry=>entry.changes.some(change=>change.field==='status'));
+  return transition && transition.changes.some(change=>change.field==='status' && change.to===formatStatusLabel(status)) && Number.isFinite(Date.parse(transition.timestamp)) ? transition.timestamp : null;
 }
 
 function formatNoteChange(value) {
@@ -254,6 +264,7 @@ function buildEquipmentChangeLog(currentEquipment, nextEquipment, timestamp, upd
   }
 
   return {
+    id: crypto.randomUUID(),
     timestamp,
     updatedBy,
     changes,
@@ -319,6 +330,7 @@ function normalizeLoadedState(rawState) {
       swMaintenanceYear: maintenanceYear,
       note: sanitizeNote(loaded.note),
       changeLog: sanitizeChangeLog(loaded.changeLog),
+      statusSince: statusStart(loaded),
       updatedAt: typeof loaded.updatedAt === 'string' ? loaded.updatedAt : fallback.updatedAt,
       updatedBy: sanitizeUpdatedBy(loaded.updatedBy),
     };
@@ -450,6 +462,7 @@ app.put('/api/live-ops/equipment/:equipmentId', async (req, res) => {
   const updatedEquipment = {
     ...currentEquipment,
     status: resolvedStatus,
+    statusSince: resolvedStatus !== currentEquipment.status ? now : statusStart(currentEquipment),
     inService: isInServiceStatus(resolvedStatus),
     swMaintenanceComplete: resolvedSwMaintenanceComplete,
     swMaintenanceYear: resolvedSwMaintenanceYear,
@@ -492,6 +505,33 @@ app.put('/api/live-ops/equipment/:equipmentId', async (req, res) => {
     updatedAt: now,
   });
 });
+
+app.route('/api/live-ops/equipment/:equipmentId/change-log/:entryId')
+  .put((req,res)=>changeEquipmentLog(req,res,false))
+  .delete((req,res)=>changeEquipmentLog(req,res,true));
+
+async function changeEquipmentLog(req,res,remove) {
+  const equipment=liveOpsState.equipment.find(item=>item.id===req.params.equipmentId);
+  if(!equipment)return res.status(404).json({error:'Equipment not found.'});
+  const log=sanitizeChangeLog(equipment.changeLog);
+  const index=log.findIndex(entry=>entry.id===req.params.entryId);
+  if(index<0)return res.status(404).json({error:'Log entry no longer exists. Refresh the equipment details.'});
+  const current=log[index];
+  if(JSON.stringify(sanitizeChangeLogEntry(req.body?.expectedEntry))!==JSON.stringify(current))return res.status(409).json({error:'This entry changed on another device. Refresh before editing it.'});
+  if(remove)log.splice(index,1);
+  else {
+    const changes=req.body?.changes;
+    if(typeof req.body?.updatedBy!=='string'||!req.body.updatedBy.trim()||req.body.updatedBy.trim().length>80
+      ||!Array.isArray(changes)||changes.length!==current.changes.length
+      ||changes.some((change,i)=>change?.field!==current.changes[i].field||typeof change.from!=='string'||typeof change.to!=='string'||change.from.length>300||change.to.length>300))return res.status(400).json({error:'Provide an operator name and valid before/after values (300 characters maximum).'});
+    log[index]={...current,updatedBy:req.body.updatedBy.trim(),changes:current.changes.map((change,i)=>({...change,from:changes[i].from.trim(),to:changes[i].to.trim()}))};
+  }
+  const updated={...equipment,changeLog:log};
+  liveOpsState={...liveOpsState,updatedAt:new Date().toISOString(),equipment:liveOpsState.equipment.map(item=>item.id===equipment.id?updated:item)};
+  await queueStateWrite(liveOpsState);
+  broadcastLiveOpsEvent('state-updated',liveOpsState);
+  return res.json({success:true,equipment:updated});
+}
 
 app.post('/api/live-ops/comments', async (req, res) => {
   const message = sanitizeCommentMessage(req.body?.message);

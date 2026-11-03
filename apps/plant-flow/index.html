@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="../../shared/operations/theme.css">
   <link rel="stylesheet" href="../../shared/operations/navigation.css">
   <link rel="stylesheet" href="operations.css?v=20261022-plant1">
-  <script src="../../shared/operations/navigation.js" defer></script>
+  <script src="../../shared/operations/navigation.js?v=20261102-cleanheaders1" defer></script>
   <script src="operations.js?v=20261022-plant1" defer></script>
 </head>
 <body data-ops-app="detention">
@@ -27,7 +27,7 @@
       </nav>
     </aside>
     <main id="main" class="flow-page" tabindex="-1">
-      <header class="intro"><div><p class="eyebrow">WATER TREATMENT</p><h1>Plant Flow &amp; Detention Time</h1><p class="lede">Follow the treatment train. Adjust flow and available units to explore detention times.</p></div></header>
+      <header class="intro"><div><h1>Plant Flow &amp; Detention Time</h1><p class="lede">Follow the treatment train. Adjust flow and available units to explore detention times.</p></div></header>
       <p class="preview-note">Compare flow and unit availability scenarios. Selections in this calculator do not change equipment status.</p>
       <section id="overview" class="overview" aria-label="Flow overview">
         <div class="panel flow-control"><div class="section-heading"><h2>Plant Flow</h2><button id="reset" class="quiet" type="button">Reset Defaults</button></div><div class="flow-entry"><label for="flow-number">Flow Rate</label><div><input id="flow-number" type="number" min="0" max="14" step="0.1" value="3.5"><span>MGD</span></div><p id="gpm">2,431 gpm</p></div><label class="sr-only" for="flow-range">Adjust Plant Flow</label><input id="flow-range" type="range" min="0" max="14" step="0.1" value="3.5"><div class="range-labels"><span>0 MGD</span><span>14 MGD</span></div><p id="flow-message" role="status">Change the flow rate or toggle a unit below.</p></div>

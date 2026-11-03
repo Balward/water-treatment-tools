@@ -117,6 +117,8 @@ test('new counts are isolated by worksheet, and combined inventories are wiped f
     assert.equal((await request('/api/inventories','POST',{ ...metadata, worksheet })).status,400);
   }
   const expected = [['operating',1,40],['janitorial',2,18],['dewatering',3,14]];
+  const originalCounts=Object.fromEntries(modern.items.map(item=>[item.id,modern.counts[item.id]??0]));
+  assert.equal((await request('/api/inventories/'+modern.id,'PATCH',{revision:0,counts:originalCounts,status:'complete'})).status,200,'Finish the preserved draft before starting another operating inventory');
   for (const [worksheet, sourceSheet, total] of expected) {
     const created = await request('/api/inventories', 'POST', { ...metadata, worksheet });
     assert.equal(created.status,201);
@@ -164,6 +166,9 @@ test('previous quantities are references only; new counts stay blank until expli
     const response=await fetch(base+'/api/inventories',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({worksheet,date:'2026-10-08',operator:'Today'})});
     assert.equal(response.status,201);return response.json();
   }
+  const resumedResponse=await fetch(base+'/api/inventories',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({worksheet:'operating',date:'2026-10-09',operator:'Other operator'})});
+  assert.equal(resumedResponse.status,200);const resumed=await resumedResponse.json();assert.equal(resumed.id,draft.id);assert.equal(resumed.counts[items[0].id],99,'Starting again resumes the untouched draft');
+  assert.equal((await fetch(base+'/api/inventories/'+draft.id,{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({revision:0})})).status,200);
   const run=await create('operating');
   assert.equal(run.sourceInventoryId,newest.id);
   assert.equal(run.sourceInventoryDate,'2026-10-07');

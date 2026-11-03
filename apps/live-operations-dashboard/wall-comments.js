@@ -7,6 +7,7 @@
   let frame;
   function update() {
     const total = list.querySelectorAll('.comment-card').length;
+    list.style.setProperty('--comment-columns',Math.max(1,total));
     count.textContent = total + (total === 1 ? ' Note' : ' Notes');
     hint.hidden = !(innerWidth >= 900 && list.scrollHeight - list.scrollTop > list.clientHeight + 2);
   }

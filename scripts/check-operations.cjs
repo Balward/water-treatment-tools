@@ -2,6 +2,9 @@
 const path = require('node:path');
 const { spawnSync } = require('node:child_process');
 const checks = {
+  'rounds-api': 'scripts/check-plant-rounds-api.cjs',
+  'rounds-pdf': 'scripts/check-plant-rounds-pdf.cjs',
+  rounds: 'scripts/check-plant-rounds.cjs',
   math: 'scripts/check-hypochlorite-math.cjs',
   home: 'scripts/check-operations-home.cjs',
   headers: 'scripts/check-shared-headers.cjs',

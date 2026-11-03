@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Chemical Ordering Preview | Inventory</title>
+  <link rel="stylesheet" href="../public/shared/operations/theme.css">
+  <link rel="stylesheet" href="chemical-orders.css">
+  <script src="chemical-orders.js" defer></script>
+</head>
+<body>
+  <header class="header"><img src="../public/branding/northglenn-logo.png" alt="City of Northglenn"><div class="facility">Water Treatment Facility<span>SUPPLY INVENTORY</span></div><span class="preview-label">Design Preview</span></header>
+  <div class="layout">
+    <nav class="sidebar" aria-label="Inventory Navigation"><p>YOUR WORKSPACE</p><a href="../public/index.html">Home</a><a href="../public/index.html">History</a><button id="pending-tab" aria-current="page">To Order List <span id="pending-count">5</span></button><button id="placed-tab">Placed Orders <span id="placed-count">0</span></button><a href="../public/index.html">Management</a></nav>
+    <main>
+      <div class="page-heading"><div><p class="eyebrow">PURCHASING</p><h1 id="page-title">To Order List</h1><p id="page-copy">Supplies and chemical deliveries, ready to review in one place.</p></div><span class="sample">Sample Inventory · Oct 28, 2026</span></div>
+      <p class="notice">Interactive mockup with sample values. Your saved inventory and orders are unchanged.</p>
+      <div id="pending-controls">
+        <div class="filters" role="group" aria-label="Order Type"><button data-filter="all" aria-pressed="true">All <span>5</span></button><button data-filter="chemical" aria-pressed="false">Chemicals <span>3</span></button><button data-filter="supply" aria-pressed="false">Supplies <span>2</span></button></div>
+        <details class="help"><summary>When Would Chemicals Appear Here?</summary><p>Completing a chemical inventory would add a recommendation when its reorder level is reached, or when its forecast says the order is due with seven days of delivery notice. A chemical would have one open recommendation that updates with new readings. Placing an order would move it to Placed Orders.</p><p>Draft readings would stay out of ordering decisions. A placed order would be shown with the next recommendation so operators can check deliveries already arranged.</p></details>
+        <div class="selection-bar"><span id="selection-status" role="status">Select items you want to order.</span><button id="review" class="primary" disabled>Review Selected</button></div>
+      </div>
+      <div id="cards" class="cards"></div>
+      <p id="empty" class="empty" hidden>No orders recorded in this preview yet.</p>
+    </main>
+  </div>
+  <dialog id="review-dialog" aria-labelledby="review-title">
+    <form id="review-form"><div class="dialog-heading"><div><p class="eyebrow">PURCHASE CHECKLIST</p><h2 id="review-title">Review Selected Orders</h2></div><button id="close-review" type="button" aria-label="Close Review">✕</button></div>
+      <p class="dialog-copy">Confirm the quantities and delivery dates with your suppliers, then record the orders you placed.</p>
+      <div id="review-items"></div>
+      <p class="dialog-copy">This preview only moves cards into the sample Placed Orders list.</p>
+      <button class="primary" type="submit">Mark Selected As Placed</button>
+    </form>
+  </dialog>
+</body>
+</html>

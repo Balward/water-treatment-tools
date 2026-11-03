@@ -12,6 +12,8 @@ flock -n 9 || { echo 'A suite deployment is already running.' >&2; exit 1; }
 mkdir -p "$source_dir" "$backup_dir"
 if [ "${1:-}" != '--installed-source' ]; then test -s "$archive"; fi
 if [ -f "$source_dir/data/live-ops-state.json" ]; then cp "$source_dir/data/live-ops-state.json" "$backup_dir/live-ops-state.json"; fi
+if [ -d "$source_dir/data/plant-rounds" ]; then cp -a "$source_dir/data/plant-rounds" "$backup_dir/plant-rounds"; fi
+if [ -d "$source_dir/data/application-review" ]; then cp -a "$source_dir/data/application-review" "$backup_dir/application-review"; fi
 if [ -f "$source_dir/.env" ]; then cp "$source_dir/.env" "$backup_dir/.env"; fi
 if [ -f "$source_dir/docker-compose.yml" ]; then
   cp "$source_dir/docker-compose.yml" "$backup_dir/docker-compose.yml"
@@ -24,6 +26,11 @@ if [ "${1:-}" != '--installed-source' ]; then tar -xzf "$archive" -C "$source_di
 # it cannot be copied back into the next image from an older server checkout.
 rm -f -- "$source_dir/apps/dashboard-new/index.html" "$source_dir/apps/dashboard-new/styles.css"
 rmdir -- "$source_dir/apps/dashboard-new" 2>/dev/null || true
+# Remove the retired experimental app from older overlaid source packages.
+for retired_file in index.html styles.css script.js schedule-data.js check-browser.cjs import-workbook.ps1 README.md; do
+  rm -f -- "$source_dir/apps/schedule-dashboard/$retired_file"
+done
+rmdir -- "$source_dir/apps/schedule-dashboard" 2>/dev/null || true
 # Keep the host's ports, persistent volumes, networks, and environment settings.
 if [ -f "$backup_dir/docker-compose.yml" ]; then cp "$backup_dir/docker-compose.yml" "$source_dir/docker-compose.yml"; fi
 cd "$source_dir"
@@ -71,7 +78,26 @@ healthy() {
           && curl --fail --silent http://127.0.0.1:6767/water-treatment-flashcards/ | grep -q 'operations-ui.js' \
           && curl --fail --silent http://127.0.0.1:6767/water-treatment-flashcards/operations.js >/dev/null \
           && curl --fail --silent http://127.0.0.1:6767/water-treatment-flashcards/operations-ui.js >/dev/null \
-          && curl --fail --silent http://127.0.0.1:6767/water-treatment-flashcards/operations.css >/dev/null;
+          && curl --fail --silent http://127.0.0.1:6767/water-treatment-flashcards/operations.css >/dev/null \
+          && curl --fail --silent http://127.0.0.1:6767/plant-rounds/ | grep -q 'startForm' \
+          && curl --fail --silent http://127.0.0.1:6767/plant-rounds/rounds.js >/dev/null \
+          && curl --fail --silent http://127.0.0.1:6767/plant-rounds/rounds.css >/dev/null \
+          && curl --fail --silent http://127.0.0.1:6767/plant-rounds/report.html >/dev/null \
+          && curl --fail --silent http://127.0.0.1:6767/plant-rounds/report.js >/dev/null \
+          && curl --fail --silent http://127.0.0.1:6767/plant-rounds/history.html >/dev/null \
+          && curl --fail --silent http://127.0.0.1:6767/plant-rounds/history.js >/dev/null \
+          && curl --fail --silent http://127.0.0.1:6767/plant-rounds/manage.html >/dev/null \
+          && curl --fail --silent http://127.0.0.1:6767/plant-rounds/manage.js >/dev/null \
+          && curl --fail --silent http://127.0.0.1:6767/plant-rounds/users.html >/dev/null \
+          && curl --fail --silent http://127.0.0.1:6767/plant-rounds/users.js >/dev/null \
+          && curl --fail --silent http://127.0.0.1:6767/plant-rounds/user-select.js >/dev/null \
+          && curl --fail --silent http://127.0.0.1:6767/plant-rounds/drawdown.js >/dev/null \
+          && curl --fail --silent http://127.0.0.1:6767/api/plant-rounds/users >/dev/null \
+          && curl --fail --silent http://127.0.0.1:6767/api/plant-rounds/template >/dev/null \
+          && curl --fail --silent http://127.0.0.1:6767/api/plant-rounds/2000-01-01/report.pdf >/dev/null \
+          && curl --fail --silent http://127.0.0.1:6767/application-review/ | grep -q 'hiring-review-list' \
+          && curl --fail --silent http://127.0.0.1:6767/application-review/hiring-reviews.js >/dev/null \
+          && curl --fail --silent http://127.0.0.1:6767/api/application-review/sets >/dev/null;
       }; then return 0; fi
     fi
     sleep 2

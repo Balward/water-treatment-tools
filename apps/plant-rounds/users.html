@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Manage Users · Northglenn Operations</title>
+  <link rel="icon" href="../../assets/logos/favicon.png">
+  <link rel="stylesheet" href="../../shared/operations/theme.css">
+  <link rel="stylesheet" href="../../shared/operations/navigation.css">
+  <link rel="stylesheet" href="rounds.css?v=20261025-mobilemenu1">
+  <script src="../../shared/operations/navigation.js?v=20261102-cleanheaders1" defer></script>
+  <script src="users.js?v=20261025-users1" defer></script>
+</head>
+<body data-ops-app="rounds">
+  <a class="skip-link" href="#main">Skip To Users</a>
+  <header class="site-header">
+    <a class="brand" href="/" aria-label="Operations Home"><img src="../../assets/logos/northglenn-horizontal.png" width="300" height="69" alt="City of Northglenn"></a>
+    <div class="facility"><strong>Water Treatment Facility</strong><span>PLANT ROUNDS</span></div>
+    <button data-ops-menu type="button">Apps</button>
+  </header>
+  <div class="workspace">
+    <aside class="sidebar">
+      <p class="nav-caption">DAILY OPERATIONS</p>
+      <nav aria-label="Plant Rounds Navigation">
+        <a class="nav-item" href="./"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m3 10 9-7 9 7v11H3Z"/></svg>Rounds Home</a>
+        <a class="nav-item" href="history.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 11h18"/></svg>History</a>
+        <a class="nav-item" href="manage.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/><circle cx="9" cy="7" r="2"/><circle cx="15" cy="12" r="2"/><circle cx="9" cy="17" r="2"/></svg>Manage Items</a>
+        <a class="nav-item" href="users.html" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="9" cy="7" r="4"/><path d="M2 21v-3a7 7 0 0 1 14 0v3m2-18a4 4 0 0 1 0 8m2 10v-3a7 7 0 0 0-2-5"/></svg>Users</a>
+      </nav>
+      <div class="sidebar-help"><strong>Shared User Directory</strong><p>Inactive users remain in saved records and can be reactivated.</p></div>
+    </aside>
+    <main id="main" tabindex="-1"><header class="hero"><h1>Users</h1><p>Choose who appears in the operator dropdowns. No login or password is needed.</p></header><section class="card manage-settings"><div><h2>Active And Inactive Users</h2><p>Inactive users are hidden from operator selection. Their records, rounds, and notes are preserved.</p></div><span id="usersCount" class="subtle-tag"></span></section><div class="manage-toolbar"><label class="manage-check"><input type="checkbox" id="showInactive">Show Inactive Users</label><button id="refreshUsers">Refresh</button><button id="addUser" class="primary" disabled>Add User</button></div><p id="usersMessage" class="manage-message" role="status" hidden></p><section class="card"><header class="card-heading"><h2>Plant Rounds Users</h2></header><div id="userList"></div></section></main>
+  </div>
+<dialog id="userDialog" aria-labelledby="userTitle"><header class="dialog-heading"><h2 id="userTitle">Add User</h2></header><form id="userForm" class="manage-form"><label>First Name<input id="firstName" autocomplete="given-name" maxlength="40" required></label><label>Last Name<input id="lastName" autocomplete="family-name" maxlength="40" required></label><label class="manage-check"><input type="checkbox" id="userActive" checked>Active</label><p id="userError" class="inline-error" role="alert" hidden></p><div class="note-form-actions"><button id="saveUser" class="primary">Save User</button><button id="cancelUser" type="button">Cancel</button></div></form></dialog></body>
+</html>

@@ -16,7 +16,7 @@
   }
   function productUrl(item) {
     try {
-      const url = new URL(item.productUrl);
+      const url = new URL(productImages.productUrl(item.productUrl));
       if (!['http:','https:'].includes(url.protocol) || url.username || url.password) return '';
       // Remove Amazon tracking while preserving the exact product identifier.
       const amazon = /(^|\.)amazon\.com$/i.test(url.hostname) && url.pathname.match(/\/(?:dp|gp\/product)\/([a-z0-9]{10})(?:\/|$)/i);

@@ -11,7 +11,7 @@ function buildReportEmail(inventory, worksheetName) {
   function productLink(item) {
     if (typeof item.productUrl !== 'string') return '';
     try {
-      const url = new URL(item.productUrl);
+      const url = new URL(productImages.productUrl(item.productUrl));
       return ['https:','http:'].includes(url.protocol) && !url.username && !url.password ? url.href : '';
     } catch { return ''; }
   }

@@ -1,0 +1,81 @@
+const {test}=require('node:test');
+const assert=require('node:assert/strict');
+const fs=require('node:fs'),os=require('node:os'),path=require('node:path');
+const {createApp}=require('../server');
+const model=require('../public/chemical-math');
+const historySeed=require('../chemical-history-2026.json');
+const october21={naohEast:6,naohCentral:6,naohWest:79,hypoEast:129,hypoWest:75,alumEast:6,alumNorth:3,alumSouth:48,alumWest:130,polymerTank:15,polymerInventory:530,permEast:31.3,permWest:12.3,permInventory:530,salt:.5,nwos:216710};
+test('October 21 gallons match the workbook cached results and the East permanganate batch stays excluded',()=>{
+  const expected={naoh:1693.06,hypochlorite:6266.63,alum:2875.16016,polymer:614.15,permanganate:617.8589};
+  for(const chemical of model.chemicals)assert.ok(Math.abs(model.volume(chemical,october21)-expected[chemical.id])<1e-8,chemical.name);
+  const perm=model.chemicals.find(c=>c.id==='permanganate');
+  assert.equal(model.volume(perm,{...october21,permEast:null}),model.volume(perm,{...october21,permEast:500}));
+  assert.equal(model.volume(perm,{...october21,permInventory:null}),null);
+  assert.equal(model.volume(model.chemicals[0],{naohEast:0,naohCentral:0,naohWest:0}),450,'Preserves workbook fixed-volume offset');
+  assert.equal(model.volume(model.chemicals[1],{hypoEast:0,hypoWest:0}),650);
+  for(const chemical of model.chemicals)assert.equal(model.volume(chemical,{}),null,'Missing levels are not assumed to be zero');
+});
+test('dated chemical inventory saves partial readings, protects revisions, recalculates the water totalizer, and survives restart',async t=>{
+  const dataDir=fs.mkdtempSync(path.join(os.tmpdir(),'chemical-inventory-'));
+  let server=createApp({dataDir,chemicalHistory:[]});await new Promise(r=>server.listen(0,'127.0.0.1',r));
+  let base='http://127.0.0.1:'+server.address().port;
+  t.after(async()=>{await new Promise(r=>server.close(r));fs.rmSync(dataDir,{recursive:true,force:true});});
+  const request=async(route,method='GET',body)=>{const response=await fetch(base+route,{method,headers:{'Content-Type':'application/json'},...(body?{body:JSON.stringify(body)}:{})});return{status:response.status,data:await response.json()};};
+  assert.deepEqual((await request('/api/chemicals')).data.records,[],'No historical readings silently imported');
+  const payload={revision:0,operator:'Blaine',readings:october21,notes:'Weekly reading',status:'complete'};
+  assert.equal((await fetch(base+'/api/chemicals/records/2026-10-21',{method:'PUT',headers:{'Content-Type':'application/json',Origin:'https://another-site.example'},body:JSON.stringify(payload)})).status,403,'Other websites cannot submit chemical readings');
+  assert.equal((await request('/api/chemicals/records/2026-10-21','PUT',{...payload,readings:{salt:-1}})).status,400);
+  assert.equal((await request('/api/chemicals/records/2026-10-21','PUT',{...payload,readings:{salt:'0.5'}})).status,400);
+  assert.equal((await request('/api/chemicals/records/2026-10-21','PUT',{...payload,readings:{unknown:1}})).status,400);
+  assert.equal((await request('/api/chemicals/records/2026-10-21','PUT',{...payload,readings:{salt:1e10}})).status,400);
+  assert.equal((await request('/api/chemicals/records/2026-02-30','PUT',payload)).status,400);
+  assert.equal((await request('/api/chemicals/records/2026-10-21','PUT',{...payload,operator:''})).status,400);
+  let result=await request('/api/chemicals/records/2026-10-21','PUT',payload);assert.equal(result.status,200);assert.equal(result.data.records[0].totals.polymer.gallons,614.15);
+  assert.equal(result.data.records[0].readings.salt,.5);assert.ok(!('received'in result.data.records[0]));assert.ok(!('used'in result.data.records[0].totals.polymer));
+  assert.equal((await request('/api/chemicals/records/2026-10-21','PUT',payload)).status,409,'Stale revisions cannot overwrite another save');
+  result=await request('/api/chemicals/records/2026-10-14','PUT',{...payload,status:'draft',revision:1,readings:{nwos:216528}});
+  assert.equal(result.data.records[0].nwosUsed,null,'Unfinished counter readings do not alter completed water-use history');
+  assert.equal(result.data.records[1].totals.naoh.gallons,null,'Partial record remains partial');
+  assert.equal((await request('/api/chemicals/records/2026-10-28','PUT',{...payload,status:'draft',revision:2,readings:{nwos:0}})).status,409,'A second chemical draft cannot be created');
+  assert.equal((await request('/api/chemicals/records/2026-10-14','PUT',{...payload,revision:2,readings:{nwos:216528}})).status,400,'A partial report cannot be marked complete');
+  result=await request('/api/chemicals/records/2026-10-14','PUT',{...payload,revision:2,readings:{...october21,nwos:216528}});
+  assert.equal(result.data.records[0].nwosUsed,182000,'NWOS uses the previous completed reading in date order');
+  result=await request('/api/chemicals/records/2026-10-28','PUT',{...payload,status:'draft',revision:3,readings:{nwos:0,permEast:10}});
+  assert.ok(result.data.records[0].nwosReset);assert.equal(result.data.records[0].totals.permanganate.gallons,null);
+  assert.equal((await request('/api/chemicals/records/2026-10-14','DELETE',{revision:1})).status,409);
+  result=await request('/api/chemicals/records/2026-10-14','DELETE',{revision:4});assert.equal(result.status,200);assert.equal(result.data.records.find(r=>r.date==='2026-10-21').nwosUsed,null);
+  const stored=JSON.parse(fs.readFileSync(path.join(dataDir,'inventories.json'),'utf8'));assert.equal(stored.inventories.length,0,'Supply inventory storage is preserved');
+  await new Promise(r=>server.close(r));server=createApp({dataDir,chemicalHistory:[]});await new Promise(r=>server.listen(0,'127.0.0.1',r));base='http://127.0.0.1:'+server.address().port;
+  assert.equal((await request('/api/chemicals')).data.records.length,2,'Readings survive a server restart');
+  for(const asset of ['chemical-inventory.html','chemical-inventory.js','chemical-inventory.css','chemical-math.js']){const response=await fetch(base+'/'+asset);assert.equal(response.status,200);assert.match(response.headers.get('content-security-policy'),/script-src 'self'/);}
+});
+
+test('2026 workbook history imports recorded gallons once, preserves app dates, and never recalculates old tank formulas',async t=>{
+  const dataDir=fs.mkdtempSync(path.join(os.tmpdir(),'chemical-import-'));
+  const existing={inventories:[],catalogRevision:7,chemicalInventory:{revision:3,records:[{date:'2026-10-21',operator:'Existing operator',readings:october21,notes:'Keep me',updatedAt:'2026-10-22T12:00:00Z'}]}};
+  fs.writeFileSync(path.join(dataDir,'inventories.json'),JSON.stringify(existing));
+  let server=createApp({dataDir});await new Promise(r=>server.listen(0,'127.0.0.1',r));
+  let base='http://127.0.0.1:'+server.address().port;
+  t.after(async()=>{await new Promise(r=>server.close(r));fs.rmSync(dataDir,{recursive:true,force:true});});
+  let result=await(await fetch(base+'/api/chemicals')).json();assert.equal(result.records.length,41);assert.equal(result.revision,4);
+  assert.equal(result.records.find(r=>r.date==='2026-10-21').operator,'Existing operator','Matching dates are not overwritten');
+  const oldest=result.records.find(r=>r.date==='2026-01-08');
+  assert.equal(oldest.totals.naoh.gallons,4226.9520438);
+  assert.equal(oldest.totals.polymer.gallons,487.858);
+  assert.equal(oldest.readings.naohEast,null,'No old tank readings or their units are imported');
+  assert.equal(model.volume(model.chemicals[0],oldest.readings),null,'Archived gallons do not come from the current formula');
+  for(const record of result.records.filter(r=>r.source)){
+    const seed=historySeed.records.find(r=>r.date===record.date);
+    for(const c of model.chemicals)assert.equal(record.totals[c.id].gallons,seed.recordedGallons[c.id],record.date+' '+c.id);
+    assert.equal(record.recordedWaterUsed,seed.recordedWaterUsed);
+  }
+  assert.equal(historySeed.records.length,41);assert.equal(historySeed.records[0].date,'2026-01-08');assert.equal(historySeed.records.at(-1).date,'2026-10-21');
+  assert.ok(!JSON.stringify(historySeed).includes('<f'),'Import contains cached values, not spreadsheet formulas');
+  const backups=fs.readdirSync(path.join(dataDir,'backups'));assert.equal(backups.length,1);assert.deepEqual(JSON.parse(fs.readFileSync(path.join(dataDir,'backups',backups[0]),'utf8')),existing,'Pre-import state is backed up');
+  const edit=await fetch(base+'/api/chemicals/records/2026-01-08',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({revision:4,operator:'Test',readings:october21,notes:''})});assert.equal(edit.status,409,'Old inventories cannot accidentally acquire modern tank formulas');
+  assert.equal((await fetch(base+'/api/chemicals/records/2026-01-08',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({revision:4})})).status,200);
+  await new Promise(r=>server.close(r));server=createApp({dataDir});await new Promise(r=>server.listen(0,'127.0.0.1',r));base='http://127.0.0.1:'+server.address().port;
+  result=await(await fetch(base+'/api/chemicals')).json();assert.equal(result.records.length,40);assert.ok(!result.records.some(r=>r.date==='2026-01-08'),'Deleted imports stay deleted after redeployment');
+  assert.equal(fs.readdirSync(path.join(dataDir,'backups')).length,1,'Import does not run twice');
+  assert.equal(JSON.parse(fs.readFileSync(path.join(dataDir,'inventories.json'),'utf8')).catalogRevision,7,'Other inventory data is preserved');
+});

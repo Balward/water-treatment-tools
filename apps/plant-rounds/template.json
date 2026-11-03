@@ -1,0 +1,1807 @@
+{
+  "source": "Blank Daily Rounds Checklist.xlsx",
+  "worksheet": "Rounds Sheet 2026",
+  "version": 1,
+  "fields": [
+    {
+      "id": "B7",
+      "required": true,
+      "source": "B7",
+      "location": "chemical-building",
+      "type": "number",
+      "section": "NaOH",
+      "label": "West Tank Level",
+      "shifts": [
+        "AM"
+      ],
+      "unit": "in"
+    },
+    {
+      "id": "B8",
+      "required": true,
+      "source": "B8",
+      "location": "chemical-building",
+      "type": "number",
+      "section": "NaOH",
+      "label": "Center Tank Level",
+      "shifts": [
+        "AM"
+      ],
+      "unit": "in"
+    },
+    {
+      "id": "B9",
+      "required": true,
+      "source": "B9",
+      "location": "chemical-building",
+      "type": "number",
+      "section": "NaOH",
+      "label": "East Tank Level",
+      "shifts": [
+        "AM"
+      ],
+      "unit": "in"
+    },
+    {
+      "id": "B10",
+      "required": true,
+      "source": "B10",
+      "location": "chemical-building",
+      "type": "number",
+      "section": "NaOH",
+      "label": "Rotameter Flow",
+      "shifts": [
+        "AM",
+        "PM"
+      ],
+      "unit": "gpm"
+    },
+    {
+      "id": "B11",
+      "required": true,
+      "source": "B11",
+      "location": "chemical-building",
+      "type": "number",
+      "section": "NaOH",
+      "label": "Skid Pressure",
+      "shifts": [
+        "AM",
+        "PM"
+      ],
+      "unit": "psi"
+    },
+    {
+      "id": "B12",
+      "required": true,
+      "source": "B12",
+      "location": "chemical-building",
+      "type": "yesno",
+      "section": "NaOH",
+      "label": "Leaks",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "B14",
+      "required": true,
+      "source": "B14",
+      "location": "chemical-building",
+      "type": "number",
+      "section": "Poly",
+      "label": "Tank Level",
+      "shifts": [
+        "AM"
+      ],
+      "unit": "in"
+    },
+    {
+      "id": "B15",
+      "required": true,
+      "source": "B15",
+      "location": "chemical-building",
+      "type": "number",
+      "section": "Poly",
+      "label": "Rotameter Flow",
+      "shifts": [
+        "AM",
+        "PM"
+      ],
+      "unit": "gpm"
+    },
+    {
+      "id": "B16",
+      "required": true,
+      "source": "B16",
+      "location": "chemical-building",
+      "type": "number",
+      "section": "Poly",
+      "label": "Skid Pressure",
+      "shifts": [
+        "AM",
+        "PM"
+      ],
+      "unit": "psi"
+    },
+    {
+      "id": "B17",
+      "required": true,
+      "source": "B17",
+      "location": "chemical-building",
+      "type": "yesno",
+      "section": "Poly",
+      "label": "Leaks",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "B19",
+      "required": true,
+      "source": "B19",
+      "location": "chemical-building",
+      "type": "number",
+      "section": "Alum",
+      "label": "North Tank Level",
+      "shifts": [
+        "AM"
+      ],
+      "unit": "in"
+    },
+    {
+      "id": "B20",
+      "required": true,
+      "source": "B20",
+      "location": "chemical-building",
+      "type": "number",
+      "section": "Alum",
+      "label": "South Tank Level",
+      "shifts": [
+        "AM"
+      ],
+      "unit": "in"
+    },
+    {
+      "id": "B21",
+      "required": true,
+      "source": "B21",
+      "location": "chemical-building",
+      "type": "number",
+      "section": "Alum",
+      "label": "East Tank Level",
+      "shifts": [
+        "AM"
+      ],
+      "unit": "in"
+    },
+    {
+      "id": "B22",
+      "required": true,
+      "source": "B22",
+      "location": "chemical-building",
+      "type": "number",
+      "section": "Alum",
+      "label": "West Tank Level",
+      "shifts": [
+        "AM"
+      ],
+      "unit": "in"
+    },
+    {
+      "id": "B23",
+      "required": true,
+      "source": "B23",
+      "location": "chemical-building",
+      "type": "number",
+      "section": "Alum",
+      "label": "Skid Pressure",
+      "shifts": [
+        "AM",
+        "PM"
+      ],
+      "unit": "psi"
+    },
+    {
+      "id": "B24",
+      "required": true,
+      "source": "B24",
+      "location": "chemical-building",
+      "type": "yesno",
+      "section": "Alum",
+      "label": "Leaks",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "B26",
+      "required": true,
+      "source": "B26",
+      "location": "chemical-building",
+      "type": "number",
+      "section": "Hypochlorite",
+      "label": "East Tank Level",
+      "shifts": [
+        "AM"
+      ],
+      "unit": "in"
+    },
+    {
+      "id": "B27",
+      "required": true,
+      "source": "B27",
+      "location": "chemical-building",
+      "type": "number",
+      "section": "Hypochlorite",
+      "label": "West Tank Level",
+      "shifts": [
+        "AM"
+      ],
+      "unit": "in"
+    },
+    {
+      "id": "B28",
+      "required": true,
+      "source": "B28",
+      "location": "chemical-building",
+      "type": "number",
+      "section": "Hypochlorite",
+      "label": "Rotameter Flow",
+      "shifts": [
+        "AM",
+        "PM"
+      ],
+      "unit": "gpm"
+    },
+    {
+      "id": "B29",
+      "required": true,
+      "source": "B29",
+      "location": "chemical-building",
+      "type": "number",
+      "section": "Hypochlorite",
+      "label": "Chase Water Pressure",
+      "shifts": [
+        "AM",
+        "PM"
+      ],
+      "unit": "psi"
+    },
+    {
+      "id": "B30",
+      "required": true,
+      "source": "B30",
+      "location": "chemical-building",
+      "type": "yesno",
+      "section": "Hypochlorite",
+      "label": "Add Salt",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "B31",
+      "required": true,
+      "source": "B31",
+      "location": "chemical-building",
+      "type": "yesno",
+      "section": "Hypochlorite",
+      "label": "Leaks",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "B33",
+      "required": true,
+      "source": "B33",
+      "location": "chemical-building",
+      "type": "number",
+      "section": "Permanganate",
+      "label": "East Tank Level",
+      "shifts": [
+        "AM"
+      ],
+      "unit": "in"
+    },
+    {
+      "id": "B34",
+      "required": true,
+      "source": "B34",
+      "location": "chemical-building",
+      "type": "number",
+      "section": "Permanganate",
+      "label": "West Tank Level",
+      "shifts": [
+        "AM"
+      ],
+      "unit": "in"
+    },
+    {
+      "id": "B35",
+      "required": true,
+      "source": "B35",
+      "location": "chemical-building",
+      "type": "yesno",
+      "section": "Permanganate",
+      "label": "Leaks",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "B37",
+      "required": true,
+      "source": "B37",
+      "location": "chemical-building",
+      "type": "number",
+      "section": "Raw Water",
+      "label": "Raw Water Turbidity",
+      "unit": "NTU",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "B38",
+      "required": true,
+      "source": "B38",
+      "location": "chemical-building",
+      "type": "number",
+      "section": "Raw Water",
+      "label": "Raw Water pH",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "B39",
+      "required": true,
+      "source": "B39",
+      "location": "chemical-building",
+      "type": "check",
+      "section": "Raw Water",
+      "label": "Flush Raw Line",
+      "shifts": [
+        "AM"
+      ]
+    },
+    {
+      "id": "F8",
+      "required": true,
+      "source": "F8",
+      "location": "rapid-mix-floc",
+      "type": "check",
+      "section": "Rapid Mix",
+      "label": "Noise Check",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "F9",
+      "required": true,
+      "source": "F9",
+      "location": "rapid-mix-floc",
+      "type": "yesno",
+      "section": "Rapid Mix",
+      "label": "Turning",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "F10",
+      "required": true,
+      "source": "F10",
+      "location": "rapid-mix-floc",
+      "type": "check",
+      "section": "Rapid Mix",
+      "label": "Check Oil Level",
+      "shifts": [
+        "AM"
+      ]
+    },
+    {
+      "id": "F13",
+      "required": true,
+      "source": "F13",
+      "location": "rapid-mix-floc",
+      "type": "yesno",
+      "section": "Stage 1 East",
+      "label": "Turning",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "F14",
+      "required": true,
+      "source": "F14",
+      "location": "rapid-mix-floc",
+      "type": "yesno",
+      "section": "Stage 1 East",
+      "label": "Chain OK",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "F16",
+      "required": true,
+      "source": "F16",
+      "location": "rapid-mix-floc",
+      "type": "yesno",
+      "section": "Stage 2 East",
+      "label": "Turning",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "F17",
+      "required": true,
+      "source": "F17",
+      "location": "rapid-mix-floc",
+      "type": "yesno",
+      "section": "Stage 2 East",
+      "label": "Chain OK",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "F19",
+      "required": true,
+      "source": "F19",
+      "location": "rapid-mix-floc",
+      "type": "yesno",
+      "section": "Stage 3 East",
+      "label": "Turning",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "F20",
+      "required": true,
+      "source": "F20",
+      "location": "rapid-mix-floc",
+      "type": "yesno",
+      "section": "Stage 3 East",
+      "label": "Chain OK",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "F22",
+      "required": true,
+      "source": "F22",
+      "location": "rapid-mix-floc",
+      "type": "yesno",
+      "section": "Stage 1 West",
+      "label": "Turning",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "F23",
+      "required": true,
+      "source": "F23",
+      "location": "rapid-mix-floc",
+      "type": "yesno",
+      "section": "Stage 1 West",
+      "label": "Chain OK",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "F25",
+      "required": true,
+      "source": "F25",
+      "location": "rapid-mix-floc",
+      "type": "yesno",
+      "section": "Stage 2 West",
+      "label": "Turning",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "F26",
+      "required": true,
+      "source": "F26",
+      "location": "rapid-mix-floc",
+      "type": "yesno",
+      "section": "Stage 2 West",
+      "label": "Chain OK",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "F28",
+      "required": true,
+      "source": "F28",
+      "location": "rapid-mix-floc",
+      "type": "yesno",
+      "section": "Stage 3 West",
+      "label": "Turning",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "F29",
+      "required": true,
+      "source": "F29",
+      "location": "rapid-mix-floc",
+      "type": "yesno",
+      "section": "Stage 3 West",
+      "label": "Chain OK",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "F32",
+      "required": true,
+      "source": "F32",
+      "location": "floc-vault",
+      "type": "number",
+      "section": "Readings And Checks",
+      "label": "Rapid Mix pH",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "F33",
+      "required": true,
+      "source": "F33",
+      "location": "floc-vault",
+      "type": "check",
+      "section": "Readings And Checks",
+      "label": "Flush RM pH Probe",
+      "shifts": [
+        "AM"
+      ]
+    },
+    {
+      "id": "F34",
+      "required": true,
+      "source": "F34",
+      "location": "floc-vault",
+      "type": "check",
+      "section": "Readings And Checks",
+      "label": "Sump Pump Check",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "F35",
+      "required": true,
+      "source": "F35",
+      "location": "floc-vault",
+      "type": "yesno",
+      "section": "Readings And Checks",
+      "label": "Leaks (Water/Chemicals)",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "F36",
+      "required": true,
+      "source": "F36",
+      "location": "floc-vault",
+      "type": "number",
+      "section": "Readings And Checks",
+      "label": "CL-17 Reading",
+      "shifts": [
+        "AM",
+        "PM"
+      ],
+      "unit": "mg/L"
+    },
+    {
+      "id": "F37",
+      "required": true,
+      "source": "F37",
+      "location": "floc-vault",
+      "type": "check",
+      "section": "Readings And Checks",
+      "label": "Clean Y-Strainer",
+      "shifts": [
+        "AM"
+      ]
+    },
+    {
+      "id": "F39",
+      "required": true,
+      "source": "F39",
+      "location": "streaming-current",
+      "type": "number",
+      "section": "Readings And Checks",
+      "label": "Streaming Current Value",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "F40",
+      "required": true,
+      "source": "F40",
+      "location": "streaming-current",
+      "type": "check",
+      "section": "Readings And Checks",
+      "label": "Flush SCM",
+      "shifts": [
+        "AM"
+      ]
+    },
+    {
+      "id": "J2",
+      "required": true,
+      "source": "J2",
+      "location": "east-clarifier",
+      "type": "yesno",
+      "section": "Readings And Checks",
+      "label": "Rakes Turning",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "J3",
+      "required": true,
+      "source": "J3",
+      "location": "east-clarifier",
+      "type": "yesno",
+      "section": "Readings And Checks",
+      "label": "Oil Sheen",
+      "shifts": [
+        "AM"
+      ]
+    },
+    {
+      "id": "J4",
+      "required": true,
+      "source": "J4",
+      "location": "east-clarifier",
+      "type": "number",
+      "section": "Readings And Checks",
+      "label": "Clarity - 5 Best 1 Worst",
+      "shifts": [
+        "AM"
+      ]
+    },
+    {
+      "id": "J5",
+      "required": true,
+      "source": "J5",
+      "location": "east-clarifier",
+      "type": "yesno",
+      "section": "Readings And Checks",
+      "label": "Debris",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "J6",
+      "required": true,
+      "source": "J6",
+      "location": "east-clarifier",
+      "type": "check",
+      "section": "Readings And Checks",
+      "label": "Check Curtain",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "J7",
+      "required": true,
+      "source": "J7",
+      "location": "east-clarifier",
+      "type": "yesno",
+      "section": "Readings And Checks",
+      "label": "Drive Leaks",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "J8",
+      "required": true,
+      "source": "J8",
+      "location": "east-clarifier",
+      "type": "yesno",
+      "section": "Readings And Checks",
+      "label": "Drive Noise",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "J9",
+      "required": true,
+      "source": "J9",
+      "location": "east-clarifier",
+      "type": "check",
+      "section": "Readings And Checks",
+      "label": "Check Oil Level",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "J10",
+      "required": true,
+      "source": "J10",
+      "location": "east-clarifier",
+      "type": "check",
+      "section": "Readings And Checks",
+      "label": "Check Over Torque",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "J12",
+      "required": true,
+      "source": "J12",
+      "location": "west-clarifier",
+      "type": "yesno",
+      "section": "Readings And Checks",
+      "label": "Rakes Turning",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "J13",
+      "required": true,
+      "source": "J13",
+      "location": "west-clarifier",
+      "type": "yesno",
+      "section": "Readings And Checks",
+      "label": "Oil Sheen",
+      "shifts": [
+        "AM"
+      ]
+    },
+    {
+      "id": "J14",
+      "required": true,
+      "source": "J14",
+      "location": "west-clarifier",
+      "type": "number",
+      "section": "Readings And Checks",
+      "label": "Clarity - 5 Best 1 Worst",
+      "shifts": [
+        "AM"
+      ]
+    },
+    {
+      "id": "J15",
+      "required": true,
+      "source": "J15",
+      "location": "west-clarifier",
+      "type": "yesno",
+      "section": "Readings And Checks",
+      "label": "Debris",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "J16",
+      "required": true,
+      "source": "J16",
+      "location": "west-clarifier",
+      "type": "check",
+      "section": "Readings And Checks",
+      "label": "Check Curtain",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "J17",
+      "required": true,
+      "source": "J17",
+      "location": "west-clarifier",
+      "type": "yesno",
+      "section": "Readings And Checks",
+      "label": "Drive Leaks",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "J18",
+      "required": true,
+      "source": "J18",
+      "location": "west-clarifier",
+      "type": "yesno",
+      "section": "Readings And Checks",
+      "label": "Drive Noise",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "J19",
+      "required": true,
+      "source": "J19",
+      "location": "west-clarifier",
+      "type": "check",
+      "section": "Readings And Checks",
+      "label": "Check Oil Level",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "J20",
+      "required": true,
+      "source": "J20",
+      "location": "west-clarifier",
+      "type": "check",
+      "section": "Readings And Checks",
+      "label": "Check Over Torque",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "J22",
+      "required": true,
+      "source": "J22",
+      "location": "tsps",
+      "type": "check",
+      "section": "Readings And Checks",
+      "label": "Check N. Pump Oil Level",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "J23",
+      "required": true,
+      "source": "J23",
+      "location": "tsps",
+      "type": "check",
+      "section": "Readings And Checks",
+      "label": "Check S. Pump Oil Level",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "J24",
+      "required": true,
+      "source": "J24",
+      "location": "tsps",
+      "type": "yesno",
+      "section": "Readings And Checks",
+      "label": "Water on Floor",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "J26",
+      "required": true,
+      "source": "J26",
+      "location": "meter-vault",
+      "type": "yesno",
+      "section": "Readings And Checks",
+      "label": "Standing Water",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "J27",
+      "required": true,
+      "source": "J27",
+      "location": "meter-vault",
+      "type": "number",
+      "section": "Readings And Checks",
+      "label": "Totalizer",
+      "shifts": [
+        "AM",
+        "PM"
+      ],
+      "unit": "k gallons"
+    },
+    {
+      "id": "J29",
+      "required": true,
+      "source": "J29",
+      "location": "waste-reclaim",
+      "type": "number",
+      "section": "Readings And Checks",
+      "label": "North Pond Level",
+      "shifts": [
+        "AM",
+        "PM"
+      ],
+      "unit": "ft"
+    },
+    {
+      "id": "J30",
+      "required": true,
+      "source": "J30",
+      "location": "waste-reclaim",
+      "type": "number",
+      "section": "Readings And Checks",
+      "label": "South Pond Level",
+      "shifts": [
+        "AM",
+        "PM"
+      ],
+      "unit": "ft"
+    },
+    {
+      "id": "J31",
+      "required": true,
+      "source": "J31",
+      "location": "waste-reclaim",
+      "type": "check",
+      "section": "Readings And Checks",
+      "label": "Waste Pump Noise Check",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "J32",
+      "required": true,
+      "source": "J32",
+      "location": "waste-reclaim",
+      "type": "check",
+      "section": "Readings And Checks",
+      "label": "ALL Pumps Oil Level Check",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "J33",
+      "required": true,
+      "source": "J33",
+      "location": "waste-reclaim",
+      "type": "number",
+      "section": "Readings And Checks",
+      "label": "Reclaim pH",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "J34",
+      "required": true,
+      "source": "J34",
+      "location": "waste-reclaim",
+      "type": "number",
+      "section": "Readings And Checks",
+      "label": "Reclaim NTU",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "J35",
+      "required": true,
+      "source": "J35",
+      "location": "waste-reclaim",
+      "type": "number",
+      "section": "Readings And Checks",
+      "label": "Turbidimeter Flow",
+      "shifts": [
+        "AM",
+        "PM"
+      ],
+      "unit": "L/Min"
+    },
+    {
+      "id": "J36",
+      "required": true,
+      "source": "J36",
+      "location": "waste-reclaim",
+      "type": "check",
+      "section": "Readings And Checks",
+      "label": "Clean Y-Strainer",
+      "shifts": [
+        "AM"
+      ]
+    },
+    {
+      "id": "J37",
+      "required": true,
+      "source": "J37",
+      "location": "waste-reclaim",
+      "type": "yesno",
+      "section": "Readings And Checks",
+      "label": "Collect Standley Sample",
+      "shifts": [
+        "AM"
+      ]
+    },
+    {
+      "id": "J39",
+      "required": true,
+      "source": "J39",
+      "location": "other",
+      "type": "check",
+      "section": "Readings And Checks",
+      "label": "Outside Lights Check",
+      "shifts": [
+        "PM"
+      ]
+    },
+    {
+      "id": "J40",
+      "required": true,
+      "source": "J40",
+      "location": "other",
+      "type": "check",
+      "section": "Readings And Checks",
+      "label": "SCADA - Lift Station Check",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "N2",
+      "required": true,
+      "source": "N2",
+      "location": "clearwell-a",
+      "type": "yesno",
+      "section": "Readings And Checks",
+      "label": "Water on floor",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "N3",
+      "required": true,
+      "source": "N3",
+      "location": "clearwell-a",
+      "type": "number",
+      "section": "Readings And Checks",
+      "label": "CL2 Reading",
+      "shifts": [
+        "AM",
+        "PM"
+      ],
+      "unit": "mg/L"
+    },
+    {
+      "id": "N4",
+      "required": true,
+      "source": "N4",
+      "location": "clearwell-a",
+      "type": "number",
+      "section": "Readings And Checks",
+      "label": "pH Reading",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "N5",
+      "required": true,
+      "source": "N5",
+      "location": "clearwell-a",
+      "type": "number",
+      "section": "Readings And Checks",
+      "label": "pH Temperature",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "N6",
+      "required": true,
+      "source": "N6",
+      "location": "clearwell-a",
+      "type": "number",
+      "section": "Readings And Checks",
+      "label": "NTU Reading",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "N7",
+      "required": true,
+      "source": "N7",
+      "location": "clearwell-a",
+      "type": "yesno",
+      "section": "Readings And Checks",
+      "label": "Proper flow",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "N9",
+      "required": true,
+      "source": "N9",
+      "location": "ops-area",
+      "type": "number",
+      "section": "Readings And Checks",
+      "label": "Phone Messages",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "N10",
+      "required": true,
+      "source": "N10",
+      "location": "ops-area",
+      "type": "number",
+      "section": "Readings And Checks",
+      "label": "North Pond Level",
+      "shifts": [
+        "AM",
+        "PM"
+      ],
+      "unit": "ft"
+    },
+    {
+      "id": "N11",
+      "required": true,
+      "source": "N11",
+      "location": "ops-area",
+      "type": "number",
+      "section": "Readings And Checks",
+      "label": "South Pond Level",
+      "shifts": [
+        "AM",
+        "PM"
+      ],
+      "unit": "ft"
+    },
+    {
+      "id": "N12",
+      "required": true,
+      "source": "N12",
+      "location": "ops-area",
+      "type": "number",
+      "section": "Readings And Checks",
+      "label": "Total Filter Flow",
+      "shifts": [
+        "AM",
+        "PM"
+      ],
+      "unit": "MGD"
+    },
+    {
+      "id": "N13",
+      "required": true,
+      "source": "N13",
+      "location": "ops-area",
+      "type": "number",
+      "section": "Readings And Checks",
+      "label": "TR Flow",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "N14",
+      "required": true,
+      "source": "N14",
+      "location": "ops-area",
+      "type": "number",
+      "section": "Readings And Checks",
+      "label": "TR Level",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "N15",
+      "required": true,
+      "source": "N15",
+      "location": "ops-area",
+      "type": "number",
+      "section": "Readings And Checks",
+      "label": "CWA Level",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "N16",
+      "required": true,
+      "source": "N16",
+      "location": "ops-area",
+      "type": "number",
+      "section": "Readings And Checks",
+      "label": "CWB Level",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "N17",
+      "required": true,
+      "source": "N17",
+      "location": "ops-area",
+      "type": "number",
+      "section": "Readings And Checks",
+      "label": "LZ Level",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "N18",
+      "required": true,
+      "source": "N18",
+      "location": "ops-area",
+      "type": "number",
+      "section": "Readings And Checks",
+      "label": "HZ Level",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "N19",
+      "required": true,
+      "source": "N19",
+      "location": "ops-area",
+      "type": "check",
+      "section": "Readings And Checks",
+      "label": "Check LZ/HZ/BPS Flows",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "N21",
+      "required": true,
+      "source": "N21",
+      "location": "dewatering",
+      "type": "check",
+      "section": "Readings And Checks",
+      "label": "Walkthrough",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "N22",
+      "required": true,
+      "source": "N22",
+      "location": "dewatering",
+      "type": "number",
+      "section": "Readings And Checks",
+      "label": "Toe Drain Flow",
+      "shifts": [
+        "AM"
+      ],
+      "unit": "L/Min"
+    },
+    {
+      "id": "N24",
+      "required": true,
+      "source": "N24",
+      "location": "gravity-thickener",
+      "type": "yesno",
+      "section": "Readings And Checks",
+      "label": "Rakes Turning",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "N25",
+      "required": true,
+      "source": "N25",
+      "location": "gravity-thickener",
+      "type": "yesno",
+      "section": "Readings And Checks",
+      "label": "Oil Sheen",
+      "shifts": [
+        "AM"
+      ]
+    },
+    {
+      "id": "N26",
+      "required": true,
+      "source": "N26",
+      "location": "gravity-thickener",
+      "type": "number",
+      "section": "Readings And Checks",
+      "label": "Sludge Level",
+      "shifts": [
+        "AM"
+      ],
+      "unit": "ft"
+    },
+    {
+      "id": "N27",
+      "required": true,
+      "source": "N27",
+      "location": "gravity-thickener",
+      "type": "check",
+      "section": "Readings And Checks",
+      "label": "Check Over Torque",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "N28",
+      "required": false,
+      "source": "N28",
+      "location": "gravity-thickener",
+      "type": "text",
+      "section": "Readings And Checks",
+      "label": "Comments",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "R2",
+      "required": true,
+      "source": "R2",
+      "location": "pac",
+      "type": "check",
+      "section": "Readings And Checks",
+      "label": "Flush PAC Pump",
+      "shifts": [
+        "AM"
+      ]
+    },
+    {
+      "id": "R3",
+      "required": true,
+      "source": "R3",
+      "location": "pac",
+      "type": "check",
+      "section": "Readings And Checks",
+      "label": "Pump Noise Check",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "R5",
+      "required": true,
+      "source": "R5",
+      "location": "filter-gallery",
+      "type": "check",
+      "section": "Readings And Checks",
+      "label": "Check Filter Panels",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "R6",
+      "required": true,
+      "source": "R6",
+      "location": "filter-gallery",
+      "type": "yesno",
+      "section": "Readings And Checks",
+      "label": "Exhaust Fan Working",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "R8",
+      "required": true,
+      "source": "R8",
+      "location": "basement",
+      "type": "number",
+      "section": "Readings And Checks",
+      "label": "CL2 Reading PAC",
+      "shifts": [
+        "AM",
+        "PM"
+      ],
+      "unit": "mg/L"
+    },
+    {
+      "id": "R9",
+      "required": true,
+      "source": "R9",
+      "location": "basement",
+      "type": "number",
+      "section": "Readings And Checks",
+      "label": "CL2 Reading CWB",
+      "shifts": [
+        "AM",
+        "PM"
+      ],
+      "unit": "mg/L"
+    },
+    {
+      "id": "R10",
+      "required": true,
+      "source": "R10",
+      "location": "basement",
+      "type": "check",
+      "section": "Readings And Checks",
+      "label": "Clean Y-Strainers",
+      "shifts": [
+        "AM"
+      ]
+    },
+    {
+      "id": "R11",
+      "required": true,
+      "source": "R11",
+      "location": "basement",
+      "type": "check",
+      "section": "Readings And Checks",
+      "label": "Check If DI Light Is Red",
+      "shifts": [
+        "AM"
+      ]
+    },
+    {
+      "id": "R12",
+      "required": true,
+      "source": "R12",
+      "location": "basement",
+      "type": "number",
+      "section": "Readings And Checks",
+      "label": "pH Reading CWB",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "R13",
+      "required": true,
+      "source": "R13",
+      "location": "basement",
+      "type": "number",
+      "section": "Readings And Checks",
+      "label": "NTU Reading CWB",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "R14",
+      "required": true,
+      "source": "R14",
+      "location": "basement",
+      "type": "number",
+      "section": "Readings And Checks",
+      "label": "Turbidimeter Flow",
+      "shifts": [
+        "AM",
+        "PM"
+      ],
+      "unit": "L/Min"
+    },
+    {
+      "id": "R15",
+      "required": true,
+      "source": "R15",
+      "location": "basement",
+      "type": "check",
+      "section": "Readings And Checks",
+      "label": "Check LZ VFDs For Faults",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "R17",
+      "required": true,
+      "source": "R17",
+      "location": "pipe-gallery",
+      "type": "yesno",
+      "section": "Readings And Checks",
+      "label": "Air Leaks",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "R18",
+      "required": true,
+      "source": "R18",
+      "location": "pipe-gallery",
+      "type": "yesno",
+      "section": "Readings And Checks",
+      "label": "Water Leaks",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "R19",
+      "required": true,
+      "source": "R19",
+      "location": "pipe-gallery",
+      "type": "number",
+      "section": "Readings And Checks",
+      "label": "East Clarifier Turbidity",
+      "shifts": [
+        "AM",
+        "PM"
+      ],
+      "unit": "NTU"
+    },
+    {
+      "id": "R20",
+      "required": true,
+      "source": "R20",
+      "location": "pipe-gallery",
+      "type": "number",
+      "section": "Readings And Checks",
+      "label": "West Clarifier Turbidity",
+      "shifts": [
+        "AM",
+        "PM"
+      ],
+      "unit": "NTU"
+    },
+    {
+      "id": "R21",
+      "required": true,
+      "source": "R21",
+      "location": "pipe-gallery",
+      "type": "check",
+      "section": "Readings And Checks",
+      "label": "Sump Pump Check",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "R23",
+      "required": true,
+      "source": "R23",
+      "location": "pump-room",
+      "type": "check",
+      "section": "Readings And Checks",
+      "label": "Cycle Sump Pump",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "R24",
+      "required": true,
+      "source": "R24",
+      "location": "pump-room",
+      "type": "yesno",
+      "section": "Readings And Checks",
+      "label": "Water On Floor",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "R25",
+      "required": true,
+      "source": "R25",
+      "location": "pump-room",
+      "type": "check",
+      "section": "Readings And Checks",
+      "label": "Pump Noise Check",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    },
+    {
+      "id": "R26",
+      "required": true,
+      "source": "R26",
+      "location": "pump-room",
+      "type": "number",
+      "section": "Readings And Checks",
+      "label": "HZ Pressure",
+      "shifts": [
+        "AM"
+      ],
+      "unit": "psi"
+    },
+    {
+      "id": "R27",
+      "required": true,
+      "source": "R27",
+      "location": "pump-room",
+      "type": "number",
+      "section": "Readings And Checks",
+      "label": "LZ Pressure",
+      "shifts": [
+        "AM"
+      ],
+      "unit": "psi"
+    },
+    {
+      "id": "R28",
+      "required": true,
+      "source": "R28",
+      "location": "pump-room",
+      "type": "yesno",
+      "section": "Readings And Checks",
+      "label": "CW Sample Pump Leaks/Noise",
+      "shifts": [
+        "AM",
+        "PM"
+      ]
+    }
+  ],
+  "locations": [
+    {
+      "id": "chemical-building",
+      "label": "Chemical Building"
+    },
+    {
+      "id": "rapid-mix-floc",
+      "label": "Rapid Mix / Floc"
+    },
+    {
+      "id": "floc-vault",
+      "label": "Floc Vault"
+    },
+    {
+      "id": "streaming-current",
+      "label": "Streaming Current"
+    },
+    {
+      "id": "east-clarifier",
+      "label": "East Clarifier"
+    },
+    {
+      "id": "west-clarifier",
+      "label": "West Clarifier"
+    },
+    {
+      "id": "tsps",
+      "label": "TSPS"
+    },
+    {
+      "id": "meter-vault",
+      "label": "Meter Vault"
+    },
+    {
+      "id": "waste-reclaim",
+      "label": "Waste Ponds / Reclaim"
+    },
+    {
+      "id": "other",
+      "label": "Other"
+    },
+    {
+      "id": "clearwell-a",
+      "label": "Clearwell A"
+    },
+    {
+      "id": "ops-area",
+      "label": "OPS Area"
+    },
+    {
+      "id": "dewatering",
+      "label": "Dewatering Building"
+    },
+    {
+      "id": "gravity-thickener",
+      "label": "Gravity Thickener"
+    },
+    {
+      "id": "pac",
+      "label": "PAC"
+    },
+    {
+      "id": "filter-gallery",
+      "label": "Filter Gallery"
+    },
+    {
+      "id": "basement",
+      "label": "Basement"
+    },
+    {
+      "id": "pipe-gallery",
+      "label": "Pipe Gallery"
+    },
+    {
+      "id": "pump-room",
+      "label": "High Service Pump Room"
+    }
+  ]
+}

@@ -84,3 +84,43 @@ button.danger{color:#a32b3d;border-color:#d5a7af;background:#fff5f5}button.dange
 .guided-review{inset:0;margin:auto;width:min(850px,calc(100vw - 24px));height:fit-content;max-height:calc(100dvh - 24px);border:1px solid var(--ops-color-line);border-radius:12px}.guided-review .dialog-heading h2{font-size:28px}.guided-progress{font-size:14px;color:#00677f;font-weight:700;margin:7px 0}.guided-review #review-slot{pointer-events:none;background:#f3f7f9}.guided-review label:has(#review-slot),.guided-review .actions{display:none}.guided-review .vote-options{grid-template-columns:repeat(3,minmax(0,1fr))}.guided-review .vote-options label:last-child{display:none}.vote-options small{display:block;font-size:11px;font-weight:400;line-height:1.5;margin-top:6px}.guided-review .vote-options span{font-size:21px;font-weight:700;min-height:98px;display:flex;flex-direction:column;justify-content:center;padding:16px 8px}.guided-review .vote-options input:checked+span{box-shadow:0 0 0 3px #00677f33}.review-save-actions{display:flex;flex-wrap:wrap;gap:12px}.review-save-actions button{min-height:52px}.guided-review .review-save-actions .primary{flex:1}.guided-review #detail-meta{font-size:16px;line-height:1.6}.guided-review #vote-form{border-bottom:0;padding-bottom:0}
 @media(max-width:899px){.manage-navigation{flex:none}.manage-navigation[open]{min-width:180px}.reviewer-welcome{padding:24px}}
 @media(max-width:500px){.guided-review{width:100%;height:100dvh;max-height:100dvh;border:0;border-radius:0}.guided-review .vote-options{gap:6px}.guided-review .vote-options span{padding:10px 4px;font-size:18px}.guided-review .vote-options small{font-size:10px}.review-save-actions button{width:100%}}
+
+/* Keep the existing workflow while giving the applicant content more space. */
+.hiring-switcher{padding:14px 18px;gap:10px;margin-bottom:20px}
+.reviewer-selection{padding-top:10px}.reviewer-identity{min-height:40px;gap:12px}
+.reviewer-identity strong{font-size:17px}.reviewer-identity button{min-height:40px;padding:7px 12px}
+.hero{gap:16px;margin-bottom:16px}.hero h1{font-size:clamp(26px,2.4vw,34px);letter-spacing:-.8px;margin:4px 0 8px}
+.metrics{margin:16px 0}.metric{padding:16px 18px}.metric strong{font-size:32px;margin:4px 0}
+.reviewer-welcome{padding:22px 24px}.reviewer-welcome h1{font-size:26px;margin:0 0 8px}
+.reviewer-welcome>p{margin-bottom:12px}.reviewer-progress-block{margin:16px 0}.reviewer-progress-block .reviewer-progress{margin-bottom:8px}
+.reviewer-welcome .reviewer-completion{margin-top:12px}.reviewer-actions>button{min-height:48px;padding:11px 18px}
+.vote-options label>span{position:relative;padding-top:26px!important}
+.vote-options input:checked+span{outline:3px solid #003e50;outline-offset:2px;background:#00576c;border-color:#fff;box-shadow:0 0 0 5px #bcdde5}
+.guided-review .vote-options input:checked+span{box-shadow:0 0 0 5px #bcdde5}
+.vote-options input:checked+span::after{content:'\2713';position:absolute;top:5px;right:8px;font-size:17px;font-weight:800;line-height:1}
+.vote-options input:focus-visible+span{outline:3px dashed #003e50;outline-offset:4px}
+#detail-meta{display:block;padding:16px 18px;background:#f3f7f9;border:1px solid #d1dfe5;border-radius:8px;font-size:14px}
+#detail-meta h3{font-size:13px;margin-bottom:12px;color:#425d6a}
+#detail-meta dl{display:grid;grid-template-columns:1fr 1fr;gap:14px 20px;margin:0}
+#detail-meta dt{font-size:11px;color:var(--ops-color-muted);margin-bottom:4px}
+#detail-meta dd{font-size:14px;line-height:1.6;margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
+#detail-meta .wide{border-top:1px solid #d1dfe5;padding-top:12px}
+#vote-form>h3{font-size:18px;padding-top:4px}
+.applicant-note header{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:start;gap:10px}
+.applicant-note header strong{line-height:1.5}.applicant-note .badge{align-self:start}
+.applicant-note p{margin-top:14px;line-height:1.75}
+.applicant-note p.no-comment,.shared-review p.no-comment{font-size:12px;font-style:italic;color:var(--ops-color-muted);margin-top:10px}
+.results-view .score.score-awaiting,.score.score-awaiting{display:inline-block;font-size:11px;font-weight:500;line-height:1.5;color:var(--ops-color-muted);white-space:normal;word-break:normal;overflow-wrap:normal;max-width:100%}
+.partial-score-label{display:inline-block;font-size:11px;font-weight:650;color:#765100;background:#fff1ce;border-radius:4px;padding:3px 6px;margin-top:6px}
+.applicants-table .applicant-summary-row>td{border-bottom:1px solid #bdcfd8;transition:background-color .12s ease}
+.applicants-table .applicant-summary-row:hover>td,.applicants-table .applicant-summary-row:focus-within>td{background:#eff6f8}
+.review-list article:hover,.review-list article:focus-within{border-color:#8eaeba;background:#f8fbfc}
+@media(min-width:900px){main{padding-top:28px}}
+@media(max-width:600px){
+  .hiring-switcher{padding:14px}.reviewer-welcome{padding:20px}
+  .applicant-notes-grid{grid-template-columns:1fr}.applicant-note{padding:14px}
+  .applicant-note header{grid-template-columns:minmax(0,1fr) auto}
+  #detail-meta{padding:14px}#detail-meta dl{gap:12px}
+  .metric{padding:14px}.hero h1{font-size:26px}
+}
+@media(prefers-reduced-motion:reduce){.applicants-table .applicant-summary-row>td{transition:none}}

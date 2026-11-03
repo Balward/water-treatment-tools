@@ -30,6 +30,8 @@ For shared records, start `npm start` for the API and `node dev-server.js` for t
 
 ## Workflow
 
+The review pages use tighter spacing above the applicant list. Application Details groups location, requested wage, and certifications before Your Review. The selected recommendation has both a strong outline and a checkmark. Results label unavailable scores **Awaiting Your Review** and mark incomplete totals **Partial Points**. Detailed comments keep each reviewer's name, recommendation, and full text together, with a quieter **No Comment** placeholder. Applicant rows use stronger separators and hover/focus highlighting.
+
 Page introductions use the review title and relevant task guidance without a repeated Northglenn Operations overline or a second team/position subtitle. The position selector shows the review title directly, without prepending the team again. The same redundant introduction branding has been removed from the other themed Operations apps and the shared application menu.
 
 **Results** is a reviewer-facing, read-only candidate table with search, sorting, scores, ranks, and printable results. Applicant details opened here expose no voting form, editing, deletion, archive, selection, transfer, creation, or settings actions. Existing result-hiding rules still apply: results require the selected reviewer's own saved vote, and ranks require all their active applicants to be reviewed. The completion shortcut opens this overview.

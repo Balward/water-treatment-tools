@@ -1,0 +1,47 @@
+const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),os=require('node:os');
+const settings=require('../public/chemical-settings'),math=require('../public/chemical-math'),{createApp}=require('../server');
+const today=new Date().toLocaleDateString('en-CA',{timeZone:'America/Denver'}),dateAt=offset=>new Date(Date.parse(today+'T12:00:00Z')+offset*86400000).toISOString().slice(0,10);
+const near=(actual,expected)=>assert.ok(Math.abs(actual-expected)<1e-8,actual+' ~= '+expected);
+const readings=Object.fromEntries(math.fields.map(([id])=>[id,1]));
+test('calibration and capacity are independent, East batch remains excluded, and settings validate structured terms',()=>{
+  const c=settings.clone(settings.defaults.naoh);near(settings.volume(c,readings),490.98);c.tanks[0].capacity=2000;near(settings.volume(c,readings),490.98);c.tanks[0].factor=20;near(settings.volume(c,readings),497.32);
+  assert.equal(settings.planning({naoh:c}).naoh.capacity,5500);
+  const perm=settings.clone(settings.defaults.permanganate);perm.tanks[1].factor=1;assert.throws(()=>settings.validate('permanganate',perm),/East 10%/);
+  const invalid=settings.clone(c);invalid.tanks[0].factor=Infinity;assert.throws(()=>settings.validate('naoh',invalid),/gallons per inch/);
+  invalid.tanks=c.tanks;invalid.delivery=100000;assert.throws(()=>settings.validate('naoh',invalid),/fit within/);
+  assert.throws(()=>settings.validate('naoh',{...c,tanks:[c.tanks[0],c.tanks[0],c.tanks[2]]}),/tank identities/);
+});
+test('scheduled changes to a chemical cannot roll back newer changes to other chemicals',()=>{
+  const a=settings.clone(settings.defaults),b=settings.clone(settings.defaults);a.polymer.delivery=300;b.naoh.offset=1000;
+  const versions=[{id:'scheduled-polymer',chemicalKey:'polymer',effectiveFrom:dateAt(1),chemicals:a},{id:'current-caustic',chemicalKey:'naoh',effectiveFrom:today,chemicals:b}];
+  const effective=settings.resolve(versions,dateAt(1));assert.equal(effective.chemicals.naoh.offset,1000);assert.equal(effective.chemicals.polymer.delivery,300);assert.equal(settings.resolve(versions,today).chemicals.polymer.delivery,265);
+});
+test('versioned API preserves drafts, completed history and imports, applies new settings to new inventories, and survives restart',async t=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'chemical-settings-'));
+  fs.writeFileSync(path.join(dir,'inventories.json'),JSON.stringify({inventories:[],chemicalInventory:{revision:0,draftLifecycleVersion:1,records:[{date:dateAt(-7),operator:'Previous',status:'complete',notes:'',readings},{date:today,operator:'Draft Operator',status:'draft',notes:'',readings},{date:dateAt(-14),operator:'Workbook',status:'complete',notes:'',readings:{},source:{type:'workbook'},recordedGallons:Object.fromEntries(math.chemicals.map(c=>[c.id,100]))}]}}));
+  let server,base;const start=async()=>{server=createApp({dataDir:dir,chemicalHistory:[]});await new Promise(r=>server.listen(0,'127.0.0.1',r));base='http://127.0.0.1:'+server.address().port;};await start();
+  t.after(async()=>{await new Promise(r=>server.close(r));fs.rmSync(dir,{recursive:true,force:true});});
+  const request=async(route,method='GET',body)=>{const response=await fetch(base+route,{method,headers:{Origin:base,'Content-Type':'application/json'},...(body?{body:JSON.stringify(body)}:{})});return{status:response.status,data:await response.json()};};
+  let before=(await request('/api/chemicals')).data;
+  const candidate=settings.clone(settings.defaults.naoh);candidate.offset=500;candidate.tanks.forEach(tank=>tank.factor=20);candidate.delivery=3000;candidate.threshold=1500;candidate.leadDays=3;candidate.supplier='Facility Chemical Supplier';
+  const body={revision:0,chemicalKey:'naoh',settings:candidate,effectiveFrom:today,operator:'Blaine Alward',reason:'Updated tank calibration and delivery arrangement'};
+  assert.equal((await request('/api/chemical-settings','POST',{...body,effectiveFrom:'2026-02-30'})).status,400);
+  assert.equal((await request('/api/chemical-settings','POST',{...body,effectiveFrom:dateAt(-1)})).status,400);
+  assert.equal((await request('/api/chemical-settings','POST',{...body,reason:''})).status,400);
+  const results=await Promise.all([request('/api/chemical-settings','POST',body),request('/api/chemical-settings','POST',body)]);assert.deepEqual(results.map(r=>r.status).sort(),[201,409]);
+  const config=results.find(r=>r.status===201).data;assert.equal(config.active.chemicals.naoh.supplier,candidate.supplier);assert.equal(config.versions.length,2);
+  let after=(await request('/api/chemicals')).data;assert.deepEqual(after.records.map(r=>r.totals),before.records.map(r=>r.totals),'Saving settings never changes old gallons');
+  after=(await request('/api/chemicals/records/'+today,'PUT',{revision:after.revision,operator:'Draft Operator',readings,notes:'',status:'complete'})).data;
+  let record=after.records.find(r=>r.date===today);assert.equal(record.settingsVersion,settings.baseline.id);near(record.totals.naoh.gallons,490.98);
+  const orders=(await request('/api/order-list')).data;const order=orders.items.find(e=>e.chemicalKey==='naoh');assert.equal(order.planning.leadDays,3);assert.equal(order.planning.threshold,1500);assert.equal(order.item.company,candidate.supplier);assert.equal(order.quantity,3000);
+  const scheduled=settings.clone(settings.defaults.polymer);scheduled.delivery=300;scheduled.threshold=450;
+  const future=await request('/api/chemical-settings','POST',{revision:config.revision,chemicalKey:'polymer',settings:scheduled,effectiveFrom:dateAt(1),operator:'Carson Conlin',reason:'Future tote specification'});assert.equal(future.status,201);assert.equal(future.data.active.chemicals.polymer.delivery,265,'Future settings do not activate early');
+  after=(await request('/api/chemicals/records/'+dateAt(1),'PUT',{revision:after.revision,operator:'New Operator',readings,notes:'',status:'draft'})).data;
+  record=after.records.find(r=>r.date===dateAt(1));assert.equal(record.settingsSnapshot.naoh.offset,500);assert.equal(record.settingsSnapshot.polymer.delivery,300);assert.equal(record.totals.naoh.gallons,560);
+  const report=require('../public/chemical-trends').reportOrderAdvice(after.records,record).find(item=>item.key==='naoh');assert.equal(report.plan.leadDays,3);assert.equal(report.plan.threshold,1500,'Reports use the inventory settings snapshot');
+  const further=settings.clone(candidate);further.offset=1000;
+  assert.equal((await request('/api/chemical-settings','POST',{...body,revision:future.data.revision,settings:further})).status,201);
+  after=(await request('/api/chemicals/records/'+dateAt(1),'PUT',{revision:after.revision,operator:'New Operator',readings,notes:'',status:'draft'})).data;assert.equal(after.records.find(r=>r.date===dateAt(1)).totals.naoh.gallons,560,'Existing new draft also remains bound to its starting version');
+  await new Promise(r=>server.close(r));await start();const restarted=(await request('/api/chemicals')).data;assert.equal(restarted.records.find(r=>r.date===dateAt(1)).totals.naoh.gallons,560);assert.equal((await request('/api/chemical-settings')).data.versions.length,4);
+  const imported=restarted.records.find(r=>r.source?.type==='workbook');assert.equal(imported.totals.naoh.gallons,100);assert.equal(imported.readings.naohEast,undefined);
+});

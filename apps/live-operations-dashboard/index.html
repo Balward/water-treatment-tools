@@ -6,14 +6,14 @@
     <title>Equipment Status Board</title>
     <link rel="icon" type="image/png" href="/assets/logos/favicon.png" />
     <link rel="stylesheet" href="../../global-styles.css" />
-    <link rel="stylesheet" href="./styles.css?v=20261024-commenthover1" />
-    <link rel="stylesheet" href="./wall-ui.css?v=20261024-commenthover1" />
-    <link rel="stylesheet" href="/shared/operations/theme.css?v=20261024-commenthover1" />
-    <link rel="stylesheet" href="/shared/operations/navigation.css?v=20261024-commenthover1" />
-    <link rel="stylesheet" href="./operations-theme.css?v=20261024-commenthover1" />
-    <link rel="stylesheet" href="./desktop-layout.css?v=20261024-commenthover1" />
-    <link rel="stylesheet" href="./wall-readability.css?v=20261024-commenthover1" />
-    <script src="/shared/operations/navigation.js?v=20261024-commenthover1" defer></script>
+    <link rel="stylesheet" href="./styles.css?v=20261028-suiteusers1" />
+    <link rel="stylesheet" href="./wall-ui.css?v=20261028-suiteusers1" />
+    <link rel="stylesheet" href="/shared/operations/theme.css?v=20261028-suiteusers1" />
+    <link rel="stylesheet" href="/shared/operations/navigation.css?v=20261028-suiteusers1" />
+    <link rel="stylesheet" href="./operations-theme.css?v=20261028-suiteusers1" />
+    <link rel="stylesheet" href="./desktop-layout.css?v=20261028-suiteusers1" />
+    <link rel="stylesheet" href="./wall-readability.css?v=20261028-suiteusers1" />
+    <script src="/shared/operations/navigation.js?v=20261102-cleanheaders1" defer></script>
   </head>
   <body data-ops-app="equipment">
     <main class="ops-page">
@@ -26,7 +26,7 @@
             class="ops-logo"
           /></a>
           <div class="ops-titles">
-            <p class="eyebrow">Water Treatment Facility</p>
+            
             <h1>Equipment Status Board</h1>
             <div class="sync-row sync-row--title">
               <span
@@ -46,7 +46,7 @@
         </div>
         <div class="wall-tools"><a class="header-qr" href="https://water.gibbhub.io/live-operations-dashboard/" aria-label="Open Equipment Status Board Editor">
           <img
-            src="/assets/qrcodes/equipment-status-edit.svg?v=20261024-commenthover1"
+            src="/assets/qrcodes/equipment-status-edit.svg?v=20261028-suiteusers1"
             alt="Scan to open the Equipment Status Board editor"
             class="header-qr-image"
           />
@@ -111,6 +111,7 @@
         </header>
 
         <div class="drawer-content">
+          <div class="equipment-edit-fields">
           <section class="drawer-section">
             <h3 class="drawer-label">Status</h3>
             <div id="statusOptions" class="status-options"></div>
@@ -137,9 +138,11 @@
             ></textarea>
           </section>
 
-          <section class="drawer-section">
+          </div>
+          <section class="drawer-section equipment-history-section">
             <details id="assetLogDetails" class="asset-log-details">
               <summary class="drawer-label asset-log-summary">Change Log</summary>
+              <p class="asset-log-empty">Editing or deleting a log entry leaves the current equipment status and notes unchanged.</p>
               <div id="assetLogList" class="asset-log-list" aria-live="polite"></div>
             </details>
           </section>
@@ -223,7 +226,7 @@
           <p class="drawer-meta">Comments are shared live across the dashboard.</p>
         </footer>
       </aside>
-      <footer class="wall-footer"><div class="wall-footer-info"><p id="recentEquipmentChange" role="status">No recent equipment changes.</p><p class="wall-source-note">Operator-reported availability &middot; In-service totals include warnings &middot; Moving border = changed within 2 min</p><span id="compactConnectionStatus" role="status"></span></div><button type="button" id="wallHeaderToggle" aria-controls="equipmentBoardHeader" aria-expanded="true">Hide Header</button></footer>
+      <footer class="wall-footer"><div class="wall-footer-info"><p id="recentEquipmentChange" role="status">Waiting for equipment data.</p><span id="compactConnectionStatus" role="status"></span></div><div class="wall-footer-actions"><button type="button" id="wallThemeToggle" aria-label="Switch To Dark Mode" title="Switch To Dark Mode"></button><button type="button" id="wallHeaderToggle" aria-controls="equipmentBoardHeader" aria-expanded="true">Hide Header</button></div></footer>
     </main>
 
 <dialog id="equipmentReadDialog" aria-labelledby="equipmentReadTitle">
@@ -298,9 +301,10 @@
       <p id="hoverPopupMeta" class="hover-popup-meta"></p>
     </aside>
 
-    <script src="./wall-ui.js?v=20261024-commenthover1"></script>
-    <script src="./wall-comments.js?v=20261024-commenthover1"></script>
-    <script src="./script.js?v=20261024-commenthover1"></script>
+    <script src="/shared/operations/users.js?v=20261028-suiteusers1"></script>
+    <script src="./wall-ui.js?v=20261028-suiteusers1"></script>
+    <script src="./wall-comments.js?v=20261028-suiteusers1"></script>
+    <script src="./script.js?v=20261028-suiteusers1"></script>
   </body>
 </html>
 

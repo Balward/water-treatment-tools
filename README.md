@@ -1,9 +1,12 @@
 # Water Treatment Tools
 
-A collection of focused, single-page web apps that help operators analyze data, size chemical feeds, and train staff for surface water and wastewater treatment. Everything is static HTML/CSS/JS (no build step required); just open an app’s `index.html` in a browser or serve the `/apps` folder from any web server.
+A collection of focused, single-page web apps that help operators analyze data, size chemical feeds, and train staff for surface water and wastewater treatment. Most interfaces use static HTML/CSS/JS with no build step. Static tools can be opened directly; Plant Rounds, Equipment Status Board, and Inventory use their APIs for shared records.
 
 ## App directory
 
+- `apps/application-review/` - Four-reviewer applicant workflow with workbook import, shared notes, weighted votes, tied rankings, and print/backup exports. See [Application Review](docs/application-review.md).
+
+- `apps/plant-rounds/` - Shared AM/PM daily rounds from the plant checklist, location navigation, readings, checks, and handoff notes. Uses the suite API and persistent data mount. See [Plant Rounds](docs/plant-rounds.md).
 - `apps/operator-inventory/` - Docker-ready supplies inventory with location selection, dated operator counts, automatic draft saves, PAR flags, and inventory history. See its README for Unraid setup.
 
 - `apps/dashboard/` – Launch pad with city branding and links to every tool.
@@ -36,7 +39,7 @@ npm install
 npm start   # runs claude-proxy-server.js
 ```
 
-Environment: copy `.env.template` to `.env` and set required keys. The proxy is not needed for normal static use.
+Environment: copy `.env.template` to `.env` and set required keys. The proxy is not needed for normal static use. Plant Rounds and Equipment Status Board require this server for shared records, even when no AI features are used.
 
 ## Design system
 

@@ -3,6 +3,7 @@
   // Keep one catalog for navigation and Operations Home. All pages use local assets.
   const categories=[['operations','Daily Operations'],['water','Water Treatment'],['wastewater','Wastewater Treatment'],['training','Training & Certification']].map(([id,label])=>({id,label}));
   const applications=[
+    {id:'rounds',category:'operations',name:'Plant Rounds',description:'Record AM and PM checks, compare readings, and share daily handoff notes.',icon:'board',path:'/plant-rounds/'},
     {id:'equipment',category:'operations',name:'Equipment Status Board',description:'Check equipment availability and share operating notes.',icon:'board',path:'/live-operations-dashboard/'},
     {id:'inventory',category:'operations',name:'Supply Inventory',description:'Count supplies, check PAR levels, and manage your order list.',icon:'box',external:'https://inventory.gibbhub.io/'},
     {id:'robojar',category:'water',name:'RoboJar Analyzer',description:'Compare jar-test results and review coagulant performance.',icon:'jar',path:'/robojar-analyzer/?v=20261022-robo1'},
@@ -29,7 +30,7 @@
   const buttons=[...document.querySelectorAll('[data-ops-menu]')];
   if(!buttons.length)return;
   const menu=document.createElement('dialog');menu.id='opsAppMenu';menu.className='ops-app-menu';menu.setAttribute('aria-labelledby','opsAppMenuTitle');
-  menu.innerHTML='<header class="ops-app-menu-header"><div><p class="ops-app-menu-eyebrow">NORTHGLENN OPERATIONS</p><h2 id="opsAppMenuTitle" class="ops-app-menu-title">Switch Applications</h2></div><button class="ops-app-menu-close" type="button" aria-label="Close Applications Menu" autofocus><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></header><nav class="ops-app-menu-links" aria-label="Navigate Between Applications"></nav><footer class="ops-app-menu-footer">One Workspace. All Your Operations Tools.</footer>';
+  menu.innerHTML='<header class="ops-app-menu-header"><div><h2 id="opsAppMenuTitle" class="ops-app-menu-title">Switch Applications</h2></div><button class="ops-app-menu-close" type="button" aria-label="Close Applications Menu" autofocus><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></header><nav class="ops-app-menu-links" aria-label="Navigate Between Applications"></nav><footer class="ops-app-menu-footer">One Workspace. All Your Operations Tools.</footer>';
   const links=menu.querySelector('nav');
   function addLink(parent,name,url,id,className=''){
     const link=document.createElement('a');link.href=url;link.textContent=name;link.className=className;link.dataset.opsDestination=id;
@@ -37,6 +38,8 @@
     parent.append(link);
   }
   addLink(links,'Operations Home',homeHref,'home','ops-app-menu-home');
+  addLink(links,'User Management',new URL('/operations-management/',suiteOrigin).href,'management','ops-app-menu-home');
+  addLink(links,'Application Review',new URL('/application-review/',suiteOrigin).href,'applications','ops-app-menu-home');
   categories.forEach(category=>{const section=document.createElement('section');section.className='ops-app-menu-group';const heading=document.createElement('h3');heading.textContent=category.label;section.append(heading);applications.filter(app=>app.category===category.id).forEach(app=>addLink(section,app.name,href(app),app.id));links.append(section);});
   document.body.append(menu);
   let opener=null,leaving=false;

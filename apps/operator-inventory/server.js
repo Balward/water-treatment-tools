@@ -6,6 +6,11 @@ const { randomUUID, createHash } = require('node:crypto');
 const seedCatalog = require('./catalog.json');
 const packSizes = require('./public/pack-sizes');
 const imageManifest = require('./public/images/manifest.json');
+const chemicals = require('./public/chemical-math');
+const chemicalOrders = require('./chemical-orders');
+const chemicalSettings = require('./public/chemical-settings');
+const {reportOrderAdvice} = require('./public/chemical-trends');
+const chemicalHistorySeed = require('./chemical-history-2026.json');
 const { createMailer, buildReportEmail, validAddress } = require('./email');
 const worksheets = [
   { id: 'operating', name: 'Operating Supplies', sourceSheet: 1 },
@@ -13,11 +18,13 @@ const worksheets = [
   { id: 'dewatering', name: 'Dewatering Supplies', sourceSheet: 3 }
 ];
 
-function createApp({ dataDir = process.env.DATA_DIR || path.join(__dirname, 'data'), mailer = createMailer() } = {}) {
+function createApp({ dataDir = process.env.DATA_DIR || path.join(__dirname, 'data'), mailer = createMailer(), chemicalHistory = chemicalHistorySeed.records } = {}) {
   let sendingEmail = false, nextEmailAt = 0;
   const releaseHash = createHash('sha256');
   for (const name of ['server.js', 'email.js', 'catalog.json', 'public/images/manifest.json', 'public/index.html', 'public/styles.css', 'public/app.js', 'public/pack-sizes.js', 'public/product-images.js', 'public/bin-cards.js', 'public/bin-cards.html', 'public/bin-cards.css', 'public/bin-card-print.js', 'public/vendor/qrcode.js', 'public/branding/northglenn-logo.png']) releaseHash.update(fs.readFileSync(path.join(__dirname, name)));
-  for (const name of ["operations-theme.css","shared/operations/theme.css","shared/operations/navigation.css","shared/operations/header.css","shared/operations/navigation.js","shared/operations/Inter-VariableFont_opsz,wght.ttf","shared/operations/Inter-LICENSE.txt"]) releaseHash.update(fs.readFileSync(path.join(__dirname, 'public', name)));
+  for (const name of ["operations-theme.css","shared/operations/theme.css","shared/operations/navigation.css","shared/operations/header.css","shared/operations/navigation.js","shared/operations/users.js","shared/operations/Inter-VariableFont_opsz,wght.ttf","shared/operations/Inter-LICENSE.txt"]) releaseHash.update(fs.readFileSync(path.join(__dirname, 'public', name)));
+  for(const name of ['supply-trends.html','supply-trends.js','supply-trend-math.js','supply-trends.css','chemical-math.js','chemical-trends.js','chemical-inventory.html','chemical-inventory.js','chemical-inventory.css'])releaseHash.update(fs.readFileSync(path.join(__dirname,'public',name)));
+  releaseHash.update(fs.readFileSync(path.join(__dirname,'chemical-history-2026.json')));
   const release = releaseHash.digest('hex').slice(0, 12);
   fs.mkdirSync(dataDir, { recursive: true });
   const file = path.join(dataDir, 'inventories.json');
@@ -30,6 +37,31 @@ function createApp({ dataDir = process.env.DATA_DIR || path.join(__dirname, 'dat
     fs.renameSync(temp, file);
     state = next;
   };
+  // Import cached workbook values once. Never overwrite app readings on matching dates.
+  if(chemicalHistory.length && !(state.chemicalInventory?.imports||[]).includes(chemicalHistorySeed.id)){
+    if(fs.existsSync(file)){
+      const backups=path.join(dataDir,'backups');fs.mkdirSync(backups,{recursive:true});
+      fs.copyFileSync(file,path.join(backups,'before-chemical-import-'+Date.now()+'.json'),fs.constants.COPYFILE_EXCL);
+    }
+    const current=state.chemicalInventory||{revision:0,records:[]},dates=new Set(current.records.map(r=>r.date)),now=new Date().toISOString();
+    const imported=chemicalHistory.filter(r=>!dates.has(r.date)).map(r=>({
+      date:r.date,operator:'Not recorded in workbook',notes:'Imported recorded gallons; historical tank formulas have not been recalculated.',
+      readings:Object.fromEntries(chemicals.fields.map(([id])=>[id,id==='nwos'?r.nwos:null])),
+      recordedGallons:{...r.recordedGallons},recordedWaterUsed:r.recordedWaterUsed,recordedWaterPreviousDate:r.recordedWaterPreviousDate,
+      source:{type:'workbook',file:chemicalHistorySeed.source,sheet:chemicalHistorySeed.sheet,row:r.sourceRow},updatedAt:now
+    }));
+    persist({...state,chemicalInventory:{...current,revision:current.revision+1,records:[...current.records,...imported],imports:[...(current.imports||[]),chemicalHistorySeed.id]}});
+  }
+  // Preserve old snapshots; reopen only the latest app-entered partial inventory.
+  if(state.chemicalInventory&&!state.chemicalInventory.draftLifecycleVersion){
+    const current=state.chemicalInventory;
+    const latest=current.records.filter(record=>record.source?.type!=='workbook').sort((a,b)=>(b.updatedAt||b.date).localeCompare(a.updatedAt||a.date))[0];
+    const reopen=latest&&!latest.status&&!current.records.some(record=>record.status==='draft')&&chemicals.fields.some(([id])=>typeof latest.readings[id]!=='number');
+    if(reopen&&fs.existsSync(file)){
+      const backups=path.join(dataDir,'backups');fs.mkdirSync(backups,{recursive:true});fs.copyFileSync(file,path.join(backups,'before-chemical-drafts-'+Date.now()+'.json'),fs.constants.COPYFILE_EXCL);
+    }
+    persist({...state,chemicalInventory:{...current,draftLifecycleVersion:1,revision:(current.revision||0)+(reopen?1:0),records:current.records.map(record=>reopen&&record===latest?{...record,status:'draft'}:record)}});
+  }
   const itemKey = item => {
     item = packSizes.normalize(item);
     return JSON.stringify([item.id,item.description,item.itemNumber,item.company,item.countSize]);
@@ -94,7 +126,67 @@ function createApp({ dataDir = process.env.DATA_DIR || path.join(__dirname, 'dat
       if (route === '/api/health' && req.method === 'GET') return json(200, { ok: true });
       if (route === '/api/email-config' && req.method === 'GET') return json(200, { enabled:mailer.enabled, defaultTo:mailer.defaultTo });
       if (route === '/api/catalog' && req.method === 'GET') return json(200, { ...currentCatalog(), worksheets, images:imageManifest.items });
-      const orderList = () => ({items:state.orderList || [],revision:state.orderListRevision || 0,orders:state.orderHistory || []});
+      const settingsState=()=>{const today=new Date().toLocaleDateString('en-CA',{timeZone:'America/Denver'});return{revision:state.chemicalSettings?.revision||0,active:chemicalSettings.resolve(state.chemicalSettings?.versions,today),versions:[chemicalSettings.baseline,...(state.chemicalSettings?.versions||[])]};};
+      if(route==='/api/chemical-settings'&&req.method==='GET')return json(200,settingsState());
+      if(route==='/api/chemical-settings'&&req.method==='POST'){
+        let origin;try{origin=new URL(req.headers.origin);}catch{fail(403,'Save settings from the inventory app.');}if(!['http:','https:'].includes(origin.protocol)||origin.host!==req.headers.host)fail(403,'Save settings from the inventory app.');
+        const body=await bodyOf(req),current=state.chemicalSettings||{revision:0,versions:[]};
+        if(body.revision!==current.revision)fail(409,'Chemical settings changed elsewhere. Reload settings before saving. Your changes have not been saved.');
+        metadata({date:body.effectiveFrom,operator:body.operator});
+        if(!/^\d{4}-\d{2}-\d{2}$/.test(body.effectiveFrom)||new Date(body.effectiveFrom).toISOString().slice(0,10)!==body.effectiveFrom)fail(400,'Choose a valid effective date.');
+        if(body.effectiveFrom<new Date().toLocaleDateString('en-CA',{timeZone:'America/Denver'}))fail(400,'Settings must take effect today or later. Historical records keep their saved settings.');
+        if(typeof body.reason!=='string'||!body.reason.trim()||body.reason.length>500)fail(400,'Enter a change summary (up to 500 characters).');
+        let settings;try{settings=chemicalSettings.validate(body.chemicalKey,body.settings);}catch(error){fail(400,error.message);}
+        const base=chemicalSettings.resolve(current.versions,body.effectiveFrom),version={id:randomUUID(),effectiveFrom:body.effectiveFrom,createdAt:new Date().toISOString(),operator:body.operator.trim(),reason:body.reason.trim(),chemicalKey:body.chemicalKey,chemicals:{...base.chemicals,[body.chemicalKey]:settings}};
+        persist({...state,chemicalSettings:{revision:current.revision+1,versions:[...current.versions,version]}});return json(201,settingsState());
+      }
+      const chemicalState=()=>{
+        const records=chemicals.calculate((state.chemicalInventory?.records||[]).map(record=>({...record,status:record.status||'complete',counted:chemicals.fields.filter(([id])=>typeof record.readings[id]==='number').length,total:chemicals.fields.length})));
+        return{revision:state.chemicalInventory?.revision||0,formulaVersion:chemicals.formulaVersion,records:records.map(record=>{const advice=reportOrderAdvice(records,record),needed=advice.filter(item=>item.decision==='Order Now').length,review=advice.filter(item=>['Reading Missing','Trend Unavailable'].includes(item.decision)).length;return{...record,orderSummary:{needed,review}};})};
+      };
+      if(route==='/api/chemicals'&&req.method==='GET')return json(200,chemicalState());
+      const chemicalMatch=route.match(/^\/api\/chemicals\/records\/(\d{4}-\d{2}-\d{2})$/);
+      if(chemicalMatch&&['PUT','DELETE'].includes(req.method)){
+        if(req.headers.origin){let origin;try{origin=new URL(req.headers.origin);}catch{fail(403,'Save chemical readings from the inventory app.');}if(!['http:','https:'].includes(origin.protocol)||origin.host!==req.headers.host)fail(403,'Save chemical readings from the inventory app.');}
+        if(req.headers['content-type']?.split(';')[0].trim()!=='application/json')fail(415,'Send chemical readings as JSON.');
+        const body=await bodyOf(req),date=chemicalMatch[1],current=state.chemicalInventory||{revision:0,records:[]};
+        if(body.revision!==current.revision)fail(409,'Chemical inventory changed in another browser. Reload to review the latest readings before saving. Your entries have not been saved.');
+        if(!Number.isFinite(Date.parse(date))||new Date(date).toISOString().slice(0,10)!==date)fail(400,'Choose a valid reading date.');
+        let records=current.records.filter(r=>r.date!==date);
+        if(req.method==='DELETE'){
+          if(records.length===current.records.length)fail(404,'This chemical inventory no longer exists.');
+        }else{
+          const previous=current.records.find(r=>r.date===date);
+          if(previous&&(previous.status||'complete')==='complete'&&body.editCompleted!==true)fail(409,'Use Edit to correct a completed inventory.');
+          if(previous?.source?.type==='workbook'){
+            metadata({...body,date});
+            const keys=chemicals.chemicals.map(c=>c.id),values=body.recordedGallons;
+            if(!values||typeof values!=='object'||Array.isArray(values)||Object.keys(values).some(key=>!keys.includes(key))||keys.some(key=>values[key]!==null&&(typeof values[key]!=='number'||!Number.isFinite(values[key])||values[key]<0||values[key]>1000000000)))fail(400,'Provide recorded gallons for each chemical, or null for an unrecorded value.');
+            if(typeof body.notes!=='string'||body.notes.length>2000)fail(400,'Notes must be up to 2,000 characters.');
+            records.push({...previous,operator:body.operator.trim(),notes:body.notes.trim(),recordedGallons:Object.fromEntries(keys.map(key=>[key,values[key]])),updatedAt:new Date().toISOString()});
+            persist({...state,chemicalInventory:{...current,revision:current.revision+1,records}});
+            return json(200,chemicalState());
+          }
+          const unfinished=current.records.find(r=>r.status==='draft'&&r.date!==date);
+          if(unfinished&&(!previous||(previous.status||'complete')!=='complete'))return json(409,{error:'Resume or delete the unfinished chemical inventory from '+unfinished.date+' before starting another.',resumeDate:unfinished.date});
+          metadata({...body,date});
+          const numericMap=(input,keys)=>{
+            if(!input||typeof input!=='object'||Array.isArray(input)||Object.keys(input).some(k=>!keys.includes(k)))fail(400,'Invalid chemical readings.');
+            return Object.fromEntries(keys.map(key=>{const value=input[key]??null;if(value!==null&&(typeof value!=='number'||!Number.isFinite(value)||value<0||value>1000000000))fail(400,'Enter a nonnegative number, up to 1,000,000,000, or leave the field blank.');return[key,value];}));
+          };
+          const readings=numericMap(body.readings,chemicals.fields.map(f=>f[0]));
+          const status=previous&&(previous.status||'complete')==='complete'?'complete':body.status??'draft';
+          if(!['draft','complete'].includes(status))fail(400,'Choose draft or complete status.');
+          if(status==='complete'&&Object.values(readings).some(v=>v===null))fail(400,'Enter every reading before completing chemical inventory. Use 0 for an empty tank or no stored stock.');
+          if(typeof body.notes!=='string'||body.notes.length>2000)fail(400,'Notes must be up to 2,000 characters.');
+          const now=new Date().toISOString();
+          const version=previous?null:chemicalSettings.resolve(state.chemicalSettings?.versions,date);
+          records.push({date,operator:body.operator.trim(),readings,notes:body.notes.trim(),status,settingsVersion:previous?.settingsVersion||version?.id||chemicalSettings.baseline.id,settingsSnapshot:previous?.settingsSnapshot||version?.chemicals||chemicalSettings.clone(chemicalSettings.defaults),createdAt:previous?.createdAt||previous?.updatedAt||now,updatedAt:now,...(status==='complete'?{completedAt:previous?.completedAt||now}:{})});
+        }
+        persist({...state,chemicalInventory:{...current,revision:current.revision+1,records}});
+        return json(200,chemicalState());
+      }
+      const orderList = () => {const next=chemicalOrders.reconcile(state);if(next!==state)persist(next);return {items:state.orderList || [],revision:state.orderListRevision || 0,orders:state.orderHistory || []};};
       if (route === '/api/order-list' && req.method === 'GET') return json(200, orderList());
       const appendOrderMatch = route.match(/^\/api\/order-history\/([a-f0-9-]+)\/items$/);
       if (req.method === 'POST' && (route === '/api/order-list/manual' || appendOrderMatch)) {
@@ -143,9 +235,11 @@ function createApp({ dataDir = process.env.DATA_DIR || path.join(__dirname, 'dat
           const selected = body.ids.map(id => current.items.find(entry => entry.id === id));
           if (selected.some(entry => !entry)) fail(409,'A selected item is no longer on the list. Refresh and review your selection.');
           if (selected.some(entry => typeof entry.quantity !== 'number' || !Number.isFinite(entry.quantity) || entry.quantity <= 0 || !entry.orderUnit?.trim())) fail(400,'Set a quantity and purchasing unit for every selected item first.');
+          if(selected.some(entry=>entry.chemicalKey&&(!entry.item.company?.trim()||!entry.deliveryDate||entry.deliveryDate<body.date)))fail(400,'Set a supplier and a delivery date on or after the order date for each chemical.');
           if (typeof body.reference !== 'string' || body.reference.length > 200) fail(400,'Order reference must be up to 200 characters.');
           const order = {id:randomUUID(),date:body.date,operator:body.operator.trim(),reference:body.reference.trim(),recordedAt:new Date().toISOString(),items:selected};
-          persist({...state,orderList:current.items.filter(entry => !body.ids.includes(entry.id)),orderListRevision:current.revision + 1,orderHistory:[order,...(state.orderHistory || [])]});
+          const resolutions={...state.chemicalOrderResolutions};for(const entry of selected.filter(e=>e.chemicalKey))resolutions[entry.chemicalKey]={readingKey:entry.readingKey,action:'placed',orderId:order.id};
+          persist({...state,chemicalOrderResolutions:resolutions,orderList:current.items.filter(entry => !body.ids.includes(entry.id)),orderListRevision:current.revision + 1,orderHistory:[order,...(state.orderHistory || [])]});
           return json(201,orderList());
         }
         if (req.method === 'PATCH') {
@@ -155,12 +249,18 @@ function createApp({ dataDir = process.env.DATA_DIR || path.join(__dirname, 'dat
           if (typeof body.orderUnit !== 'string' || !body.orderUnit.trim() || body.orderUnit.trim().length > 80) fail(400,'Enter the purchasing unit (up to 80 characters).');
           if (typeof body.notes !== 'string' || body.notes.length > 1000) fail(400,'Order notes must be up to 1,000 characters.');
           const updated = {...existing,quantity:body.quantity,orderUnit:body.orderUnit.trim(),notes:body.notes.trim(),updatedAt:new Date().toISOString()};
+          if(existing.chemicalKey){
+            if(typeof body.supplier!=='string'||body.supplier.length>200)fail(400,'Enter a supplier name (up to 200 characters).');
+            if(typeof body.deliveryDate!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(body.deliveryDate)||!Number.isFinite(Date.parse(body.deliveryDate))||new Date(body.deliveryDate).toISOString().slice(0,10)!==body.deliveryDate)fail(400,'Choose a valid chemical delivery date.');
+            updated.item={...existing.item,company:body.supplier.trim()};updated.deliveryDate=body.deliveryDate;updated.deliveryDateEdited=true;
+          }
           persist({...state,orderList:current.items.map(entry => entry.id === updated.id ? updated : entry),orderListRevision:current.revision + 1});
           return json(200,orderList());
         }
         if (req.method === 'DELETE') {
           if (!current.items.some(entry => entry.id === listMatch[1])) fail(404,'This item is no longer on the order list.');
-          persist({...state,orderList:current.items.filter(entry => entry.id !== listMatch[1]),orderListRevision:current.revision + 1});
+          const removed=current.items.find(entry=>entry.id===listMatch[1]),resolutions={...state.chemicalOrderResolutions};if(removed.chemicalKey)resolutions[removed.chemicalKey]={readingKey:removed.readingKey,action:'removed'};
+          persist({...state,chemicalOrderResolutions:resolutions,orderList:current.items.filter(entry => entry.id !== listMatch[1]),orderListRevision:current.revision + 1});
           return json(200,orderList());
         }
         const inventory = state.inventories.find(run => run.id === body.inventoryId);
@@ -210,11 +310,14 @@ function createApp({ dataDir = process.env.DATA_DIR || path.join(__dirname, 'dat
         persist({...state,catalogItems:items,catalogRevision:catalog.revision + 1});
         return json(req.method === 'POST' ? 201 : 200,{...currentCatalog(),worksheets,images:imageManifest.items});
       }
+      if (route === '/api/supply-trends' && req.method === 'GET') return json(200, state.inventories.filter(record=>record.worksheet==='operating'&&record.status==='complete').map(record=>({id:record.id,worksheet:record.worksheet,status:record.status,date:record.date,operator:record.operator,updatedAt:record.updatedAt,items:record.items.map(packSizes.normalize),counts:record.counts})));
       if (route === '/api/inventories' && req.method === 'GET') return json(200, state.inventories.map(summary).sort((a,b) => b.updatedAt.localeCompare(a.updatedAt)));
       if (route === '/api/inventories' && req.method === 'POST') {
         const body = await bodyOf(req); metadata(body);
         const worksheet = worksheets.find(w => w.id === body.worksheet);
         if (!worksheet) fail(400, 'Choose Operating Supplies, Janitorial Supplies, or Dewatering Supplies.');
+        const unfinished=state.inventories.filter(record=>record.worksheet===worksheet.id&&record.status==='draft').sort((a,b)=>b.updatedAt.localeCompare(a.updatedAt))[0];
+        if(unfinished)return json(200,{...unfinished,resumed:true});
         const items = structuredClone(currentCatalog().items.filter(i => i.sourceSheet === worksheet.sourceSheet));
         if (!items.length) fail(400,'This worksheet has no items. Add items before starting inventory.');
         const previous = state.inventories.filter(r => r.worksheet === worksheet.id && r.status === 'complete').sort((a,b) => b.date.localeCompare(a.date) || (b.completedAt || b.updatedAt).localeCompare(a.completedAt || a.updatedAt))[0];
@@ -271,27 +374,29 @@ function createApp({ dataDir = process.env.DATA_DIR || path.join(__dirname, 'dat
           const current = state.inventories.find(r => r.id === match[1]);
           if (!current) fail(404, 'This inventory was deleted.');
           if (body.revision !== current.revision) fail(409, 'This inventory changed in another browser. Reload it before making more changes.');
-          if (current.status === 'complete') fail(409, 'Completed inventories are read-only. Start a new inventory for a new count.');
+          if (current.status === 'complete' && body.editCompleted !== true) fail(409, 'Use Edit to correct a completed inventory.');
           if (!body.counts || typeof body.counts !== 'object' || Array.isArray(body.counts)) fail(400, 'Provide item counts.');
           const counts = { ...current.counts };
           for (const [id, count] of Object.entries(body.counts)) {
             if (!current.items.some(i => i.id === id)) fail(400, 'Unknown inventory item.');
-            if (count === null) { delete counts[id]; continue; }
+            if (count === null) { if(current.status==='complete')fail(400,'Completed inventory counts cannot be cleared. Enter 0 for no stock.');delete counts[id]; continue; }
             if (typeof count !== 'number' || !Number.isFinite(count) || count < 0 || count > 1000000000) fail(400, 'Counts must be numbers from 0 to 1,000,000,000.');
             counts[id] = count;
           }
           if (body.status !== undefined && !['draft', 'complete'].includes(body.status)) fail(400, 'Invalid inventory status.');
           if (body.status === 'complete' && current.items.some(i => counts[i.id] === undefined)) fail(400, 'Count every item before completing inventory. Use 0 for items with no stock.');
-          const updated = { ...current, counts, status: body.status || current.status, revision: current.revision + 1, updatedAt: new Date().toISOString() };
-          if (updated.status === 'complete') updated.completedAt = updated.updatedAt;
+          const updated = { ...current, counts, status: current.status==='complete'?'complete':body.status || current.status, revision: current.revision + 1, updatedAt: new Date().toISOString() };
+          if (updated.status === 'complete') updated.completedAt = current.completedAt || updated.updatedAt;
           persist(queueCompletedInventories({ ...state, inventories: state.inventories.map(r => r.id === updated.id ? updated : r) })); return json(200, updated);
         }
       }
       if (route.startsWith('/api/')) return json(404, { error: 'Endpoint not found.' });
       if (!['GET', 'HEAD'].includes(req.method)) return json(405, { error: 'Method not allowed.' });
       const assets = { '/': 'index.html', '/index.html': 'index.html', '/app.js': 'app.js', '/pack-sizes.js':'pack-sizes.js', '/styles.css': 'styles.css', '/branding/northglenn-logo.png':'branding/northglenn-logo.png' };
+      for(const name of ['supply-trends.html','supply-trends.js','supply-trend-math.js','supply-trends.css'])assets['/'+name]=name;
+      for(const name of ['chemical-settings.js','chemical-settings-manager.js','chemical-settings-manager.css','chemical-math.js','chemical-trends.js','chemical-inventory.html','chemical-inventory.js','chemical-inventory.css'])assets['/'+name]=name;
       for (const asset of ['product-images.js','bin-cards.html','bin-cards.js','bin-cards.css','bin-card-print.js','vendor/qrcode.js','licenses/qrcode-MIT.txt']) assets['/' + asset] = asset;
-      for (const asset of ["operations-theme.css","shared/operations/theme.css","shared/operations/navigation.css","shared/operations/header.css","shared/operations/navigation.js","shared/operations/Inter-VariableFont_opsz,wght.ttf","shared/operations/Inter-LICENSE.txt"]) assets['/' + asset] = asset;
+      for (const asset of ["operations-theme.css","shared/operations/theme.css","shared/operations/navigation.css","shared/operations/header.css","shared/operations/navigation.js","shared/operations/users.js","shared/operations/Inter-VariableFont_opsz,wght.ttf","shared/operations/Inter-LICENSE.txt"]) assets['/' + asset] = asset;
       // Only filenames in the imported manifest are exposed, never arbitrary paths.
       for (const photo of Object.values(imageManifest.items)) {
         if (/^\/images\/s[123]-r\d+\.(jpg|png|webp|gif)$/.test(photo.src)) assets[photo.src] = photo.src.slice(1);
@@ -299,7 +404,7 @@ function createApp({ dataDir = process.env.DATA_DIR || path.join(__dirname, 'dat
       if (!assets[route]) return json(404, { error: 'Page not found.' });
       const asset = assets[route];
       const imageType = { '.jpg':'image/jpeg', '.png':'image/png', '.webp':'image/webp', '.gif':'image/gif', '.ttf':'font/ttf', '.txt':'text/plain; charset=utf-8' }[path.extname(asset)];
-      res.writeHead(200, { 'Content-Type': imageType || (asset.endsWith('.css') ? 'text/css; charset=utf-8' : asset.endsWith('.js') ? 'text/javascript; charset=utf-8' : 'text/html; charset=utf-8'), 'Cache-Control': 'no-store', 'X-Inventory-Version': release, 'X-Content-Type-Options': 'nosniff', 'Content-Security-Policy': "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; frame-ancestors 'self'" });
+      res.writeHead(200, { 'Content-Type': imageType || (asset.endsWith('.css') ? 'text/css; charset=utf-8' : asset.endsWith('.js') ? 'text/javascript; charset=utf-8' : 'text/html; charset=utf-8'), 'Cache-Control': 'no-store', 'X-Inventory-Version': release, 'X-Content-Type-Options': 'nosniff', 'Content-Security-Policy': "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://water.gibbhub.io; frame-ancestors 'self'" });
       let content = fs.readFileSync(path.join(__dirname, 'public', asset));
       if (asset.endsWith('.html')) content = content.toString('utf8').replace(/(href|src)="\.\/([\w/-]+\.(?:css|js))(?:\?[^\"]*)?"/g, (_, attr, name) => `${attr}="./${name}?v=${release}"`);
       res.end(req.method === 'HEAD' ? undefined : content);

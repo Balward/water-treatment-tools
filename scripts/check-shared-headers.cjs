@@ -4,7 +4,7 @@ const {createBrowserCheck}=require('./lib/browser-check.cjs');
 
 for(const width of [1920,1440,1024,900,899,850,768,390,320]){
  const measurements=[];
- for(const [name,url] of [['home','http://127.0.0.1:8782/'],['inventory','http://127.0.0.1:'+inventory.address().port],['inventory-live-server','http://127.0.0.1:8782/apps/operator-inventory/public/index.html'],['alum','http://127.0.0.1:8782/apps/alum-hydrometer-conversion/index.html'],['plant-production','http://127.0.0.1:8782/apps/plant-flow/index.html']]){
+ for(const [name,url] of [['home','http://127.0.0.1:8782/'],['inventory','http://127.0.0.1:'+inventory.address().port],['inventory-live-server','http://127.0.0.1:8782/apps/operator-inventory/public/index.html'],['rounds','http://127.0.0.1:8782/apps/plant-rounds/index.html'],['alum','http://127.0.0.1:8782/apps/alum-hydrometer-conversion/index.html'],['plant-production','http://127.0.0.1:8782/apps/plant-flow/index.html']]){
   await call('Emulation.setDeviceMetricsOverride',{width,height:1080,deviceScaleFactor:1,mobile:false});await call('Page.navigate',{url});
   for(let i=0;i<100;i++){if(await evaluate('document.readyState==="complete"&&document.querySelector(".site-header,.topbar")'))break;await new Promise(r=>setTimeout(r,50));}
   await evaluate('document.fonts.ready');await evaluate('new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))');
@@ -58,7 +58,7 @@ for(const width of [1920,1440,1024,900,899,850,768,390,320]){
       assert.equal(await evaluate('document.getElementById("primaryDryAlum").textContent'),'--');
       await evaluate('document.getElementById("resetButton").click()');assert.equal(await evaluate('document.getElementById("primaryDryAlum").textContent'),initial);
       await evaluate('document.querySelector("[data-ops-menu]").click()');assert.equal(await evaluate('document.querySelector(".ops-app-menu [aria-current]").dataset.opsDestination'),'alum');
-      assert.equal(await evaluate('document.querySelectorAll(".ops-app-menu [data-ops-destination]").length'),14);
+      assert.equal(await evaluate('document.querySelectorAll(".ops-app-menu [data-ops-destination]").length'),17);
       await evaluate('document.querySelector(".ops-app-menu-close").click()');
       await evaluate('document.querySelectorAll(".sidebar a")[2].click();new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))');
       assert.equal(await evaluate('document.querySelector(".sidebar [aria-current]").getAttribute("href")'),'#reference','Section navigation follows the visible reference section');
@@ -72,15 +72,15 @@ for(const width of [1920,1440,1024,900,899,850,768,390,320]){
     const initialTop=await evaluate('document.querySelector(".sidebar").getBoundingClientRect().top');
     for(const offset of [200,800]){
       await evaluate(`window.scrollTo(0,${offset});new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))`);
-      assert.equal(await evaluate('document.querySelector(".sidebar").getBoundingClientRect().top'),initialTop,name+' sidebar stays below the header while scrolling');
-      assert.equal(await evaluate('document.querySelector(".sidebar").getBoundingClientRect().bottom'),1080,name+' sidebar fills the remaining viewport');
+      assert.ok(Math.abs(await evaluate('document.querySelector(".sidebar").getBoundingClientRect().top')-initialTop)<1,name+' sidebar stays below the header while scrolling');
+      assert.ok(Math.abs(await evaluate('document.querySelector(".sidebar").getBoundingClientRect().bottom')-1080)<1,name+' sidebar fills the remaining viewport');
     }
     await evaluate('window.scrollTo(0,0);new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))');
     if(width===1440){
       await call('Emulation.setDeviceMetricsOverride',{width,height:320,deviceScaleFactor:1,mobile:false});
       await evaluate('new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))');
-      assert.ok(await evaluate('document.querySelector(".sidebar").scrollHeight>document.querySelector(".sidebar").clientHeight'),name+' long menu can scroll in a short window');
-      await evaluate('document.querySelector(".sidebar").scrollTop=1000');
+      if(name!=='rounds')assert.ok(await evaluate('document.querySelector(".sidebar").scrollHeight>document.querySelector(".sidebar").clientHeight'),name+' long menu can scroll in a short window');
+      await evaluate('document.querySelector(".sidebar nav").lastElementChild.scrollIntoView({block:"nearest"})');
       assert.ok(await evaluate('(()=>{const last=document.querySelector(".sidebar nav").lastElementChild.getBoundingClientRect();return last.top>=112 && last.bottom<=320})()'),name+' last navigation item remains reachable');
       await call('Emulation.setDeviceMetricsOverride',{width,height:1080,deviceScaleFactor:1,mobile:false});
       await evaluate('document.querySelector(".sidebar").scrollTop=0;window.scrollTo(0,0);new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))');

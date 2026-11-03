@@ -1,0 +1,582 @@
+{
+  "id": "weekly-chemical-inventory-2026-v1",
+  "source": "Weekly Chemical Inventory.xlsx",
+  "sheet": "2026",
+  "description": "Cached numeric volumes from the supplied workbook; no formulas or old tank levels imported.",
+  "records": [
+    {
+      "date": "2026-01-08",
+      "recordedGallons": {
+        "naoh": 4226.9520438,
+        "hypochlorite": 6910.657499999999,
+        "alum": 6443.20256,
+        "polymer": 487.858,
+        "permanganate": 789.2909
+      },
+      "nwos": 202659,
+      "recordedWaterUsed": null,
+      "recordedWaterPreviousDate": null,
+      "sourceRow": 5
+    },
+    {
+      "date": "2026-01-15",
+      "recordedGallons": {
+        "naoh": 4273.91817762,
+        "hypochlorite": 6497.67,
+        "alum": 5772.035626666667,
+        "polymer": 468.57399999999996,
+        "permanganate": 711.4322
+      },
+      "nwos": 202659,
+      "recordedWaterUsed": 0,
+      "recordedWaterPreviousDate": "2026-01-08",
+      "sourceRow": 6
+    },
+    {
+      "date": "2026-01-22",
+      "recordedGallons": {
+        "naoh": 4109.53670925,
+        "hypochlorite": 6125.98125,
+        "alum": 5134.42704,
+        "polymer": 443.57349999999997,
+        "permanganate": 710.7179
+      },
+      "nwos": 202659,
+      "recordedWaterUsed": 0,
+      "recordedWaterPreviousDate": "2026-01-15",
+      "sourceRow": 7
+    },
+    {
+      "date": "2026-01-28",
+      "recordedGallons": {
+        "naoh": 4098.577944692,
+        "hypochlorite": 5809.3575,
+        "alum": 4631.05184,
+        "polymer": 422.1445,
+        "permanganate": 710.7179
+      },
+      "nwos": 202659,
+      "recordedWaterUsed": 0,
+      "recordedWaterPreviousDate": "2026-01-22",
+      "sourceRow": 8
+    },
+    {
+      "date": "2026-02-04",
+      "recordedGallons": {
+        "naoh": 3937.3275519100002,
+        "hypochlorite": 5423.9025,
+        "alum": 3959.8849066666667,
+        "polymer": 397.144,
+        "permanganate": 710.0036
+      },
+      "nwos": 202659,
+      "recordedWaterUsed": 0,
+      "recordedWaterPreviousDate": "2026-01-28",
+      "sourceRow": 9
+    },
+    {
+      "date": "2026-02-11",
+      "recordedGallons": {
+        "naoh": 3819.91221736,
+        "hypochlorite": 4997.148749999999,
+        "alum": 3188.042933333333,
+        "polymer": 361.4305,
+        "permanganate": 709.2893
+      },
+      "nwos": 202659,
+      "recordedWaterUsed": 0,
+      "recordedWaterPreviousDate": "2026-02-04",
+      "sourceRow": 10
+    },
+    {
+      "date": "2026-02-18",
+      "recordedGallons": {
+        "naoh": 3506.8046585599996,
+        "hypochlorite": 4680.525,
+        "alum": 2718.22608,
+        "polymer": 601.43,
+        "permanganate": 710.0036
+      },
+      "nwos": 202659,
+      "recordedWaterUsed": 0,
+      "recordedWaterPreviousDate": "2026-02-11",
+      "sourceRow": 11
+    },
+    {
+      "date": "2026-02-25",
+      "recordedGallons": {
+        "naoh": 3506.8046585599996,
+        "hypochlorite": 4295.07,
+        "alum": 2147.7341866666666,
+        "polymer": 580.001,
+        "permanganate": 615.0017
+      },
+      "nwos": 202659,
+      "recordedWaterUsed": 0,
+      "recordedWaterPreviousDate": "2026-02-18",
+      "sourceRow": 12
+    },
+    {
+      "date": "2026-03-04",
+      "recordedGallons": {
+        "naoh": 3162.38634388,
+        "hypochlorite": 3964.68,
+        "alum": 5846.583946666667,
+        "polymer": 537.9300000000001,
+        "permanganate": 614.2874
+      },
+      "nwos": 202659,
+      "recordedWaterUsed": 0,
+      "recordedWaterPreviousDate": "2026-02-25",
+      "sourceRow": 13
+    },
+    {
+      "date": "2026-03-12",
+      "recordedGallons": {
+        "naoh": 3373.2400000000002,
+        "hypochlorite": 4201.692499999999,
+        "alum": 4931.26,
+        "polymer": 515.49,
+        "permanganate": 614.2874
+      },
+      "nwos": 202659,
+      "recordedWaterUsed": 0,
+      "recordedWaterPreviousDate": "2026-03-04",
+      "sourceRow": 14
+    },
+    {
+      "date": "2026-03-21",
+      "recordedGallons": {
+        "naoh": 3209.32,
+        "hypochlorite": 3816.2374999999997,
+        "alum": 4057.02,
+        "polymer": 481.15,
+        "permanganate": 613.5731
+      },
+      "nwos": 202659,
+      "recordedWaterUsed": 0,
+      "recordedWaterPreviousDate": "2026-03-12",
+      "sourceRow": 15
+    },
+    {
+      "date": "2026-03-25",
+      "recordedGallons": {
+        "naoh": 3311.77,
+        "hypochlorite": 3417.0162499999997,
+        "alum": 3681.37,
+        "polymer": 458.71,
+        "permanganate": 613.5731
+      },
+      "nwos": 202705,
+      "recordedWaterUsed": 46000,
+      "recordedWaterPreviousDate": "2026-03-21",
+      "sourceRow": 16
+    },
+    {
+      "date": "2026-04-01",
+      "recordedGallons": {
+        "naoh": 2983.93,
+        "hypochlorite": 2852.6,
+        "alum": 2772.98,
+        "polymer": 425.05,
+        "permanganate": 613.5731
+      },
+      "nwos": 203110,
+      "recordedWaterUsed": 405000,
+      "recordedWaterPreviousDate": "2026-03-25",
+      "sourceRow": 17
+    },
+    {
+      "date": "2026-04-08",
+      "recordedGallons": {
+        "naoh": 2799.52,
+        "hypochlorite": 7092.605,
+        "alum": 2014.85,
+        "polymer": 647.81,
+        "permanganate": 530
+      },
+      "nwos": 203329,
+      "recordedWaterUsed": 219000,
+      "recordedWaterPreviousDate": "2026-04-01",
+      "sourceRow": 18
+    },
+    {
+      "date": "2026-04-15",
+      "recordedGallons": {
+        "naoh": 2608.28,
+        "hypochlorite": 6624.5525,
+        "alum": 5464,
+        "polymer": 614.15,
+        "permanganate": 530
+      },
+      "nwos": 203666,
+      "recordedWaterUsed": 337000,
+      "recordedWaterPreviousDate": "2026-04-08",
+      "sourceRow": 19
+    },
+    {
+      "date": "2026-04-22",
+      "recordedGallons": {
+        "naoh": 2430.7,
+        "hypochlorite": 5743.5125,
+        "alum": 4835.64,
+        "polymer": 569.27,
+        "permanganate": 530
+      },
+      "nwos": 204000,
+      "recordedWaterUsed": 334000,
+      "recordedWaterPreviousDate": "2026-04-15",
+      "sourceRow": 20
+    },
+    {
+      "date": "2026-04-29",
+      "recordedGallons": {
+        "naoh": 2212.1400000000003,
+        "hypochlorite": 5027.6675,
+        "alum": 4125.32,
+        "polymer": 497.81500000000005,
+        "permanganate": 530
+      },
+      "nwos": 204295,
+      "recordedWaterUsed": 295000,
+      "recordedWaterPreviousDate": "2026-04-22",
+      "sourceRow": 21
+    },
+    {
+      "date": "2026-05-06",
+      "recordedGallons": {
+        "naoh": 1993.58,
+        "hypochlorite": 4394.42,
+        "alum": 3483.3,
+        "polymer": 444.52,
+        "permanganate": 400.717
+      },
+      "nwos": 204458,
+      "recordedWaterUsed": 163000,
+      "recordedWaterPreviousDate": "2026-04-29",
+      "sourceRow": 22
+    },
+    {
+      "date": "2026-05-13",
+      "recordedGallons": {
+        "naoh": 1829.66,
+        "hypochlorite": 3816.2374999999997,
+        "alum": 2732,
+        "polymer": 388.42,
+        "permanganate": 665.717
+      },
+      "nwos": 204753,
+      "recordedWaterUsed": 295000,
+      "recordedWaterPreviousDate": "2026-05-06",
+      "sourceRow": 23
+    },
+    {
+      "date": "2026-05-20",
+      "recordedGallons": {
+        "naoh": 1624.76,
+        "hypochlorite": 3155.4575,
+        "alum": 1967.04,
+        "polymer": 586.1,
+        "permanganate": 665.717
+      },
+      "nwos": 205078,
+      "recordedWaterUsed": 325000,
+      "recordedWaterPreviousDate": "2026-05-13",
+      "sourceRow": 24
+    },
+    {
+      "date": "2026-05-27",
+      "recordedGallons": {
+        "naoh": 5176.36,
+        "hypochlorite": 2522.21,
+        "alum": 1106.46,
+        "polymer": 506.23,
+        "permanganate": 665.717
+      },
+      "nwos": 205311,
+      "recordedWaterUsed": 233000,
+      "recordedWaterPreviousDate": "2026-05-20",
+      "sourceRow": 25
+    },
+    {
+      "date": "2026-06-03",
+      "recordedGallons": {
+        "naoh": 4725.58,
+        "hypochlorite": 6294.162499999999,
+        "alum": 3485.77056,
+        "polymer": 450.13,
+        "permanganate": 672.86
+      },
+      "nwos": 205760,
+      "recordedWaterUsed": 449000,
+      "recordedWaterPreviousDate": "2026-05-27",
+      "sourceRow": 26
+    },
+    {
+      "date": "2026-06-10",
+      "recordedGallons": {
+        "naoh": 4438.72,
+        "hypochlorite": 5454.421249999999,
+        "alum": 2515.9105600000003,
+        "polymer": 388.42,
+        "permanganate": 572.858
+      },
+      "nwos": 206223,
+      "recordedWaterUsed": 463000,
+      "recordedWaterPreviousDate": "2026-06-03",
+      "sourceRow": 27
+    },
+    {
+      "date": "2026-06-17",
+      "recordedGallons": {
+        "naoh": 4015.26,
+        "hypochlorite": 4394.42,
+        "alum": 9955.005866666666,
+        "polymer": 315.49,
+        "permanganate": 572.1437
+      },
+      "nwos": 206765,
+      "recordedWaterUsed": 542000,
+      "recordedWaterPreviousDate": "2026-06-10",
+      "sourceRow": 28
+    },
+    {
+      "date": "2026-06-24",
+      "recordedGallons": {
+        "naoh": 3605.46,
+        "hypochlorite": 3623.5099999999998,
+        "alum": 8746.905386666665,
+        "polymer": 230.01000000000002,
+        "permanganate": 717.8609
+      },
+      "nwos": 207352,
+      "recordedWaterUsed": 587000,
+      "recordedWaterPreviousDate": "2026-06-17",
+      "sourceRow": 29
+    },
+    {
+      "date": "2026-07-01",
+      "recordedGallons": {
+        "naoh": 3263.96,
+        "hypochlorite": 7312.865,
+        "alum": 7605.9216,
+        "polymer": 687.08,
+        "permanganate": 716.4322999999999
+      },
+      "nwos": 207894,
+      "recordedWaterUsed": 542000,
+      "recordedWaterPreviousDate": "2026-06-24",
+      "sourceRow": 30
+    },
+    {
+      "date": "2026-07-08",
+      "recordedGallons": {
+        "naoh": 2635.6,
+        "hypochlorite": 6101.4349999999995,
+        "alum": 6397.8211200000005,
+        "polymer": 608.54,
+        "permanganate": 715.718
+      },
+      "nwos": 208455,
+      "recordedWaterUsed": 561000,
+      "recordedWaterPreviousDate": "2026-07-01",
+      "sourceRow": 31
+    },
+    {
+      "date": "2026-07-15",
+      "recordedGallons": {
+        "naoh": 1993.58,
+        "hypochlorite": 5330.525,
+        "alum": 5256.837333333333,
+        "polymer": 517.45,
+        "permanganate": 615.716
+      },
+      "nwos": 209023,
+      "recordedWaterUsed": 568000,
+      "recordedWaterPreviousDate": "2026-07-08",
+      "sourceRow": 32
+    },
+    {
+      "date": "2026-07-22",
+      "recordedGallons": {
+        "naoh": 5121.72,
+        "hypochlorite": 4284.29,
+        "alum": 4115.853546666667,
+        "polymer": 433.3,
+        "permanganate": 613.5731
+      },
+      "nwos": 209620,
+      "recordedWaterUsed": 597000,
+      "recordedWaterPreviousDate": "2026-07-15",
+      "sourceRow": 33
+    },
+    {
+      "date": "2026-07-29",
+      "recordedGallons": {
+        "naoh": 4302.12,
+        "hypochlorite": 3238.055,
+        "alum": 2957.12016,
+        "polymer": 642.2,
+        "permanganate": 613.5731
+      },
+      "nwos": 210205,
+      "recordedWaterUsed": 585000,
+      "recordedWaterPreviousDate": "2026-07-22",
+      "sourceRow": 34
+    },
+    {
+      "date": "2026-08-05",
+      "recordedGallons": {
+        "naoh": 3591.8,
+        "hypochlorite": 6707.15,
+        "alum": 10386.956906666666,
+        "polymer": 591.71,
+        "permanganate": 530
+      },
+      "nwos": 210806,
+      "recordedWaterUsed": 601000,
+      "recordedWaterPreviousDate": "2026-07-29",
+      "sourceRow": 35
+    },
+    {
+      "date": "2026-08-12",
+      "recordedGallons": {
+        "naoh": 2936.12,
+        "hypochlorite": 5743.5125,
+        "alum": 9307.816906666667,
+        "polymer": 517.45,
+        "permanganate": 530
+      },
+      "nwos": 211662,
+      "recordedWaterUsed": 856000,
+      "recordedWaterPreviousDate": "2026-08-05",
+      "sourceRow": 36
+    },
+    {
+      "date": "2026-08-19",
+      "recordedGallons": {
+        "naoh": 2212.1400000000003,
+        "hypochlorite": 4779.875,
+        "alum": 7964.299733333333,
+        "polymer": 466.96000000000004,
+        "permanganate": 679.2887
+      },
+      "nwos": 212284,
+      "recordedWaterUsed": 622000,
+      "recordedWaterPreviousDate": "2026-08-12",
+      "sourceRow": 37
+    },
+    {
+      "date": "2026-08-26",
+      "recordedGallons": {
+        "naoh": 1542.8,
+        "hypochlorite": 3761.1724999999997,
+        "alum": 6689.08256,
+        "polymer": 681.47,
+        "permanganate": 679.2887
+      },
+      "nwos": 213050,
+      "recordedWaterUsed": 766000,
+      "recordedWaterPreviousDate": "2026-08-19",
+      "sourceRow": 38
+    },
+    {
+      "date": "2026-09-09",
+      "recordedGallons": {
+        "naoh": 4042.58,
+        "hypochlorite": 6211.565,
+        "alum": 8454.024906666667,
+        "polymer": 586.1,
+        "permanganate": 576.4295
+      },
+      "nwos": 214451,
+      "recordedWaterUsed": 1401000,
+      "recordedWaterPreviousDate": "2026-08-26",
+      "sourceRow": 39
+    },
+    {
+      "date": "2026-09-16",
+      "recordedGallons": {
+        "naoh": 3591.8,
+        "hypochlorite": 5413.1224999999995,
+        "alum": 7433.614506666667,
+        "polymer": 528.6700000000001,
+        "permanganate": 575.7152
+      },
+      "nwos": 214687,
+      "recordedWaterUsed": 236000,
+      "recordedWaterPreviousDate": "2026-09-09",
+      "sourceRow": 40
+    },
+    {
+      "date": "2026-09-23",
+      "recordedGallons": {
+        "naoh": 3100.04,
+        "hypochlorite": 4449.485,
+        "alum": 6346.087413333333,
+        "polymer": 472.57000000000005,
+        "permanganate": 450.71799999999996
+      },
+      "nwos": 215472,
+      "recordedWaterUsed": 785000,
+      "recordedWaterPreviousDate": "2026-09-16",
+      "sourceRow": 41
+    },
+    {
+      "date": "2026-09-30",
+      "recordedGallons": {
+        "naoh": 2649.26,
+        "hypochlorite": 3651.0425,
+        "alum": 5433.773706666667,
+        "polymer": 446.764,
+        "permanganate": 719.2895
+      },
+      "nwos": 215782,
+      "recordedWaterUsed": 310000,
+      "recordedWaterPreviousDate": "2026-09-23",
+      "sourceRow": 42
+    },
+    {
+      "date": "2026-10-07",
+      "recordedGallons": {
+        "naoh": 2266.7799999999997,
+        "hypochlorite": 7478.0599999999995,
+        "alum": 4500.70016,
+        "polymer": 674.738,
+        "permanganate": 718.5752
+      },
+      "nwos": 216230,
+      "recordedWaterUsed": 448000,
+      "recordedWaterPreviousDate": "2026-09-30",
+      "sourceRow": 43
+    },
+    {
+      "date": "2026-10-14",
+      "recordedGallons": {
+        "naoh": 1925.28,
+        "hypochlorite": 6789.7474999999995,
+        "alum": 3612.80016,
+        "polymer": 642.2,
+        "permanganate": 717.8609
+      },
+      "nwos": 216528,
+      "recordedWaterUsed": 298000,
+      "recordedWaterPreviousDate": "2026-10-07",
+      "sourceRow": 44
+    },
+    {
+      "date": "2026-10-21",
+      "recordedGallons": {
+        "naoh": 1693.06,
+        "hypochlorite": 6266.63,
+        "alum": 2875.16016,
+        "polymer": 614.15,
+        "permanganate": 617.8589
+      },
+      "nwos": 216710,
+      "recordedWaterUsed": 182000,
+      "recordedWaterPreviousDate": "2026-10-14",
+      "sourceRow": 45
+    }
+  ]
+}

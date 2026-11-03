@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en" class="chemical-document">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
+  <title>Chemical Inventory | Northglenn Water Treatment</title>
+  <link rel="stylesheet" href="./styles.css"><link rel="stylesheet" href="./shared/operations/theme.css"><link rel="stylesheet" href="./shared/operations/navigation.css"><link rel="stylesheet" href="./operations-theme.css"><link rel="stylesheet" href="./chemical-inventory.css">
+  <script src="./shared/operations/navigation.js" defer></script><script src="./chemical-settings.js" defer></script><script src="./chemical-math.js" defer></script><script src="./chemical-trends.js" defer></script><script src="./chemical-inventory.js" defer></script>
+<script src="./shared/operations/users.js" defer></script>
+</head>
+<body data-ops-app="inventory" class="chemical-page">
+<div class="phone-app">
+  <header class="topbar"><a class="brand ops-home-link" href="https://water.gibbhub.io/" aria-label="Operations Home"><img class="city-logo" src="./branding/northglenn-logo.png" alt="City of Northglenn" width="3376" height="780"></a><p class="facility-name">Water Treatment Facility<span>CHEMICAL INVENTORY</span></p><button data-ops-menu type="button" aria-label="Open Applications Menu">Apps</button></header>
+  <main id="app-scroll">
+    <a class="text-button chemical-back" href="./">&larr; Inventory Home</a>
+    <p class="eyebrow">WEEKLY INVENTORY</p><h1>Chemical Inventory</h1>
+    <div class="chemical-tabs" role="group" aria-label="Chemical inventory section"><button id="entry-tab" type="button" aria-pressed="true">Inventory</button><button id="history-tab" type="button" aria-pressed="false">History</button><button id="trends-tab" type="button" aria-pressed="false">Trends</button></div>
+    <p id="chemical-status" role="status" aria-live="polite"></p>
+    <section id="chemical-entry"><form id="chemical-form">
+      <div class="chemical-meta"><label>Reading Date<input id="chemical-date" type="date" required></label><label>Operator<input id="chemical-operator" readonly inputmode="none" maxlength="100" autocomplete="name" required></label></div>
+      <div id="chemical-date-notice" class="chemical-date-notice" role="status" hidden>
+        <svg id="chemical-date-warning-icon" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" hidden><path d="m12 3 10 18H2Z"/><path d="M12 9v5m0 3v1"/></svg>
+        <div><strong id="chemical-date-warning-title" hidden>Inventory Already Exists For This Date</strong><p id="chemical-existing" class="report-note"></p></div>
+        <button id="choose-chemical-date" type="button" hidden>Change Date</button>
+      </div>
+      <div id="chemical-fields"></div>
+      <section class="chemical-card"><h2>Salt</h2><div class="chemical-inputs"><label><span>Inventory<small>pallets</small></span><input id="reading-salt" data-reading="salt" type="number" min="0" max="1000000000" step="any" inputmode="decimal"></label></div></section>
+      <section class="chemical-card"><h2>Northwest Open Space Water</h2><div class="chemical-inputs"><label><span>Meter Reading<small>1,000 gal</small></span><input id="reading-nwos" data-reading="nwos" type="number" min="0" max="1000000000" step="any" inputmode="decimal"></label></div></section>
+      <label class="chemical-notes">Notes<textarea id="chemical-notes" rows="3" maxlength="2000" placeholder="Unusual readings, batching notes, or meter resets"></textarea></label>
+      <p id="chemical-progress" class="report-note" role="status"></p>
+      <div class="chemical-actions"><button id="save-chemical" type="submit">Save Draft</button><button id="chemical-report" type="button">View Report</button><button id="complete-chemical" type="button" class="primary" disabled>Complete Inventory</button><button id="reload-chemicals" type="button">Reload Saved Readings</button></div><p class="report-note">Readings save automatically. Leave unrecorded values blank; enter 0 for an empty tank. Complete inventory once all readings are entered.</p>
+    </form></section>
+    <section id="chemical-summary" hidden aria-labelledby="chemical-summary-title">
+      <p id="chemical-saved-banner" class="chemical-saved-banner" role="status" hidden>✓ Readings Saved Successfully</p>
+      <h2 id="chemical-summary-title" tabindex="-1">Saved Inventory</h2>
+      <div id="chemical-summary-content"></div>
+      <div class="chemical-actions"><button id="summary-edit" type="button" class="primary">Edit Readings</button><button id="summary-history" type="button">View All History</button></div>
+    </section>
+    <section id="chemical-history" hidden><h2>Reading History</h2><p class="report-note">View saved inventories by date. Imported workbook inventories preserve the gallons recorded at the time; older tank levels are not recalculated with today's formulas.</p><div id="chemical-history-list"></div></section>
+    <section id="chemical-trends" hidden aria-labelledby="trends-title">
+      <h2 id="trends-title">Inventory Trends</h2><p class="report-note">Choose one item to explore its saved readings over time. Imported chemical gallons retain their original recorded values.</p>
+      <div class="trend-filters">
+        <label>Item<select id="trend-item"></select></label>
+        <label id="trend-measure-label" hidden>Measurement<select id="trend-measure"><option value="used">Water Used Between Readings</option><option value="meter">Cumulative Meter Reading</option></select></label>
+        <label>Date Range<select id="trend-range"><option value="all">All History</option><option value="30">Last 30 Days</option><option value="90">Last 90 Days</option><option value="365">Last 365 Days</option><option value="custom">Custom Dates</option></select></label>
+        <label>From<input id="trend-from" type="date"></label><label>Through<input id="trend-through" type="date"></label>
+      </div>
+      <div class="trend-forecast-controls"><label><input id="trend-forecast-enabled" type="checkbox" checked> Show Forecast</label><label>Forecast Ahead<select id="trend-forecast-days"><option value="14">14 Days</option><option value="30" selected>30 Days</option><option value="60">60 Days</option></select></label></div>
+      <p id="trend-status" role="status"></p><div id="trend-stats" class="trend-stats"></div><p id="trend-forecast-summary" class="trend-forecast-summary" role="status"></p>
+      <div id="trend-chart-panel" class="trend-chart-panel" hidden>
+        <h3 id="trend-chart-title"></h3><p id="trend-description" class="report-note"></p>
+        <svg id="trend-chart" viewBox="0 0 920 350" role="group" aria-label="Interactive trend chart. Use the arrow keys to move between readings."></svg>
+        <div class="trend-legend"><span><i class="trend-import-symbol" aria-hidden="true"></i>Imported Workbook</span><span><i class="trend-app-symbol" aria-hidden="true"></i>App Reading</span><span id="trend-forecast-legend" hidden><i class="trend-forecast-symbol" aria-hidden="true"></i>Forecast</span></div>
+        <div class="trend-readout" aria-live="polite"><div><strong id="trend-point-date"></strong><p id="trend-point-value"></p><span id="trend-point-source"></span></div><button id="trend-open-inventory" type="button">View This Inventory</button></div>
+      </div>
+      <section id="trend-order-plan" class="trend-order-plan" aria-label="Chemical Order Planning" hidden></section>
+      <details id="trend-values" hidden><summary>View Recorded Values</summary><div class="chemical-table-wrap"><table class="chemical-table"><thead><tr><th>Date</th><th id="trend-value-heading">Value</th><th>Source</th></tr></thead><tbody id="trend-value-rows"></tbody></table></div></details>
+    </section>
+  </main>
+</div>
+</body>
+</html>

@@ -61,9 +61,9 @@
   let popupCardId = null;
   let editingCommentId = null;
 
-  function promptForOperatorName() {
+  async function promptForOperatorName() {
     const savedName = localStorage.getItem(operatorNameStorageKey) || '';
-    const enteredName = window.prompt('Save change as (name):', savedName);
+    const enteredName = await OperationsUsers.choose(savedName);
     if (enteredName === null) {
       return null;
     }
@@ -212,7 +212,7 @@
                   return null;
                 }
 
-                return { timestamp, updatedBy, changes };
+                return { id:entry.id, timestamp, updatedBy, changes };
               })
               .filter(Boolean)
             : [],
@@ -463,6 +463,8 @@
       return;
     }
 
+    if(assetLogList.dataset.equipmentId===equipment.id && assetLogList.querySelector('form'))return;
+    assetLogList.dataset.equipmentId=equipment.id;
     const changeLog = Array.isArray(equipment?.changeLog) ? equipment.changeLog : [];
     assetLogList.innerHTML = '';
 
@@ -481,15 +483,14 @@
       const meta = document.createElement('div');
       meta.className = 'asset-log-item-meta';
 
-      const author = document.createElement('p');
+      const author = document.createElement('span');
       author.className = 'asset-log-item-author';
       author.textContent = entry.updatedBy || 'operator';
-      meta.appendChild(author);
-
-      const timestamp = document.createElement('p');
+      const timestamp = document.createElement('time');
       timestamp.className = 'asset-log-item-time';
       timestamp.textContent = formatTimestamp(entry.timestamp);
-      meta.appendChild(timestamp);
+      timestamp.dateTime = entry.timestamp;
+      meta.append(timestamp, document.createTextNode(' \u00b7 by '), author);
 
       const changesList = document.createElement('ul');
       changesList.className = 'asset-log-item-changes';
@@ -499,9 +500,45 @@
         changesList.appendChild(listItem);
       }
 
-      item.append(meta, changesList);
+      item.append(changesList, meta);
+      const actions=document.createElement('div');actions.className='asset-log-actions';
+      for(const [label,remove] of [['Edit Entry',false],['Delete Entry',true]]){
+        const button=document.createElement('button');button.type='button';button.textContent=label;
+        button.addEventListener('click',()=>{
+          if(remove){if(confirm('Delete this change log entry? Current equipment status and notes will stay unchanged.'))saveLogEntry(equipment.id,entry,null,button);return;}
+          if(item.querySelector('form'))return;
+          const form=document.createElement('form');form.className='asset-log-form';
+          const input=(label,value,multiline=false)=>{
+            const wrapper=document.createElement('label');wrapper.textContent=label;
+            const control=document.createElement(multiline?'textarea':'input');control.value=value;control.maxLength=multiline?300:80;
+            wrapper.append(control);form.append(wrapper);return control;
+          };
+          const authorInput=input('Operator',entry.updatedBy);authorInput.required=true;
+          const fields=entry.changes.map(change=>({field:change.field,from:input(change.label+' — Before',change.from,true),to:input(change.label+' — After',change.to,true)}));
+          const save=document.createElement('button');save.type='submit';save.textContent='Save Entry';
+          const cancel=document.createElement('button');cancel.type='button';cancel.textContent='Cancel';cancel.addEventListener('click',()=>{form.remove();renderAssetLog(findEquipment(equipment.id));});
+          form.append(save,cancel);
+          form.addEventListener('submit',async event=>{event.preventDefault();await saveLogEntry(equipment.id,entry,{updatedBy:authorInput.value,changes:fields.map(f=>({field:f.field,from:f.from.value,to:f.to.value}))},save);});
+          item.append(form);authorInput.focus();
+        });
+        actions.append(button);
+      }
+      item.append(actions);
       assetLogList.appendChild(item);
     }
+  }
+
+  async function saveLogEntry(equipmentId,entry,values,button){
+    button.disabled=true;
+    try{
+      const response=await fetch(`${API_BASE}/equipment/${encodeURIComponent(equipmentId)}/change-log/${encodeURIComponent(entry.id)}`,{method:values?'PUT':'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({expectedEntry:entry,...values})});
+      const result=await response.json();
+      if(!response.ok)throw new Error(result.error||'Could not save the log entry.');
+      const equipment=findEquipment(equipmentId);
+      if(equipment)Object.assign(equipment,normalizeState({equipment:[result.equipment],comments:[]}).equipment[0]);
+      assetLogList.querySelector('form')?.remove();
+      syncFromState();
+    }catch(error){alert(error.message);}finally{button.disabled=false;}
   }
 
   function setCardDetails(card, item) {
@@ -760,6 +797,9 @@
     pendingSidebarChanges = {};
     setSaveButtonState();
     refreshDrawer();
+    if (window.matchMedia('(min-width: 900px)').matches) {
+      document.getElementById('assetLogDetails').open = true;
+    }
     equipmentDrawer.classList.add('is-open');
     equipmentDrawer.setAttribute('aria-hidden', 'false');
     drawerBackdrop.hidden = false;
@@ -1102,7 +1142,7 @@
     if (!selectedEquipmentId || Object.keys(pendingSidebarChanges).length === 0) {
       return;
     }
-    const editorName = promptForOperatorName();
+    const editorName = await promptForOperatorName();
     if (!editorName) {
       return;
     }
@@ -1150,7 +1190,7 @@
       return;
     }
 
-    const editorName = promptForOperatorName();
+    const editorName = await promptForOperatorName();
     if (!editorName) {
       return;
     }

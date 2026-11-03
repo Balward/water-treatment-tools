@@ -21,10 +21,10 @@ test('catalog edits persist across inventory saves and restarts while snapshots 
   assert.equal((await request(route,'PATCH',body)).status,409);
   const added=await request('/api/catalog/items','POST',{...body,revision:catalog.revision,description:'New supply',location:'New shelf',par:null});assert.equal(added.status,201);catalog=added.data;
   const custom=catalog.items.find(i=>i.description==='New supply');assert.ok(custom.id.startsWith('custom-'));assert.equal(custom.par,null);
+  const counts=Object.fromEntries(old.items.map(i=>[i.id,0]));assert.equal((await request('/api/inventories/'+old.id,'PATCH',{revision:0,counts,status:'complete'})).status,200);
   const next=(await request('/api/inventories','POST',{worksheet:'operating',operator:'Test',date:'2026-10-10'})).data;
   assert.equal(next.items.find(i=>i.id===item.id).description,'Changed name');assert.ok(next.items.some(i=>i.id===custom.id));
   assert.equal((await request('/api/inventories/'+old.id)).data.items[0].description,item.description);
-  const counts=Object.fromEntries(old.items.map(i=>[i.id,0]));assert.equal((await request('/api/inventories/'+old.id,'PATCH',{revision:0,counts,status:'complete'})).status,200);
   assert.equal((await request('/api/catalog')).data.revision,catalog.revision);
   assert.equal((await request(route,'DELETE',{revision:0})).status,409);
   const removed=await request(route,'DELETE',{revision:catalog.revision});assert.equal(removed.status,200);catalog=removed.data;

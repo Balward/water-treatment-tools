@@ -65,7 +65,7 @@ async function main() {
       assert.equal(await evaluate('document.querySelector(".topbar").getBoundingClientRect().height'),width<=800?144:112,'Common banner height at '+width);
       assert.ok(await evaluate('document.getElementById("opsAppMenu").open'));
       assert.equal(await evaluate('document.querySelector(".ops-app-menu [aria-current=page]").dataset.opsDestination'),'inventory');
-      assert.equal(await evaluate('document.querySelectorAll(".ops-app-menu [data-ops-destination]").length'),14);
+      assert.equal(await evaluate('document.querySelectorAll(".ops-app-menu [data-ops-destination]").length'),16);
       assert.equal(await evaluate('document.querySelector(".ops-app-menu [data-ops-destination=home]").href'),'https://water.gibbhub.io/?v=operations-home-20261021');
       assert.ok(await evaluate('(()=>{const b=document.getElementById("opsAppMenu").getBoundingClientRect();return b.left>=0&&b.right<=innerWidth&&b.top===0&&b.bottom<=innerHeight})()'),'Shared menu fits '+width);
       await evaluate('document.querySelector(".ops-app-menu-close").click();new Promise(r=>requestAnimationFrame(r))');
@@ -107,7 +107,7 @@ async function main() {
       await until('document.getElementById("new-dialog").open');
       if (worksheet === 'janitorial') {
         await evaluate(`document.getElementById('operator-name').focus();Object.defineProperty(visualViewport,'height',{configurable:true,get:()=>480});visualViewport.dispatchEvent(new Event('resize'))`);
-        await until(`document.body.classList.contains('keyboard-open') && document.getElementById('operator-name').getBoundingClientRect().bottom<=480`);
+        await until(`!document.body.classList.contains('keyboard-open') && document.getElementById('operator-name').readOnly`);
         await evaluate(`delete visualViewport.height;document.activeElement.blur();visualViewport.dispatchEvent(new Event('resize'))`);
         await until(`!document.body.classList.contains('keyboard-open')`);
       }
@@ -115,6 +115,11 @@ async function main() {
       await until(`!document.getElementById('workspace').hidden && document.getElementById('stat-remaining').textContent === '${total}'`);
     }
     await start('janitorial',18);
+    const firstDraftId=await evaluate('run.id');
+    await evaluate('document.getElementById("nav-home").click()');await until('!document.getElementById("home-view").hidden');
+    await evaluate('document.querySelector("[data-worksheet=janitorial]").click()');await until('!document.getElementById("workspace").hidden');
+    assert.equal(await evaluate('run.id'),firstDraftId,'Choosing a type with unfinished work resumes the same inventory');
+    assert.equal(await evaluate('document.getElementById("new-dialog").open'),false,'Resume does not offer a duplicate inventory form');
     assert.equal(await evaluate('document.querySelectorAll("[data-adjust], [data-use-previous], #arrow-step").length'),0,'Entry controls are keyboard-only');
     assert.equal(await evaluate('document.querySelector("#workspace input[type=search]")'),null,'Counting screens do not have item search');
     assert.equal(await evaluate('document.querySelector("[data-id]").dataset.id'),'s2-r5','Items stay in worksheet order');
@@ -244,8 +249,8 @@ async function main() {
     await evaluate('document.activeElement.blur()'); await viewport(390);
     await until("!document.body.classList.contains('keyboard-open')");
     await evaluate(`document.getElementById('nav-history').click()`);
-    await until(`document.getElementById('history-title').textContent==='Inventory history'`);
-    await until(`document.querySelector('.history-card .history-top strong')?.textContent==='Operating Supplies'`);
+    await until(`document.getElementById('history-title').textContent==='Inventory History'`);
+    await until(`document.querySelector('.history-card:has([data-report]) .history-top strong')?.textContent==='Operating Supplies'`);
     await evaluate(`document.querySelector('[data-report]').click()`);
     await until(`!document.getElementById('order-report').hidden`);
     assert.equal(await evaluate(`document.querySelectorAll('#report-items .report-item').length`),0,'Blank draft counts are not treated as zero stock');
@@ -398,7 +403,7 @@ async function main() {
     await until('window.__reloadPending !== true && document.querySelectorAll("[data-worksheet]").length === 3');
     assert.equal(await evaluate('document.documentElement.dataset.layout'),'desktop',JSON.stringify(await evaluate('({ua:navigator.userAgent,uaMobile:navigator.userAgentData?.mobile,touch:navigator.maxTouchPoints,width:innerWidth,screenWidth:screen.width,screenHeight:screen.height,phoneDevice})')));
     assert.ok(await evaluate('document.querySelector(".phone-app").getBoundingClientRect().width > 1200'));
-    assert.equal(await evaluate('getComputedStyle(document.querySelector(".worksheet-list")).gridTemplateColumns.split(" ").length'),3);
+    assert.equal(await evaluate('getComputedStyle(document.querySelector(".worksheet-list")).gridTemplateColumns.split(" ").length'),2);
     await checkWidth(); await screenshot('home-desktop');
     await evaluate("document.querySelector('[data-worksheet=\"operating\"]').click()");
     await until("document.getElementById('new-dialog').open");
@@ -474,7 +479,40 @@ async function main() {
     assert.equal(await evaluate("document.querySelector('[data-worksheet=\"operating\"] time').dateTime"),'2026-10-14');
     assert.equal(await evaluate("document.querySelector('[data-worksheet=\"janitorial\"] time').dateTime"),'2026-10-11');
     assert.equal(await evaluate("document.querySelector('[data-worksheet=\"dewatering\"] .worksheet-last-count').textContent"),'No completed inventory yet');
-    await evaluate('records=window.originalRecords;renderHome()');
+    await evaluate('window.originalChemicalRecords=chemicalRecords;chemicalRecords=[{date:"2026-10-16",status:"draft",operator:"Test Operator",counted:3,total:16,updatedAt:"2026-10-16T12:00:00Z"}];showMode("home");renderHome()');
+    for(const width of [390,1366]){
+      await viewport(width);await evaluate('new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))');
+      assert.equal(await evaluate('document.querySelectorAll("#history-list .history-card").length'),4,'Recent inventories shows four cards');
+      assert.ok(await evaluate('(()=>{const cards=[...document.querySelectorAll("#history-list .history-card")],heights=cards.map(card=>card.getBoundingClientRect().height),widths=cards.map(card=>card.getBoundingClientRect().width);return Math.max(...heights)-Math.min(...heights)<1&&Math.max(...widths)-Math.min(...widths)<1})()'),'Mixed chemical/supply recent cards have equal dimensions at '+width);
+      assert.ok(await evaluate('!!document.querySelector("#history-list [data-chemical-resume]")'),'Unfinished chemical inventory remains in the recent cards');
+      assert.ok(await evaluate('(()=>{const cards=[...document.querySelectorAll("#history-list .history-card")];return cards.every(card=>card.querySelector(".history-order-summary")&&card.querySelector(".report-button")&&card.querySelectorAll(".history-controls button").length===3)})()'),'Chemical and supply cards share status, action and report slots');
+      assert.ok(await evaluate('document.querySelector("[data-inventory-type=chemical] .report-button").textContent.includes("Draft")'),'An incomplete chemical inventory does not claim no order is needed');
+    }
+    await evaluate('chemicalRecords.push({...chemicalRecords[0],date:"2026-01-08",status:"complete",updatedAt:"2030-01-01T12:00:00Z",source:{type:"workbook"}});showMode("history")');
+    assert.ok(await evaluate('(()=>{const rows=[...document.querySelectorAll("#history-list .history-card p")];return ["2026-10-16","2026-10-15","2026-10-14","2026-10-11","2026-10-10","2026-01-08"].every((date,i)=>rows[i].textContent.includes(prettyDate(date)))})()'),'History sorts by inventory date even when old workbook entries were imported later');
+    assert.equal(await evaluate('document.getElementById("history-title").textContent'),'Inventory History');
+    for(const [type,count]of [['chemical',2],['operating',3],['janitorial',1],['dewatering',0]]){
+      await evaluate('document.getElementById("history-type").value='+JSON.stringify(type)+';document.getElementById("history-type").dispatchEvent(new Event("change"))');
+      assert.equal(await evaluate('document.querySelectorAll("#history-list .history-card").length'),count,'History filters '+type);
+      await evaluate('renderHistory()');
+      assert.equal(await evaluate('document.getElementById("history-type").value'),type,'Refresh preserves the selected type');
+    }
+    assert.ok(await evaluate('document.querySelector("#history-list .empty").textContent.includes("this inventory type")'),'Empty filter explains that there are no matching inventories');
+    await evaluate('showMode("home")');
+    assert.ok(await evaluate('document.getElementById("history-filters").hidden&&document.querySelectorAll("#history-list .history-card").length===4'),'Home recent cards include all types regardless of the history filter');
+    await evaluate('showMode("history");document.getElementById("history-type").value="all";document.getElementById("history-type").dispatchEvent(new Event("change"))');
+    assert.equal(await evaluate('document.querySelectorAll("#history-list .history-card").length'),6,'All Inventory Types restores the full history');
+    await evaluate('records=window.originalRecords;chemicalRecords=window.originalChemicalRecords;renderHistory();renderHome()');
+    await evaluate('showMode("history");window.correctionId=records.find(record=>record.status==="complete").id;[...document.querySelectorAll("[data-edit]")].find(button=>button.dataset.edit===window.correctionId).click()');
+    await until('!document.getElementById("workspace").hidden&&!navigating');
+    assert.ok(await evaluate('!document.querySelector("[data-id]").disabled'),'Edit opens completed supply counts for correction');
+    await evaluate('window.correctionItem=document.querySelector("[data-id]").dataset.id;const field=document.querySelector("[data-id]");field.value="1.25";field.dispatchEvent(new Event("input",{bubbles:true}));approvedCounts.set(window.correctionItem,1.25);field.blur()');
+    await until('document.getElementById("save-status").textContent==="All changes saved"');
+    assert.ok(await evaluate('run.status==="complete"&&run.counts[window.correctionItem]===1.25'),'Corrected supply inventory remains completed');
+    await evaluate('document.getElementById("nav-history").click()');await until('!document.getElementById("history-view").hidden');
+    await evaluate('[...document.querySelectorAll("[data-open]")].find(button=>button.dataset.open===window.correctionId).click()');
+    await until('!document.getElementById("workspace").hidden&&!navigating');
+    assert.ok(await evaluate('document.querySelector("[data-id]").disabled'),'View keeps completed supply inventories read-only');
     assert.equal(errors.length,0,'No browser runtime exceptions');
     console.log('Browser checks passed: mobile 320/390/430px, desktop 1024/1366px, narrow-window adaptation, phone landscape detection, inventory and order-list workflows.');
   } finally {
