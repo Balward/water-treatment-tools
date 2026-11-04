@@ -127,27 +127,3 @@ button.danger{color:#a32b3d;border-color:#d5a7af;background:#fff5f5}button.dange
   .metric{padding:14px}.hero h1{font-size:26px}
 }
 @media(prefers-reduced-motion:reduce){.applicants-table .applicant-summary-row>td{transition:none}}
-
-.notice.interviews-ready{background:#eef6e2;border-color:#b9ce99;color:#426800}
-.interview-counts{display:flex;flex-wrap:wrap;gap:10px 24px;padding:14px 0;border-top:1px solid var(--ops-color-line);border-bottom:1px solid var(--ops-color-line);color:var(--ops-color-muted);font-size:13px}
-.interview-counts strong{font-size:22px;color:var(--ops-color-ink);margin-right:5px}
-.interview-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:16px}
-.interview-card{display:flex;flex-direction:column;gap:14px;border:1px solid var(--ops-color-line);border-radius:8px;padding:20px;min-width:0}
-.interview-card.is-selected{border-left:4px solid #00677f;background:#f8fbfc}
-.interview-card>header{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px}
-.interview-choice{display:flex;align-items:flex-start;gap:10px;flex:1;min-width:0;cursor:pointer;font-size:16px;line-height:1.5}
-.interview-choice strong{overflow-wrap:anywhere}.interview-choice input{width:20px;height:20px;flex:none;margin:2px 0;accent-color:#00677f}
-.interview-contact-info{display:grid;gap:5px;font-size:13px;overflow-wrap:anywhere}.interview-contact-info>span{color:var(--ops-color-muted);font-size:12px}
-.interview-contact-status{font-size:12px;color:var(--ops-color-muted)}
-.interview-appointment{padding:12px;background:#e8f3d6;border-radius:6px;color:#365700;line-height:1.6}
-.interview-appointment strong,.interview-appointment span{display:block;font-size:13px;overflow-wrap:anywhere}
-.interview-card>button{margin-top:auto;align-self:flex-start}.interview-empty{grid-column:1/-1;padding:20px}
-.interview-dialog{width:min(760px,calc(100vw - 24px))}
-.interview-form-section{display:grid;gap:16px}.interview-form-section+.interview-form-section{padding-top:20px;border-top:1px solid var(--ops-color-line)}
-.interview-form-section h3{font-size:17px}.interview-form-section p{margin:0}.interview-form-section fieldset{min-width:0}
-#interview-clear-time{margin-top:14px}#interview-schedule-fields:disabled{opacity:.65}
-.interview-dialog .dialog-footer{position:sticky;bottom:0;z-index:2;background:white}
-#interview-history summary{cursor:pointer;font-weight:600;min-height:40px;display:flex;align-items:center;gap:8px}#interview-history summary::before{content:'\25b8'}#interview-history[open] summary::before{content:'\25be'}
-#interview-history-list article{padding:14px 0;border-top:1px solid var(--ops-color-line)}#interview-history-list time{font-size:11px;color:var(--ops-color-muted)}
-#interview-history-list p{font-size:13px;margin-top:5px;overflow-wrap:anywhere}#interview-history-list .history-note{white-space:pre-wrap;color:var(--ops-color-muted);padding-left:12px;border-left:2px solid var(--ops-color-line)}
-@media(max-width:750px){.interview-list{grid-template-columns:1fr}.interview-card{padding:16px}.interview-dialog .form-grid{grid-template-columns:1fr}}

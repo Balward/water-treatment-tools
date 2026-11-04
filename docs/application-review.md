@@ -76,18 +76,6 @@ Import replaces the selected review after confirmation; when current applicants 
 
 The printed summary keeps the applicant comparison table. Reviewer details start on a separate page for each applicant, with a clear name/ID header, score/progress, qualifications, and aligned Reviewer / Interview Vote / Notes columns. Vote labels retain color and text, blank votes read Not Reviewed, notes preserve line breaks and wrap, and long notes continue across pages. Printing one applicant omits the overall summary table. The Import And Backup section uses separate, spaced action panels; Archived Applicants has its own card.
 
-## Interview Planning
-
-Open **Manage Reviews > Interviews** using the existing management PIN. Check applicants to select them for interviews after every assigned reviewer has voted for every active applicant in that hiring review. This condition is checked on the server too. Contact information can be entered earlier, and existing interviews remain editable if review work is reopened. Archived hiring reviews are read-only.
-
-Email and phone are optional fields in both the applicant editor and Interview Details. Each selected applicant has a call status (Not Called Yet, Called, Voicemail Left, or Reached Applicant), a response (Awaiting Response, Accepted Interview, or Declined Interview), and contact notes. Saving status or scheduling changes adds dated contact/scheduling history. Selecting or removing an applicant also creates a history entry. History is preserved when an applicant is removed from the interview list; any scheduled time is cleared with confirmation. Declining an interview clears its current appointment while preserving prior scheduling history.
-
-After acceptance, use the date/time pickers, duration (default 60 minutes), and optional location or meeting details. Dates and times are explicitly **Mountain Time / America/Denver**, regardless of the coordinator's device timezone. A date and time must be entered together. Overlap warnings compare the selected hiring review's appointments and allow saves for separate interview panels. Filters show selected applicants, those needing contact, pending responses, accepted applicants needing a time, scheduled interviews, or declined applicants. Scheduled results sort by date and time.
-
-Contact details and interview history persist in each applicant's shared record and are included in JSON backups/imports. Editing application details with older clients or through bulk edit preserves these fields. New fields default to blank when reading existing records. Existing revision checks and backup writes apply to all interview actions. This stage records communication and schedules; it does not send emails or calendar invitations.
-
-Verify the interview workflow with `node --test scripts/application-interviews.test.cjs` and `node scripts/check-application-interviews.cjs`. Both use temporary synthetic records. Deployment runs the interview model/API tests along with the existing review tests.
-
 ## Storage And Deployment
 
 - Data: `data/application-review/review.json`, under the existing suite's persistent `/app/data` mount. Override with `APPLICATION_REVIEW_DATA_DIR` when needed.

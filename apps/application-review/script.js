@@ -23,7 +23,6 @@ function requestManagement(next='dashboard'){
 }
 const selectedApplicants=new Set();let movingApplicants=[];
 let bulkMode='add';const bulkOriginal=new Map();
-let interviewApplicant=null;
 function updateApplicantSelection(){
   const boxes=[...document.querySelectorAll('#applicants [data-select-applicant]')],chosen=boxes.filter(b=>b.checked).length;
   $('select-all-applicants').checked=boxes.length>0&&chosen===boxes.length;$('select-all-applicants').indeterminate=chosen>0&&chosen<boxes.length;
@@ -56,9 +55,6 @@ function applyArchiveState(){
   document.querySelectorAll('#applicants [data-select-applicant],#select-all-applicants').forEach(control=>{control.disabled=archived||view!=='dashboard';control.hidden=view!=='dashboard';});
   updateApplicantSelection();
   document.querySelectorAll('#bulk-rows tr').forEach(row=>{row.querySelector('[data-field=state]').disabled=archived||row.querySelector('[data-field=country]').value!=='US';});
-  document.querySelectorAll('#interview-form input,#interview-form select,#interview-form textarea,#save-interview,#interview-clear-time').forEach(control=>control.disabled=archived);
-  document.querySelectorAll('[data-interview-select]').forEach(control=>control.disabled=archived||!model.interviewsReady(state)&&!control.checked);
-  syncInterviewSchedule();
 }
 async function request(options,route='/api/application-review/sets/'+encodeURIComponent(activeSetId)){const response=await fetch(route,{cache:'no-store',...options});if(!response.ok){let data;try{data=await response.json();}catch{}throw Error(data?.error||'Unable to reach shared review storage. Start the API and refresh.');}return response.json();}
 function readLocal(){const saved=localStorage.getItem(collectionKey)||localStorage.getItem(key);return saved?hiring.validate(JSON.parse(saved)):hiring.blank();}
@@ -79,7 +75,7 @@ async function save(action){
     if(local){const current=readLocal(),next=hiring.apply(current,{...action,setId:activeSetId,revision:state.revision});writeLocal(next,current);accept(hiring.response(next,activeSetId));}
     else accept(await request({method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...action,revision:state.revision})}));
     render();message('Saved successfully.');return true;
-  }catch(error){message(error.message,true);const target=$('interview-dialog').open?'interview-error':$('move-dialog').open?'move-error':$('bulk-dialog').open?'bulk-error':$('review-dialog').open?'review-error':$('applicant-dialog').open?'applicant-error':'setup-error';$(target).textContent=error.message;return false;}
+  }catch(error){message(error.message,true);const target=$('move-dialog').open?'move-error':$('bulk-dialog').open?'bulk-error':$('review-dialog').open?'review-error':$('applicant-dialog').open?'applicant-error':'setup-error';$(target).textContent=error.message;return false;}
   finally{controls(false);}
 }
 function badge(row){return `<span class="badge ${row.status==='Complete'?'complete':row.status==='Pending'?'pending':''}">${esc(row.status)}</span>`;}
@@ -96,7 +92,6 @@ function render(){
   $('new-hiring-review').disabled=false;
   renderHiringReviews();
   renderMyReviews();
-  renderInterviews();
   document.body.classList.toggle('reviewer-mode',view==='review');
   const canRank=model.canCompare(state,reviewerSlot());$('sort').querySelector('[value=rank]').disabled=!canRank;if(!canRank&&$('sort').value==='rank')$('sort').value='lastName';
   const rows=model.summarize(state),complete=rows.filter(a=>a.status==='Complete').length;
@@ -182,18 +177,17 @@ function renderSetup(){
   $('archived-list').innerHTML=state.applicants.filter(a=>a.archived).map(a=>`<article><span><strong>${esc(model.displayName(a))}</strong><small> · ${a.id}</small></span><button data-restore="${a.id}" type="button">Restore Applicant</button></article>`).join('')||'<p class="muted">No archived applicants.</p>';
 }
 function switchView(next){
-  if(['dashboard','setup','sets','interviews'].includes(next)&&!requestManagement(next))return;
+  if(['dashboard','setup','sets'].includes(next)&&!requestManagement(next))return;
   if(setupDirty&&next!=='setup'&&!confirm('Leave Review Setup and discard your unsaved changes?'))return;
   if(next!=='setup'){setupDirty=false;renderSetup();}
-  view=next;document.body.classList.toggle('reviewer-mode',view==='review');for(const name of ['dashboard','review','setup','guide','sets','interviews'])$(name+'-view').hidden=name!==view;
+  view=next;document.body.classList.toggle('reviewer-mode',view==='review');for(const name of ['dashboard','review','setup','guide','sets'])$(name+'-view').hidden=name!==view;
   if(view==='overview')$('dashboard-view').hidden=false;
-  document.querySelector('.manage-navigation').open=['dashboard','setup','sets','interviews'].includes(view);
+  document.querySelector('.manage-navigation').open=['dashboard','setup','sets'].includes(view);
   $('add-applicant').hidden=view!=='dashboard';
   $('new-hiring-review').hidden=view==='review'||view==='guide';
   document.querySelectorAll('[data-view]').forEach(b=>{if(b.dataset.view===view)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});
   $('page-description').textContent={overview:'Compare interview recommendations and total points. Turn on reviewer comments for more detail.',dashboard:'A clear view of every candidate, from first review to interview discussion.',review:'Your assigned perspective. One recommendation at a time.',setup:'Assign reviewers, confirm scoring, and keep a backup of your work.',guide:'The workbook workflow, carried into your Operations workspace.',sets:'Separate applicant pools for each team, position, and hiring round.'}[view];
   $('main').focus({preventScroll:true});window.scrollTo({top:0});
-  if(view==='interviews')$('page-description').textContent='Select applicants, track contact attempts, and schedule interviews. All appointments use Mountain Time.';
   applyArchiveState();
 }
 function closeDialog(dialog){if(busy)return;if(dirty&&!confirm('Discard your unsaved changes?'))return;dirty=false;dialog.close();}
@@ -205,7 +199,6 @@ function openApplicant(id=null){
   $('applicant-country').innerHTML=reference.countries.map(([code,name])=>`<option value="${code}">${esc(name)}</option>`).join('');$('applicant-country').value=a?.country||'US';
   $('applicant-state').innerHTML='<option value="">Select State (Optional)</option>'+reference.states.map(([code,name])=>`<option value="${code}">${code} — ${name}</option>`).join('')+(a?.state&&!reference.states.some(([code])=>code===a.state)?`<option value="${esc(a.state)}">${esc(a.state)} (Existing Value)</option>`:'');
   $('applicant-first-name').value=a?.firstName||'';$('applicant-last-name').value=a?.lastName||'';$('applicant-state').value=a?.state||'';$('applicant-wage').value=a?.wage??'';$('applicant-licenses').value=a?.licenses||'';$('applicant-error').textContent='';dirty=false;$('applicant-dialog').showModal();
-  $('applicant-email').value=a?.email||'';$('applicant-phone').value=a?.phone||'';
   updateApplicantCountry();
 }
 function bulkRowLabels(){
@@ -310,64 +303,6 @@ function renderPerspectives(){
   }).join('');
 }
 function loadReview(){const value=$('review-slot').value,review=state.applicants.find(a=>a.id===selected)?.reviews[value];$('review-notes').value=review?.notes||'';document.querySelectorAll('[name=vote]').forEach(input=>input.checked=input.value===(review?.vote||''));$('review-error').textContent=value===''?'Assign reviewers in Review Setup, then choose your name.':'';dirty=false;renderPerspectives();}
-const contactLabels={'not-contacted':'Not Called Yet',called:'Called',voicemail:'Voicemail Left',reached:'Reached Applicant'};
-function appointmentLabel(details){
-  if(!details.date)return 'Not Scheduled';
-  const [hour,minute]=details.time.split(':').map(Number),date=new Date(details.date+'T12:00:00Z').toLocaleDateString('en-US',{timeZone:'America/Denver',month:'short',day:'numeric',year:'numeric'});
-  return date+' at '+(hour%12||12)+':'+String(minute).padStart(2,'0')+' '+(hour>=12?'PM':'AM')+' MT';
-}
-function interviewStatus(a){const i=a.interview;return !i.selected?'Not Selected':i.response==='declined'?'Declined':i.date?'Scheduled':i.response==='accepted'?'Ready To Schedule':i.contactStatus==='not-contacted'?'Needs Contact':'Awaiting Response';}
-function renderInterviews(){
-  const ready=model.interviewsReady(state),all=state.applicants.filter(a=>!a.archived),chosen=all.filter(a=>a.interview.selected),remaining=model.summarize(state).reduce((sum,a)=>sum+a.pending,0);
-  $('interview-readiness').textContent=ready?'All assigned reviews are complete. Select the applicants you want to interview.':remaining?remaining+' reviewer recommendation'+(remaining===1?' is':'s are')+' still needed. New interview selections open when all assigned reviews are complete. Existing contact details and interviews can still be updated.':'Add applicants and assign reviewers to begin. Interview selections open after all assigned reviews are complete.';
-  $('interview-readiness').classList.toggle('interviews-ready',ready);
-  $('interview-counts').innerHTML=[['Selected',chosen.length],['Needs Contact',chosen.filter(a=>interviewStatus(a)==='Needs Contact').length],['Ready To Schedule',chosen.filter(a=>interviewStatus(a)==='Ready To Schedule').length],['Scheduled',chosen.filter(a=>interviewStatus(a)==='Scheduled').length]].map(([label,count])=>`<span><strong>${count}</strong> ${label}</span>`).join('');
-  const query=$('interview-search').value.trim().toLowerCase(),filter=$('interview-filter').value;
-  const labels={'needs-contact':'Needs Contact',awaiting:'Awaiting Response',ready:'Ready To Schedule',scheduled:'Scheduled',declined:'Declined'};
-  let list=all.filter(a=>[model.displayName(a),a.name,a.email,a.phone].join(' ').toLowerCase().includes(query)&&(filter==='all'||filter==='selected'&&a.interview.selected||interviewStatus(a)===labels[filter]));
-  list.sort((a,b)=>filter==='scheduled'?(a.interview.date+a.interview.time).localeCompare(b.interview.date+b.interview.time)||model.compareLastName(a,b):model.compareLastName(a,b));
-  $('interview-shown').textContent=list.length+' Applicant'+(list.length===1?'':'s')+' Shown';
-  $('interview-list').innerHTML=list.map(a=>{const i=a.interview,status=interviewStatus(a);return `<article class="interview-card ${i.selected?'is-selected':''}"><header><label class="interview-choice"><input type="checkbox" data-interview-select="${a.id}" ${i.selected?'checked':''} aria-label="Select ${esc(model.displayName(a))} for interview"><strong>${esc(model.displayName(a))}</strong></label><span class="badge ${status==='Scheduled'?'complete':status==='Declined'?'vote-no':i.selected?'pending':''}">${status}</span></header><div class="interview-contact-info">${a.email?`<a href="mailto:${esc(a.email)}">${esc(a.email)}</a>`:'<span>No Email Added</span>'}${a.phone?`<a href="tel:${esc(a.phone.replace(/[^\d+]/g,''))}">${esc(a.phone)}</a>`:'<span>No Phone Added</span>'}</div>${i.selected?`<p class="interview-contact-status">${contactLabels[i.contactStatus]} &middot; ${i.response==='pending'?'Awaiting Response':i.response==='accepted'?'Accepted Interview':'Declined Interview'}</p>`:''}${i.date?`<p class="interview-appointment"><strong>${esc(appointmentLabel(i))}</strong><span>${i.duration} Minutes${i.location?' &middot; '+esc(i.location):''}</span></p>`:''}<button type="button" data-interview-open="${a.id}">${activeMeta?.archived?'View Details':i.selected?'Contact & Schedule':'Add / Edit Contact Details'}</button></article>`;}).join('')||'<p class="muted interview-empty">No applicants match this view.</p>';
-}
-function syncInterviewSchedule(){
-  const applicant=state?.applicants.find(a=>a.id===interviewApplicant),allowed=applicant?.interview.selected&&$('interview-response').value==='accepted'&&!activeMeta?.archived&&!busy;
-  $('interview-schedule-fields').disabled=!allowed;
-  $('interview-schedule-help').textContent=allowed?'All dates and times use Mountain Time (America/Denver). Leave both fields blank until a time is agreed.':'Scheduling becomes available when the applicant accepts. Any existing appointment is cleared when a pending or declined response is saved.';
-}
-function interviewOverlap(){
-  const date=$('interview-date').value,time=$('interview-time').value,[hour,minute]=time.split(':').map(Number),start=hour*60+minute,duration=Number($('interview-duration').value);
-  const conflicts=state.applicants.filter(a=>a.id!==interviewApplicant&&!a.archived&&a.interview.selected&&a.interview.date===date&&date&&time).filter(a=>{const [h,m]=a.interview.time.split(':').map(Number),other=h*60+m;return start<other+a.interview.duration&&other<start+duration;});
-  $('interview-overlap').hidden=!conflicts.length;$('interview-overlap').textContent=conflicts.length?'Overlaps with '+conflicts.map(a=>model.displayName(a)).join('; ')+'. You can still save if these interviews use different panels.':'';
-}
-function openInterview(id){
-  if(!requestManagement('interviews')||busy)return;
-  const a=state.applicants.find(a=>a.id===id&&!a.archived);if(!a)return;
-  interviewApplicant=id;const i=a.interview;
-  $('interview-title').textContent=model.displayName(a);$('interview-applicant-id').textContent=a.id;
-  for(const [field,value] of Object.entries({email:a.email,phone:a.phone,contact:i.contactStatus,response:i.response,notes:i.notes,date:i.date,time:i.time,duration:i.duration,location:i.location}))$('interview-'+field).value=value;
-  $('interview-tracking').hidden=!i.selected;$('interview-scheduling').hidden=!i.selected;
-  $('interview-history-list').innerHTML=[...i.history].reverse().map(entry=>`<article><time>${esc(new Date(entry.at).toLocaleString('en-US',{timeZone:'America/Denver',dateStyle:'medium',timeStyle:'short'}))} MT</time><p>${esc(entry.summary)}</p>${entry.notes?`<p class="history-note">${esc(entry.notes)}</p>`:''}</article>`).join('')||'<p class="muted">No contact or scheduling updates yet.</p>';
-  $('interview-history').open=false;$('interview-history').hidden=!i.selected&&!i.history.length;$('interview-error').textContent='';
-  dirty=false;applyArchiveState();interviewOverlap();$('interview-dialog').showModal();
-}
-$('interview-list').addEventListener('change',async event=>{
-  const box=event.target.closest('[data-interview-select]');if(!box||busy)return;
-  if(!requestManagement('interviews')){box.checked=!box.checked;return;}
-  if(!box.checked&&state.applicants.find(a=>a.id===box.dataset.interviewSelect)?.interview.date&&!confirm('Remove this applicant from the interview list and clear their scheduled time? Contact history will be preserved.')){box.checked=true;return;}
-  const selected=box.checked;if(!await save({type:'interview-selection',ids:[box.dataset.interviewSelect],selected})){box.checked=!selected;}
-});
-$('interview-list').addEventListener('click',event=>{const button=event.target.closest('[data-interview-open]');if(button)openInterview(button.dataset.interviewOpen);});
-for(const id of ['interview-search','interview-filter'])$(id).addEventListener('input',()=>{renderInterviews();applyArchiveState();});
-$('interview-response').addEventListener('change',()=>{if($('interview-response').value!=='accepted'){$('interview-date').value='';$('interview-time').value='';}syncInterviewSchedule();interviewOverlap();});
-for(const id of ['interview-date','interview-time','interview-duration'])$(id).addEventListener('input',interviewOverlap);
-$('interview-clear-time').onclick=()=>{$('interview-date').value='';$('interview-time').value='';dirty=true;interviewOverlap();};
-$('interview-form').onsubmit=async event=>{
-  event.preventDefault();if(busy||!requestManagement('interviews'))return;
-  const response=$('interview-response').value;
-  if(await save({type:'interview',id:interviewApplicant,email:$('interview-email').value,phone:$('interview-phone').value,interview:{contactStatus:$('interview-contact').value,response,notes:$('interview-notes').value,date:response==='accepted'?$('interview-date').value:'',time:response==='accepted'?$('interview-time').value:'',duration:Number($('interview-duration').value),location:$('interview-location').value}})){
-    dirty=false;$('interview-dialog').close();message('Interview details saved.');
-  }
-};
 function download(filename,body,type='application/json'){const url=URL.createObjectURL(new Blob([body],{type})),link=document.createElement('a');link.href=url;link.download=filename;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 function backup(){download('application-review-'+activeSetId+'-'+new Date().toISOString().slice(0,10)+'.json',JSON.stringify({...state,hiringReview:activeMeta},null,2));}
 function print(id){
@@ -426,8 +361,8 @@ function nextGuided(){
 $('start-reviews').onclick=()=>{if(busy||reviewerSlot()===null||activeMeta?.archived)return;queue=model.summarize(state).filter(a=>!model.canReveal(a,reviewerSlot())).sort(model.compareLastName).map(a=>a.id);nextGuided();};
 $('skip-applicant').onclick=()=>{if(busy)return;if(dirty&&!confirm('Skip this applicant and discard your unsaved changes?'))return;queue=queue.filter(id=>id!==selected);dirty=false;nextGuided();};
 document.addEventListener('click',event=>{const open=event.target.closest('[data-open]');if(open)openReview(open.dataset.open,open.dataset.slot===undefined?undefined:Number(open.dataset.slot));const close=event.target.closest('[data-close]');if(close)closeDialog(close.closest('dialog'));});
-for(const dialog of [$('applicant-dialog'),$('review-dialog'),$('hiring-dialog'),$('bulk-dialog'),$('move-dialog'),$('interview-dialog')]){dialog.addEventListener('cancel',event=>{event.preventDefault();closeDialog(dialog);});dialog.addEventListener('input',event=>{if(event.target.id!=='review-slot')dirty=true;});}
-$('applicant-form').onsubmit=async event=>{event.preventDefault();if(await save({type:'applicant',id:editing,firstName:$('applicant-first-name').value,lastName:$('applicant-last-name').value,country:$('applicant-country').value,state:$('applicant-state').value,wage:$('applicant-wage').value===''?null:Number($('applicant-wage').value),licenses:$('applicant-licenses').value,email:$('applicant-email').value,phone:$('applicant-phone').value})){dirty=false;$('applicant-dialog').close();}};
+for(const dialog of [$('applicant-dialog'),$('review-dialog'),$('hiring-dialog'),$('bulk-dialog'),$('move-dialog')]){dialog.addEventListener('cancel',event=>{event.preventDefault();closeDialog(dialog);});dialog.addEventListener('input',event=>{if(event.target.id!=='review-slot')dirty=true;});}
+$('applicant-form').onsubmit=async event=>{event.preventDefault();if(await save({type:'applicant',id:editing,firstName:$('applicant-first-name').value,lastName:$('applicant-last-name').value,country:$('applicant-country').value,state:$('applicant-state').value,wage:$('applicant-wage').value===''?null:Number($('applicant-wage').value),licenses:$('applicant-licenses').value})){dirty=false;$('applicant-dialog').close();}};
 $('review-slot').addEventListener('change',()=>{if(dirty&&!confirm('Discard unsaved changes before switching reviewer?')){$('review-slot').value=String(slot);return;}slot=$('review-slot').value===''?null:Number($('review-slot').value);$('my-reviewer').value=$('review-slot').value;rememberReviewer();showPerspectives=false;render();loadReview();});
 $('vote-form').onsubmit=async event=>{
   event.preventDefault();if($('review-slot').value===''){$('review-error').textContent='Choose a named reviewer first.';return;}
