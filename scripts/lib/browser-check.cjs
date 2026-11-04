@@ -88,6 +88,10 @@ async function launchBrowser({ acceptDialogs = false, userGesture = false } = {}
       pending.set(id, { resolve, reject, timer });
       socket.send(JSON.stringify({ id, method, params, ...(session ? { sessionId: session } : {}) }));
     });
+    // Test-triggered backups belong to the disposable profile, not the user's Downloads.
+    const downloadPath = path.join(profile, 'downloads');
+    fs.mkdirSync(downloadPath, { recursive: true });
+    await call('Browser.setDownloadBehavior', { behavior: 'allow', downloadPath });
     const target = await call('Target.createTarget', { url: 'about:blank' });
     session = (await call('Target.attachToTarget', { targetId: target.targetId, flatten: true })).sessionId;
     await call('Page.enable');
