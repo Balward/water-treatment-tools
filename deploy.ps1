@@ -20,7 +20,7 @@ try {
         }
         Invoke-Checked 'node' @('scripts/check-hypochlorite-math.cjs')
         Invoke-Checked 'node' @('scripts/check-plant-rounds-api.cjs')
-        Invoke-Checked 'node' @('--test','scripts/application-review.test.cjs')
+        Invoke-Checked 'node' @('--test','scripts/application-review.test.cjs','scripts/application-interviews.test.cjs')
         New-Item -ItemType Directory -Force -Path 'deployment' | Out-Null
         $archive = Join-Path $PSScriptRoot 'deployment\water-treatment-tools.tar.gz'
         $files = @('Dockerfile','.dockerignore','package.json','package-lock.json','.env.template','claude-proxy-server.js','application-review-api.js','plant-rounds-api.js','plant-rounds-pdf.js','nginx.conf','global-styles.css','apps','assets','shared','docs','sample-data','README.md','docker-compose.yml','deploy-unraid.sh','update.sh')
