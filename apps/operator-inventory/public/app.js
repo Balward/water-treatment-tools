@@ -204,7 +204,8 @@ $('print-order-review').addEventListener('click', async () => {
   } catch (error) { notify(error.message); }
 });
 $('nav-order-list').addEventListener('click', () => navigate('order-list'));
-$('nav-order-history').addEventListener('click', () => navigate('order-history'));
+$('to-order-tab').addEventListener('click', () => navigate('order-list'));
+$('placed-orders-tab').addEventListener('click', () => navigate('order-history'));
 let purchaseTargetOrder = null, purchasePickerRevision = 0;
 function pickerAlreadyAdded(item) {
   const entries = purchaseTargetOrder ? purchaseTargetOrder.items : orderList.items;
@@ -493,8 +494,11 @@ function showMode(next) {
   $('order-report').hidden = next !== 'report';
   $('order-list-view').hidden = next !== 'order-list';
   $('order-history-view').hidden = next !== 'order-history';
+  $('orders-navigation').hidden = !['order-list','order-history'].includes(next);
+  $('to-order-tab').setAttribute('aria-pressed', String(next === 'order-list'));
+  $('placed-orders-tab').setAttribute('aria-pressed', String(next === 'order-history'));
   $('order-review-view').hidden = next !== 'order-review';
-  for (const name of ['home', 'history', 'order-list', 'order-history', 'manage']) { const button = $('nav-' + name); if (next === name || (next === 'report' && name === 'history') || (next === 'order-review' && name === 'order-list')) button.setAttribute('aria-current', 'page'); else button.removeAttribute('aria-current'); }
+  for (const name of ['home', 'history', 'order-list', 'manage']) { const button = $('nav-' + name); if (next === name || (next === 'report' && name === 'history') || (['order-review','order-history'].includes(next) && name === 'order-list')) button.setAttribute('aria-current', 'page'); else button.removeAttribute('aria-current'); }
   renderHistory(); $('app-scroll').scrollTo({ top:0, behavior:'instant' });
 }
 function renderOverview() {

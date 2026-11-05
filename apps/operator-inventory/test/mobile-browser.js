@@ -81,7 +81,7 @@ async function main() {
     await until('window.__reloadPending !== true && document.querySelectorAll("[data-worksheet]").length === 3');
     assert.equal(await evaluate('getComputedStyle(document.querySelector(".welcome")).backgroundColor'),'rgb(255, 255, 255)','Old saved preferences cannot restore dark mode');
     assert.equal(await evaluate('document.documentElement.hasAttribute("data-theme")'),false);
-    assert.equal(await evaluate('document.querySelectorAll(".bottom-nav button").length'),6);
+    assert.equal(await evaluate('document.querySelectorAll(".bottom-nav button").length'),5);
     assert.equal(await evaluate('getComputedStyle(document.querySelector(".bottom-nav")).position'),'static','Navigation belongs to the app layout');
     async function checkDockOnScroll() {
       const top = await evaluate('document.querySelector(".bottom-nav").getBoundingClientRect().top');
@@ -373,7 +373,7 @@ async function main() {
     assert.equal(await evaluate('orderList.items.length'),1,'Unselected purchases remain in the backlog');
     assert.ok(await evaluate("orderList.items.every(entry=>entry.item.id!=='s1-r7')"),'Only the selected purchase leaves the active list');
     assert.ok(await evaluate("document.getElementById('past-order-items').textContent.includes('HACH-123')"));
-    await evaluate("document.getElementById('nav-order-history').click()");
+    await evaluate("document.getElementById('placed-orders-tab').click()");
     await until("!document.getElementById('order-history-view').hidden");
     assert.ok(await evaluate("document.getElementById('history-view').hidden && document.getElementById('order-list-view').hidden"),'Order History is separate from Inventory History and the backlog');
     for(const width of [320,390,430]) { await viewport(width); await checkWidth(); }
@@ -455,7 +455,7 @@ async function main() {
     await until("document.getElementById('ordered-dialog').open");
     await evaluate("document.getElementById('ordered-by').value='Browser buyer';document.getElementById('ordered-reference').value='MANUAL-TEST';document.getElementById('ordered-form').requestSubmit()");
     await until("!document.getElementById('ordered-dialog').open && !listBusy");
-    await evaluate("document.getElementById('nav-order-history').click()");
+    await evaluate("document.getElementById('placed-orders-tab').click()");
     await until("!document.getElementById('order-history-view').hidden");
     await evaluate("document.querySelector('[data-add-history-item]').click()");
     await until("document.getElementById('add-purchase-dialog').open");

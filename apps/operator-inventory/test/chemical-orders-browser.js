@@ -26,7 +26,7 @@ const {launchBrowser,removeTemporaryDirectory}=require('../../../scripts/lib/bro
     await evaluate('document.getElementById("mark-selected-ordered").click();document.getElementById("ordered-by").value="Blaine";document.getElementById("ordered-date").value="2026-10-28";document.getElementById("ordered-form").requestSubmit()');
     await until('!document.getElementById("ordered-dialog").open&&orderList.orders.length===1');
     const saved=await(await fetch(base+'/api/order-list')).json();assert.equal(saved.orders[0].items.length,2);assert.equal(saved.items.length,4,'Recorded chemical stays out of the queue');
-    await evaluate('document.getElementById("nav-order-history").click()');await until('!document.getElementById("order-history-view").hidden');assert.ok(await evaluate('document.getElementById("past-order-items").textContent.includes("Expected Delivery")'));
+    await evaluate('document.getElementById("placed-orders-tab").click()');await until('!document.getElementById("order-history-view").hidden');assert.ok(await evaluate('document.getElementById("past-order-items").textContent.includes("Expected Delivery")'));
     assert.deepEqual(browser.errors,[]);console.log('Chemical purchasing browser passed: supply photos, filters, mobile widths, delivery edit, mixed review, placement and history.');
   }finally{await browser?.close();await new Promise(r=>server.close(r));await removeTemporaryDirectory(dir);}
 })().catch(error=>{console.error(error);process.exitCode=1;});

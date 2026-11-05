@@ -24,6 +24,8 @@ const {launchBrowser,removeTemporaryDirectory}=require('../../../scripts/lib/bro
       await call('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
       await evaluate('document.fonts.ready');
       assert.ok(await evaluate('document.documentElement.scrollWidth<=innerWidth'),'Chemical trends fit '+width);
+      assert.equal(await evaluate('document.querySelectorAll(".bottom-nav a").length'),5);
+      assert.ok(await evaluate('(()=>{const nav=document.querySelector(".bottom-nav");return nav.scrollWidth<=nav.clientWidth})()'),'All five navigation items fit '+width);
       await evaluate('document.getElementById("supplies-tab").click()');
       assert.ok(await evaluate('document.documentElement.scrollWidth<=innerWidth'),'Supply trends fit '+width);
       await evaluate('document.getElementById("chemicals-tab").click()');
@@ -35,6 +37,14 @@ const {launchBrowser,removeTemporaryDirectory}=require('../../../scripts/lib/bro
     await evaluate('[...document.querySelectorAll(".bottom-nav a")].find(a=>a.href.endsWith("?view=history")).click()');
     await until('document.getElementById("nav-history")?.getAttribute("aria-current")==="page"');
     assert.ok(await evaluate('document.getElementById("home-view").hidden'));
+    await evaluate('document.getElementById("nav-order-list").click()');
+    await until('!document.getElementById("order-list-view").hidden');
+    assert.ok(await evaluate('!document.getElementById("orders-navigation").hidden'));
+    await evaluate('document.getElementById("placed-orders-tab").click()');
+    await until('!document.getElementById("order-history-view").hidden');
+    assert.equal(await evaluate('document.getElementById("nav-order-list").getAttribute("aria-current")'),'page');
+    await evaluate('document.getElementById("to-order-tab").click()');
+    await until('!document.getElementById("order-list-view").hidden');
     await call('Page.navigate',{url:base+'/?view=manage'});
     await until('document.querySelectorAll(".manager-card").length>0');
     assert.deepEqual(browser.errors,[]);
