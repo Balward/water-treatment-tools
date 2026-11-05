@@ -46,6 +46,7 @@ test('logout revokes the server session; changing the passphrase invalidates old
 });
 test('missing configuration and corrupt session storage fail closed; forged cookies and cross-origin requests are rejected',async t=>{
   const missing=await harness(t,{verifier:''});assert.equal((await fetch(missing.base+'/application-review-access')).status,503);assert.equal((await fetch(missing.base+'/api/application-review')).status,503);
+  const malformed=await harness(t,{verifier:'broken'});assert.equal((await fetch(malformed.base+'/application-review-access/setup')).status,503);await assert.rejects(fs.access(path.join(malformed.directory,'access/setup-code.txt')));
   const h=await harness(t);assert.equal((await h.login(passphrase,undefined,{Origin:'https://other.invalid'})).status,403);
   assert.equal((await fetch(h.base+'/api/application-review',{headers:{Cookie:'applicationReviewDev='+'a'.repeat(64)}})).status,401);
   await fs.mkdir(path.join(h.directory,'access'),{recursive:true});await fs.writeFile(path.join(h.directory,'access/access.json'),'broken');await h.restart();assert.equal((await fetch(h.base+'/api/application-review')).status,503);
@@ -59,4 +60,42 @@ test('production sessions use Secure host cookies, safe redirects, and hashed co
   const verifier=await auth.makePassphraseHash(passphrase),contents=replaceSetting('OTHER_SETTING=keep\nAPPLICATION_REVIEW_PASSPHRASE_HASH=old\n',verifier);
   assert.ok(contents.includes('OTHER_SETTING=keep'));assert.ok(!contents.includes(passphrase));assert.equal(require('dotenv').parse(contents).APPLICATION_REVIEW_PASSPHRASE_HASH,verifier);assert.equal((contents.match(/APPLICATION_REVIEW_PASSPHRASE_HASH=/g)||[]).length,1);assert.ok(contents.includes("='scrypt$"));
   await assert.rejects(auth.makePassphraseHash('2350'),/8 and 256/);
+});
+test('one-time browser setup requires a private code, is single-use, and persists without environment configuration',async t=>{
+  const h=await harness(t,{verifier:''}),page=await fetch(h.base+'/application-review-access/setup');assert.equal(page.status,200);
+  const code=(await fs.readFile(path.join(h.directory,'access/setup-code.txt'),'utf8')).trim();assert.equal(code.length,64);assert.ok(!(await page.text()).includes(code));
+  const setup=async(value,confirm='Browser Chosen Test Phrase!')=>fetch(h.base+'/application-review-access/setup',{method:'POST',redirect:'manual',headers:{'Content-Type':'application/x-www-form-urlencoded',Origin:h.base},body:new URLSearchParams({setupCode:value,newPassphrase:'Browser Chosen Test Phrase!',confirmPassphrase:confirm})});
+  assert.equal((await setup('wrong')).status,401);assert.equal((await setup(code,'Mismatch')).status,400);
+  assert.equal((await fetch(h.base+'/api/application-review')).status,503);
+  const response=await setup(code);assert.equal(response.status,303);const cookie=response.headers.get('set-cookie').split(';')[0];
+  assert.equal((await fetch(h.base+'/api/application-review',{headers:{Cookie:cookie}})).status,200);
+  assert.equal((await setup(code)).status,409);assert.equal((await fetch(h.base+'/application-review-access/setup')).status,404);
+  await assert.rejects(fs.access(path.join(h.directory,'access/setup-code.txt')));
+  const saved=await fs.readFile(path.join(h.directory,'access/access.json'),'utf8');assert.ok(!saved.includes(code)&&!saved.includes('Browser Chosen Test Phrase!'));
+  await h.restart();assert.equal((await h.login('Browser Chosen Test Phrase!')).status,303);assert.equal((await fetch(h.base+'/api/application-review',{headers:{Cookie:cookie}})).status,200);
+});
+test('in-app changes require the current phrase, replace every session, and survive restarts without editing environment files',async t=>{
+  const h=await harness(t),first=(await h.login()).headers.get('set-cookie').split(';')[0],other=(await h.login()).headers.get('set-cookie').split(';')[0];
+  const change=async(body,cookie=first,origin=h.base)=>fetch(h.base+'/application-review-access/passphrase',{method:'POST',headers:{'Content-Type':'application/json',Origin:origin,Cookie:cookie},body:JSON.stringify(body)});
+  const action={currentPassphrase:passphrase,newPassphrase:'Changed In The App!',confirmPassphrase:'Changed In The App!'};
+  assert.equal((await change(action,'')).status,401);assert.equal((await change(action,first,'https://other.invalid')).status,403);
+  assert.equal((await change({...action,currentPassphrase:'Wrong Phrase!'})).status,400);assert.equal((await change({...action,confirmPassphrase:'Not Matching'})).status,400);
+  assert.equal((await change({...action,newPassphrase:'2350',confirmPassphrase:'2350'})).status,400);
+  assert.equal((await fetch(h.base+'/api/application-review',{headers:{Cookie:other}})).status,200,'Failed changes preserve existing sessions');
+  const response=await change(action);assert.equal(response.status,200);const current=response.headers.get('set-cookie').split(';')[0];
+  for(const cookie of [first,other])assert.equal((await fetch(h.base+'/api/application-review',{headers:{Cookie:cookie}})).status,401);
+  assert.equal((await fetch(h.base+'/api/application-review',{headers:{Cookie:current}})).status,200);assert.equal((await h.login(passphrase)).status,401);
+  await h.restart();assert.equal((await h.login(action.newPassphrase)).status,303);assert.equal((await fetch(h.base+'/api/application-review',{headers:{Cookie:current}})).status,200);
+  await h.restart({verifier:await auth.makePassphraseHash('Terminal Recovery Phrase!')});assert.equal((await h.login('Terminal Recovery Phrase!')).status,303);assert.equal((await h.login(action.newPassphrase)).status,401);
+});
+test('expired setup codes are replaced privately and concurrent passphrase changes cannot overwrite each other',async t=>{
+  let now=Date.now();const h=await harness(t,{verifier:'',now:()=>now});
+  await fetch(h.base+'/application-review-access/setup');const previous=(await fs.readFile(path.join(h.directory,'access/setup-code.txt'),'utf8')).trim();
+  now+=24*60*60*1000+1;await fetch(h.base+'/application-review-access/setup');const code=(await fs.readFile(path.join(h.directory,'access/setup-code.txt'),'utf8')).trim();assert.notEqual(code,previous);
+  const body={newPassphrase:passphrase,confirmPassphrase:passphrase};
+  const setup=async value=>fetch(h.base+'/application-review-access/setup',{method:'POST',redirect:'manual',headers:{'Content-Type':'application/x-www-form-urlencoded',Origin:h.base},body:new URLSearchParams({...body,setupCode:value})});
+  assert.equal((await setup(previous)).status,401);assert.equal((await setup(code)).status,303);
+  const cookie=(await h.login()).headers.get('set-cookie').split(';')[0],another=(await h.login()).headers.get('set-cookie').split(';')[0];
+  const changes=await Promise.all([cookie,another].map((value,i)=>fetch(h.base+'/application-review-access/passphrase',{method:'POST',headers:{'Content-Type':'application/json',Origin:h.base,Cookie:value},body:JSON.stringify({currentPassphrase:passphrase,newPassphrase:'Concurrent Test Phrase '+i,confirmPassphrase:'Concurrent Test Phrase '+i})})));
+  assert.deepEqual(changes.map(r=>r.status).sort(),[200,401]);
 });

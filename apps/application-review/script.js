@@ -11,6 +11,7 @@ let state,local=false,busy=false,view='review',selected=null,editing=null,dirty=
 let guided=false,queue=[],showPerspectives=false,pendingReviewer='';
 const reviewerKey='northglenn-application-review-reviewer';
 let managementUnlocked=false,pendingManagementView='dashboard';
+let accessManaged=false;
 const overviewModeKey='northglenn-application-review-overview-mode';
 let detailedOverview=false;try{detailedOverview=localStorage.getItem(overviewModeKey)==='detailed';}catch{}
 function setOverviewMode(detailed){
@@ -55,6 +56,8 @@ function applyArchiveState(){
   document.querySelectorAll('#applicants [data-select-applicant],#select-all-applicants').forEach(control=>{control.disabled=archived||view!=='dashboard';control.hidden=view!=='dashboard';});
   updateApplicantSelection();
   document.querySelectorAll('#bulk-rows tr').forEach(row=>{row.querySelector('[data-field=state]').disabled=archived||row.querySelector('[data-field=country]').value!=='US';});
+  document.querySelectorAll('#access-settings-form input,#access-change-passphrase').forEach(control=>control.disabled=busy||!accessManaged);
+  $('access-settings-unavailable').hidden=accessManaged;
 }
 function accessExpired(){ $('access-expired').hidden=false;$('access-signin').href='/application-review-access?next='+encodeURIComponent(location.pathname+location.search); }
 async function request(options,route='/api/application-review/sets/'+encodeURIComponent(activeSetId)){const response=await fetch(route,{cache:'no-store',...options});if(response.status===401)accessExpired();if(!response.ok){let data;try{data=await response.json();}catch{}throw Error(data?.error||'Unable to reach shared review storage. Start the API and refresh.');}return response.json();}
@@ -143,6 +146,7 @@ async function selectHiringReview(id){
   try{
     const payload=local?hiring.response(readLocal(),id):await request(undefined,'/api/application-review/sets/'+encodeURIComponent(id));
     document.querySelectorAll('dialog[open]').forEach(dialog=>dialog.close());dirty=false;setupDirty=false;selected=null;editing=null;
+    $('access-settings-form').reset();
     selectedApplicants.clear();accept(payload);$('search').value='';$('status-filter').value='all';render();
     const match=state.reviewers.indexOf(previousName);$('my-reviewer').value=match>=0?String(match):'';slot=match>=0?match:null;render();
     message('');
@@ -178,17 +182,19 @@ function renderSetup(){
   $('archived-list').innerHTML=state.applicants.filter(a=>a.archived).map(a=>`<article><span><strong>${esc(model.displayName(a))}</strong><small> · ${a.id}</small></span><button data-restore="${a.id}" type="button">Restore Applicant</button></article>`).join('')||'<p class="muted">No archived applicants.</p>';
 }
 function switchView(next){
-  if(['dashboard','setup','sets'].includes(next)&&!requestManagement(next))return;
+  if(['dashboard','setup','sets','access'].includes(next)&&!requestManagement(next))return;
+  if(view==='access'&&next!=='access'){if(dirty&&!confirm('Discard the unsaved passphrase entries?'))return;dirty=false;$('access-settings-form').reset();}
   if(setupDirty&&next!=='setup'&&!confirm('Leave Review Setup and discard your unsaved changes?'))return;
   if(next!=='setup'){setupDirty=false;renderSetup();}
-  view=next;document.body.classList.toggle('reviewer-mode',view==='review');for(const name of ['dashboard','review','setup','guide','sets'])$(name+'-view').hidden=name!==view;
+  view=next;document.body.classList.toggle('reviewer-mode',view==='review');for(const name of ['dashboard','review','setup','guide','sets','access'])$(name+'-view').hidden=name!==view;
   if(view==='overview')$('dashboard-view').hidden=false;
-  document.querySelector('.manage-navigation').open=['dashboard','setup','sets'].includes(view);
+  document.querySelector('.manage-navigation').open=['dashboard','setup','sets','access'].includes(view);
   $('add-applicant').hidden=view!=='dashboard';
   $('new-hiring-review').hidden=view==='review'||view==='guide';
   document.querySelectorAll('[data-view]').forEach(b=>{if(b.dataset.view===view)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});
   $('page-description').textContent={overview:'Compare interview recommendations and total points. Turn on reviewer comments for more detail.',dashboard:'A clear view of every candidate, from first review to interview discussion.',review:'Your assigned perspective. One recommendation at a time.',setup:'Assign reviewers, confirm scoring, and keep a backup of your work.',guide:'The workbook workflow, carried into your Operations workspace.',sets:'Separate applicant pools for each team, position, and hiring round.'}[view];
   $('main').focus({preventScroll:true});window.scrollTo({top:0});
+  if(view==='access')$('page-description').textContent='Manage the shared passphrase for Application Review.';
   applyArchiveState();
 }
 function closeDialog(dialog){if(busy)return;if(dirty&&!confirm('Discard your unsaved changes?'))return;dirty=false;dialog.close();}
@@ -447,7 +453,20 @@ $('access-signout').onclick=async()=>{
   if(busy)return;if((dirty||setupDirty)&&!confirm('Discard unsaved changes and sign out?'))return;
   try{const response=await fetch('/application-review-access/logout',{method:'POST'});if(!response.ok)throw Error('Unable to sign out. Try again.');dirty=false;setupDirty=false;location.assign('/application-review-access');}catch(error){message(error.message,true);}
 };
-fetch('/application-review-access/status',{cache:'no-store'}).then(response=>response.ok?response.json():null).then(status=>{$('access-signout').hidden=!status?.authenticated;}).catch(()=>{});
+fetch('/application-review-access/status',{cache:'no-store'}).then(response=>response.ok?response.json():null).then(status=>{accessManaged=status?.authenticated===true;$('access-signout').hidden=!accessManaged;if(state)applyArchiveState();}).catch(()=>{});
+$('access-settings-form').addEventListener('input',()=>{dirty=true;$('access-settings-result').hidden=true;});
+$('access-settings-form').onsubmit=async event=>{
+  event.preventDefault();if(busy||!accessManaged||!requestManagement('access'))return;
+  $('access-settings-error').textContent='';$('access-settings-result').hidden=true;
+  const currentPassphrase=$('access-current-passphrase').value,newPassphrase=$('access-new-passphrase').value,confirmPassphrase=$('access-confirm-passphrase').value;
+  if(newPassphrase!==confirmPassphrase){$('access-settings-error').textContent='The new passphrase entries did not match.';return;}
+  controls(true);
+  try{
+    const response=await fetch('/application-review-access/passphrase',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({currentPassphrase,newPassphrase,confirmPassphrase})});
+    const data=await response.json();if(response.status===401)accessExpired();if(!response.ok)throw Error(data.error||'Unable to change the passphrase.');
+    $('access-settings-form').reset();dirty=false;$('access-settings-result').textContent=data.message;$('access-settings-result').hidden=false;
+  }catch(error){$('access-settings-error').textContent=error.message;}finally{controls(false);}
+};
 window.addEventListener('pageshow',event=>{if(event.persisted)location.reload();});
 refresh(true);
 })();

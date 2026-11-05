@@ -31,6 +31,17 @@ try {
             Invoke-Checked 'scp' @($archive,"${destination}:/mnt/user/appdata/water-treatment-tools.tar.gz")
             Invoke-Checked 'scp' @((Join-Path $PSScriptRoot 'deploy-unraid.sh'),"${destination}:/mnt/user/appdata/water-treatment-tools-update.sh")
             Invoke-Checked 'ssh' @($destination,'bash /mnt/user/appdata/water-treatment-tools-update.sh')
+            # Retrieve the initial setup code privately, never into logs or Downloads.
+            $setupState = & ssh $destination 'if test -s /mnt/user/appdata/water-treatment-tools/data/application-review-access/setup-code.txt; then printf setup-pending; fi'
+            if ($LASTEXITCODE -ne 0) { throw 'Unable to check Application Review setup status.' }
+            $privateSetupFile = Join-Path $PSScriptRoot 'deployment\application-review-setup-code.txt'
+            if (([string]$setupState).Trim() -eq 'setup-pending') {
+                Invoke-Checked 'scp' @("${destination}:/mnt/user/appdata/water-treatment-tools/data/application-review-access/setup-code.txt",$privateSetupFile)
+                Write-Host "Application Review first-time setup code saved privately to: $privateSetupFile"
+                Write-Host 'Open /application-review-access/setup in your browser to choose the passphrase.'
+            } elseif (Test-Path -LiteralPath $privateSetupFile) {
+                Remove-Item -LiteralPath $privateSetupFile
+            }
         }
     }
     if ($Target -in @('All','Inventory')) {

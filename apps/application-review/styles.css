@@ -127,3 +127,6 @@ button.danger{color:#a32b3d;border-color:#d5a7af;background:#fff5f5}button.dange
   .metric{padding:14px}.hero h1{font-size:26px}
 }
 @media(prefers-reduced-motion:reduce){.applicants-table .applicant-summary-row>td{transition:none}}
+.access-settings-card{max-width:700px;display:grid;gap:20px}
+.access-settings-card .card-heading{margin-bottom:0}.access-settings-card .notice{margin:0}
+.access-settings-result{padding:14px 16px;border:1px solid #b9ce99;border-radius:6px;background:#eef6e2;color:#426800;font-size:14px}
