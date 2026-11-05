@@ -1,0 +1,28 @@
+/* Keep every inventory destination accessible in a single mobile navigation row. */
+@media (max-width: 899px) {
+  .bottom-nav { display:flex; overflow-x:auto; gap:4px; }
+  .bottom-nav button,.bottom-nav a { flex:1 0 78px; min-width:78px; }
+}
+.inventory-trends-page .phone-app { display:grid; grid-template-columns:var(--ops-sidebar-width,222px) minmax(0,1fr); grid-template-rows:auto 1fr; }
+.inventory-trends-page .topbar { grid-column:1 / -1; }
+.inventory-trends-page #app-scroll { grid-column:2; grid-row:2; width:100%; max-width:1400px; min-width:0; box-sizing:border-box; }
+.inventory-trends-page .bottom-nav { grid-column:1; grid-row:2; display:flex; flex-direction:column; align-self:start; position:sticky; top:0; height:100dvh; padding:22px 14px; background:#172228; gap:8px; box-sizing:border-box; }
+.inventory-trends-page .bottom-nav a { display:flex; align-items:center; gap:12px; min-height:52px; padding:12px; border-radius:10px; color:#bccbd2; text-decoration:none; box-sizing:border-box; font-weight:600; }
+.inventory-trends-page .bottom-nav a[aria-current=page] { background:#00677f; color:white; }
+.inventory-trends-page .bottom-nav a:hover { background:#28424b; }
+.inventory-trends-page .bottom-nav a svg { width:26px; height:26px; flex:none; }
+.inventory-trends-page .bottom-nav a small { font-size:13px; }
+.trends-tabs { display:flex; gap:8px; margin:24px 0; }
+.trends-tabs button { min-height:48px; padding:12px 18px; border:1px solid var(--line); border-radius:8px; background:var(--surface); color:var(--accent); font:inherit; font-weight:650; cursor:pointer; }
+.trends-tabs button[aria-selected=true] { background:var(--accent); color:white; border-color:var(--accent); }
+.inventory-trends-page [hidden] { display:none!important; }
+.inventory-trends-page #chemical-trends input,.inventory-trends-page #chemical-trends select { font-size:16px; }
+@media (max-width:899px) {
+  .inventory-trends-page .phone-app { display:block; }
+  .inventory-trends-page #app-scroll { padding-bottom:120px; }
+  .inventory-trends-page .bottom-nav { position:fixed; inset:auto 0 0; height:auto; flex-direction:row; padding:8px; z-index:20; }
+  .inventory-trends-page .bottom-nav a { flex-direction:column; justify-content:center; gap:6px; padding:8px 4px; }
+  .inventory-trends-page .bottom-nav a small { font-size:10px; white-space:nowrap; }
+  .inventory-trends-page .ops-sidebar-caption { display:none; }
+  .trends-tabs button { flex:1; padding:12px 8px; font-size:14px; }
+}

@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Inventory Trends | Northglenn Water Treatment</title>
+  <link rel="stylesheet" href="./styles.css"><link rel="stylesheet" href="./shared/operations/theme.css"><link rel="stylesheet" href="./shared/operations/navigation.css"><link rel="stylesheet" href="./operations-theme.css"><link rel="stylesheet" href="./supply-trends.css">
+  <script src="./shared/operations/navigation.js" defer></script><script src="./pack-sizes.js" defer></script><script src="./supply-trend-math.js" defer></script><script src="./supply-trends.js" defer></script>
+<link rel="stylesheet" href="./chemical-inventory.css"><link rel="stylesheet" href="./trends.css"><script src="./chemical-settings.js" defer></script><script src="./chemical-math.js" defer></script><script src="./chemical-trends.js" defer></script><script src="./trends.js" defer></script></head>
+<body data-ops-app="inventory" class="supply-trends-page inventory-trends-page">
+<div class="phone-app">
+  <header class="topbar"><a class="brand ops-home-link" href="https://water.gibbhub.io/" aria-label="Operations Home"><img class="city-logo" src="./branding/northglenn-logo.png" alt="City of Northglenn" width="3376" height="780"></a><p class="facility-name">Water Treatment Facility<span>SUPPLY INVENTORY</span></p><button data-ops-menu type="button" aria-label="Open Applications Menu">Apps</button></header>
+  <main id="app-scroll">
+    <h1>Inventory Trends</h1>
+    <div class="trends-tabs" role="tablist" aria-label="Inventory Type">
+      <button id="supplies-tab" role="tab" aria-selected="true" aria-controls="supplies-panel" type="button">Operating Supplies</button>
+      <button id="chemicals-tab" role="tab" aria-selected="false" aria-controls="chemicals-panel" tabindex="-1" type="button">Chemicals</button>
+    </div>
+    <section id="supplies-panel" role="tabpanel" aria-labelledby="supplies-tab">
+    <p>Review completed counts and refine PAR levels. Draft inventories are excluded.</p>
+    <p id="supply-status" role="status" aria-live="polite">Loading inventory history...</p>
+    <section class="supply-panel" aria-labelledby="planning-title">
+      <h2 id="planning-title">PAR Planning</h2>
+      <p>Use the supplier lead time and how often you count or review this item. These planning values apply to this review only.</p>
+      <form id="supply-planning" class="supply-controls">
+        <label>History Window<select id="supply-window"><option value="90">90 Days</option><option value="180" selected>180 Days</option><option value="365">365 Days</option><option value="all">All History</option></select></label>
+        <label>Delivery Lead Time (Days)<input id="supply-lead" type="number" min="0" max="365" value="7" required></label>
+        <label>Review Interval (Days)<input id="supply-interval" type="number" min="1" max="365" value="7" required></label>
+        <label>Safety Buffer (%)<input id="supply-buffer" type="number" min="0" max="500" value="50" required></label>
+        <label>Round PAR Up To<select id="supply-increment"><option value="1">Whole Count Unit</option><option value="0.5">Half Count Unit</option><option value="0.25">Quarter Count Unit</option></select></label>
+      </form>
+      <details><summary>How The Estimate Works</summary><p>Suggested PAR = average daily net stock decline &times; (lead time + review interval) &times; safety buffer factor, rounded up. It uses flat and declining intervals of 45 days or less. Increasing intervals are excluded because they may contain restocking. At least three eligible intervals, 21 eligible days, 28 days of history, and some decline are required.</p><p>Counts are not a usage ledger. Restocking between counts, corrections, and stockouts can hide demand. Treat this as a starting point and account for critical spares, shelf life, and unusual use. A flat count does not prove an item is unnecessary. On duplicate dates, the most recently updated compatible completed inventory is used.</p></details>
+    </section>
+    <section class="supply-panel" aria-labelledby="item-trend-title">
+      <h2 id="item-trend-title">Item Trend</h2>
+      <label>Operating Supply<select id="supply-item"></select></label>
+      <p id="supply-item-details"></p><div id="supply-stats" class="supply-stats"></div>
+      <div id="supply-chart"></div><p id="supply-evidence"></p>
+      <p id="supply-cautions" class="supply-cautions"></p>
+      <button id="save-supply-par" type="button" hidden></button>
+      <p class="report-note">Saving changes only the PAR for future inventories. Existing drafts and completed inventories retain their original PAR.</p>
+      <details><summary>Recorded Counts</summary><div class="supply-table-wrap"><table><thead><tr><th>Date</th><th>On Hand</th><th>PAR At Count</th><th>Operator</th></tr></thead><tbody id="supply-readings"></tbody></table></div></details>
+    </section>
+    <section class="supply-panel" aria-labelledby="par-review-title"><h2 id="par-review-title">PAR Review</h2><p>Select an item to inspect its chart and evidence before changing its PAR.</p><label>Find An Item<input id="supply-search" type="search" placeholder="Item, supplier, or location"></label><div class="supply-table-wrap"><table><thead><tr><th>Item</th><th>Count Unit</th><th>Current PAR</th><th>Estimated PAR</th><th>Evidence</th></tr></thead><tbody id="supply-review"></tbody></table></div></section>
+    </section>
+    <section id="chemicals-panel" role="tabpanel" aria-labelledby="chemicals-tab" hidden>
+    <section id="chemical-trends" hidden aria-labelledby="trends-title">
+      <h2 id="trends-title">Chemical Trends &amp; Order Planning</h2><p class="report-note">Choose one item to explore its saved readings over time. Imported chemical gallons retain their original recorded values.</p>
+      <div class="trend-filters">
+        <label>Item<select id="trend-item"></select></label>
+        <label id="trend-measure-label" hidden>Measurement<select id="trend-measure"><option value="used">Water Used Between Readings</option><option value="meter">Cumulative Meter Reading</option></select></label>
+        <label>Date Range<select id="trend-range"><option value="all">All History</option><option value="30">Last 30 Days</option><option value="90">Last 90 Days</option><option value="365">Last 365 Days</option><option value="custom">Custom Dates</option></select></label>
+        <label>From<input id="trend-from" type="date"></label><label>Through<input id="trend-through" type="date"></label>
+      </div>
+      <div class="trend-forecast-controls"><label><input id="trend-forecast-enabled" type="checkbox" checked> Show Forecast</label><label>Forecast Ahead<select id="trend-forecast-days"><option value="14">14 Days</option><option value="30" selected>30 Days</option><option value="60">60 Days</option></select></label></div>
+      <p id="trend-status" role="status"></p><div id="trend-stats" class="trend-stats"></div><p id="trend-forecast-summary" class="trend-forecast-summary" role="status"></p>
+      <div id="trend-chart-panel" class="trend-chart-panel" hidden>
+        <h3 id="trend-chart-title"></h3><p id="trend-description" class="report-note"></p>
+        <svg id="trend-chart" viewBox="0 0 920 350" role="group" aria-label="Interactive trend chart. Use the arrow keys to move between readings."></svg>
+        <div class="trend-legend"><span><i class="trend-import-symbol" aria-hidden="true"></i>Imported Workbook</span><span><i class="trend-app-symbol" aria-hidden="true"></i>App Reading</span><span id="trend-forecast-legend" hidden><i class="trend-forecast-symbol" aria-hidden="true"></i>Forecast</span></div>
+        <div class="trend-readout" aria-live="polite"><div><strong id="trend-point-date"></strong><p id="trend-point-value"></p><span id="trend-point-source"></span></div><button id="trend-open-inventory" type="button">View This Inventory</button></div>
+      </div>
+      <section id="trend-order-plan" class="trend-order-plan" aria-label="Chemical Order Planning" hidden></section>
+      <details id="trend-values" hidden><summary>View Recorded Values</summary><div class="chemical-table-wrap"><table class="chemical-table"><thead><tr><th>Date</th><th id="trend-value-heading">Value</th><th>Source</th></tr></thead><tbody id="trend-value-rows"></tbody></table></div></details>
+    </section>
+
+    <button id="reload-trend-chemicals" type="button" hidden>Retry Loading Chemicals</button>
+    </section>
+  </main>
+<nav class="bottom-nav" aria-label="Main navigation"><p class="ops-sidebar-caption">YOUR WORKSPACE</p><a href="./?view=home"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m2.5 10 9.5-8 9.5 8M5 8v13h14V8"/></svg></span><small>Home</small></a><a href="./?view=history"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M12 6v6l4 2.5"/></svg></span><small>History</small></a><a href="./trends.html" aria-current="page"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18M6 16l5-5 4 3 6-9"/></svg></span><small>Trends</small></a><a href="./?view=order-list"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6h11M9 12h11M9 18h11M3 6l1 1 2-2M3 12l1 1 2-2M3 18l1 1 2-2"/></svg></span><small>To Order List</small></a><a href="./?view=order-history"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 7 9-4 9 4v10l-9 4-9-4V7Zm0 0 9 4 9-4M12 11v10M7.5 5l9 4"/></svg></span><small>Placed Orders</small></a><a href="./?view=manage"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19.39 8.94L22.27 9.82L22.27 14.18L19.39 15.06L19.39 15.06L20.81 17.72L17.72 20.81L15.06 19.39L15.06 19.39L14.18 22.27L9.82 22.27L8.94 19.39L8.94 19.39L6.28 20.81L3.19 17.72L4.61 15.06L4.61 15.06L1.73 14.18L1.73 9.82L4.61 8.94L4.61 8.94L3.19 6.28L6.28 3.19L8.94 4.61L8.94 4.61L9.82 1.73L14.18 1.73L15.06 4.61L15.06 4.61L17.72 3.19L20.81 6.28L19.39 8.94Z"/><circle cx="12" cy="12" r="3.2"/></svg></span><small>Management</small></a></nav>
+</div>
+</body>
+</html>

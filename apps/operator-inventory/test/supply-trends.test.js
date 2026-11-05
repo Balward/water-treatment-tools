@@ -25,5 +25,5 @@ test('trends endpoint returns only completed operating snapshots and new page as
   t.after(async()=>{await new Promise(r=>server.close(r));fs.rmSync(dir,{recursive:true,force:true});});
   const base='http://127.0.0.1:'+server.address().port;
   const response=await fetch(base+'/api/supply-trends'),records=await response.json();assert.equal(records.length,1);assert.equal(records[0].counts[item.id],4);
-  for(const file of ['supply-trends.html','supply-trends.js','supply-trend-math.js','supply-trends.css'])assert.equal((await fetch(base+'/'+file)).status,200);
+  for(const file of ['trends.html','trends.js','trends.css','supply-trends.html','supply-trends.js','supply-trend-math.js','supply-trends.css'])assert.equal((await fetch(base+'/'+file)).status,200);
 });

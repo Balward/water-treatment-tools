@@ -587,7 +587,7 @@ async function flush(complete = false) {
 async function navigate(next) {
   if (navigating || completing) return;
   navigating = true; render();
-  try { await flush(); if (['order-list','order-history'].includes(next)) await refreshOrderList(); showMode(next); history().catch(error => notify(error.message)); }
+  try { await flush(); if(next==='trends'){location.assign('./trends.html');return;} if (['order-list','order-history'].includes(next)) await refreshOrderList(); showMode(next); history().catch(error => notify(error.message)); }
   catch (error) { if (!Object.keys(pending).length) notify(error.message); }
   finally { navigating = false; render(); }
 }
@@ -603,6 +603,7 @@ document.addEventListener('operations:before-navigate', event => {
 });
 function selectLocation(name) { locationName = name; render(); }
 $('back-home').addEventListener('click', () => navigate('home'));
+$('nav-trends').addEventListener('click', () => navigate('trends'));
 $('nav-home').addEventListener('click', () => navigate('home'));
 $('nav-history').addEventListener('click', () => navigate('history'));
 $('location-select').addEventListener('change', event => selectLocation(event.target.value));
@@ -801,7 +802,7 @@ $('refresh').addEventListener('click', () => history().catch(error => notify(err
 window.addEventListener('pageshow', event => { if (event.persisted) history().catch(error => notify(error.message)); });
 window.addEventListener('beforeunload', event => { if (saving || Object.keys(pending).length || invalid.size) { event.preventDefault(); event.returnValue = ''; } });
 async function init() {
-  try { [catalog,emailConfig,orderList] = await Promise.all([api('/api/catalog'),api('/api/email-config'),api('/api/order-list')]); renderOrderList(); renderHome(); showMode('home'); await history(); }
+  try { [catalog,emailConfig,orderList] = await Promise.all([api('/api/catalog'),api('/api/email-config'),api('/api/order-list')]); renderOrderList(); renderHome(); const requestedView=new URLSearchParams(location.search).get('view'); showMode(['home','history','order-list','order-history','manage'].includes(requestedView)?requestedView:'home'); if(mode==='manage')await openManager(); await history(); }
   catch (error) { notify('Could not load inventory: ' + error.message); }
 }
 init();

@@ -23,7 +23,7 @@ function createApp({ dataDir = process.env.DATA_DIR || path.join(__dirname, 'dat
   const releaseHash = createHash('sha256');
   for (const name of ['server.js', 'email.js', 'catalog.json', 'public/images/manifest.json', 'public/index.html', 'public/styles.css', 'public/app.js', 'public/pack-sizes.js', 'public/product-images.js', 'public/bin-cards.js', 'public/bin-cards.html', 'public/bin-cards.css', 'public/bin-card-print.js', 'public/vendor/qrcode.js', 'public/branding/northglenn-logo.png']) releaseHash.update(fs.readFileSync(path.join(__dirname, name)));
   for (const name of ["operations-theme.css","shared/operations/theme.css","shared/operations/navigation.css","shared/operations/header.css","shared/operations/navigation.js","shared/operations/users.js","shared/operations/Inter-VariableFont_opsz,wght.ttf","shared/operations/Inter-LICENSE.txt"]) releaseHash.update(fs.readFileSync(path.join(__dirname, 'public', name)));
-  for(const name of ['supply-trends.html','supply-trends.js','supply-trend-math.js','supply-trends.css','chemical-math.js','chemical-trends.js','chemical-inventory.html','chemical-inventory.js','chemical-inventory.css'])releaseHash.update(fs.readFileSync(path.join(__dirname,'public',name)));
+  for(const name of ['trends.html','trends.js','trends.css','supply-trends.html','supply-trends.js','supply-trend-math.js','supply-trends.css','chemical-math.js','chemical-trends.js','chemical-inventory.html','chemical-inventory.js','chemical-inventory.css'])releaseHash.update(fs.readFileSync(path.join(__dirname,'public',name)));
   releaseHash.update(fs.readFileSync(path.join(__dirname,'chemical-history-2026.json')));
   const release = releaseHash.digest('hex').slice(0, 12);
   fs.mkdirSync(dataDir, { recursive: true });
@@ -393,7 +393,7 @@ function createApp({ dataDir = process.env.DATA_DIR || path.join(__dirname, 'dat
       if (route.startsWith('/api/')) return json(404, { error: 'Endpoint not found.' });
       if (!['GET', 'HEAD'].includes(req.method)) return json(405, { error: 'Method not allowed.' });
       const assets = { '/': 'index.html', '/index.html': 'index.html', '/app.js': 'app.js', '/pack-sizes.js':'pack-sizes.js', '/styles.css': 'styles.css', '/branding/northglenn-logo.png':'branding/northglenn-logo.png' };
-      for(const name of ['supply-trends.html','supply-trends.js','supply-trend-math.js','supply-trends.css'])assets['/'+name]=name;
+      for(const name of ['trends.html','trends.js','trends.css','supply-trends.html','supply-trends.js','supply-trend-math.js','supply-trends.css'])assets['/'+name]=name;
       for(const name of ['chemical-settings.js','chemical-settings-manager.js','chemical-settings-manager.css','chemical-math.js','chemical-trends.js','chemical-inventory.html','chemical-inventory.js','chemical-inventory.css'])assets['/'+name]=name;
       for (const asset of ['product-images.js','bin-cards.html','bin-cards.js','bin-cards.css','bin-card-print.js','vendor/qrcode.js','licenses/qrcode-MIT.txt']) assets['/' + asset] = asset;
       for (const asset of ["operations-theme.css","shared/operations/theme.css","shared/operations/navigation.css","shared/operations/header.css","shared/operations/navigation.js","shared/operations/users.js","shared/operations/Inter-VariableFont_opsz,wght.ttf","shared/operations/Inter-LICENSE.txt"]) assets['/' + asset] = asset;

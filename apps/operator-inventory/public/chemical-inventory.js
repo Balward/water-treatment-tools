@@ -129,7 +129,7 @@
   $('chemical-form').addEventListener('input',event=>{if(event.target.id==='chemical-date')return;dirty=true;editVersion++;controls();scheduleSave();});
   let selectedDate=$('chemical-date').value;
   $('entry-tab').addEventListener('click',async()=>{if(!current())return;if((dirty||activeSave)&&!await saveReading())return;if(complete(current()))showSummary(current().date);else await openEditor(current().date);});$('history-tab').addEventListener('click',()=>tab(true));
-  $('trends-tab').addEventListener('click',()=>tab('trends'));
+  $('trends-tab').addEventListener('click',async()=>{if(busy)return;if((dirty||activeSave)&&!await saveReading())return;location.assign('./trends.html?view=chemicals');});
   document.addEventListener('chemical:open-inventory',event=>showSummary(event.detail.date));
   $('reload-chemicals').addEventListener('click',()=>{if(!dirty||confirm('Discard unsaved entries and reload saved readings?')){clearTimeout(saveTimer);refresh();}});
   $('chemical-form').addEventListener('submit',async event=>{

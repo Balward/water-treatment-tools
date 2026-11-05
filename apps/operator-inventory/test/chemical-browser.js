@@ -9,6 +9,7 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
   let browser;
   try{
     browser=await launchBrowser({acceptDialogs:true});const {call,evaluate,errors}=browser;
+    const waitForTrends=async()=>{for(let i=0;i<100;i++){if(await evaluate('location.pathname.endsWith("/trends.html")&&document.querySelectorAll("#trend-item option").length===7&&!document.getElementById("trend-status").textContent.startsWith("Loading")'))return;await wait(50);}throw Error('Trends did not load');};
     await call('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
     await call('Page.navigate',{url:base+'/'});
     for(let i=0;i<100;i++){if(await evaluate('!!document.querySelector(".chemical-worksheet")'))break;await wait(50);}
@@ -115,7 +116,7 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
     assert.ok(await evaluate('!document.getElementById("chemical-summary").hidden&&document.getElementById("chemical-summary-content").textContent.includes("4,226.95")'),'Historical summary shows original January gallons');
     assert.ok(await evaluate('!document.getElementById("summary-edit").hidden&&document.getElementById("chemical-summary-content").textContent.includes("without recalculating")'),'Imported snapshots also offer Edit without recalculating old tank readings');
     const imported=await call('Page.captureScreenshot',{format:'png',captureBeyondViewport:true});fs.writeFileSync(path.resolve(__dirname,'../../../preview/chemical-inventory-imported.png'),Buffer.from(imported.data,'base64'));
-    await evaluate('document.getElementById("trends-tab").click()');await wait(100);
+    await evaluate('document.getElementById("trends-tab").click()');await waitForTrends();
     assert.equal(await evaluate('document.querySelectorAll("#trend-item option").length'),7,'Each chemical, salt, and NWOS has its own trend');
     assert.equal(await evaluate('document.querySelectorAll("[data-trend-point]").length'),41,'All imported chemical inventories appear in the trend');
     assert.ok(await evaluate('!!document.querySelector(".trend-forecast-line")&&document.getElementById("trend-forecast-summary").textContent.includes("Recent net drawdown")'), 'Recent inventory readings produce a labeled forecast line');
@@ -134,17 +135,17 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
     assert.ok(await evaluate('document.getElementById("trend-order-plan").textContent.includes("1,250 gal remaining")'),'Caustic planning explains the full-load capacity constraint');
     await evaluate('[...document.querySelectorAll("[data-trend-point]")].find(p=>p.getAttribute("tabindex")==="0").dispatchEvent(new KeyboardEvent("keydown",{key:"Home",bubbles:true}))');
     assert.ok(await evaluate('document.getElementById("trend-point-value").textContent.includes("4,226.95")'),'Keyboard selection shows the original January gallon total');
-    await evaluate('document.getElementById("trend-open-inventory").click()');
+    await evaluate('document.getElementById("trend-open-inventory").click()');for(let i=0;i<100;i++){if(await evaluate('!!document.getElementById("chemical-summary")&&!document.getElementById("chemical-summary").hidden'))break;await wait(50);}
     assert.ok(await evaluate('!document.getElementById("chemical-summary").hidden&&document.getElementById("chemical-summary-title").textContent.includes("Jan 8")'),'A chart reading opens its saved inventory');
-    await evaluate('document.getElementById("trends-tab").click();document.getElementById("trend-from").value="2026-10-01";document.getElementById("trend-through").value="2026-10-21";document.getElementById("trend-through").dispatchEvent(new Event("change"))');
+    await evaluate('document.getElementById("trends-tab").click()');await waitForTrends();await evaluate('document.getElementById("trend-from").value="2026-10-01";document.getElementById("trend-through").value="2026-10-21";document.getElementById("trend-through").dispatchEvent(new Event("change"))');
     assert.equal(await evaluate('document.querySelectorAll("[data-trend-point]").length'),3,'Custom date ranges filter individual charts');
     await evaluate('document.getElementById("trend-range").value="all";document.getElementById("trend-range").dispatchEvent(new Event("change"));document.getElementById("trend-item").value="salt";document.getElementById("trend-item").dispatchEvent(new Event("change"))');
     assert.ok(await evaluate('document.getElementById("trend-chart-panel").hidden&&document.getElementById("trend-status").textContent.includes("No salt counts")'),'Missing salt history is explained rather than charted as zero');
     assert.ok(await evaluate('document.getElementById("trend-order-plan").hidden'),'No invented salt ordering assumptions');
     const beforeSalt=await(await fetch(base+'/api/chemicals')).json();
     assert.ok((await fetch(base+'/api/chemicals/records/2026-10-27',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({revision:beforeSalt.revision,operator:'Trend check',readings:{salt:.5},notes:''})})).ok);
-    await call('Page.reload');await wait(150);for(let i=0;i<80;i++){if(await evaluate('document.querySelectorAll("[data-view-date]").length===42'))break;await wait(50);}
-    await evaluate('document.getElementById("trends-tab").click();document.getElementById("trend-item").value="salt";document.getElementById("trend-item").dispatchEvent(new Event("change"))');
+    await call('Page.reload');await waitForTrends();
+    await evaluate('document.getElementById("trend-item").value="salt";document.getElementById("trend-item").dispatchEvent(new Event("change"))');
     assert.equal(await evaluate('document.querySelectorAll("[data-trend-point]").length'),1,'A single saved pallet count produces a valid chart');
     assert.ok(await evaluate('document.getElementById("trend-point-value").textContent.includes("0.5 pallets")'),'Salt chart uses pallet units');
     assert.ok(await evaluate('!document.querySelector(".trend-forecast-line")&&document.getElementById("trend-forecast-summary").textContent.includes("Forecast needs")'), 'A single salt reading does not fabricate a usage forecast');
