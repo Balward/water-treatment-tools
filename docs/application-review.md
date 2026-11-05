@@ -78,6 +78,31 @@ The printed summary keeps the applicant comparison table. Reviewer details start
 
 ## Storage And Deployment
 
+### Shared Access Passphrase
+
+The whole Application Review app and its API require a server-validated access session. The public login page is `/application-review-access`; primary pages, alternate `/apps/application-review/` URLs, static assets, and `/api/application-review` all pass through the same check. This check also applies when connecting directly to Node's published API port. Other suite apps remain available without this review-specific passphrase. The existing `2350` management PIN still only controls editing tools within an authenticated session.
+
+The shared passphrase is configured as `APPLICATION_REVIEW_PASSPHRASE_HASH` in the server's private `.env` file. It is not stored in the webpage or repository. Access stays locked if the hash is missing or malformed. Use an 8-character or longer code/passphrase; a phrase of at least 12 characters is recommended. Do not pass the actual phrase as a command argument or enter it into a public configuration file.
+
+After this version is installed, run these commands in the **Unraid terminal** to set or change it. The temporary Node container writes the host's private `.env` directly, so this works even when the running suite mounts `.env` read-only:
+
+```sh
+docker run --rm -it -v /mnt/user/appdata/water-treatment-tools:/workspace -w /workspace node:24-alpine node set-application-review-passphrase.js
+docker restart water-treatment-tools
+```
+
+The tool prompts for the phrase twice without echoing it. It replaces only the passphrase-hash setting and preserves other `.env` values. The hash is single-quoted to prevent Docker Compose from interpreting its dollar signs. The restart applies the new hash and invalidates all old review sessions. If Unraid explicitly sets the same variable in the container's environment, update that setting instead or remove the override; environment variables take precedence over `.env`.
+
+For local development, run `node set-application-review-passphrase.js`, start the API with `npm start`, and use `node dev-server.js`. Use the development server's URL to preview the actual access gate. Standalone Live Server previews use browser-only test data and do not represent production access protection. Production sessions require HTTPS; the login refuses an HTTP origin and cookies use the `Secure` flag. The access screen works over local HTTP only when running outside production.
+
+Sessions last **three days from sign-in**, without extending their lifetime on F5 or normal usage. Opaque session tokens are `HttpOnly`, `SameSite=Lax` cookies; production uses a `__Host-` cookie with `Secure`, no Domain attribute, and Path `/`. Only token digests and expiry dates are saved in `data/application-review-access/access.json`, so sessions survive restarts. Sign Out revokes that browser's session on the server. Credential changes revoke all sessions. Session corruption or a write failure locks access rather than exposing data. If an open page expires, unsaved notes stay in the form and a sign-in notice appears. Sign Out is available in the navigation; back/forward restoration reloads the page through the server check.
+
+Incorrect attempts are limited to 10 per source/network path in 15 minutes, with an additional global cap of 100; attempts persist across restarts. The service trusts only the internal loopback nginx hop's overwritten `X-Real-IP`, not arbitrary forwarding headers. A shared reverse proxy may make several reviewers share a rate-limit bucket. No passphrases, raw session tokens, or credential hashes are returned by the API. Missing access returns 401 on data endpoints; unconfigured or unavailable access storage returns 503. The access page and protected responses have `noindex, nofollow, noarchive` and `no-store` directives. These directives supplement authentication; they do not replace it or instantly remove previously indexed pages.
+
+The production deployment check expects unauthenticated primary/alternate pages to redirect and both the nginx and direct Node data endpoints to deny access. Deployment backups include the private session/attempt directory. Review records stay in their existing separate data directory.
+
+Verify with `node --test scripts/application-review-auth.test.cjs` and `node scripts/check-application-review-access.cjs`. These use temporary credentials and storage. Never use actual applicant records in the auth fixtures.
+
 - Data: `data/application-review/review.json`, under the existing suite's persistent `/app/data` mount. Override with `APPLICATION_REVIEW_DATA_DIR` when needed.
 - Backups: `before-<revision>.json`, retained before each mutation. Include this directory in retention and recovery planning; no automatic history deletion is implemented.
 - All changes require the current revision; concurrent stale saves are rejected while the form remains intact. Refresh after closing or copying your unsaved entries, then reapply. The page refreshes idle shared views every minute, never an open dialog or unsaved setup.

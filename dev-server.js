@@ -100,7 +100,7 @@ function handleRequest(req, res) {
     let pathname = parsedUrl.pathname;
     
     console.log(`${req.method} ${pathname}`);
-    if (pathname.startsWith('/api/plant-rounds') || pathname.startsWith('/api/application-review')) {
+    if (pathname.startsWith('/api/plant-rounds') || /^\/(?:api\/application-review|(?:apps\/)?application-review|application-review-access)(?:\/|$)/i.test(pathname)) {
         const upstream=http.request({hostname:'127.0.0.1',port:Number(process.env.API_PORT)||3001,path:req.url,method:req.method,headers:req.headers},response=>{res.writeHead(response.statusCode,response.headers);response.pipe(res);});
         upstream.on('error',()=>{res.writeHead(503,{'Content-Type':'application/json'});res.end(JSON.stringify({error:'Start the API with npm start to use shared plant rounds.'}));});
         req.pipe(upstream);return;

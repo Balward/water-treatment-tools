@@ -18,6 +18,7 @@ console.log('Claude API Key loaded:', CLAUDE_API_KEY ? `${CLAUDE_API_KEY.substri
 console.log('OpenAI API Key loaded:', OPENAI_API_KEY ? `${OPENAI_API_KEY.substring(0, 15)}...` : 'NOT FOUND');
 
 // Middleware
+require('./application-review-auth').register(app);
 app.use(cors());
 app.use('/api/application-review',express.json({limit:'5mb'}));
 app.use(express.json());

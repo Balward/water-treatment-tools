@@ -56,7 +56,8 @@ function applyArchiveState(){
   updateApplicantSelection();
   document.querySelectorAll('#bulk-rows tr').forEach(row=>{row.querySelector('[data-field=state]').disabled=archived||row.querySelector('[data-field=country]').value!=='US';});
 }
-async function request(options,route='/api/application-review/sets/'+encodeURIComponent(activeSetId)){const response=await fetch(route,{cache:'no-store',...options});if(!response.ok){let data;try{data=await response.json();}catch{}throw Error(data?.error||'Unable to reach shared review storage. Start the API and refresh.');}return response.json();}
+function accessExpired(){ $('access-expired').hidden=false;$('access-signin').href='/application-review-access?next='+encodeURIComponent(location.pathname+location.search); }
+async function request(options,route='/api/application-review/sets/'+encodeURIComponent(activeSetId)){const response=await fetch(route,{cache:'no-store',...options});if(response.status===401)accessExpired();if(!response.ok){let data;try{data=await response.json();}catch{}throw Error(data?.error||'Unable to reach shared review storage. Start the API and refresh.');}return response.json();}
 function readLocal(){const saved=localStorage.getItem(collectionKey)||localStorage.getItem(key);return saved?hiring.validate(JSON.parse(saved)):hiring.blank();}
 function writeLocal(next,current){localStorage.setItem(collectionKey+'-previous',JSON.stringify(current));localStorage.setItem(collectionKey,JSON.stringify(next));}
 function accept(payload){
@@ -422,6 +423,7 @@ async function refresh(initial=false){
   try {
     if(initial){
       const response=await fetch('/api/application-review/sets',{cache:'no-store'});
+      if(response.status===401)accessExpired();
       if(response.status===404&&['localhost','127.0.0.1',''].includes(location.hostname))local=true;
       else if(!response.ok)throw Error('Shared hiring review storage is unavailable. Start or update the API and refresh.');
       else {if(!response.headers.get('content-type')?.includes('application/json'))throw Error('Start the API or use Live Server for browser preview.');directory=await response.json();}
@@ -441,5 +443,11 @@ async function refresh(initial=false){
 $('refresh').onclick=()=>refresh();window.addEventListener('beforeunload',event=>{if(dirty||setupDirty||busy){event.preventDefault();event.returnValue='';}});
 document.addEventListener('operations:before-navigate',event=>{if(busy||(dirty||setupDirty)&&!confirm('Leave this page and discard your unsaved changes?'))event.preventDefault();});
 setInterval(()=>{if(!local&&state&&!document.hidden)refresh();},60000);
+$('access-signout').onclick=async()=>{
+  if(busy)return;if((dirty||setupDirty)&&!confirm('Discard unsaved changes and sign out?'))return;
+  try{const response=await fetch('/application-review-access/logout',{method:'POST'});if(!response.ok)throw Error('Unable to sign out. Try again.');dirty=false;setupDirty=false;location.assign('/application-review-access');}catch(error){message(error.message,true);}
+};
+fetch('/application-review-access/status',{cache:'no-store'}).then(response=>response.ok?response.json():null).then(status=>{$('access-signout').hidden=!status?.authenticated;}).catch(()=>{});
+window.addEventListener('pageshow',event=>{if(event.persisted)location.reload();});
 refresh(true);
 })();

@@ -14,6 +14,7 @@ if [ "${1:-}" != '--installed-source' ]; then test -s "$archive"; fi
 if [ -f "$source_dir/data/live-ops-state.json" ]; then cp "$source_dir/data/live-ops-state.json" "$backup_dir/live-ops-state.json"; fi
 if [ -d "$source_dir/data/plant-rounds" ]; then cp -a "$source_dir/data/plant-rounds" "$backup_dir/plant-rounds"; fi
 if [ -d "$source_dir/data/application-review" ]; then cp -a "$source_dir/data/application-review" "$backup_dir/application-review"; fi
+if [ -d "$source_dir/data/application-review-access" ]; then cp -a "$source_dir/data/application-review-access" "$backup_dir/application-review-access"; fi
 if [ -f "$source_dir/.env" ]; then cp "$source_dir/.env" "$backup_dir/.env"; fi
 if [ -f "$source_dir/docker-compose.yml" ]; then
   cp "$source_dir/docker-compose.yml" "$backup_dir/docker-compose.yml"
@@ -37,6 +38,17 @@ cd "$source_dir"
 docker compose config --quiet
 # Build first. A build failure leaves the healthy running container in place.
 docker compose build water-treatment-tools
+review_access_locked() {
+  local response
+  for review_path in /application-review/ /apps/application-review/index.html; do
+    response=$(curl --silent --output /dev/null --write-out '%{http_code}' "http://127.0.0.1:6767$review_path")
+    [ "$response" = 303 ] || return 1
+  done
+  for review_origin in http://127.0.0.1:6767 http://127.0.0.1:6768; do
+    response=$(curl --silent --output /dev/null --write-out '%{http_code}' "$review_origin/api/application-review/sets")
+    case "$response" in 401|503) ;; *) return 1 ;; esac
+  done
+}
 healthy() {
   for attempt in $(seq 1 30); do
     if [ "$(docker inspect water-treatment-tools --format '{{if .State.Health}}{{.State.Health.Status}}{{end}}' 2>/dev/null)" = healthy ] \
@@ -95,9 +107,7 @@ healthy() {
           && curl --fail --silent http://127.0.0.1:6767/api/plant-rounds/users >/dev/null \
           && curl --fail --silent http://127.0.0.1:6767/api/plant-rounds/template >/dev/null \
           && curl --fail --silent http://127.0.0.1:6767/api/plant-rounds/2000-01-01/report.pdf >/dev/null \
-          && curl --fail --silent http://127.0.0.1:6767/application-review/ | grep -q 'hiring-review-list' \
-          && curl --fail --silent http://127.0.0.1:6767/application-review/hiring-reviews.js >/dev/null \
-          && curl --fail --silent http://127.0.0.1:6767/api/application-review/sets >/dev/null;
+          && review_access_locked;
       }; then return 0; fi
     fi
     sleep 2

@@ -15,9 +15,9 @@ COPY .env.template ./.env.template
 COPY claude-proxy-server.js ./
 COPY plant-rounds-api.js ./
 COPY application-review-api.js ./
-COPY apps/application-review/model.js ./apps/application-review/model.js
-COPY apps/application-review/reference-data.js ./apps/application-review/reference-data.js
-COPY apps/application-review/hiring-reviews.js ./apps/application-review/hiring-reviews.js
+COPY application-review-auth.js ./
+COPY set-application-review-passphrase.js ./
+COPY apps/application-review/ ./apps/application-review/
 COPY plant-rounds-pdf.js ./
 COPY assets/fonts/pdf/ ./assets/fonts/pdf/
 COPY apps/plant-rounds/template.json ./apps/plant-rounds/template.json
