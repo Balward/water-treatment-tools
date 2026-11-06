@@ -67,6 +67,28 @@ test('SOP model preserves the template structure, photos, and ordered steps, whi
   assert.throws(()=>model.validate({...doc,groups:[{...doc.groups[0],id:step.id}]}),/Duplicate/);
   step.photos[0].data='data:image/svg+xml;base64,aGVsbG8=';assert.throws(()=>model.validate(doc),/Photos/);
 });
+test('SOP deletion requires exact confirmation and current details, preserves recovery data, and blocks stale recreation',async t=>{
+  const directory=await fs.mkdtemp(path.join(os.tmpdir(),'sop-delete-')),app=express();app.use(express.json({limit:'16mb'}));register(app,{directory});
+  const server=app.listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));const base='http://127.0.0.1:'+server.address().port;
+  t.after(async()=>{await new Promise(r=>server.close(r));await fs.rm(directory,{recursive:true,force:true});});
+  const draft=model.blank();draft.title='Pump <Inspection>';draft.purpose='Retain original instructions.';
+  const put=doc=>fetch(base+'/api/sops/'+doc.id,{method:'PUT',headers:{Origin:base,'Content-Type':'application/json'},body:JSON.stringify(doc)});
+  const saved=await(await put(draft)).json(),other=model.blank();other.title='Keep This SOP';await put(other);
+  const remove=(body,origin=base)=>fetch(base+'/api/sops/'+saved.id,{method:'DELETE',headers:{Origin:origin,'Content-Type':'application/json'},body:JSON.stringify(body)});
+  const confirmation={confirmation:'DELETE',title:saved.title,updatedAt:saved.updatedAt};
+  assert.equal((await remove(confirmation,'https://elsewhere.example')).status,403);
+  for(const word of ['', 'delete',' DELETE'])assert.equal((await remove({...confirmation,confirmation:word})).status,400);
+  assert.equal((await remove({...confirmation,title:'Another SOP'})).status,409);
+  const newer=await(await put({...saved,purpose:'Newer instructions.'})).json();assert.equal((await remove(confirmation)).status,409,'Concurrent edits require fresh confirmation');
+  assert.equal((await remove({...confirmation,updatedAt:newer.updatedAt})).status,200);
+  assert.equal((await fetch(base+'/api/sops/'+saved.id)).status,404);
+  assert.equal((await(await fetch(base+'/api/sops')).json()).length,1);
+  assert.equal((await fetch(base+'/api/sops/'+other.id)).status,200);
+  assert.deepEqual(JSON.parse(await fs.readFile(path.join(directory,'deleted',saved.id+'.json'),'utf8')),newer);
+  assert.equal(JSON.parse(await fs.readFile(path.join(directory,'history',saved.id+'-1.json'),'utf8')).purpose,draft.purpose);
+  assert.equal((await put(draft)).status,410,'An old editor cannot recreate a deleted SOP');
+  assert.equal((await remove({...confirmation,updatedAt:newer.updatedAt})).status,404);
+});
 test('SOP API persists drafts and photos, protects concurrent saves per document, and retains previous versions',async t=>{
   const directory=await fs.mkdtemp(path.join(os.tmpdir(),'sop-api-'));
   function app(){const instance=express();instance.use(express.json({limit:'16mb'}));register(instance,{directory});return instance;}

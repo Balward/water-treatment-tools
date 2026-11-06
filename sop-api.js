@@ -25,6 +25,10 @@ module.exports=function registerSOP(app,{directory=process.env.SOP_DATA_DIR||pat
     queue=queue.catch(()=>{}).then(async()=>{
       try{
         let previous;try{previous=await read(doc.id);}catch(error){if(error.code!=='ENOENT')throw error;}
+        if(!previous){
+          try{await fs.access(path.join(directory,'deleted',doc.id+'.json'));return res.status(410).json({error:'This SOP was deleted. Download a backup of your draft or import it as a new SOP.'});}
+          catch(error){if(error.code!=='ENOENT')throw error;}
+        }
         if(doc.revision!==(previous?.revision||0))return res.status(409).json({error:'This SOP was updated in another window. Your draft is still here. Download a backup before reopening the saved version.'});
         const next={...doc,revision:doc.revision+1,updatedAt:new Date().toISOString()};
         await fs.mkdir(directory,{recursive:true});
@@ -33,6 +37,21 @@ module.exports=function registerSOP(app,{directory=process.env.SOP_DATA_DIR||pat
         await fs.writeFile(temp,JSON.stringify(next));await fs.rename(temp,target);
         res.json(next);
       }catch{res.status(500).json({error:'Unable to save this SOP. Your draft is still available; please try again.'});}
+    });
+  });
+  app.delete('/api/sops/:id',(req,res)=>{
+    let origin;try{origin=new URL(req.headers.origin);}catch{}
+    if(!origin||origin.host!==req.headers.host||!['http:','https:'].includes(origin.protocol))return res.status(403).json({error:'Delete SOPs from the application page.'});
+    if(!validId(req.params.id))return res.status(400).json({error:'Invalid SOP identifier.'});
+    if(req.body?.confirmation!=='DELETE')return res.status(400).json({error:'Type DELETE to confirm deletion.'});
+    queue=queue.catch(()=>{}).then(async()=>{
+      try{
+        let previous;try{previous=await read(req.params.id);}catch(error){if(error.code==='ENOENT')return res.status(404).json({error:'This SOP no longer exists. Close this window and refresh the library.'});throw error;}
+        if(req.body.title!==previous.title||req.body.updatedAt!==previous.updatedAt)return res.status(409).json({error:'This SOP changed after you opened the library. Cancel, refresh the library, and confirm the updated SOP before deleting.'});
+        await fs.mkdir(path.join(directory,'deleted'),{recursive:true});
+        await fs.rename(path.join(directory,previous.id+'.json'),path.join(directory,'deleted',previous.id+'.json'));
+        res.json({deleted:true,id:previous.id});
+      }catch{res.status(500).json({error:'Unable to delete this SOP. Please try again.'});}
     });
   });
 };

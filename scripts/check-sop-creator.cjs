@@ -193,6 +193,24 @@ const {launchBrowser,removeTemporaryDirectory}=require('./lib/browser-check.cjs'
     await call('Emulation.setEmulatedMedia',{media:'print'});
     assert.equal(await evaluate('document.querySelector(".document-photos img").getBoundingClientRect().height'),180,'Mobile screen sizing does not alter printed photo height');
     const mobilePdf=await call('Page.printToPDF',{printBackground:true,preferCSSPageSize:true});assert.ok(Buffer.from(mobilePdf.data,'base64').length>5000);
+    await call('Emulation.setEmulatedMedia',{media:''});await call('Page.navigate',{url:base+'/sop-creator/library.html'});
+    await until('!!document.querySelector("[data-delete]")');
+    await evaluate(`document.querySelector('[data-delete="${mobileDoc.id}"]').click()`);
+    assert.equal(await evaluate('document.getElementById("delete-sop-title").textContent'),mobileDoc.title);
+    assert.ok(await evaluate('document.getElementById("confirm-delete-sop").disabled'));
+    await input('#delete-sop-confirmation','delete');assert.ok(await evaluate('document.getElementById("confirm-delete-sop").disabled'));
+    await input('#delete-sop-confirmation','DELETE');assert.equal(await evaluate('document.getElementById("confirm-delete-sop").disabled'),false);
+    await evaluate('document.getElementById("cancel-delete-sop").click()');assert.equal((await fetch(base+'/api/sops/'+mobileDoc.id)).status,200,'Cancel keeps the SOP');
+    await evaluate(`document.querySelector('[data-delete="${mobileDoc.id}"]').click()`);assert.equal(await evaluate('document.getElementById("delete-sop-confirmation").value'),'');
+    const beforeDelete=await(await fetch(base+'/api/sops/'+mobileDoc.id)).json();await fetch(base+'/api/sops/'+mobileDoc.id,{method:'PUT',headers:{Origin:base,'Content-Type':'application/json'},body:JSON.stringify({...beforeDelete,title:'Changed SOP Title'})});
+    await input('#delete-sop-confirmation','DELETE');await evaluate('document.getElementById("confirm-delete-sop").click()');await until('document.getElementById("delete-sop-error").textContent.includes("changed")');
+    assert.ok(await evaluate('document.getElementById("delete-sop-dialog").open'));
+    await evaluate('document.getElementById("cancel-delete-sop").click();document.getElementById("refresh-library").click()');await until(`document.querySelector('[data-delete="${mobileDoc.id}"]')?.closest('.library-card').textContent.includes('Changed SOP Title')`);
+    await evaluate(`document.querySelector('[data-delete="${mobileDoc.id}"]').click()`);assert.equal(await evaluate('document.getElementById("delete-sop-title").textContent'),'Changed SOP Title');
+    await call('Emulation.setDeviceMetricsOverride',{width:320,height:844,deviceScaleFactor:1,mobile:true});assert.ok(await evaluate('document.documentElement.scrollWidth<=document.documentElement.clientWidth'));
+    await input('#delete-sop-confirmation','DELETE');await evaluate('document.getElementById("confirm-delete-sop").click()');await until('!document.getElementById("delete-sop-dialog").open');
+    assert.equal((await fetch(base+'/api/sops/'+mobileDoc.id)).status,404);assert.equal(await evaluate(`!!document.querySelector('[data-delete="${mobileDoc.id}"]')`),false);
+    assert.equal((await fetch(base+'/api/sops/'+saved.id)).status,200,'Deleting one SOP preserves other SOPs');
     assert.deepEqual(browser.errors,[]);console.log('SOP browser passed: saved mobile photo layouts, annual reviews, live preview, steps, photos, recovery, library, conflicts, mobile/desktop layouts, and print/PDF.');
   }finally{await browser?.close();await new Promise(resolve=>server.close(resolve));await removeTemporaryDirectory(directory);}
 })().catch(error=>{console.error(error);process.exitCode=1;});

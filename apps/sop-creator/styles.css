@@ -40,6 +40,8 @@ dialog{width:min(800px,calc(100% - 32px));max-height:85dvh;overflow:auto;border:
 .preview-window .sop-workspace{display:block}
 .preview-window #preview{position:static;max-height:none;overflow:visible;border:0;background:transparent}
 .preview-window .paper-wrap{padding:0}
+button.danger{color:#a52831;border-color:#d4a0a4;background:#fff5f5}button.danger:hover:not(:disabled){background:#a52831;border-color:#a52831;color:#fff}
+#delete-sop-dialog{width:min(520px,calc(100% - 32px))}.delete-sop-title{font-weight:700;overflow-wrap:anywhere;padding:12px;background:#f3f7f9;border-radius:6px}#delete-sop-error{color:#a52831;font-size:14px}#delete-sop-error:empty{display:none}#delete-sop-form .confirm-actions{justify-content:flex-end;margin-top:20px}
 @media screen and (max-width:600px){
   .preview-window main{width:100%;min-width:0;padding:12px 10px}
   .preview-window-toolbar{flex-wrap:wrap;padding:12px 14px;gap:10px}
