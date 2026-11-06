@@ -175,6 +175,24 @@ const {launchBrowser,removeTemporaryDirectory}=require('./lib/browser-check.cjs'
     await evaluate('document.getElementById("library-button").click()');await until('!!document.querySelector("[data-open]")');
     assert.equal(await evaluate(`!!document.querySelector('[data-open="${overdue.id}"]').closest('.library-card').querySelector('.needs-review')`),false,'Saved no-change review clears the overdue flag');
     assert.ok(await evaluate(`document.querySelector('[data-open="${overdue.id}"]').closest('.library-card').textContent.includes('Reviewed ')`));
-    assert.deepEqual(browser.errors,[]);console.log('SOP browser passed: annual review flags, saved review entries, live preview, sections, steps, photos, recovery, library, conflicts, mobile/desktop layouts, and print/PDF.');
+    const mobileDoc=require('../apps/sop-creator/model').blank();mobileDoc.title='Saved SOP With Multiple Wide Photos And A Long Heading';
+    mobileDoc.notes='Reference: https://example.test/'+ 'long-reference-'.repeat(20);
+    const mobileStep=require('../apps/sop-creator/model').step();mobileStep.instruction='Compare these three views of the equipment.';
+    mobileStep.photos=Array.from({length:3},(_,i)=>({id:crypto.randomUUID(),data:saved.groups[0].steps[0].photos[0].data,caption:'Equipment photo '+(i+1)+' with a descriptive caption.'}));
+    mobileStep.tables=[{id:crypto.randomUUID(),caption:'Operating Limits',headers:['Parameter','Reading'],rows:[['Pressure','45 psi']]}];mobileDoc.groups[0].steps=[mobileStep];
+    assert.equal((await fetch(base+'/api/sops/'+mobileDoc.id,{method:'PUT',headers:{'Content-Type':'application/json',Origin:base},body:JSON.stringify(mobileDoc)})).status,200);
+    await call('Page.navigate',{url:base+'/sop-creator/preview.html?sop='+mobileDoc.id});
+    await until('document.querySelectorAll(".document-photos img").length===3&&Array.from(document.images).every(im=>im.complete&&im.naturalWidth>0)');
+    for(const width of [320,360,390,430,600,768,1024]){
+      await call('Emulation.setDeviceMetricsOverride',{width,height:844,deviceScaleFactor:1,mobile:true});
+      assert.ok(await evaluate('document.documentElement.scrollWidth<=document.documentElement.clientWidth'),'Saved SOP has no horizontal scrolling at '+width);
+      assert.ok(await evaluate('Array.from(document.querySelectorAll(".document-photo-row, .document-photos img")).every(el=>{const r=el.getBoundingClientRect();return r.left>=0&&r.right<=document.documentElement.clientWidth+1})'),'All photo rows and images fit at '+width);
+    }
+    await call('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:1,mobile:true});
+    assert.ok(await evaluate('(()=>{const images=Array.from(document.querySelectorAll(".document-photos img")).map(im=>im.getBoundingClientRect());return Math.abs(images[0].top-images[1].top)<1&&images[2].top>images[1].bottom})()'),'Photos stay paired and the third photo flows beneath');
+    await call('Emulation.setEmulatedMedia',{media:'print'});
+    assert.equal(await evaluate('document.querySelector(".document-photos img").getBoundingClientRect().height'),180,'Mobile screen sizing does not alter printed photo height');
+    const mobilePdf=await call('Page.printToPDF',{printBackground:true,preferCSSPageSize:true});assert.ok(Buffer.from(mobilePdf.data,'base64').length>5000);
+    assert.deepEqual(browser.errors,[]);console.log('SOP browser passed: saved mobile photo layouts, annual reviews, live preview, steps, photos, recovery, library, conflicts, mobile/desktop layouts, and print/PDF.');
   }finally{await browser?.close();await new Promise(resolve=>server.close(resolve));await removeTemporaryDirectory(directory);}
 })().catch(error=>{console.error(error);process.exitCode=1;});
