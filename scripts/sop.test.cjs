@@ -1,5 +1,13 @@
 const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs/promises'),os=require('node:os'),path=require('node:path'),express=require('express');
 const model=require('../apps/sop-creator/model'),register=require('../sop-api');
+test('Safety concerns remain distinct from security and older SOPs still open',()=>{
+  const doc=model.blank();doc.safety='Test the safety shower.';doc.security='Restrict panel access.';
+  const normalized=model.validate(doc),html=require('../apps/sop-creator/document').render(normalized);
+  assert.match(html,/<h2>Safety Concerns<\/h2><ul><li>Test the safety shower\.<\/li>/);
+  assert.match(html,/<h2>Security Concerns<\/h2><ul><li>Restrict panel access\.<\/li>/);
+  delete doc.safety;assert.equal(model.validate(doc).safety,'');
+  assert.throws(()=>model.validate({...doc,safety:5}));
+});
 test('Revised Date follows the latest valid revision date regardless of row order',()=>{
   const doc=model.blank();assert.equal(model.revisedDate(doc),'');
   doc.revisionHistory=[{date:'2026-11-05'},{date:''},{date:'2026-11-06'},{date:'2026-10-01'}];
@@ -30,7 +38,7 @@ test('SOP model preserves the template structure, photos, and ordered steps, whi
   assert.equal(migrated.groups[0].steps[0].instruction,'Inspect The Gauge\n\nCheck the gauge.');
   assert.equal(migrated.groups[0].steps[0].title,undefined);
   assert.deepEqual(model.validate(migrated),migrated,'Older titles migrate once without losing content');
-  assert.deepEqual(model.sections.map(section=>section[1]),['Purpose','Background','Notes','Security Concerns','Equipment']);
+  assert.deepEqual(model.sections.map(section=>section[1]),['Purpose','Background','Notes','Safety Concerns','Security Concerns','Equipment']);
   assert.throws(()=>model.validate({...doc,effectiveDate:'2026-02-30'}));
   assert.throws(()=>model.validate({...doc,id:'../../file'}));
   assert.throws(()=>model.validate({...doc,groups:[{...doc.groups[0],id:step.id}]}),/Duplicate/);

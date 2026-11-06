@@ -1,6 +1,6 @@
 (function(root){
   'use strict';
-  const sections=[['purpose','Purpose'],['background','Background'],['notes','Notes'],['security','Security Concerns'],['equipment','Equipment']];
+  const sections=[['purpose','Purpose'],['background','Background'],['notes','Notes'],['safety','Safety Concerns'],['security','Security Concerns'],['equipment','Equipment']];
   const tagGroups=[
     {label:'Treatment Processes',tags:['Raw Water','Coagulation','Flocculation','Sedimentation','Filtration','Backwashing','Disinfection','Clearwells & Storage','Pumping','Residuals Handling']},
     {label:'Instrumentation & Water Quality',tags:['pH','Turbidity','Chlorine','Conductivity','Dissolved Oxygen','ORP','Temperature','Flow','Pressure','Level','Instrumentation']},
@@ -10,7 +10,7 @@
   ];
   const tags=tagGroups.flatMap(group=>group.tags);
   const id=()=>globalThis.crypto.randomUUID();
-  function blank(){return {id:id(),revision:0,title:'',team:'Water Treatment',tags:[],effectiveDate:'',preparedBy:'',approvedBy:'',purpose:'',background:'',notes:'',security:'',equipment:'',revisionHistory:[],groups:[{id:id(),title:'',steps:[]}]};}
+  function blank(){return {id:id(),revision:0,title:'',team:'Water Treatment',tags:[],effectiveDate:'',preparedBy:'',approvedBy:'',purpose:'',background:'',notes:'',safety:'',security:'',equipment:'',revisionHistory:[],groups:[{id:id(),title:'',steps:[]}]};}
   function revisedDate(doc){return (doc.revisionHistory||[]).map(row=>row.date).filter(date=>typeof date==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(date)&&Number.isFinite(Date.parse(date+'T12:00:00Z'))&&new Date(date+'T12:00:00Z').toISOString().slice(0,10)===date).sort().at(-1)||'';}
   const step=()=>({id:id(),instruction:'',substeps:[],photos:[],tables:[]});
   const table=()=>({id:id(),caption:'',headers:['Column 1','Column 2'],rows:[['',''],['','']]});
@@ -24,7 +24,7 @@
     const selectedTags=input.tags===undefined?[]:input.tags;
     if(!Array.isArray(selectedTags)||selectedTags.length>20||selectedTags.some(tag=>!tags.includes(tag)))fail('Choose up to 20 tags from the SOP tag list.');
     result.tags=[...new Set(selectedTags)];
-    for(const name of ['title','team','effectiveDate','preparedBy','approvedBy',...sections.map(s=>s[0])])result[name]=text(input[name],sections.some(s=>s[0]===name)?20000:300);
+    for(const name of ['title','team','effectiveDate','preparedBy','approvedBy',...sections.map(s=>s[0])])result[name]=text(name==='safety'&&input[name]===undefined?'':input[name],sections.some(s=>s[0]===name)?20000:300);
     if(result.effectiveDate&&(!/^\d{4}-\d{2}-\d{2}$/.test(result.effectiveDate)||!Number.isFinite(Date.parse(result.effectiveDate+'T12:00:00Z'))||new Date(result.effectiveDate+'T12:00:00Z').toISOString().slice(0,10)!==result.effectiveDate))fail('Choose a valid effective date.');
     let photoBytes=0,stepCount=0;const ids=new Set([result.id]);
     const unique=value=>{key(value);if(ids.has(value))fail('Duplicate step or photo identifier.');ids.add(value);return value;};
