@@ -12,6 +12,8 @@ Open Preview Window opens a separate document window that updates live from the 
 
 Procedure photos are centered in a consistent 180-pixel-high frame (1.875 inches in print), without cropping. Multiple photos are arranged two per row, with captions beneath each image. Additional photos wrap onto new rows.
 
+Procedure writing fields expand as you type. Enter splits the current entry at the caret and creates the next numbered step or lettered substep; Shift+Enter inserts a line break. Ctrl/Cmd+Enter moves to the next step, creating it if needed. At the beginning of a plain step with no photos or substeps, Tab indents it beneath the previous step in the same section. Shift+Tab at the beginning of a substep promotes it to a step, preserving subsequent substeps beneath it. Enter on an empty substep returns to numbered steps. Alt+Up/Down moves between instruction fields. Other Tab presses retain normal focus navigation, and Add Step / Add Substep remain available.
+
 Import / Backup exports editable JSON with photos. Imports create a new document and do not overwrite an existing SOP. Word import is not supported. Unsaved edits trigger a prompt before opening another SOP or starting over. Downloads occur only when Download SOP Backup is clicked.
 
 The app uses the suite's existing access model; no new authentication is introduced. It is not deployed automatically.

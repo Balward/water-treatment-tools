@@ -13,6 +13,11 @@ dialog{width:min(800px,calc(100% - 32px));max-height:85dvh;overflow:auto;border:
 .document-step .document-photos figure:only-child{max-width:100%}
 .document-step .document-photos img{width:100%;height:180px;max-height:180px;object-fit:contain;object-position:center;margin:0 auto}
 .photo-editor img{justify-self:center}
+.step-editor label:has(>[data-step-instruction]){font-size:0;gap:0}
+.step-editor textarea[data-step-instruction],.step-editor textarea[data-substep]{min-height:52px;overflow-y:hidden;resize:none;border:0;border-bottom:1px solid #c8d7de;border-radius:0;background:transparent;padding:8px 2px;font-size:16px;line-height:1.55}
+.step-editor textarea[data-step-instruction]:focus,.step-editor textarea[data-substep]:focus{border-bottom-color:var(--ops-color-accent);background:#fff}
+#procedure-shortcuts{font-size:12px;line-height:1.8}
+#procedure-shortcuts kbd{font:600 11px var(--ops-font-family);color:var(--ops-color-ink);background:#edf2f4;border:1px solid #d1dde2;border-radius:4px;padding:2px 4px;white-space:nowrap}
 .preview-window-toolbar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 24px;background:white;border-bottom:1px solid var(--ops-color-line)}
 .preview-window-toolbar p{margin:5px 0 0;font-size:12px;color:var(--ops-color-muted)}
 .preview-window main{max-width:900px;padding:20px;margin:auto}

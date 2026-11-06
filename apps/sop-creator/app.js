@@ -36,7 +36,7 @@
     $('save-button').disabled=saving;
     for(const id of ['new-button','library-button','files-button'])$(id).disabled=saving;
   }
-  function fitWorkspace(){const workspace=document.querySelector('.sop-workspace');workspace.style.setProperty('--workspace-height',Math.max(360,innerHeight-workspace.getBoundingClientRect().top-24)+'px');}
+  function fitWorkspace(){const workspace=document.querySelector('.sop-workspace');workspace.style.setProperty('--workspace-height',Math.max(360,innerHeight-workspace.getBoundingClientRect().top-24)+'px');if($('editor').getClientRects().length)for(const input of $('procedure-groups').querySelectorAll('[data-step-instruction],[data-substep]'))sizeWritingField(input);}
   window.addEventListener('resize',fitWorkspace);
   new ResizeObserver(fitWorkspace).observe(document.querySelector('.toolbar'));
   let previewVisible=true,previewWidth=55;
@@ -104,7 +104,11 @@
   function renderSteps(){
     let number=0;
     $('procedure-groups').innerHTML=doc.groups.map((group,gi)=>'<section class="procedure-group" data-group="'+group.id+'"><div class="group-heading"><strong>Section '+(gi+1)+'</strong>'+controls('section',group.id,gi,doc.groups.length)+'</div>'+field('Section Heading (Optional)','data-group-title="'+group.id+'"',group.title)+'<div class="steps">'+group.steps.map((step,si)=>'<article class="step-editor" data-step="'+step.id+'"><div class="step-heading"><h3>Step '+(++number)+'</h3>'+controls('step',step.id,si,group.steps.length)+'</div>'+field('Instructions','data-step-instruction="'+step.id+'"',step.instruction,true)+'<div class="substeps">'+step.substeps.map((sub,i)=>'<div class="substep-editor">'+field('Substep '+String.fromCharCode(97+i),'data-substep="'+sub.id+'"',sub.text,true)+controls('substep',sub.id,i,step.substeps.length)+'</div>').join('')+'</div><div class="photos">'+step.photos.map((photo,i)=>'<figure class="photo-editor"><img src="'+photo.data+'" alt="Step photo '+(i+1)+'">'+field('Photo Caption','data-caption="'+photo.id+'"',photo.caption)+controls('photo',photo.id,i,step.photos.length)+'</figure>').join('')+'</div><div class="step-actions"><button type="button" data-action="add-substep" data-id="'+step.id+'">+ Add Substep</button><label class="photo-upload">+ Add Photo<input type="file" data-photo="'+step.id+'" accept="image/png,image/jpeg,image/webp" aria-label="Add Photo To Step '+number+'"></label></div></article>').join('')+'</div><button class="add-step" type="button" data-action="add-step" data-id="'+group.id+'">+ Add Step</button></section>').join('');
+    for(const input of $('procedure-groups').querySelectorAll('[data-step-instruction],[data-substep]')){
+      input.rows=1;input.placeholder=input.dataset.stepInstruction?'Type step instructions...':'Type substep instructions...';input.setAttribute('aria-describedby','procedure-shortcuts');sizeWritingField(input);
+    }
   }
+  function sizeWritingField(input){input.style.height='auto';input.style.height=Math.max(52,input.scrollHeight+2)+'px';}
   const paragraphs=text=>text.split(/\n\s*\n/).filter(s=>s.trim()).map(s=>'<p>'+escape(s).replaceAll('\n','<br>')+'</p>').join('');
   function renderPhotos(photos){
     if(!photos.length)return '';
@@ -125,6 +129,7 @@
   }
   const allSteps=()=>doc.groups.flatMap(group=>group.steps);
   $('editor').addEventListener('focusin',event=>{
+    if(event.target.matches('[data-step-instruction],[data-substep]'))sizeWritingField(event.target);
     if(innerWidth<1100)return;
     const step=event.target.closest('[data-step]'),key=event.target.dataset.meta;
     const target=step?document.querySelector('[data-preview-step="'+step.dataset.step+'"]'):key?document.querySelector('[data-preview-section="'+key+'"]')||document.querySelector('.document-header'):null;
@@ -138,7 +143,65 @@
     else if(d.substep)allSteps().flatMap(s=>s.substeps).find(s=>s.id===d.substep).text=input.value;
     else if(d.caption)allSteps().flatMap(s=>s.photos).find(p=>p.id===d.caption).caption=input.value;
     else return;
+    if(d.stepInstruction||d.substep)sizeWritingField(input);
     changed();
+  });
+  function focusWriting(id,substep=false,position=0){
+    const input=$('procedure-groups').querySelector('['+(substep?'data-substep':'data-step-instruction')+'="'+id+'"]');
+    input?.focus();input?.setSelectionRange(position,position);
+  }
+  function finishWriting(id,substep=false,position=0){changed();renderSteps();focusWriting(id,substep,position);}
+  $('procedure-groups').addEventListener('keydown',event=>{
+    const input=event.target;
+    if(!input.matches('[data-step-instruction],[data-substep]')||event.isComposing||event.keyCode===229)return;
+    const subId=input.dataset.substep,step=allSteps().find(item=>subId?item.substeps.some(sub=>sub.id===subId):item.id===input.dataset.stepInstruction);
+    if(!step)return;
+    const group=doc.groups.find(item=>item.steps.includes(step)),stepIndex=group.steps.indexOf(step),subIndex=subId?step.substeps.findIndex(sub=>sub.id===subId):-1;
+    const start=input.selectionStart,end=input.selectionEnd;
+    if(event.altKey&&!event.ctrlKey&&!event.metaKey&&['ArrowUp','ArrowDown'].includes(event.key)){
+      event.preventDefault();
+      const fields=[...$('procedure-groups').querySelectorAll('[data-step-instruction],[data-substep]')],index=fields.indexOf(input),next=fields[index+(event.key==='ArrowUp'?-1:1)];
+      if(next){next.focus();next.setSelectionRange(next.value.length,next.value.length);}return;
+    }
+    if(event.altKey)return;
+    if(event.key==='Tab'&&!event.ctrlKey&&!event.metaKey&&start===0&&end===0){
+      if(!event.shiftKey&&!subId&&stepIndex>0&&!step.substeps.length&&!step.photos.length){
+        const parent=group.steps[stepIndex-1];
+        if(parent.substeps.length>=26)return;
+        event.preventDefault();const sub={id:crypto.randomUUID(),text:input.value};parent.substeps.push(sub);group.steps.splice(stepIndex,1);finishWriting(sub.id,true);
+      }else if(event.shiftKey&&subId){
+        event.preventDefault();
+        if(allSteps().length>=200)return message('Use up to 200 steps per SOP.',true);
+        const next=model.step();next.instruction=input.value;next.substeps=step.substeps.splice(subIndex+1);step.substeps.splice(subIndex,1);group.steps.splice(stepIndex+1,0,next);finishWriting(next.id);
+      }
+      return;
+    }
+    if(event.key!=='Enter'||event.shiftKey)return;
+    event.preventDefault();
+    if(event.ctrlKey||event.metaKey){
+      const next=allSteps()[allSteps().indexOf(step)+1];
+      if(next)return focusWriting(next.id,false,next.instruction.length);
+      if(allSteps().length>=200)return message('Use up to 200 steps per SOP.',true);
+      const created=model.step();group.steps.splice(stepIndex+1,0,created);return finishWriting(created.id);
+    }
+    if(subId){
+      if(!input.value.trim()){
+        if(allSteps().length>=200)return message('Use up to 200 steps per SOP.',true);
+        const next=model.step();next.substeps=step.substeps.splice(subIndex+1);step.substeps.splice(subIndex,1);group.steps.splice(stepIndex+1,0,next);return finishWriting(next.id);
+      }
+      if(step.substeps.length>=26)return message('Use up to 26 substeps per step.',true);
+      const sub={id:crypto.randomUUID(),text:input.value.slice(end)};step.substeps[subIndex].text=input.value.slice(0,start);step.substeps.splice(subIndex+1,0,sub);return finishWriting(sub.id,true);
+    }
+    if(!input.value.trim()){
+      const next=group.steps[stepIndex+1];
+      if(next)focusWriting(next.id);else input.closest('.procedure-group').querySelector('.add-step').focus();
+      return;
+    }
+    if(allSteps().length>=200)return message('Use up to 200 steps per SOP.',true);
+    const next=model.step();next.instruction=input.value.slice(end);step.instruction=input.value.slice(0,start);
+    // When splitting text, its following substeps and photos follow the trailing text.
+    if(next.instruction){next.substeps=step.substeps;next.photos=step.photos;step.substeps=[];step.photos=[];}
+    group.steps.splice(stepIndex+1,0,next);finishWriting(next.id);
   });
   function move(list,id,action){const index=list.findIndex(item=>item.id===id);if(action==='remove')list.splice(index,1);else{const destination=index+(action==='up'?-1:1);if(destination>=0&&destination<list.length)[list[index],list[destination]]=[list[destination],list[index]];}}
   $('procedure-groups').addEventListener('click',event=>{
@@ -210,7 +273,7 @@
       doc={...next,id:crypto.randomUUID(),revision:0};renderEditor();changed();message('Backup imported as a new SOP. Save it to add it to the library.');
     }catch(error){message('Import failed: '+error.message,true);}finally{event.target.value='';}
   };
-  for(const view of ['edit','preview'])$(view+'-view').onclick=()=>{document.querySelector('.sop-workspace').dataset.view=view;$('edit-view').setAttribute('aria-pressed',String(view==='edit'));$('preview-view').setAttribute('aria-pressed',String(view==='preview'));};
+  for(const view of ['edit','preview'])$(view+'-view').onclick=()=>{document.querySelector('.sop-workspace').dataset.view=view;$('edit-view').setAttribute('aria-pressed',String(view==='edit'));$('preview-view').setAttribute('aria-pressed',String(view==='preview'));requestAnimationFrame(fitWorkspace);};
   document.addEventListener('operations:before-navigate',event=>event.detail.waitUntil((async()=>{if(saving)return false;const allowed=await askToLeave();if(allowed){dirty=false;await draftQueue;await local('delete').catch(()=>{});}return allowed;})()));
   window.addEventListener('beforeunload',event=>{if(dirty||saving){event.preventDefault();event.returnValue='';}});
   $('editor').inert=true;
