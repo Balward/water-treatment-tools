@@ -43,8 +43,8 @@ const {launchBrowser,removeTemporaryDirectory}=require('./lib/browser-check.cjs'
     await input('[data-revision-field=summary]','Initial issue');await input('[data-revision-field=date]','2026-11-05');await input('[data-revision-field=revisedBy]','Operations Team');
     assert.equal(await evaluate('document.getElementById("revised-date").value'),'2026-11-05');
     assert.ok(await evaluate('document.querySelector(".document-revisions").textContent.includes("Initial issue")'),'Revision table updates live');
-    assert.equal(await evaluate('document.querySelectorAll(".document-revisions th").length'),4);
-    assert.equal(await evaluate('document.querySelector(".document-revisions th").textContent'),'Revision Date');
+    assert.equal(await evaluate('document.querySelectorAll(".document-revisions th").length'),5);
+    assert.equal(await evaluate('document.querySelector(".document-revisions th").textContent'),'Date');
     await evaluate('document.getElementById("add-revision").click()');
     await input('.revision-entry:last-child [data-revision-field=date]','2026-11-06');
     assert.ok(await evaluate('document.querySelector(".document-header").textContent.includes("Revised Date")&&document.querySelector(".document-header").textContent.includes("2026-11-06")'),'Document header follows the newest revision date');
@@ -151,6 +151,23 @@ const {launchBrowser,removeTemporaryDirectory}=require('./lib/browser-check.cjs'
     await call('Emulation.setEmulatedMedia',{media:''});await call('Emulation.setDeviceMetricsOverride',{width:1600,height:1000,deviceScaleFactor:1,mobile:false});
     await evaluate('document.getElementById("editor").scrollTop=0;document.getElementById("preview").scrollTop=0;window.dispatchEvent(new Event("resize"))');
     const shot=await call('Page.captureScreenshot',{format:'png'});fs.writeFileSync('preview/sop-creator.png',Buffer.from(shot.data,'base64'));
-    assert.deepEqual(browser.errors,[]);console.log('SOP browser passed: live preview, sections, step ordering, substeps, photos, recovery, save/library, conflicts, escaped text, mobile/desktop layouts, and print/PDF.');
+    const overdue=require('../apps/sop-creator/model').blank();overdue.title='Annual Review Test';overdue.effectiveDate='2000-01-01';
+    assert.equal((await fetch(base+'/api/sops/'+overdue.id,{method:'PUT',headers:{'Content-Type':'application/json',Origin:base},body:JSON.stringify(overdue)})).status,200);
+    await evaluate('document.getElementById("library-button").click()');await until('!!document.querySelector(".needs-review")');
+    assert.equal(await evaluate(`document.querySelector('[data-open="${overdue.id}"]').closest('.library-card').querySelector('.needs-review').textContent`),'Needs Review');
+    await evaluate(`document.querySelector('[data-open="${overdue.id}"]').click()`);
+    await until('document.getElementById("confirm-dialog")?.open||document.querySelector("[data-meta=title]")?.value==="Annual Review Test"');
+    if(await evaluate('!!document.getElementById("confirm-dialog")?.open'))await evaluate('document.getElementById("confirm-discard").click()');
+    await until('document.querySelector("[data-meta=title]")?.value==="Annual Review Test"');
+    await evaluate('document.getElementById("add-revision").click()');
+    await input('[data-revision-field=type]','review');await input('[data-revision-field=revisedBy]','Reviewing Operator');
+    assert.ok(await evaluate('document.querySelector(".document-revisions").textContent.includes("Reviewed - No Changes")'));
+    assert.equal(await evaluate('document.getElementById("revised-date").value'),'Not Recorded','A review does not pretend the instructions changed');
+    await evaluate('document.getElementById("save-button").click()');await until('document.getElementById("save-status").textContent==="Saved"');
+    const reviewed=await(await fetch(base+'/api/sops/'+overdue.id)).json();assert.equal(reviewed.revisionHistory[0].type,'review');assert.equal(reviewed.revisionHistory[0].revisedBy,'Reviewing Operator');
+    await evaluate('document.getElementById("library-button").click()');await until('!!document.querySelector("[data-open]")');
+    assert.equal(await evaluate(`!!document.querySelector('[data-open="${overdue.id}"]').closest('.library-card').querySelector('.needs-review')`),false,'Saved no-change review clears the overdue flag');
+    assert.ok(await evaluate(`document.querySelector('[data-open="${overdue.id}"]').closest('.library-card').textContent.includes('Reviewed ')`));
+    assert.deepEqual(browser.errors,[]);console.log('SOP browser passed: annual review flags, saved review entries, live preview, sections, steps, photos, recovery, library, conflicts, mobile/desktop layouts, and print/PDF.');
   }finally{await browser?.close();await new Promise(resolve=>server.close(resolve));await removeTemporaryDirectory(directory);}
 })().catch(error=>{console.error(error);process.exitCode=1;});

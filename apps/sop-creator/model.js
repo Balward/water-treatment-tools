@@ -11,7 +11,18 @@
   const tags=tagGroups.flatMap(group=>group.tags);
   const id=()=>globalThis.crypto.randomUUID();
   function blank(){return {id:id(),revision:0,title:'',team:'Water Treatment',tags:[],effectiveDate:'',preparedBy:'',approvedBy:'',purpose:'',background:'',notes:'',safety:'',security:'',equipment:'',revisionHistory:[],groups:[{id:id(),title:'',steps:[]}]};}
-  function revisedDate(doc){return (doc.revisionHistory||[]).map(row=>row.date).filter(date=>typeof date==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(date)&&Number.isFinite(Date.parse(date+'T12:00:00Z'))&&new Date(date+'T12:00:00Z').toISOString().slice(0,10)===date).sort().at(-1)||'';}
+  const validDate=date=>typeof date==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(date)&&Number.isFinite(Date.parse(date+'T12:00:00Z'))&&new Date(date+'T12:00:00Z').toISOString().slice(0,10)===date;
+  const latestDate=dates=>dates.filter(validDate).sort().at(-1)||'';
+  function revisedDate(doc){return latestDate((doc.revisionHistory||[]).filter(row=>row.type!=='review').map(row=>row.date));}
+  function reviewedDate(doc){return latestDate((doc.revisionHistory||[]).filter(row=>row.type==='review').map(row=>row.date));}
+  function reviewStatus(doc,today=new Date()){
+    const lastDate=latestDate([doc.effectiveDate,doc.revisedDate,doc.reviewedDate,...(doc.revisionHistory||[]).map(row=>row.date)]);
+    if(!lastDate)return {needsReview:true,lastDate:'',dueDate:''};
+    const year=Number(lastDate.slice(0,4))+1,month=Number(lastDate.slice(5,7)),day=Math.min(Number(lastDate.slice(8,10)),new Date(Date.UTC(year,month,0)).getUTCDate());
+    const dueDate=[year,String(month).padStart(2,'0'),String(day).padStart(2,'0')].join('-');
+    const current=typeof today==='string'?today:[today.getFullYear(),String(today.getMonth()+1).padStart(2,'0'),String(today.getDate()).padStart(2,'0')].join('-');
+    return {needsReview:current>dueDate,lastDate,dueDate};
+  }
   const step=()=>({id:id(),instruction:'',substeps:[],photos:[],tables:[]});
   const table=()=>({id:id(),caption:'',headers:['Column 1','Column 2'],rows:[['',''],['','']]});
   function validate(input){
@@ -33,6 +44,7 @@
     result.revisionHistory=revisions.map(row=>{
       if(!row||typeof row!=='object')fail('Invalid revision entry.');
       const next={id:unique(row.id)};
+      if(row.type!==undefined){if(!['revision','review'].includes(row.type))fail('Choose Revision or Review for the history entry.');next.type=row.type;}
       for(const key of ['date','summary','revisedBy','approvedBy'])next[key]=text(row[key],key==='summary'?2000:300);
       if(next.date&&(!/^\d{4}-\d{2}-\d{2}$/.test(next.date)||!Number.isFinite(Date.parse(next.date+'T12:00:00Z'))||new Date(next.date+'T12:00:00Z').toISOString().slice(0,10)!==next.date))fail('Choose a valid revision effective date.');
       return next;
@@ -65,6 +77,6 @@
     });
     return result;
   }
-  const api={sections,tagGroups,tags,blank,step,table,revisedDate,validate};
+  const api={sections,tagGroups,tags,blank,step,table,revisedDate,reviewedDate,reviewStatus,validate};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.SOPModel=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

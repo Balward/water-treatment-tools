@@ -1,5 +1,21 @@
 const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs/promises'),os=require('node:os'),path=require('node:path'),express=require('express');
 const model=require('../apps/sop-creator/model'),register=require('../sop-api');
+test('Annual review flags use dated history, preserve revision dates, and handle calendar boundaries',()=>{
+  const doc=model.blank();doc.effectiveDate='2024-02-29';
+  assert.equal(model.reviewStatus(doc,'2025-02-28').needsReview,false);
+  assert.equal(model.reviewStatus(doc,'2025-03-01').needsReview,true);
+  doc.revisionHistory=[{id:crypto.randomUUID(),date:'2024-10-01',summary:'Updated instructions',revisedBy:'Operator',approvedBy:''},{id:crypto.randomUUID(),type:'review',date:'2025-11-06',summary:'',revisedBy:'Reviewer',approvedBy:''}];
+  assert.equal(model.revisedDate(doc),'2024-10-01');assert.equal(model.reviewedDate(doc),'2025-11-06');
+  assert.equal(model.reviewStatus(doc,'2026-11-06').needsReview,false);
+  assert.equal(model.reviewStatus(doc,'2026-11-07').needsReview,true);
+  assert.equal(model.reviewStatus({updatedAt:'2026-11-06'},'2026-11-06').needsReview,true);
+  const summary={effectiveDate:doc.effectiveDate,revisedDate:model.revisedDate(doc),reviewedDate:model.reviewedDate(doc)};
+  assert.deepEqual(model.reviewStatus(summary,'2026-11-07'),model.reviewStatus(doc,'2026-11-07'));
+  assert.deepEqual(model.validate(doc).revisionHistory,doc.revisionHistory);
+  assert.match(require('../apps/sop-creator/document').render(doc),/Reviewed - No Changes/);
+  assert.throws(()=>model.validate({...doc,revisionHistory:[{...doc.revisionHistory[1],type:'unknown'}]}),/Revision or Review/);
+  doc.revisionHistory.reverse();assert.equal(model.reviewStatus(doc,'2026-11-06').needsReview,false);
+});
 test('Safety concerns remain distinct from security and older SOPs still open',()=>{
   const doc=model.blank();doc.safety='Test the safety shower.';doc.security='Restrict panel access.';
   const normalized=model.validate(doc),html=require('../apps/sop-creator/document').render(normalized);

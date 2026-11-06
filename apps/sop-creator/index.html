@@ -6,9 +6,9 @@
   <link rel="icon" href="../../assets/logos/favicon.png">
   <link rel="stylesheet" href="../../shared/operations/theme.css">
   <link rel="stylesheet" href="../../shared/operations/navigation.css">
-  <link rel="stylesheet" href="styles.css?v=20261106-readview1">
+  <link rel="stylesheet" href="styles.css?v=20261106-review1">
   <script src="../../shared/operations/navigation.js" defer></script>
-  <script src="model.js?v=20261106-safety1" defer></script><script src="document.js?v=20261106-safety1" defer></script><script src="app.js?v=20261106-readview1" defer></script>
+  <script src="model.js?v=20261106-review1" defer></script><script src="document.js?v=20261106-review1" defer></script><script src="app.js?v=20261106-review1" defer></script>
 </head>
 <body data-ops-app="sops">
   <a class="skip-link" href="#editor">Skip To SOP Editor</a>
@@ -35,7 +35,7 @@
             <label class="wide">Title <span class="required">Required</span><input data-meta="title" maxlength="300" placeholder="Name Of The Procedure" required></label>
             <label>Team<select data-meta="team"><option>Water Treatment</option><option>Wastewater Treatment</option><option>Maintenance</option><option>Laboratory Services</option><option>General Operations</option></select></label>
             <label>Effective Date<input data-meta="effectiveDate" type="date"></label>
-            <label>Revised Date<input id="revised-date" type="text" readonly aria-describedby="revised-date-help" value="Not Recorded"><small id="revised-date-help" class="help">Latest date from Revision History.</small></label>
+            <label>Revised Date<input id="revised-date" type="text" readonly aria-describedby="revised-date-help" value="Not Recorded"><small id="revised-date-help" class="help">Latest revision date; no-change reviews are tracked separately.</small></label>
             <label>Prepared By<input data-meta="preparedBy" maxlength="300"></label>
             <label>Approved By<input data-meta="approvedBy" maxlength="300"></label>
           </div>
@@ -43,7 +43,7 @@
         <section class="editor-panel"><div class="panel-heading"><h2>SOP Tags</h2><span id="tag-count"></span></div><div id="selected-sop-tags" class="sop-tags"></div><details class="tag-picker"><summary>Choose Tags</summary><label>Find A Tag<input id="tag-search" type="search" placeholder="e.g. pH, calibration, filtration"></label><div id="tag-options"></div><p id="tag-empty" hidden>No matching tags.</p></details></section>
         <section class="editor-panel"><h2>Context &amp; Preparation</h2><p class="help">Empty sections are omitted from the finished document. Enter one note or equipment item per line.</p><div id="context-fields"></div></section>
         <section class="editor-panel procedure-editor"><div class="panel-heading"><h2>Procedure</h2><button id="add-section" type="button">+ Add Section</button></div><p class="help" id="procedure-shortcuts"><kbd>Enter</kbd> Next item · <kbd>Shift+Enter</kbd> New line · <kbd>Ctrl/⌘+Enter</kbd> Jump to next step. At the start of a step, <kbd>Tab</kbd> indents a plain step beneath the previous one; <kbd>Shift+Tab</kbd> outdents a substep. <kbd>Alt+↑/↓</kbd> moves between entries.</p><div id="procedure-groups"></div></section>
-        <section class="editor-panel" aria-labelledby="revisions-title"><div class="panel-heading"><h2 id="revisions-title">Revision History</h2><button id="add-revision" type="button">+ Add Revision</button></div><p class="help">Add a row when the SOP changes. The revision table appears at the end of the document.</p><div id="revision-entries"></div></section>
+        <section class="editor-panel" aria-labelledby="revisions-title"><div class="panel-heading"><h2 id="revisions-title">Revision History</h2><button id="add-revision" type="button">+ Add History Entry</button></div><p class="help">Choose Revision when the SOP changes, or Review - No Changes to record a completed review. Enter the date and reviewer, then Save SOP. Both count toward the annual review reminder.</p><div id="revision-entries"></div></section>
       </section>
       <section id="preview" aria-label="Live SOP Preview"><div class="preview-heading"><h2>Live Preview</h2><div class="preview-heading-actions"><span>Letter · Portrait</span><button id="close-preview" type="button" aria-label="Close Live Preview">&times;</button></div></div><div class="paper-wrap"><article id="sop-document" class="sop-document"></article></div></section>
     </div>

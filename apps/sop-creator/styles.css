@@ -24,6 +24,7 @@ dialog{width:min(800px,calc(100% - 32px));max-height:85dvh;overflow:auto;border:
 .document-data-table{width:100%;table-layout:fixed;border-collapse:collapse;margin:10px 0;font-size:11px;line-height:1.4}
 .document-data-table caption{text-align:left;font-weight:650;margin-bottom:6px;break-after:avoid}.document-data-table th,.document-data-table td{border:1px solid #bdcbd1;padding:6px 8px;vertical-align:top;text-align:left;white-space:pre-wrap;overflow-wrap:anywhere}.document-data-table th{background:#edf5f7;font-weight:650}.document-data-table thead{display:table-header-group}.document-data-table tr{break-inside:avoid}
 .revision-entry{border-top:1px solid var(--ops-color-line);padding-top:16px;margin-top:16px}
+.needs-review{display:inline-block;padding:5px 10px;margin:0 0 8px;border:1px solid #b77912;border-radius:5px;background:#fff1c2;color:#704600;font-size:13px;font-weight:700}
 .document-revisions table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:10px;line-height:1.4}
 .document-revisions .revision-date{width:20%}.document-revisions .revision-summary{width:40%}
 .document-revisions th,.document-revisions td{border:1px solid #c8d5dc;padding:6px 8px;text-align:left;vertical-align:top;overflow-wrap:anywhere;white-space:pre-wrap}

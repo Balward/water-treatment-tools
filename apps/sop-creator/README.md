@@ -26,7 +26,7 @@ Each library card has Edit SOP and View SOP. Edit opens the saved procedure in t
 
 Revision History is an editable table at the end of the SOP, containing revision date, change summary, revised by, and approved by. Add, edit, reorder, or remove entries in the editor; they are saved with the SOP and included in previews, PDFs, and backups. Empty tables are omitted. Entries are maintained manually; saving does not issue a revision or verify an approval. The document header shows Revised Date instead of a version number, automatically using the latest valid date in Revision History regardless of row order. When no dated entry exists, it shows Not Recorded. Dates identify revisions; revision numbers are not used. Existing entries keep their dates and change details when opened.
 
-The app uses the suite's existing access model; no new authentication is introduced. It is not deployed automatically.
+The app uses the suite's existing access model; no new authentication is introduced. Deployment follows the repository deployment instructions.
 
 Checks:
 
@@ -34,3 +34,5 @@ Checks:
 node --test scripts/sop.test.cjs
 node scripts/check-sop-creator.cjs
 ```
+
+Library cards show Needs Review when the latest revision, review, or effective date is more than one calendar year old, or no such date is recorded. The exact anniversary is not overdue; February 29 anniversaries fall on February 28 in non-leap years. Save timestamps do not reset review reminders. Add History Entry offers Revision or Review - No Changes; record the date and reviewer and save the SOP. Older history entries remain revisions. Reviews appear in the printed history and Reviewed Date metadata without changing Revised Date.
