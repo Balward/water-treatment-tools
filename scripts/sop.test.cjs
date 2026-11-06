@@ -3,6 +3,10 @@ const model=require('../apps/sop-creator/model'),register=require('../sop-api');
 test('SOP model preserves the template structure, photos, and ordered steps, while rejecting unsafe data',()=>{
   const doc=model.blank();doc.title='Check A Pump';const step=model.step();step.instruction='Check the gauge.';step.substeps.push({id:crypto.randomUUID(),text:'Record the reading.'});step.photos.push({id:crypto.randomUUID(),data:'data:image/png;base64,aGVsbG8=',caption:'Gauge'});doc.groups[0].steps.push(step);
   assert.deepEqual(model.validate(doc),doc);
+  const withTable=structuredClone(doc);withTable.groups[0].steps[0].tables.push(model.table());
+  withTable.groups[0].steps[0].tables[0].rows[0]=['Pressure','45 psi'];assert.deepEqual(model.validate(withTable),withTable);
+  withTable.groups[0].steps[0].tables[0].rows[0].pop();assert.throws(()=>model.validate(withTable),/column count/);
+  const noTables=structuredClone(doc);delete noTables.groups[0].steps[0].tables;assert.deepEqual(model.validate(noTables).groups[0].steps[0].tables,[],'Older SOPs open without tables');
   const older=structuredClone(doc);delete older.revisionHistory;assert.deepEqual(model.validate(older).revisionHistory,[],'Existing SOPs open without a revision table');
   const withHistory=structuredClone(doc);withHistory.revisionHistory.push({id:crypto.randomUUID(),version:'1.0',date:'2026-11-05',summary:'Initial issue',revisedBy:'Operations',approvedBy:''});
   assert.deepEqual(model.validate(withHistory),withHistory);

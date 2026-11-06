@@ -13,6 +13,13 @@ dialog{width:min(800px,calc(100% - 32px));max-height:85dvh;overflow:auto;border:
 .document-step .document-photos figure:only-child{max-width:100%}
 .document-step .document-photos img{width:100%;height:180px;max-height:180px;object-fit:contain;object-position:center;margin:0 auto}
 .photo-editor img{justify-self:center}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.table-editor{min-width:0;border:1px solid var(--ops-color-line);border-radius:7px;padding:12px;background:#fff;display:grid;gap:12px}
+.table-editor-scroll{overflow-x:auto;max-width:100%}.table-editor table{border-collapse:collapse;width:100%}.table-editor th,.table-editor td{padding:5px;vertical-align:top;border:1px solid #d1dde2;min-width:145px}.table-editor th{background:#edf5f7}.table-editor input,.table-editor textarea{padding:8px;font-size:16px;min-height:42px}.table-editor textarea{min-height:64px;line-height:1.4}.table-editor th button,.table-row-actions button{min-height:32px;font-size:11px;padding:5px 7px;margin-top:6px}.table-editor .table-row-actions{min-width:80px;width:80px}
+.step-editor,.table-editor{min-width:0;grid-template-columns:minmax(0,1fr)}.table-editor-scroll{position:relative;min-width:0;width:100%}
+.document-tables{margin:10px 0 10px calc(0px - var(--step-list-indent) - var(--step-text-indent))}
+.document-data-table{width:100%;table-layout:fixed;border-collapse:collapse;margin:10px 0;font-size:11px;line-height:1.4}
+.document-data-table caption{text-align:left;font-weight:650;margin-bottom:6px;break-after:avoid}.document-data-table th,.document-data-table td{border:1px solid #bdcbd1;padding:6px 8px;vertical-align:top;text-align:left;white-space:pre-wrap;overflow-wrap:anywhere}.document-data-table th{background:#edf5f7;font-weight:650}.document-data-table thead{display:table-header-group}.document-data-table tr{break-inside:avoid}
 .revision-entry{border-top:1px solid var(--ops-color-line);padding-top:16px;margin-top:16px}
 .document-revisions table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:10px;line-height:1.4}
 .document-revisions .revision-version{width:12%}.document-revisions .revision-date{width:17%}.document-revisions .revision-summary{width:35%}

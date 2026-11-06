@@ -43,6 +43,19 @@ const {launchBrowser,removeTemporaryDirectory}=require('./lib/browser-check.cjs'
     await evaluate('document.querySelector("[data-action=add-step]").click()');await input('.step-editor:last-child [data-step-instruction]','Check The Motor');
     await evaluate('document.querySelector(".step-editor:last-child [data-action=step-up]").click()');
     assert.equal(await evaluate('document.querySelector(".document-step>p").textContent'),'Check The Motor');
+    await evaluate('document.querySelector("[data-action=add-table]").click()');
+    await input('[data-table-caption]','Operating Limits');
+    await input('[data-table-row="-1"][data-table-column="0"]','Parameter');await input('[data-table-row="-1"][data-table-column="1"]','Expected Reading');
+    await input('[data-table-row="0"][data-table-column="0"]','Pressure');await input('[data-table-row="0"][data-table-column="1"]','45 psi');
+    await input('[data-table-row="1"][data-table-column="0"]','Valve position');await input('[data-table-row="1"][data-table-column="1"]','Open');
+    await evaluate('document.querySelector("[data-action=table-row-add]").click();document.querySelector("[data-action=table-column-add]").click()');
+    assert.equal(await evaluate('document.querySelectorAll(".document-data-table th").length'),3);
+    await evaluate('[...document.querySelectorAll("[data-action=table-column-remove]")].find(button=>button.dataset.index==="2").click()');
+    await until('document.querySelectorAll(".document-data-table th").length===2');
+    await evaluate('[...document.querySelectorAll("[data-action=table-row-remove]")].find(button=>button.dataset.index==="2").click()');
+    await until('document.querySelectorAll(".document-data-table tbody tr").length===2');
+    await evaluate('document.querySelector("[data-action=add-table]").click();document.querySelector(".table-editor:last-of-type [data-action=table-remove]").click()');
+    await until('document.querySelectorAll(".table-editor").length===1');
     assert.equal(await evaluate('document.querySelectorAll("[data-step-title],.document-step h4").length'),0,'Steps contain instructions without separate titles');
     assert.equal(await evaluate('document.querySelector(".document-substeps li").textContent'),'Record the pressure.');
     assert.equal(await evaluate('document.querySelectorAll(".document-section ul li").length'),2);
@@ -55,7 +68,7 @@ const {launchBrowser,removeTemporaryDirectory}=require('./lib/browser-check.cjs'
     assert.ok(await evaluate('(()=>{const row=document.querySelector(".document-photo-row"),images=[...row.querySelectorAll("img")].map(img=>img.getBoundingClientRect()),bounds=document.getElementById("sop-document").getBoundingClientRect();return Math.abs(images[1].left-images[0].right-8)<1&&Math.abs((images[0].left+images[1].right)/2-(bounds.left+bounds.right)/2)<1&&images[1].width<images[0].width})()'),'Different photo shapes stay close together and the pair is centered on the page');
     await until('document.getElementById("save-status").textContent.includes("Draft Kept")');await evaluate('window.__oldSOPPage=true');await call('Page.reload');await until('!window.__oldSOPPage&&!!document.querySelector("[data-meta=purpose]")&&!document.getElementById("editor").inert&&document.querySelectorAll(".photo-editor").length===2');assert.equal(await evaluate('document.querySelector("[data-meta=title]").value'),'Inspect The Sample Pump');
     await evaluate('document.getElementById("save-button").click()');await until('document.getElementById("message").textContent==="SOP saved to the library."');
-    const records=await(await fetch(base+'/api/sops')).json();assert.equal(records.length,1);const saved=await(await fetch(base+'/api/sops/'+records[0].id)).json();assert.equal(saved.groups[0].steps[0].photos.length,2);assert.equal(saved.revisionHistory[0].summary,'Initial issue','Revision entries are saved with the SOP');
+    const records=await(await fetch(base+'/api/sops')).json();assert.equal(records.length,1);const saved=await(await fetch(base+'/api/sops/'+records[0].id)).json();assert.equal(saved.groups[0].steps[0].photos.length,2);assert.equal(saved.revisionHistory[0].summary,'Initial issue','Revision entries are saved with the SOP');assert.equal(saved.groups[0].steps[0].tables[0].rows[0][1],'45 psi','Table cells survive recovery and saving');
     await evaluate('document.getElementById("new-button").click();document.getElementById("library-button").click()');await until('!!document.querySelector("[data-open]")');await evaluate('document.querySelector("[data-open]").click()');await until('document.querySelector("[data-meta=title]").value==="Inspect The Sample Pump"');
     // Unsaved drafts survive failed saves; stale revisions cannot overwrite a newer server version.
     const updated=await fetch(base+'/api/sops/'+saved.id,{method:'PUT',headers:{'Content-Type':'application/json',Origin:base},body:JSON.stringify({...saved,purpose:'Server update'})});assert.equal(updated.status,200);

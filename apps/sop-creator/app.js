@@ -123,13 +123,19 @@
   });
   function renderSteps(){
     let number=0;
-    $('procedure-groups').innerHTML=doc.groups.map((group,gi)=>'<section class="procedure-group" data-group="'+group.id+'"><div class="group-heading"><strong>Section '+(gi+1)+'</strong>'+controls('section',group.id,gi,doc.groups.length)+'</div>'+field('Section Heading (Optional)','data-group-title="'+group.id+'"',group.title)+'<div class="steps">'+group.steps.map((step,si)=>'<article class="step-editor" data-step="'+step.id+'"><div class="step-heading"><h3>Step '+(++number)+'</h3>'+controls('step',step.id,si,group.steps.length)+'</div>'+field('Instructions','data-step-instruction="'+step.id+'"',step.instruction,true)+'<div class="substeps">'+step.substeps.map((sub,i)=>'<div class="substep-editor">'+field('Substep '+String.fromCharCode(97+i),'data-substep="'+sub.id+'"',sub.text,true)+controls('substep',sub.id,i,step.substeps.length)+'</div>').join('')+'</div><div class="photos">'+step.photos.map((photo,i)=>'<figure class="photo-editor"><img src="'+photo.data+'" alt="Step photo '+(i+1)+'">'+field('Photo Caption','data-caption="'+photo.id+'"',photo.caption)+controls('photo',photo.id,i,step.photos.length)+'</figure>').join('')+'</div><div class="step-actions"><button type="button" data-action="add-substep" data-id="'+step.id+'">+ Add Substep</button><label class="photo-upload">+ Add Photo<input type="file" data-photo="'+step.id+'" accept="image/png,image/jpeg,image/webp" aria-label="Add Photo To Step '+number+'"></label></div></article>').join('')+'</div><button class="add-step" type="button" data-action="add-step" data-id="'+group.id+'">+ Add Step</button></section>').join('');
+    $('procedure-groups').innerHTML=doc.groups.map((group,gi)=>'<section class="procedure-group" data-group="'+group.id+'"><div class="group-heading"><strong>Section '+(gi+1)+'</strong>'+controls('section',group.id,gi,doc.groups.length)+'</div>'+field('Section Heading (Optional)','data-group-title="'+group.id+'"',group.title)+'<div class="steps">'+group.steps.map((step,si)=>'<article class="step-editor" data-step="'+step.id+'"><div class="step-heading"><h3>Step '+(++number)+'</h3>'+controls('step',step.id,si,group.steps.length)+'</div>'+field('Instructions','data-step-instruction="'+step.id+'"',step.instruction,true)+'<div class="substeps">'+step.substeps.map((sub,i)=>'<div class="substep-editor">'+field('Substep '+String.fromCharCode(97+i),'data-substep="'+sub.id+'"',sub.text,true)+controls('substep',sub.id,i,step.substeps.length)+'</div>').join('')+'</div>'+editTables(step.tables)+'<div class="photos">'+step.photos.map((photo,i)=>'<figure class="photo-editor"><img src="'+photo.data+'" alt="Step photo '+(i+1)+'">'+field('Photo Caption','data-caption="'+photo.id+'"',photo.caption)+controls('photo',photo.id,i,step.photos.length)+'</figure>').join('')+'</div><div class="step-actions"><button type="button" data-action="add-substep" data-id="'+step.id+'">+ Add Substep</button><button type="button" data-action="add-table" data-id="'+step.id+'">+ Add Table</button><label class="photo-upload">+ Add Photo<input type="file" data-photo="'+step.id+'" accept="image/png,image/jpeg,image/webp" aria-label="Add Photo To Step '+number+'"></label></div></article>').join('')+'</div><button class="add-step" type="button" data-action="add-step" data-id="'+group.id+'">+ Add Step</button></section>').join('');
     for(const input of $('procedure-groups').querySelectorAll('[data-step-instruction],[data-substep]')){
       input.rows=1;input.placeholder=input.dataset.stepInstruction?'Type step instructions...':'Type substep instructions...';input.setAttribute('aria-describedby','procedure-shortcuts');sizeWritingField(input);
     }
   }
   function sizeWritingField(input){input.style.height='auto';input.style.height=Math.max(52,input.scrollHeight+2)+'px';}
   const paragraphs=text=>text.split(/\n\s*\n/).filter(s=>s.trim()).map(s=>'<p>'+escape(s).replaceAll('\n','<br>')+'</p>').join('');
+  function editTables(tables){
+    return tables.map((table,index)=>'<section class="table-editor" data-table-editor="'+table.id+'"><div class="group-heading"><strong>Table '+(index+1)+'</strong>'+controls('table',table.id,index,tables.length)+'</div>'+field('Table Caption (Optional)','data-table-caption="'+table.id+'"',table.caption)+'<div class="table-editor-scroll"><table><thead><tr>'+table.headers.map((header,column)=>'<th><input data-table="'+table.id+'" data-table-row="-1" data-table-column="'+column+'" value="'+escape(header)+'" maxlength="2000" aria-label="Column '+(column+1)+' Header"><button type="button" data-action="table-column-remove" data-id="'+table.id+'" data-index="'+column+'"'+(table.headers.length===1?' disabled':'')+' aria-label="Remove Column '+(column+1)+'">Remove Column</button></th>').join('')+'<th class="table-row-actions"><span class="sr-only">Row Actions</span></th></tr></thead><tbody>'+table.rows.map((row,rowIndex)=>'<tr>'+row.map((cell,column)=>'<td><textarea rows="2" maxlength="2000" data-table="'+table.id+'" data-table-row="'+rowIndex+'" data-table-column="'+column+'" aria-label="Row '+(rowIndex+1)+', Column '+(column+1)+'">'+escape(cell)+'</textarea></td>').join('')+'<td class="table-row-actions"><button type="button" data-action="table-row-remove" data-id="'+table.id+'" data-index="'+rowIndex+'"'+(table.rows.length===1?' disabled':'')+' aria-label="Remove Row '+(rowIndex+1)+'">Remove Row</button></td></tr>').join('')+'</tbody></table></div><div class="step-actions"><button type="button" data-action="table-row-add" data-id="'+table.id+'">+ Add Row</button><button type="button" data-action="table-column-add" data-id="'+table.id+'">+ Add Column</button></div></section>').join('');
+  }
+  function previewTables(tables){
+    return tables.length?'<div class="document-tables">'+tables.map(table=>'<table class="document-data-table">'+(table.caption.trim()?'<caption>'+escape(table.caption)+'</caption>':'')+'<thead><tr>'+table.headers.map(header=>'<th scope="col">'+escape(header)+'</th>').join('')+'</tr></thead><tbody>'+table.rows.map(row=>'<tr>'+row.map(cell=>'<td>'+escape(cell)+'</td>').join('')+'</tr>').join('')+'</tbody></table>').join('')+'</div>':'';
+  }
   function renderPhotos(photos){
     if(!photos.length)return '';
     const rows=[];
@@ -145,9 +151,10 @@
     document.title=(doc.title.trim()||'SOP Creator')+' | Northglenn Operations';
     let count=0;
     const metadata=[['Team',doc.team],['Effective',doc.effectiveDate],['Version',doc.version],['Prepared By',doc.preparedBy],['Approved By',doc.approvedBy]].filter(([,value])=>value.trim());
-    $('sop-document').innerHTML='<header class="document-header"><img src="../../assets/logos/northglenn-horizontal.png" alt="City of Northglenn"><p class="document-kind">Standard Operating Procedure (SOP)</p><h1>'+escape(doc.title||'Untitled Procedure')+'</h1><dl>'+metadata.map(([label,value])=>'<div><dt>'+label+'</dt><dd>'+escape(value)+'</dd></div>').join('')+'</dl></header>'+model.sections.filter(([key])=>doc[key].trim()).map(([key,label])=>'<section class="document-section" data-preview-section="'+key+'"><h2>'+label+'</h2>'+(['notes','security','equipment'].includes(key)?'<ul>'+doc[key].split('\n').filter(s=>s.trim()).map(s=>'<li>'+escape(s)+'</li>').join('')+'</ul>':paragraphs(doc[key]))+'</section>').join('')+'<section class="document-section"><h2>Procedure</h2>'+doc.groups.map(group=>(group.title.trim()?'<h3 class="procedure-section-title">'+escape(group.title)+'</h3>':'')+'<ol class="document-steps" start="'+(count+1)+'">'+group.steps.map(step=>{count++;return '<li class="document-step" data-preview-step="'+step.id+'">'+paragraphs(step.instruction)+(step.substeps.length?'<ol class="document-substeps" type="a">'+step.substeps.map(sub=>'<li>'+escape(sub.text).replaceAll('\n','<br>')+'</li>').join('')+'</ol>':'')+renderPhotos(step.photos)+'</li>';}).join('')+'</ol>').join('')+(count?'':'<p class="preview-placeholder">Add your first step to begin the procedure.</p>')+'</section>'+revisionTable();
+    $('sop-document').innerHTML='<header class="document-header"><img src="../../assets/logos/northglenn-horizontal.png" alt="City of Northglenn"><p class="document-kind">Standard Operating Procedure (SOP)</p><h1>'+escape(doc.title||'Untitled Procedure')+'</h1><dl>'+metadata.map(([label,value])=>'<div><dt>'+label+'</dt><dd>'+escape(value)+'</dd></div>').join('')+'</dl></header>'+model.sections.filter(([key])=>doc[key].trim()).map(([key,label])=>'<section class="document-section" data-preview-section="'+key+'"><h2>'+label+'</h2>'+(['notes','security','equipment'].includes(key)?'<ul>'+doc[key].split('\n').filter(s=>s.trim()).map(s=>'<li>'+escape(s)+'</li>').join('')+'</ul>':paragraphs(doc[key]))+'</section>').join('')+'<section class="document-section"><h2>Procedure</h2>'+doc.groups.map(group=>(group.title.trim()?'<h3 class="procedure-section-title">'+escape(group.title)+'</h3>':'')+'<ol class="document-steps" start="'+(count+1)+'">'+group.steps.map(step=>{count++;return '<li class="document-step" data-preview-step="'+step.id+'">'+paragraphs(step.instruction)+(step.substeps.length?'<ol class="document-substeps" type="a">'+step.substeps.map(sub=>'<li>'+escape(sub.text).replaceAll('\n','<br>')+'</li>').join('')+'</ol>':'')+previewTables(step.tables)+renderPhotos(step.photos)+'</li>';}).join('')+'</ol>').join('')+(count?'':'<p class="preview-placeholder">Add your first step to begin the procedure.</p>')+'</section>'+revisionTable();
   }
   const allSteps=()=>doc.groups.flatMap(group=>group.steps);
+  const allTables=()=>allSteps().flatMap(step=>step.tables);
   $('editor').addEventListener('focusin',event=>{
     if(event.target.matches('[data-step-instruction],[data-substep]'))sizeWritingField(event.target);
     if(innerWidth<1100)return;
@@ -157,7 +164,9 @@
   });
   $('editor').addEventListener('input',event=>{
     const input=event.target,d=input.dataset;
-    if(d.revisionField)doc.revisionHistory.find(row=>row.id===d.revision)[d.revisionField]=input.value;
+    if(d.table){const table=allTables().find(table=>table.id===d.table),row=Number(d.tableRow),column=Number(d.tableColumn);if(row===-1)table.headers[column]=input.value;else table.rows[row][column]=input.value;}
+    else if(d.tableCaption)allTables().find(table=>table.id===d.tableCaption).caption=input.value;
+    else if(d.revisionField)doc.revisionHistory.find(row=>row.id===d.revision)[d.revisionField]=input.value;
     else if(d.meta)doc[d.meta]=input.value;
     else if(d.groupTitle)doc.groups.find(g=>g.id===d.groupTitle).title=input.value;
     else if(d.stepInstruction)allSteps().find(s=>s.id===d.stepInstruction).instruction=input.value;
@@ -186,7 +195,7 @@
     }
     if(event.altKey)return;
     if(event.key==='Tab'&&!event.ctrlKey&&!event.metaKey&&start===0&&end===0){
-      if(!event.shiftKey&&!subId&&stepIndex>0&&!step.substeps.length&&!step.photos.length){
+      if(!event.shiftKey&&!subId&&stepIndex>0&&!step.substeps.length&&!step.photos.length&&!step.tables.length){
         const parent=group.steps[stepIndex-1];
         if(parent.substeps.length>=26)return;
         event.preventDefault();const sub={id:crypto.randomUUID(),text:input.value};parent.substeps.push(sub);group.steps.splice(stepIndex,1);finishWriting(sub.id,true);
@@ -221,7 +230,7 @@
     if(allSteps().length>=200)return message('Use up to 200 steps per SOP.',true);
     const next=model.step();next.instruction=input.value.slice(end);step.instruction=input.value.slice(0,start);
     // When splitting text, its following substeps and photos follow the trailing text.
-    if(next.instruction){next.substeps=step.substeps;next.photos=step.photos;step.substeps=[];step.photos=[];}
+    if(next.instruction){next.substeps=step.substeps;next.photos=step.photos;next.tables=step.tables;step.substeps=[];step.photos=[];step.tables=[];}
     group.steps.splice(stepIndex+1,0,next);finishWriting(next.id);
   });
   function move(list,id,action){const index=list.findIndex(item=>item.id===id);if(action==='remove')list.splice(index,1);else{const destination=index+(action==='up'?-1:1);if(destination>=0&&destination<list.length)[list[index],list[destination]]=[list[destination],list[index]];}}
@@ -231,6 +240,30 @@
     if(action==='add-step'){
       if(allSteps().length>=200)return message('Use up to 200 steps per SOP.',true);
       const step=model.step();doc.groups.find(g=>g.id===id).steps.push(step);focus='[data-step-instruction="'+step.id+'"]';
+    }else if(action==='add-table'){
+      const step=allSteps().find(step=>step.id===id);if(step.tables.length>=6)return message('Use up to 6 tables per step.',true);
+      const table=model.table();step.tables.push(table);focus='[data-table-caption="'+table.id+'"]';
+    }else if(action.startsWith('table-')){
+      const step=allSteps().find(step=>step.tables.some(table=>table.id===id)),table=step?.tables.find(table=>table.id===id);if(!table)return;
+      focus='[data-table-caption="'+id+'"]';
+      const index=Number(button.dataset.index);
+      if(action==='table-row-add'){
+        if(table.rows.length>=50)return message('Use up to 50 rows per table.',true);
+        table.rows.push(table.headers.map(()=>''));focus='[data-table="'+id+'"][data-table-row="'+(table.rows.length-1)+'"][data-table-column="0"]';
+      }else if(action==='table-column-add'){
+        if(table.headers.length>=8)return message('Use up to 8 columns per table.',true);
+        table.headers.push('Column '+(table.headers.length+1));table.rows.forEach(row=>row.push(''));focus='[data-table="'+id+'"][data-table-row="-1"][data-table-column="'+(table.headers.length-1)+'"]';
+      }else if(action==='table-row-remove'){
+        if(table.rows.length===1||!Number.isInteger(index)||index<0||index>=table.rows.length||!window.confirm('Remove this table row and its contents?'))return;
+        table.rows.splice(index,1);
+      }else if(action==='table-column-remove'){
+        if(table.headers.length===1||!Number.isInteger(index)||index<0||index>=table.headers.length||!window.confirm('Remove this table column and its contents?'))return;
+        table.headers.splice(index,1);table.rows.forEach(row=>row.splice(index,1));
+      }else if(['table-up','table-down','table-remove'].includes(action)){
+        if(action==='table-remove'&&!window.confirm('Remove this table and its contents?'))return;
+        move(step.tables,id,action.slice('table-'.length));
+        if(action==='table-remove')focus='[data-step-instruction="'+step.id+'"]';
+      }else return;
     }else if(action==='add-substep'){
       const step=allSteps().find(s=>s.id===id);if(step.substeps.length>=26)return message('Use up to 26 substeps per step.',true);
       const sub={id:crypto.randomUUID(),text:''};step.substeps.push(sub);focus='[data-substep="'+sub.id+'"]';
