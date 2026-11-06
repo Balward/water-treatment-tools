@@ -21,7 +21,9 @@ console.log('OpenAI API Key loaded:', OPENAI_API_KEY ? `${OPENAI_API_KEY.substri
 require('./application-review-auth').register(app);
 app.use(cors());
 app.use('/api/application-review',express.json({limit:'5mb'}));
+app.use('/api/sops',express.json({limit:'16mb'}));
 app.use(express.json());
+require('./sop-api')(app);
 require('./application-review-api')(app);
 require('./plant-rounds-api')(app);
 

@@ -53,7 +53,7 @@ const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
     await evaluate('document.querySelector("[data-ops-menu]").click()');
     assert.ok(await evaluate('document.getElementById("opsAppMenu").open'));
     assert.equal(await evaluate('document.querySelector(".ops-app-menu [aria-current=page]").dataset.opsDestination'),'equipment');
-    assert.equal(await evaluate('document.querySelectorAll(".ops-app-menu [data-ops-destination]").length'),17);
+    assert.equal(await evaluate('document.querySelectorAll(".ops-app-menu [data-ops-destination]").length'),18);
     await evaluate('document.querySelector(".ops-app-menu-close").click();new Promise(r=>requestAnimationFrame(r))');
     assert.ok(await evaluate('[...document.images].every(image=>image.complete&&image.naturalWidth>0)'));
     assert.equal(await evaluate('document.querySelector(".header-qr").href'),'https://water.gibbhub.io/live-operations-dashboard/','QR opens the editor without TV mode');

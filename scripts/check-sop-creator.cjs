@@ -1,0 +1,53 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),fsp=require('node:fs/promises'),os=require('node:os'),path=require('node:path'),express=require('express');
+const {launchBrowser,removeTemporaryDirectory}=require('./lib/browser-check.cjs');
+(async()=>{
+  const directory=await fsp.mkdtemp(path.join(os.tmpdir(),'sop-browser-')),app=express();
+  app.use(express.json({limit:'16mb'}));require('../sop-api')(app,{directory});app.use('/sop-creator',express.static(path.resolve('apps/sop-creator')));app.use('/shared',express.static(path.resolve('shared')));app.use('/assets',express.static(path.resolve('assets')));
+  const server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));const base='http://127.0.0.1:'+server.address().port;let browser;
+  try{
+    browser=await launchBrowser({acceptDialogs:true});const {call,evaluate}=browser;
+    const until=async expression=>{for(let i=0;i<120;i++){if(await evaluate(expression))return;await new Promise(r=>setTimeout(r,40));}throw Error('Timed out: '+expression);};
+    await call('Emulation.setDeviceMetricsOverride',{width:1600,height:1000,deviceScaleFactor:1,mobile:false});await call('Page.navigate',{url:base+'/sop-creator/'});await until('!!document.querySelector("[data-meta=purpose]")&&!document.getElementById("editor").inert');
+    const input=async(selector,value)=>evaluate(`(()=>{const input=document.querySelector(${JSON.stringify(selector)});input.value=${JSON.stringify(value)};input.dispatchEvent(new Event('input',{bubbles:true}));})()`);
+    await input('[data-meta=title]','Inspect The Sample Pump');await input('[data-meta=purpose]','Check that the pump is ready.');await input('[data-meta=notes]','First note\nSecond note');
+    await evaluate('document.querySelector("[data-action=add-step]").click()');await input('[data-step-title]','Inspect The Gauge');await input('[data-step-instruction]','Look for damage.\nRecord any issues.');
+    await evaluate('document.querySelector("[data-action=add-substep]").click()');await input('[data-substep]','Record the pressure.');
+    await evaluate('document.querySelector("[data-action=add-step]").click()');await input('.step-editor:last-child [data-step-title]','Check The Motor');
+    await evaluate('document.querySelector(".step-editor:last-child [data-action=step-up]").click()');
+    assert.equal(await evaluate('document.querySelector(".document-step h4").textContent'),'Check The Motor');
+    assert.equal(await evaluate('document.querySelector(".document-substeps li").textContent'),'Record the pressure.');
+    assert.equal(await evaluate('document.querySelectorAll(".document-section ul li").length'),2);
+    await input('[data-meta=background]','<script>window.injected=true</script>');assert.equal(await evaluate('window.injected===true'),false);assert.ok(await evaluate('document.getElementById("sop-document").textContent.includes("<script>")'));
+    await evaluate(`(()=>{const canvas=document.createElement('canvas');canvas.width=100;canvas.height=60;canvas.getContext('2d').fillRect(0,0,100,60);return new Promise(resolve=>canvas.toBlob(blob=>{const file=new File([blob],'gauge.png',{type:'image/png'}),transfer=new DataTransfer();transfer.items.add(file);const input=document.querySelector('[data-photo]');input.files=transfer.files;input.dispatchEvent(new Event('change',{bubbles:true}));resolve();}));})()`);
+    await until('document.querySelectorAll(".photo-editor").length===1');await input('[data-caption]','Pump Gauge');assert.equal(await evaluate('document.querySelector("figcaption").textContent'),'Pump Gauge');
+    await until('document.getElementById("save-status").textContent.includes("Draft Kept")');await evaluate('window.__oldSOPPage=true');await call('Page.reload');await until('!window.__oldSOPPage&&!!document.querySelector("[data-meta=purpose]")&&!document.getElementById("editor").inert&&document.querySelectorAll(".photo-editor").length===1');assert.equal(await evaluate('document.querySelector("[data-meta=title]").value'),'Inspect The Sample Pump');
+    await evaluate('document.getElementById("save-button").click()');await until('document.getElementById("message").textContent==="SOP saved to the library."');
+    const records=await(await fetch(base+'/api/sops')).json();assert.equal(records.length,1);const saved=await(await fetch(base+'/api/sops/'+records[0].id)).json();assert.equal(saved.groups[0].steps[0].photos.length,1);
+    await evaluate('document.getElementById("new-button").click();document.getElementById("library-button").click()');await until('!!document.querySelector("[data-open]")');await evaluate('document.querySelector("[data-open]").click()');await until('document.querySelector("[data-meta=title]").value==="Inspect The Sample Pump"');
+    // Unsaved drafts survive failed saves; stale revisions cannot overwrite a newer server version.
+    const updated=await fetch(base+'/api/sops/'+saved.id,{method:'PUT',headers:{'Content-Type':'application/json',Origin:base},body:JSON.stringify({...saved,purpose:'Server update'})});assert.equal(updated.status,200);
+    await input('[data-meta=purpose]','Local unsaved edit');await evaluate('document.getElementById("save-button").click()');await until('document.getElementById("message").textContent.includes("another window")');assert.equal(await evaluate('document.querySelector("[data-meta=purpose]").value'),'Local unsaved edit');
+    await evaluate('document.getElementById("new-button").click()');assert.ok(await evaluate('document.getElementById("confirm-dialog").open'));await evaluate('document.getElementById("confirm-cancel").click()');
+    await evaluate(`(async()=>{const document=await(await fetch('/api/sops/${saved.id}')).json();const transfer=new DataTransfer();transfer.items.add(new File([JSON.stringify({format:'northglenn-sop',version:1,document})],'sop-backup.json',{type:'application/json'}));const input=window.document.getElementById('import-file');window.document.getElementById('files-button').click();input.files=transfer.files;input.dispatchEvent(new Event('change'));})()`);
+    await until('document.getElementById("confirm-dialog").open');await evaluate('document.getElementById("confirm-discard").click()');await until('document.getElementById("message").textContent.startsWith("Backup imported")');
+    await evaluate('document.getElementById("save-button").click()');await until('document.getElementById("message").textContent==="SOP saved to the library."');assert.equal((await(await fetch(base+'/api/sops')).json()).length,2,'Import creates a new SOP and preserves the original');
+    for(const width of [1600,1200,1024,390,320]){
+      await call('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});await evaluate('document.fonts.ready');
+      assert.ok(await evaluate('document.documentElement.scrollWidth<=innerWidth'),'Editor fits '+width);
+      if(width>=1100)assert.ok(await evaluate('document.getElementById("editor").getBoundingClientRect().width>400&&document.getElementById("preview").getBoundingClientRect().width>500'),'Editor and preview each get usable desktop space');
+      if(width<1100){await evaluate('document.getElementById("preview-view").click()');assert.ok(await evaluate('document.documentElement.scrollWidth<=innerWidth'),'Preview fits '+width);await evaluate('document.getElementById("edit-view").click()');}
+    }
+    await input('[data-meta=background]','Use this procedure for a consistent routine inspection.');
+    await input('[data-meta=purpose]','Confirm the sample pump is ready for operation.');
+    await input('[data-meta=preparedBy]','Operations Team');
+    await input('[data-meta=documentNumber]','SOP-001');
+    await evaluate('document.getElementById("message").hidden=true');
+    await call('Emulation.setEmulatedMedia',{media:'print'});assert.equal(await evaluate('getComputedStyle(document.getElementById("editor")).display'),'none');assert.notEqual(await evaluate('getComputedStyle(document.getElementById("preview")).display'),'none');
+    const pdf=await call('Page.printToPDF',{printBackground:true,preferCSSPageSize:true});assert.ok(Buffer.from(pdf.data,'base64').length>5000);
+    fs.mkdirSync('preview',{recursive:true});fs.writeFileSync('preview/sop-creator-test.pdf',Buffer.from(pdf.data,'base64'));
+    await call('Emulation.setEmulatedMedia',{media:''});await call('Emulation.setDeviceMetricsOverride',{width:1600,height:1000,deviceScaleFactor:1,mobile:false});
+    await evaluate('document.getElementById("editor").scrollTop=0;document.getElementById("preview").scrollTop=0;window.dispatchEvent(new Event("resize"))');
+    const shot=await call('Page.captureScreenshot',{format:'png'});fs.writeFileSync('preview/sop-creator.png',Buffer.from(shot.data,'base64'));
+    assert.deepEqual(browser.errors,[]);console.log('SOP browser passed: live preview, sections, step ordering, substeps, photos, recovery, save/library, conflicts, escaped text, mobile/desktop layouts, and print/PDF.');
+  }finally{await browser?.close();await new Promise(resolve=>server.close(resolve));await removeTemporaryDirectory(directory);}
+})().catch(error=>{console.error(error);process.exitCode=1;});

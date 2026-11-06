@@ -6,6 +6,7 @@
     {id:'rounds',category:'operations',name:'Plant Rounds',description:'Record AM and PM checks, compare readings, and share daily handoff notes.',icon:'board',path:'/plant-rounds/'},
     {id:'equipment',category:'operations',name:'Equipment Status Board',description:'Check equipment availability and share operating notes.',icon:'board',path:'/live-operations-dashboard/'},
     {id:'inventory',category:'operations',name:'Supply Inventory',description:'Count supplies, check PAR levels, and manage your order list.',icon:'box',external:'https://inventory.gibbhub.io/'},
+    {id:'sops',category:'operations',name:'SOP Creator',description:'Build consistent procedures with numbered steps, photos, and a live document preview.',icon:'book',path:'/sop-creator/'},
     {id:'robojar',category:'water',name:'RoboJar Analyzer',description:'Compare jar-test results and review coagulant performance.',icon:'jar',path:'/robojar-analyzer/?v=20261022-robo1'},
     {id:'hypo',category:'water',name:'Sodium Hypochlorite Calculator',description:'Calculate chlorine dose and chemical feed requirements.',icon:'water',path:'/sodium-hypochlorite-calculator/?v=20261022-hypo1'},
     {id:'permanganate',category:'water',name:'Permanganate Dose Predictor',description:'Explore dose estimates using historical plant data.',icon:'dose',path:'/dose-predictor/?v=20261022-dose1'},

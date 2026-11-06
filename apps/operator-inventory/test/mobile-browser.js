@@ -65,7 +65,7 @@ async function main() {
       assert.equal(await evaluate('document.querySelector(".topbar").getBoundingClientRect().height'),width<=800?144:112,'Common banner height at '+width);
       assert.ok(await evaluate('document.getElementById("opsAppMenu").open'));
       assert.equal(await evaluate('document.querySelector(".ops-app-menu [aria-current=page]").dataset.opsDestination'),'inventory');
-      assert.equal(await evaluate('document.querySelectorAll(".ops-app-menu [data-ops-destination]").length'),17);
+      assert.equal(await evaluate('document.querySelectorAll(".ops-app-menu [data-ops-destination]").length'),18);
       assert.equal(await evaluate('document.querySelector(".ops-app-menu [data-ops-destination=home]").href'),'https://water.gibbhub.io/?v=operations-home-20261021');
       assert.ok(await evaluate('(()=>{const b=document.getElementById("opsAppMenu").getBoundingClientRect();return b.left>=0&&b.right<=innerWidth&&b.top===0&&b.bottom<=innerHeight})()'),'Shared menu fits '+width);
       await evaluate('document.querySelector(".ops-app-menu-close").click();new Promise(r=>requestAnimationFrame(r))');

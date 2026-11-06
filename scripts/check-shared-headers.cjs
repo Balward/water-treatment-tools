@@ -58,7 +58,7 @@ for(const width of [1920,1440,1024,900,899,850,768,390,320]){
       assert.equal(await evaluate('document.getElementById("primaryDryAlum").textContent'),'--');
       await evaluate('document.getElementById("resetButton").click()');assert.equal(await evaluate('document.getElementById("primaryDryAlum").textContent'),initial);
       await evaluate('document.querySelector("[data-ops-menu]").click()');assert.equal(await evaluate('document.querySelector(".ops-app-menu [aria-current]").dataset.opsDestination'),'alum');
-      assert.equal(await evaluate('document.querySelectorAll(".ops-app-menu [data-ops-destination]").length'),17);
+      assert.equal(await evaluate('document.querySelectorAll(".ops-app-menu [data-ops-destination]").length'),18);
       await evaluate('document.querySelector(".ops-app-menu-close").click()');
       await evaluate('document.querySelectorAll(".sidebar a")[2].click();new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))');
       assert.equal(await evaluate('document.querySelector(".sidebar [aria-current]").getAttribute("href")'),'#reference','Section navigation follows the visible reference section');

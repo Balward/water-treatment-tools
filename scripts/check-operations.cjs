@@ -2,6 +2,7 @@
 const path = require('node:path');
 const { spawnSync } = require('node:child_process');
 const checks = {
+  sops: 'scripts/check-sop-creator.cjs',
   'rounds-api': 'scripts/check-plant-rounds-api.cjs',
   'rounds-pdf': 'scripts/check-plant-rounds-pdf.cjs',
   rounds: 'scripts/check-plant-rounds.cjs',
