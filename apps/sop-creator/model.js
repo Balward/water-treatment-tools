@@ -3,7 +3,7 @@
   const sections=[['purpose','Purpose'],['background','Background'],['notes','Notes'],['security','Security Concerns'],['equipment','Equipment']];
   const id=()=>globalThis.crypto.randomUUID();
   function blank(){return {id:id(),revision:0,title:'',subtitle:'Standard Operating Procedure (SOP)',documentNumber:'',team:'Water Treatment',effectiveDate:'',version:'1.0',preparedBy:'',approvedBy:'',purpose:'',background:'',notes:'',security:'',equipment:'',groups:[{id:id(),title:'',steps:[]}]};}
-  const step=()=>({id:id(),title:'',instruction:'',substeps:[],photos:[]});
+  const step=()=>({id:id(),instruction:'',substeps:[],photos:[]});
   function validate(input){
     const fail=message=>{throw Error(message);};
     const text=(value,max=20000)=>{if(typeof value!=='string'||value.length>max)fail('An SOP field is missing or too long.');return value;};
@@ -21,7 +21,10 @@
       return {id:unique(group.id),title:text(group.title,300),steps:group.steps.map(item=>{
         if(++stepCount>200)fail('Use up to 200 steps per SOP.');
         if(!item||!Array.isArray(item.substeps)||item.substeps.length>26||!Array.isArray(item.photos)||item.photos.length>8)fail('Use up to 26 substeps and 8 photos per step.');
-        return {id:unique(item.id),title:text(item.title,300),instruction:text(item.instruction),substeps:item.substeps.map(sub=>({id:unique(sub.id),text:text(sub.text)})),photos:item.photos.map(photo=>{
+        // Retain older step titles as ordinary instruction text when opening a saved SOP or backup.
+        const oldTitle=item.title===undefined?'':text(item.title,300);
+        const instruction=text([oldTitle,text(item.instruction,20302)].filter(value=>value.trim()).join('\n\n'),20302);
+        return {id:unique(item.id),instruction,substeps:item.substeps.map(sub=>({id:unique(sub.id),text:text(sub.text)})),photos:item.photos.map(photo=>{
           const data=text(photo.data,3000000);photoBytes+=data.length;
           if(!/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/]+=*$/.test(data))fail('Photos must be PNG, JPEG, or WebP images.');
           if(photoBytes>12000000)fail('Photos are too large for one SOP. Use fewer or smaller photos.');

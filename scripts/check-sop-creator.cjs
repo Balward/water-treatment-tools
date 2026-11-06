@@ -10,11 +10,12 @@ const {launchBrowser,removeTemporaryDirectory}=require('./lib/browser-check.cjs'
     await call('Emulation.setDeviceMetricsOverride',{width:1600,height:1000,deviceScaleFactor:1,mobile:false});await call('Page.navigate',{url:base+'/sop-creator/'});await until('!!document.querySelector("[data-meta=purpose]")&&!document.getElementById("editor").inert');
     const input=async(selector,value)=>evaluate(`(()=>{const input=document.querySelector(${JSON.stringify(selector)});input.value=${JSON.stringify(value)};input.dispatchEvent(new Event('input',{bubbles:true}));})()`);
     await input('[data-meta=title]','Inspect The Sample Pump');await input('[data-meta=purpose]','Check that the pump is ready.');await input('[data-meta=notes]','First note\nSecond note');
-    await evaluate('document.querySelector("[data-action=add-step]").click()');await input('[data-step-title]','Inspect The Gauge');await input('[data-step-instruction]','Look for damage.\nRecord any issues.');
+    await evaluate('document.querySelector("[data-action=add-step]").click()');await input('[data-step-instruction]','Look for damage.\nRecord any issues.');
     await evaluate('document.querySelector("[data-action=add-substep]").click()');await input('[data-substep]','Record the pressure.');
-    await evaluate('document.querySelector("[data-action=add-step]").click()');await input('.step-editor:last-child [data-step-title]','Check The Motor');
+    await evaluate('document.querySelector("[data-action=add-step]").click()');await input('.step-editor:last-child [data-step-instruction]','Check The Motor');
     await evaluate('document.querySelector(".step-editor:last-child [data-action=step-up]").click()');
-    assert.equal(await evaluate('document.querySelector(".document-step h4").textContent'),'Check The Motor');
+    assert.equal(await evaluate('document.querySelector(".document-step>p").textContent'),'Check The Motor');
+    assert.equal(await evaluate('document.querySelectorAll("[data-step-title],.document-step h4").length'),0,'Steps contain instructions without separate titles');
     assert.equal(await evaluate('document.querySelector(".document-substeps li").textContent'),'Record the pressure.');
     assert.equal(await evaluate('document.querySelectorAll(".document-section ul li").length'),2);
     await input('[data-meta=background]','<script>window.injected=true</script>');assert.equal(await evaluate('window.injected===true'),false);assert.ok(await evaluate('document.getElementById("sop-document").textContent.includes("<script>")'));

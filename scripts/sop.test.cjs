@@ -3,6 +3,11 @@ const model=require('../apps/sop-creator/model'),register=require('../sop-api');
 test('SOP model preserves the template structure, photos, and ordered steps, while rejecting unsafe data',()=>{
   const doc=model.blank();doc.title='Check A Pump';const step=model.step();step.instruction='Check the gauge.';step.substeps.push({id:crypto.randomUUID(),text:'Record the reading.'});step.photos.push({id:crypto.randomUUID(),data:'data:image/png;base64,aGVsbG8=',caption:'Gauge'});doc.groups[0].steps.push(step);
   assert.deepEqual(model.validate(doc),doc);
+  const legacy=structuredClone(doc);legacy.groups[0].steps[0].title='Inspect The Gauge';
+  const migrated=model.validate(legacy);
+  assert.equal(migrated.groups[0].steps[0].instruction,'Inspect The Gauge\n\nCheck the gauge.');
+  assert.equal(migrated.groups[0].steps[0].title,undefined);
+  assert.deepEqual(model.validate(migrated),migrated,'Older titles migrate once without losing content');
   assert.deepEqual(model.sections.map(section=>section[1]),['Purpose','Background','Notes','Security Concerns','Equipment']);
   assert.throws(()=>model.validate({...doc,effectiveDate:'2026-02-30'}));
   assert.throws(()=>model.validate({...doc,id:'../../file'}));
