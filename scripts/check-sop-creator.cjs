@@ -32,6 +32,12 @@ const {launchBrowser,removeTemporaryDirectory}=require('./lib/browser-check.cjs'
     assert.ok(await evaluate('document.querySelector(".step-editor:last-child [data-step-instruction]").clientHeight>200'),'Writing fields grow to fit text');
     await evaluate('document.getElementById("new-button").click();document.getElementById("confirm-discard").click()');
     await input('[data-meta=title]','Inspect The Sample Pump');await input('[data-meta=purpose]','Check that the pump is ready.');await input('[data-meta=notes]','First note\nSecond note');
+    assert.equal(await evaluate('document.querySelectorAll(".document-revisions").length'),0,'Empty revision table is omitted');
+    await evaluate('document.getElementById("add-revision").click()');
+    await input('[data-revision-field=summary]','Initial issue');await input('[data-revision-field=date]','2026-11-05');await input('[data-revision-field=revisedBy]','Operations Team');
+    assert.ok(await evaluate('document.querySelector(".document-revisions").textContent.includes("Initial issue")'),'Revision table updates live');
+    await evaluate('document.getElementById("add-revision").click();document.querySelector(".revision-entry:last-child [data-action=revision-remove]").click()');
+    await until('document.querySelectorAll(".revision-entry").length===1');
     await evaluate('document.querySelector("[data-action=add-step]").click()');await input('[data-step-instruction]','Look for damage.\nRecord any issues.');
     await evaluate('document.querySelector("[data-action=add-substep]").click()');await input('[data-substep]','Record the pressure.');
     await evaluate('document.querySelector("[data-action=add-step]").click()');await input('.step-editor:last-child [data-step-instruction]','Check The Motor');
@@ -49,7 +55,7 @@ const {launchBrowser,removeTemporaryDirectory}=require('./lib/browser-check.cjs'
     assert.ok(await evaluate('(()=>{const row=document.querySelector(".document-photo-row"),images=[...row.querySelectorAll("img")].map(img=>img.getBoundingClientRect()),bounds=document.getElementById("sop-document").getBoundingClientRect();return Math.abs(images[1].left-images[0].right-8)<1&&Math.abs((images[0].left+images[1].right)/2-(bounds.left+bounds.right)/2)<1&&images[1].width<images[0].width})()'),'Different photo shapes stay close together and the pair is centered on the page');
     await until('document.getElementById("save-status").textContent.includes("Draft Kept")');await evaluate('window.__oldSOPPage=true');await call('Page.reload');await until('!window.__oldSOPPage&&!!document.querySelector("[data-meta=purpose]")&&!document.getElementById("editor").inert&&document.querySelectorAll(".photo-editor").length===2');assert.equal(await evaluate('document.querySelector("[data-meta=title]").value'),'Inspect The Sample Pump');
     await evaluate('document.getElementById("save-button").click()');await until('document.getElementById("message").textContent==="SOP saved to the library."');
-    const records=await(await fetch(base+'/api/sops')).json();assert.equal(records.length,1);const saved=await(await fetch(base+'/api/sops/'+records[0].id)).json();assert.equal(saved.groups[0].steps[0].photos.length,2);
+    const records=await(await fetch(base+'/api/sops')).json();assert.equal(records.length,1);const saved=await(await fetch(base+'/api/sops/'+records[0].id)).json();assert.equal(saved.groups[0].steps[0].photos.length,2);assert.equal(saved.revisionHistory[0].summary,'Initial issue','Revision entries are saved with the SOP');
     await evaluate('document.getElementById("new-button").click();document.getElementById("library-button").click()');await until('!!document.querySelector("[data-open]")');await evaluate('document.querySelector("[data-open]").click()');await until('document.querySelector("[data-meta=title]").value==="Inspect The Sample Pump"');
     // Unsaved drafts survive failed saves; stale revisions cannot overwrite a newer server version.
     const updated=await fetch(base+'/api/sops/'+saved.id,{method:'PUT',headers:{'Content-Type':'application/json',Origin:base},body:JSON.stringify({...saved,purpose:'Server update'})});assert.equal(updated.status,200);

@@ -13,6 +13,11 @@ dialog{width:min(800px,calc(100% - 32px));max-height:85dvh;overflow:auto;border:
 .document-step .document-photos figure:only-child{max-width:100%}
 .document-step .document-photos img{width:100%;height:180px;max-height:180px;object-fit:contain;object-position:center;margin:0 auto}
 .photo-editor img{justify-self:center}
+.revision-entry{border-top:1px solid var(--ops-color-line);padding-top:16px;margin-top:16px}
+.document-revisions table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:10px;line-height:1.4}
+.document-revisions .revision-version{width:12%}.document-revisions .revision-date{width:17%}.document-revisions .revision-summary{width:35%}
+.document-revisions th,.document-revisions td{border:1px solid #c8d5dc;padding:6px 8px;text-align:left;vertical-align:top;overflow-wrap:anywhere;white-space:pre-wrap}
+.document-revisions th{background:#edf5f7;font-weight:650;font-size:9px}.document-revisions thead{display:table-header-group}.document-revisions tr{break-inside:avoid}
 .step-editor label:has(>[data-step-instruction]){font-size:0;gap:0}
 .step-editor textarea[data-step-instruction],.step-editor textarea[data-substep]{min-height:52px;overflow-y:hidden;resize:none;border:0;border-bottom:1px solid #c8d7de;border-radius:0;background:transparent;padding:8px 2px;font-size:16px;line-height:1.55}
 .step-editor textarea[data-step-instruction]:focus,.step-editor textarea[data-substep]:focus{border-bottom-color:var(--ops-color-accent);background:#fff}

@@ -2,7 +2,7 @@
   'use strict';
   const sections=[['purpose','Purpose'],['background','Background'],['notes','Notes'],['security','Security Concerns'],['equipment','Equipment']];
   const id=()=>globalThis.crypto.randomUUID();
-  function blank(){return {id:id(),revision:0,title:'',team:'Water Treatment',effectiveDate:'',version:'1.0',preparedBy:'',approvedBy:'',purpose:'',background:'',notes:'',security:'',equipment:'',groups:[{id:id(),title:'',steps:[]}]};}
+  function blank(){return {id:id(),revision:0,title:'',team:'Water Treatment',effectiveDate:'',version:'1.0',preparedBy:'',approvedBy:'',purpose:'',background:'',notes:'',security:'',equipment:'',revisionHistory:[],groups:[{id:id(),title:'',steps:[]}]};}
   const step=()=>({id:id(),instruction:'',substeps:[],photos:[]});
   function validate(input){
     const fail=message=>{throw Error(message);};
@@ -15,6 +15,15 @@
     if(result.effectiveDate&&(!/^\d{4}-\d{2}-\d{2}$/.test(result.effectiveDate)||!Number.isFinite(Date.parse(result.effectiveDate+'T12:00:00Z'))||new Date(result.effectiveDate+'T12:00:00Z').toISOString().slice(0,10)!==result.effectiveDate))fail('Choose a valid effective date.');
     let photoBytes=0,stepCount=0;const ids=new Set([result.id]);
     const unique=value=>{key(value);if(ids.has(value))fail('Duplicate step or photo identifier.');ids.add(value);return value;};
+    const revisions=input.revisionHistory===undefined?[]:input.revisionHistory;
+    if(!Array.isArray(revisions)||revisions.length>100)fail('Use up to 100 revision entries per SOP.');
+    result.revisionHistory=revisions.map(row=>{
+      if(!row||typeof row!=='object')fail('Invalid revision entry.');
+      const next={id:unique(row.id)};
+      for(const key of ['version','date','summary','revisedBy','approvedBy'])next[key]=text(row[key],key==='summary'?2000:300);
+      if(next.date&&(!/^\d{4}-\d{2}-\d{2}$/.test(next.date)||!Number.isFinite(Date.parse(next.date+'T12:00:00Z'))||new Date(next.date+'T12:00:00Z').toISOString().slice(0,10)!==next.date))fail('Choose a valid revision effective date.');
+      return next;
+    });
     if(!Array.isArray(input.groups)||input.groups.length>30)fail('Use up to 30 procedure sections.');
     result.groups=input.groups.map(group=>{
       if(!group||!Array.isArray(group.steps))fail('Invalid procedure section.');
