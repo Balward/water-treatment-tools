@@ -12,7 +12,7 @@
   });
   $('open-preview-window').onclick=()=>{
     if(previewWindow&&!previewWindow.closed){updatePreviewWindow();previewWindow.focus();return;}
-    previewWindow=window.open('./preview.html',previewWindowName,'popup,width=1000,height=900,resizable=yes,scrollbars=yes');
+    previewWindow=window.open('./preview.html?v=20261106-tables1',previewWindowName,'popup,width=1000,height=900,resizable=yes,scrollbars=yes');
     if(!previewWindow)message('Allow pop-ups for this site to open the preview window.',true);
   };
   let doc=model.blank(),dirty=false,saving=false,sequence=0,localSaved=false,library=[],draftQueue=Promise.resolve(),confirmResolve;
