@@ -7,6 +7,12 @@ test('Revised Date follows the latest valid revision date regardless of row orde
   doc.revisionHistory=doc.revisionHistory.filter(row=>row.date!=='2026-11-06');assert.equal(model.revisedDate(doc),'2026-11-05');
   assert.equal(model.revisedDate({revisionHistory:[{date:'2026-02-30'},{date:'invalid'}]}),'');
 });
+test('Water treatment tags validate, deduplicate, and migrate older SOPs',()=>{
+  const doc=model.blank();doc.tags=['pH','Calibration','Instrumentation','pH'];assert.deepEqual(model.validate(doc).tags,['pH','Calibration','Instrumentation']);
+  delete doc.tags;assert.deepEqual(model.validate(doc).tags,[]);
+  assert.throws(()=>model.validate({...doc,tags:['Unlisted Tag']}),/tag list/);
+  assert.throws(()=>model.validate({...doc,tags:model.tags.slice(0,21)}),/20 tags/);
+});
 test('SOP model preserves the template structure, photos, and ordered steps, while rejecting unsafe data',()=>{
   const doc=model.blank();doc.title='Check A Pump';const step=model.step();step.instruction='Check the gauge.';step.substeps.push({id:crypto.randomUUID(),text:'Record the reading.'});step.photos.push({id:crypto.randomUUID(),data:'data:image/png;base64,aGVsbG8=',caption:'Gauge'});doc.groups[0].steps.push(step);
   assert.deepEqual(model.validate(doc),doc);

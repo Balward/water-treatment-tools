@@ -32,6 +32,9 @@ const {launchBrowser,removeTemporaryDirectory}=require('./lib/browser-check.cjs'
     assert.ok(await evaluate('document.querySelector(".step-editor:last-child [data-step-instruction]").clientHeight>200'),'Writing fields grow to fit text');
     await evaluate('document.getElementById("new-button").click();document.getElementById("confirm-discard").click()');
     await input('[data-meta=title]','Inspect The Sample Pump');await input('[data-meta=purpose]','Check that the pump is ready.');await input('[data-meta=notes]','First note\nSecond note');
+    await evaluate('document.querySelector(".tag-picker").open=true;for(const tag of ["pH","Calibration","Instrumentation"]){const checkbox=[...document.querySelectorAll("[data-sop-tag]")].find(input=>input.dataset.sopTag===tag);checkbox.checked=true;checkbox.dispatchEvent(new Event("change",{bubbles:true}));}');
+    assert.equal(await evaluate('document.querySelectorAll("#selected-sop-tags button").length'),3);
+    await input('#tag-search','calibration');assert.equal(await evaluate('[...document.querySelectorAll(".tag-option")].filter(label=>!label.hidden).length'),1);await input('#tag-search','');
     assert.equal(await evaluate('document.querySelectorAll(".document-revisions").length'),0,'Empty revision table is omitted');
     assert.equal(await evaluate('document.querySelectorAll("[data-meta=version]").length'),0,'Document version field is removed');
     assert.equal(await evaluate('document.getElementById("revised-date").value'),'Not Recorded');
@@ -80,6 +83,7 @@ const {launchBrowser,removeTemporaryDirectory}=require('./lib/browser-check.cjs'
     await evaluate('document.getElementById("save-button").click()');await until('document.getElementById("message").textContent==="SOP saved to the library."');
     const records=await(await fetch(base+'/api/sops')).json();assert.equal(records.length,1);const saved=await(await fetch(base+'/api/sops/'+records[0].id)).json();assert.equal(saved.groups[0].steps[0].photos.length,2);assert.equal(saved.revisionHistory[0].summary,'Initial issue','Revision entries are saved with the SOP');assert.equal(saved.groups[0].steps[0].tables[0].rows[0][1],'45 psi','Table cells survive recovery and saving');
     await evaluate('document.getElementById("new-button").click();document.getElementById("library-button").click()');await until('!!document.querySelector("[data-open]")');await evaluate('document.querySelector("[data-open]").click()');await until('document.querySelector("[data-meta=title]").value==="Inspect The Sample Pump"');
+    assert.equal(await evaluate('document.querySelectorAll("#selected-sop-tags button").length'),3,'SOP tags survive saving, library loading and reopening');
     // Unsaved drafts survive failed saves; stale revisions cannot overwrite a newer server version.
     const updated=await fetch(base+'/api/sops/'+saved.id,{method:'PUT',headers:{'Content-Type':'application/json',Origin:base},body:JSON.stringify({...saved,purpose:'Server update'})});assert.equal(updated.status,200);
     await input('[data-meta=purpose]','Local unsaved edit');await evaluate('document.getElementById("save-button").click()');await until('document.getElementById("message").textContent.includes("another window")');assert.equal(await evaluate('document.querySelector("[data-meta=purpose]").value'),'Local unsaved edit');
@@ -87,6 +91,12 @@ const {launchBrowser,removeTemporaryDirectory}=require('./lib/browser-check.cjs'
     await evaluate(`(async()=>{const document=await(await fetch('/api/sops/${saved.id}')).json();const transfer=new DataTransfer();transfer.items.add(new File([JSON.stringify({format:'northglenn-sop',version:1,document})],'sop-backup.json',{type:'application/json'}));const input=window.document.getElementById('import-file');window.document.getElementById('files-button').click();input.files=transfer.files;input.dispatchEvent(new Event('change'));})()`);
     await until('document.getElementById("confirm-dialog").open');await evaluate('document.getElementById("confirm-discard").click()');await until('document.getElementById("message").textContent.startsWith("Backup imported")');
     await evaluate('document.getElementById("save-button").click()');await until('document.getElementById("message").textContent==="SOP saved to the library."');assert.equal((await(await fetch(base+'/api/sops')).json()).length,2,'Import creates a new SOP and preserves the original');
+    await evaluate('document.getElementById("library-button").click()');await until('document.querySelectorAll("[data-open]").length===2');
+    await evaluate('document.getElementById("library-tag").value="Calibration";document.getElementById("library-tag").dispatchEvent(new Event("change"))');
+    assert.equal(await evaluate('document.querySelectorAll("[data-open]").length'),2);
+    await evaluate('document.getElementById("library-tag").value="Filtration";document.getElementById("library-tag").dispatchEvent(new Event("change"))');assert.equal(await evaluate('document.querySelectorAll("[data-open]").length'),0,'Tag filter excludes nonmatching SOPs');
+    await evaluate('document.getElementById("clear-library-filters").click();document.querySelector("[data-filter-tag]").click()');assert.equal(await evaluate('document.getElementById("library-tag").value'),'pH','Tag chips filter the library');
+    await evaluate('document.getElementById("library-sort").value="tags";document.getElementById("library-sort").dispatchEvent(new Event("change"));document.querySelector("[data-close=library-dialog]").click()');
     await evaluate('(()=>{const open=window.open.bind(window);window.open=(...args)=>(window.__sopPopout=open(...args));document.getElementById("open-preview-window").click();})()');
     await until('window.__sopPopout&&!window.__sopPopout.closed&&window.__sopPopout.document.getElementById("sop-document")?.textContent.includes("Inspect The Sample Pump")');
     await input('[data-meta=purpose]','Updated with the preview window open.');

@@ -99,8 +99,33 @@
   function renderEditor(){
     for(const element of document.querySelectorAll('[data-meta]'))element.value=doc[element.dataset.meta];
     $('context-fields').innerHTML=model.sections.map(([key,label])=>field(label,'data-meta="'+key+'"',doc[key],true)).join('');
-    renderSteps();renderRevisions();renderPreview();status();
+    renderTags();renderSteps();renderRevisions();renderPreview();status();
   }
+  function renderTags(){
+    $('tag-options').innerHTML=model.tagGroups.map(group=>'<fieldset><legend>'+escape(group.label)+'</legend><div class="tag-group-options">'+group.tags.map(tag=>'<label class="tag-option"><input type="checkbox" data-sop-tag="'+escape(tag)+'"><span>'+escape(tag)+'</span></label>').join('')+'</div></fieldset>').join('');
+    renderTagSelection();filterTags();
+  }
+  function renderTagSelection(){
+    $('tag-count').textContent=doc.tags.length+' Selected';
+    $('selected-sop-tags').innerHTML=doc.tags.map(tag=>'<button type="button" data-remove-tag="'+escape(tag)+'" aria-label="Remove '+escape(tag)+' Tag">'+escape(tag)+' <span aria-hidden="true">×</span></button>').join('');
+    for(const checkbox of $('tag-options').querySelectorAll('[data-sop-tag]'))checkbox.checked=doc.tags.includes(checkbox.dataset.sopTag);
+  }
+  function filterTags(){
+    const query=$('tag-search').value.trim().toLowerCase();let matches=0;
+    for(const group of $('tag-options').querySelectorAll('fieldset')){
+      let visible=0;for(const label of group.querySelectorAll('.tag-option')){label.hidden=!label.textContent.toLowerCase().includes(query);if(!label.hidden)visible++;}
+      group.hidden=!visible;matches+=visible;
+    }
+    $('tag-empty').hidden=matches>0;
+  }
+  $('tag-search').oninput=filterTags;
+  $('tag-options').addEventListener('change',event=>{
+    const input=event.target;if(!input.matches('[data-sop-tag]'))return;
+    if(input.checked&&doc.tags.length>=20){input.checked=false;return message('Choose up to 20 tags for an SOP.',true);}
+    doc.tags=input.checked?[...doc.tags,input.dataset.sopTag]:doc.tags.filter(tag=>tag!==input.dataset.sopTag);
+    renderTagSelection();changed();
+  });
+  $('selected-sop-tags').onclick=event=>{const button=event.target.closest('[data-remove-tag]');if(button){doc.tags=doc.tags.filter(tag=>tag!==button.dataset.removeTag);renderTagSelection();changed();}};
   function renderRevisions(){
     $('revision-entries').innerHTML=doc.revisionHistory.length?doc.revisionHistory.map((row,index)=>'<section class="revision-entry"><div class="group-heading"><strong>Revision Entry</strong>'+controls('revision',row.id,index,doc.revisionHistory.length)+'</div><div class="fields">'+[['date','Revision Date'],['revisedBy','Revised By'],['approvedBy','Approved By'],['summary','Change Summary']].map(([key,label])=>'<div class="'+(key==='summary'?'wide':'')+'">'+field(label,'data-revision="'+row.id+'" data-revision-field="'+key+'"'+(key==='date'?' type="date"':''),row[key],key==='summary')+'</div>').join('')+'</div></section>').join(''):'<p class="help">No revision entries yet.</p>';
     for(const input of $('revision-entries').querySelectorAll('[data-revision-field="summary"]'))input.maxLength=2000;
@@ -299,17 +324,29 @@
   $('save-button').onclick=save;
   $('new-button').onclick=async()=>{if(!await askToLeave())return;doc=model.blank();dirty=false;sequence++;message('');renderEditor();await persist();document.querySelector('[data-meta="title"]').focus();};
   $('print-button').onclick=async()=>{await Promise.all([...$('sop-document').querySelectorAll('img')].map(image=>image.decode().catch(()=>{})));await document.fonts.ready;window.print();};
+  function libraryTagOptions(){
+    const selected=$('library-tag').value;
+    $('library-tag').innerHTML='<option value="">All Tags</option><option value="__untagged">Untagged</option>'+model.tagGroups.map(group=>'<optgroup label="'+escape(group.label)+'">'+group.tags.map(tag=>'<option value="'+escape(tag)+'">'+escape(tag)+'</option>').join('')+'</optgroup>').join('');
+    $('library-tag').value=selected;
+  }
   function renderLibrary(){
-    const query=$('library-search').value.toLowerCase();
-    const matches=library.filter(item=>[item.title,item.team].some(value=>String(value||'').toLowerCase().includes(query)));
-    $('library-list').innerHTML=matches.length?matches.map(item=>'<article class="library-card"><div><h3>'+escape(item.title)+'</h3><p>'+escape([item.team,item.revisedDate?'Revised '+item.revisedDate:''].filter(Boolean).join(' · '))+'</p><small>Saved '+escape(new Date(item.updatedAt).toLocaleString())+'</small></div><button type="button" data-open="'+item.id+'">Open SOP</button></article>').join(''):'<p class="empty">'+(library.length?'No matching SOPs.':'No saved SOPs yet. Create a procedure and choose Save SOP.')+'</p>';
+    const query=$('library-search').value.trim().toLowerCase(),tag=$('library-tag').value,sort=$('library-sort').value;
+    const matches=library.filter(item=>[item.title,item.team,...(item.tags||[])].some(value=>String(value||'').toLowerCase().includes(query))&&(!tag||(tag==='__untagged'?!(item.tags||[]).length:(item.tags||[]).includes(tag))));
+    const title=(a,b)=>a.title.localeCompare(b.title);
+    matches.sort((a,b)=>sort==='title'?title(a,b):sort==='tags'?(a.tags||[]).slice().sort().join(', ').localeCompare((b.tags||[]).slice().sort().join(', '))||title(a,b):sort==='revised'?(b.revisedDate||'').localeCompare(a.revisedDate||'')||title(a,b):b.updatedAt.localeCompare(a.updatedAt)||title(a,b));
+    $('library-count').textContent=matches.length+' of '+library.length+' SOPs';
+    $('library-list').innerHTML=matches.length?matches.map(item=>'<article class="library-card"><div><h3>'+escape(item.title)+'</h3><p>'+escape([item.team,item.revisedDate?'Revised '+item.revisedDate:''].filter(Boolean).join(' / '))+'</p><div class="sop-tags">'+(item.tags||[]).map(tag=>'<button type="button" data-filter-tag="'+escape(tag)+'" aria-label="Filter SOPs By '+escape(tag)+'">'+escape(tag)+'</button>').join('')+'</div><small>Saved '+escape(new Date(item.updatedAt).toLocaleString())+'</small></div><button type="button" data-open="'+item.id+'">Open SOP</button></article>').join(''):'<p class="empty">'+(library.length?'No matching SOPs. Clear filters to see all documents.':'No saved SOPs yet. Create a procedure and choose Save SOP.')+'</p>';
   }
   $('library-button').onclick=async()=>{
     $('library-dialog').showModal();$('library-status').textContent='Loading SOPs…';
-    try{library=await request('/api/sops');renderLibrary();$('library-status').textContent='';}catch(error){$('library-status').textContent=error.message;}
+    try{library=await request('/api/sops');libraryTagOptions();renderLibrary();$('library-status').textContent='';}catch(error){$('library-status').textContent=error.message;}
   };
   $('library-search').oninput=renderLibrary;
+  $('library-tag').onchange=renderLibrary;
+  $('library-sort').onchange=renderLibrary;
+  $('clear-library-filters').onclick=()=>{$('library-search').value='';$('library-tag').value='';renderLibrary();};
   $('library-list').onclick=async event=>{
+    const tag=event.target.closest('[data-filter-tag]');if(tag){$('library-tag').value=tag.dataset.filterTag;renderLibrary();return;}
     const button=event.target.closest('[data-open]');if(!button)return;
     $('library-dialog').close();if(!await askToLeave())return;
     try{const next=model.validate(await request('/api/sops/'+button.dataset.open));doc=next;dirty=false;sequence++;renderEditor();await persist();message('Opened saved SOP.');}catch(error){message(error.message,true);}

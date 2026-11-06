@@ -9,7 +9,7 @@ module.exports=function registerSOP(app,{directory=process.env.SOP_DATA_DIR||pat
     try{
       const files=await fs.readdir(directory).catch(error=>{if(error.code==='ENOENT')return [];throw error;});
       const records=await Promise.all(files.filter(file=>/^[a-zA-Z0-9-]+\.json$/.test(file)).map(async file=>{
-        const doc=await read(file.slice(0,-5));return {id:doc.id,title:doc.title,team:doc.team,revisedDate:model.revisedDate(doc),effectiveDate:doc.effectiveDate,updatedAt:doc.updatedAt};
+        const doc=await read(file.slice(0,-5));return {id:doc.id,title:doc.title,team:doc.team,tags:Array.isArray(doc.tags)?doc.tags.filter(tag=>model.tags.includes(tag)):[],revisedDate:model.revisedDate(doc),effectiveDate:doc.effectiveDate,updatedAt:doc.updatedAt};
       }));
       res.json(records.sort((a,b)=>b.updatedAt.localeCompare(a.updatedAt)));
     }catch{res.status(500).json({error:'Unable to load the SOP library. Saved documents have not been changed.'});}
