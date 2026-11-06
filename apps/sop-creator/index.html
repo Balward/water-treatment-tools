@@ -23,6 +23,10 @@
       <div class="toolbar-actions"><button id="library-button" type="button">SOP Library</button><button id="new-button" type="button">New SOP</button><button id="save-button" class="primary" type="button">Save SOP</button><button id="print-button" type="button">Print / Save PDF</button><button id="files-button" type="button" aria-haspopup="dialog">Import / Backup</button></div>
     </div>
     <p id="message" role="status" aria-live="polite" hidden></p>
+    <div class="preview-controls" aria-label="Preview Layout">
+      <button id="toggle-preview" type="button" aria-expanded="true" aria-controls="preview">Hide Preview</button>
+      <label for="preview-size">Preview Width <output id="preview-size-value" for="preview-size">55%</output><input id="preview-size" type="range" min="35" max="65" step="1" value="55"></label>
+    </div>
     <div class="mobile-switch" role="group" aria-label="Workspace View"><button id="edit-view" aria-pressed="true" type="button">Edit SOP</button><button id="preview-view" aria-pressed="false" type="button">Preview</button></div>
     <div class="sop-workspace" data-view="edit">
       <section id="editor" aria-label="SOP Editor" tabindex="-1">
@@ -41,7 +45,7 @@
         <section class="editor-panel"><h2>Context &amp; Preparation</h2><p class="help">Empty sections are omitted from the finished document. Enter one note or equipment item per line.</p><div id="context-fields"></div></section>
         <section class="editor-panel procedure-editor"><div class="panel-heading"><h2>Procedure</h2><button id="add-section" type="button">+ Add Section</button></div><p class="help">Use sections for different locations or phases. Steps are numbered continuously; substeps use letters.</p><div id="procedure-groups"></div></section>
       </section>
-      <section id="preview" aria-label="Live SOP Preview"><div class="preview-heading"><h2>Live Preview</h2><span>Letter · Portrait</span></div><div class="paper-wrap"><article id="sop-document" class="sop-document"></article></div></section>
+      <section id="preview" aria-label="Live SOP Preview"><div class="preview-heading"><h2>Live Preview</h2><div class="preview-heading-actions"><span>Letter · Portrait</span><button id="close-preview" type="button" aria-label="Close Live Preview">&times;</button></div></div><div class="paper-wrap"><article id="sop-document" class="sop-document"></article></div></section>
     </div>
   </main>
   <dialog id="library-dialog" aria-labelledby="library-title"><div class="dialog-heading"><h2 id="library-title">SOP Library</h2><button data-close="library-dialog" type="button" aria-label="Close SOP Library">×</button></div><label>Find An SOP<input id="library-search" type="search" placeholder="Title, document number, or team"></label><p id="library-status" role="status"></p><div id="library-list"></div></dialog>

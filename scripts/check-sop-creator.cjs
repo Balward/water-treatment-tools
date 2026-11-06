@@ -31,11 +31,27 @@ const {launchBrowser,removeTemporaryDirectory}=require('./lib/browser-check.cjs'
     await evaluate(`(async()=>{const document=await(await fetch('/api/sops/${saved.id}')).json();const transfer=new DataTransfer();transfer.items.add(new File([JSON.stringify({format:'northglenn-sop',version:1,document})],'sop-backup.json',{type:'application/json'}));const input=window.document.getElementById('import-file');window.document.getElementById('files-button').click();input.files=transfer.files;input.dispatchEvent(new Event('change'));})()`);
     await until('document.getElementById("confirm-dialog").open');await evaluate('document.getElementById("confirm-discard").click()');await until('document.getElementById("message").textContent.startsWith("Backup imported")');
     await evaluate('document.getElementById("save-button").click()');await until('document.getElementById("message").textContent==="SOP saved to the library."');assert.equal((await(await fetch(base+'/api/sops')).json()).length,2,'Import creates a new SOP and preserves the original');
+    await evaluate('document.getElementById("preview-size").value="35";document.getElementById("preview-size").dispatchEvent(new Event("input"))');
+    const smallPreview=await evaluate('document.getElementById("preview").getBoundingClientRect().width');
+    await evaluate('document.getElementById("preview-size").value="65";document.getElementById("preview-size").dispatchEvent(new Event("input"))');
+    assert.ok(await evaluate('document.getElementById("preview").getBoundingClientRect().width')>smallPreview+200,'Slider resizes the preview pane');
+    await evaluate('document.getElementById("close-preview").click()');
+    assert.equal(await evaluate('getComputedStyle(document.getElementById("preview")).display'),'none');
+    assert.ok(await evaluate('document.getElementById("editor").getBoundingClientRect().width>1000'),'Hidden preview gives the editor full width');
+    assert.ok(await evaluate('document.getElementById("preview-size").disabled'));
+    await call('Emulation.setEmulatedMedia',{media:'print'});
+    assert.equal(await evaluate('getComputedStyle(document.getElementById("preview")).display'),'block','Printing still includes a closed preview');
+    await call('Emulation.setEmulatedMedia',{media:''});
+    await evaluate('window.__oldSOPPage=true');await call('Page.reload');
+    await until('!window.__oldSOPPage&&!!document.querySelector("[data-meta=purpose]")&&!document.getElementById("editor").inert');
+    assert.equal(await evaluate('document.getElementById("toggle-preview").textContent'),'Show Preview');
+    assert.equal(await evaluate('document.getElementById("preview-size").value'),'65','Layout preference survives refresh');
+    await evaluate('document.getElementById("toggle-preview").click();document.getElementById("preview-size").value="55";document.getElementById("preview-size").dispatchEvent(new Event("input"))');
     for(const width of [1600,1200,1024,390,320]){
       await call('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});await evaluate('document.fonts.ready');
       assert.ok(await evaluate('document.documentElement.scrollWidth<=innerWidth'),'Editor fits '+width);
       if(width>=1100)assert.ok(await evaluate('document.getElementById("editor").getBoundingClientRect().width>400&&document.getElementById("preview").getBoundingClientRect().width>500'),'Editor and preview each get usable desktop space');
-      if(width<1100){await evaluate('document.getElementById("preview-view").click()');assert.ok(await evaluate('document.documentElement.scrollWidth<=innerWidth'),'Preview fits '+width);await evaluate('document.getElementById("edit-view").click()');}
+      if(width<1100){await evaluate('document.getElementById("preview-view").click()');assert.ok(await evaluate('document.documentElement.scrollWidth<=innerWidth'),'Preview fits '+width);await evaluate('document.getElementById("close-preview").click()');assert.notEqual(await evaluate('getComputedStyle(document.getElementById("editor")).display'),'none','Closing mobile preview returns to editor');}
     }
     await input('[data-meta=background]','Use this procedure for a consistent routine inspection.');
     await input('[data-meta=purpose]','Confirm the sample pump is ready for operation.');

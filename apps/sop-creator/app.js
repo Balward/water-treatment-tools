@@ -26,6 +26,24 @@
   function fitWorkspace(){const workspace=document.querySelector('.sop-workspace');workspace.style.setProperty('--workspace-height',Math.max(360,innerHeight-workspace.getBoundingClientRect().top-24)+'px');}
   window.addEventListener('resize',fitWorkspace);
   new ResizeObserver(fitWorkspace).observe(document.querySelector('.toolbar'));
+  let previewVisible=true,previewWidth=55;
+  try{const settings=JSON.parse(localStorage.getItem('sop-preview-layout')||'null');if(settings){previewVisible=settings.visible!==false;if(Number.isFinite(settings.width))previewWidth=Math.max(35,Math.min(65,settings.width));}}catch{}
+  function previewLayout(){
+    const workspace=document.querySelector('.sop-workspace');
+    workspace.classList.toggle('preview-closed',!previewVisible);
+    workspace.style.setProperty('--editor-share',(100-previewWidth)+'fr');
+    workspace.style.setProperty('--preview-share',previewWidth+'fr');
+    $('toggle-preview').textContent=previewVisible?'Hide Preview':'Show Preview';
+    $('toggle-preview').setAttribute('aria-expanded',String(previewVisible));
+    $('preview-size').value=previewWidth;$('preview-size').disabled=!previewVisible;
+    $('preview-size-value').textContent=previewWidth+'%';
+    try{localStorage.setItem('sop-preview-layout',JSON.stringify({visible:previewVisible,width:previewWidth}));}catch{}
+    requestAnimationFrame(fitWorkspace);
+  }
+  $('toggle-preview').onclick=()=>{previewVisible=!previewVisible;previewLayout();};
+  $('preview-size').oninput=event=>{previewWidth=Number(event.target.value);previewLayout();};
+  $('close-preview').onclick=()=>{if(innerWidth<1100){$('edit-view').click();$('preview-view').focus();}else{previewVisible=false;previewLayout();$('toggle-preview').focus();}};
+  previewLayout();
   function message(text,error=false){$('message').hidden=!text;$('message').textContent=text;$('message').className=error?'error':'success';requestAnimationFrame(fitWorkspace);}
   function persist(){
     const snapshot={doc:structuredClone(doc),dirty};localSaved=false;
