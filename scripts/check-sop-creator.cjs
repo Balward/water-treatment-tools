@@ -92,6 +92,16 @@ const {launchBrowser,removeTemporaryDirectory}=require('./lib/browser-check.cjs'
     await until('document.getElementById("confirm-dialog").open');await evaluate('document.getElementById("confirm-discard").click()');await until('document.getElementById("message").textContent.startsWith("Backup imported")');
     await evaluate('document.getElementById("save-button").click()');await until('document.getElementById("message").textContent==="SOP saved to the library."');assert.equal((await(await fetch(base+'/api/sops')).json()).length,2,'Import creates a new SOP and preserves the original');
     await evaluate('document.getElementById("library-button").click()');await until('document.querySelectorAll("[data-open]").length===2');
+    assert.equal(await evaluate('document.querySelector("[data-open]").textContent'),'Edit SOP');
+    assert.equal(await evaluate('document.querySelector("[data-view]").textContent'),'View SOP');
+    await evaluate('(()=>{const open=window.open.bind(window);window.open=(...args)=>(window.__savedSOPWindow=open(...args));document.querySelector("[data-view]").click();})()');
+    await until('window.__savedSOPWindow?.document.getElementById("preview-window-status")?.textContent.includes("Read Only")');
+    assert.ok(await evaluate('window.__savedSOPWindow.document.getElementById("sop-document").textContent.includes("Operating Limits")'),'View shows the saved document, including tables');
+    assert.equal(await evaluate('window.__savedSOPWindow.document.querySelectorAll("[data-step-instruction]").length'),0,'View contains no editing fields');
+    assert.ok(await evaluate('!window.__savedSOPWindow.document.getElementById("print-preview").disabled'),'Saved SOP view offers Print / Save PDF');
+    await evaluate('window.__savedSOPWindow.__oldSavedPage=true;window.__savedSOPWindow.location.reload()');
+    await until('!window.__savedSOPWindow.__oldSavedPage&&window.__savedSOPWindow.document.getElementById("preview-window-status")?.textContent.includes("Read Only")');
+    await evaluate('window.__savedSOPWindow.close()');
     await evaluate('document.getElementById("library-tag").value="Calibration";document.getElementById("library-tag").dispatchEvent(new Event("change"))');
     assert.equal(await evaluate('document.querySelectorAll("[data-open]").length'),2);
     await evaluate('document.getElementById("library-tag").value="Filtration";document.getElementById("library-tag").dispatchEvent(new Event("change"))');assert.equal(await evaluate('document.querySelectorAll("[data-open]").length'),0,'Tag filter excludes nonmatching SOPs');

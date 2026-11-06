@@ -12,7 +12,7 @@
   });
   $('open-preview-window').onclick=()=>{
     if(previewWindow&&!previewWindow.closed){updatePreviewWindow();previewWindow.focus();return;}
-    previewWindow=window.open('./preview.html?v=20261106-datehistory1',previewWindowName,'popup,width=1000,height=900,resizable=yes,scrollbars=yes');
+    previewWindow=window.open('./preview.html?v=20261106-readview1',previewWindowName,'popup,width=1000,height=900,resizable=yes,scrollbars=yes');
     if(!previewWindow)message('Allow pop-ups for this site to open the preview window.',true);
   };
   let doc=model.blank(),dirty=false,saving=false,sequence=0,localSaved=false,navigatingToLibrary=false,draftQueue=Promise.resolve(),confirmResolve;
@@ -130,11 +130,6 @@
     $('revision-entries').innerHTML=doc.revisionHistory.length?doc.revisionHistory.map((row,index)=>'<section class="revision-entry"><div class="group-heading"><strong>Revision Entry</strong>'+controls('revision',row.id,index,doc.revisionHistory.length)+'</div><div class="fields">'+[['date','Revision Date'],['revisedBy','Revised By'],['approvedBy','Approved By'],['summary','Change Summary']].map(([key,label])=>'<div class="'+(key==='summary'?'wide':'')+'">'+field(label,'data-revision="'+row.id+'" data-revision-field="'+key+'"'+(key==='date'?' type="date"':''),row[key],key==='summary')+'</div>').join('')+'</div></section>').join(''):'<p class="help">No revision entries yet.</p>';
     for(const input of $('revision-entries').querySelectorAll('[data-revision-field="summary"]'))input.maxLength=2000;
   }
-  function revisionTable(){
-    const rows=doc.revisionHistory.filter(row=>[row.date,row.summary,row.revisedBy,row.approvedBy].some(value=>value.trim()));
-    if(!rows.length)return '';
-    return '<section class="document-section document-revisions" data-preview-section="revisions"><h2>Revision History</h2><table><colgroup><col class="revision-date"><col class="revision-summary"><col><col></colgroup><thead><tr><th>Revision Date</th><th>Change Summary</th><th>Revised By</th><th>Approved By</th></tr></thead><tbody>'+rows.map(row=>'<tr>'+[row.date,row.summary,row.revisedBy,row.approvedBy].map(value=>'<td>'+escape(value)+'</td>').join('')+'</tr>').join('')+'</tbody></table></section>';
-  }
   $('add-revision').onclick=()=>{
     if(doc.revisionHistory.length>=100)return message('Use up to 100 revision entries per SOP.',true);
     const row={id:crypto.randomUUID(),date:doc.effectiveDate,summary:'',revisedBy:doc.preparedBy,approvedBy:''};
@@ -154,18 +149,8 @@
     }
   }
   function sizeWritingField(input){input.style.height='auto';input.style.height=Math.max(52,input.scrollHeight+2)+'px';}
-  const paragraphs=text=>text.split(/\n\s*\n/).filter(s=>s.trim()).map(s=>'<p>'+escape(s).replaceAll('\n','<br>')+'</p>').join('');
   function editTables(tables){
     return tables.map((table,index)=>'<section class="table-editor" data-table-editor="'+table.id+'"><div class="group-heading"><strong>Table '+(index+1)+'</strong>'+controls('table',table.id,index,tables.length)+'</div>'+field('Table Caption (Optional)','data-table-caption="'+table.id+'"',table.caption)+'<div class="table-editor-scroll"><table><thead><tr>'+table.headers.map((header,column)=>'<th><input data-table="'+table.id+'" data-table-row="-1" data-table-column="'+column+'" value="'+escape(header)+'" maxlength="2000" aria-label="Column '+(column+1)+' Header"><button type="button" data-action="table-column-remove" data-id="'+table.id+'" data-index="'+column+'"'+(table.headers.length===1?' disabled':'')+' aria-label="Remove Column '+(column+1)+'">Remove Column</button></th>').join('')+'<th class="table-row-actions"><span class="sr-only">Row Actions</span></th></tr></thead><tbody>'+table.rows.map((row,rowIndex)=>'<tr>'+row.map((cell,column)=>'<td><textarea rows="2" maxlength="2000" data-table="'+table.id+'" data-table-row="'+rowIndex+'" data-table-column="'+column+'" aria-label="Row '+(rowIndex+1)+', Column '+(column+1)+'">'+escape(cell)+'</textarea></td>').join('')+'<td class="table-row-actions"><button type="button" data-action="table-row-remove" data-id="'+table.id+'" data-index="'+rowIndex+'"'+(table.rows.length===1?' disabled':'')+' aria-label="Remove Row '+(rowIndex+1)+'">Remove Row</button></td></tr>').join('')+'</tbody></table></div><div class="step-actions"><button type="button" data-action="table-row-add" data-id="'+table.id+'">+ Add Row</button><button type="button" data-action="table-column-add" data-id="'+table.id+'">+ Add Column</button></div></section>').join('');
-  }
-  function previewTables(tables){
-    return tables.length?'<div class="document-tables">'+tables.map(table=>'<table class="document-data-table">'+(table.caption.trim()?'<caption>'+escape(table.caption)+'</caption>':'')+'<thead><tr>'+table.headers.map(header=>'<th scope="col">'+escape(header)+'</th>').join('')+'</tr></thead><tbody>'+table.rows.map(row=>'<tr>'+row.map(cell=>'<td>'+escape(cell)+'</td>').join('')+'</tr>').join('')+'</tbody></table>').join('')+'</div>':'';
-  }
-  function renderPhotos(photos){
-    if(!photos.length)return '';
-    const rows=[];
-    for(let index=0;index<photos.length;index+=2)rows.push('<div class="document-photo-row">'+photos.slice(index,index+2).map(photo=>'<figure><img src="'+photo.data+'" alt="'+escape(photo.caption||'Procedure illustration')+'">'+(photo.caption.trim()?'<figcaption>'+escape(photo.caption)+'</figcaption>':'')+'</figure>').join('')+'</div>');
-    return '<div class="document-photos">'+rows.join('')+'</div>';
   }
   $('sop-document').addEventListener('load',event=>{
     const image=event.target;
@@ -175,9 +160,7 @@
     clearTimeout(previewWindowTimer);previewWindowTimer=setTimeout(updatePreviewWindow,100);
     $('revised-date').value=model.revisedDate(doc)||'Not Recorded';
     document.title=(doc.title.trim()||'SOP Creator')+' | Northglenn Operations';
-    let count=0;
-    const metadata=[['Team',doc.team],['Effective',doc.effectiveDate],['Revised Date',model.revisedDate(doc)||'Not Recorded'],['Prepared By',doc.preparedBy],['Approved By',doc.approvedBy]].filter(([,value])=>value.trim());
-    $('sop-document').innerHTML='<header class="document-header"><img src="../../assets/logos/northglenn-horizontal.png" alt="City of Northglenn"><p class="document-kind">Standard Operating Procedure (SOP)</p><h1>'+escape(doc.title||'Untitled Procedure')+'</h1><dl>'+metadata.map(([label,value])=>'<div><dt>'+label+'</dt><dd>'+escape(value)+'</dd></div>').join('')+'</dl></header>'+model.sections.filter(([key])=>doc[key].trim()).map(([key,label])=>'<section class="document-section" data-preview-section="'+key+'"><h2>'+label+'</h2>'+(['notes','security','equipment'].includes(key)?'<ul>'+doc[key].split('\n').filter(s=>s.trim()).map(s=>'<li>'+escape(s)+'</li>').join('')+'</ul>':paragraphs(doc[key]))+'</section>').join('')+'<section class="document-section"><h2>Procedure</h2>'+doc.groups.map(group=>(group.title.trim()?'<h3 class="procedure-section-title">'+escape(group.title)+'</h3>':'')+'<ol class="document-steps" start="'+(count+1)+'">'+group.steps.map(step=>{count++;return '<li class="document-step" data-preview-step="'+step.id+'">'+paragraphs(step.instruction)+(step.substeps.length?'<ol class="document-substeps" type="a">'+step.substeps.map(sub=>'<li>'+escape(sub.text).replaceAll('\n','<br>')+'</li>').join('')+'</ol>':'')+previewTables(step.tables)+renderPhotos(step.photos)+'</li>';}).join('')+'</ol>').join('')+(count?'':'<p class="preview-placeholder">Add your first step to begin the procedure.</p>')+'</section>'+revisionTable();
+    $('sop-document').innerHTML=SOPDocument.render(doc);
   }
   const allSteps=()=>doc.groups.flatMap(group=>group.steps);
   const allTables=()=>allSteps().flatMap(step=>step.tables);
