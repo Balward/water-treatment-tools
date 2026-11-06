@@ -18,7 +18,7 @@ Procedure writing fields expand as you type. Enter splits the current entry at t
 
 Import / Backup exports editable JSON with photos. Imports create a new document and do not overwrite an existing SOP. Word import is not supported. Unsaved edits trigger a prompt before opening another SOP or starting over. Downloads occur only when Download SOP Backup is clicked.
 
-Revision History is an editable table at the end of the SOP, containing revision, effective date, change summary, revised by, and approved by. Add, edit, reorder, or remove entries in the editor; they are saved with the SOP and included in previews, PDFs, and backups. Empty tables are omitted. Entries are maintained manually; saving does not issue a revision, increment the visible version, or verify an approval.
+Revision History is an editable table at the end of the SOP, containing revision, effective date, change summary, revised by, and approved by. Add, edit, reorder, or remove entries in the editor; they are saved with the SOP and included in previews, PDFs, and backups. Empty tables are omitted. Entries are maintained manually; saving does not issue a revision or verify an approval. The document header shows Revised Date instead of a version number, automatically using the latest valid date in Revision History regardless of row order. When no dated entry exists, it shows Not Recorded. Revision numbers remain editable in the table.
 
 The app uses the suite's existing access model; no new authentication is introduced. It is not deployed automatically.
 

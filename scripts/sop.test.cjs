@@ -1,5 +1,12 @@
 const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs/promises'),os=require('node:os'),path=require('node:path'),express=require('express');
 const model=require('../apps/sop-creator/model'),register=require('../sop-api');
+test('Revised Date follows the latest valid revision date regardless of row order',()=>{
+  const doc=model.blank();assert.equal(model.revisedDate(doc),'');
+  doc.revisionHistory=[{date:'2026-11-05'},{date:''},{date:'2026-11-06'},{date:'2026-10-01'}];
+  assert.equal(model.revisedDate(doc),'2026-11-06');doc.revisionHistory.reverse();assert.equal(model.revisedDate(doc),'2026-11-06');
+  doc.revisionHistory=doc.revisionHistory.filter(row=>row.date!=='2026-11-06');assert.equal(model.revisedDate(doc),'2026-11-05');
+  assert.equal(model.revisedDate({revisionHistory:[{date:'2026-02-30'},{date:'invalid'}]}),'');
+});
 test('SOP model preserves the template structure, photos, and ordered steps, while rejecting unsafe data',()=>{
   const doc=model.blank();doc.title='Check A Pump';const step=model.step();step.instruction='Check the gauge.';step.substeps.push({id:crypto.randomUUID(),text:'Record the reading.'});step.photos.push({id:crypto.randomUUID(),data:'data:image/png;base64,aGVsbG8=',caption:'Gauge'});doc.groups[0].steps.push(step);
   assert.deepEqual(model.validate(doc),doc);

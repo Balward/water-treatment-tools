@@ -2,7 +2,8 @@
   'use strict';
   const sections=[['purpose','Purpose'],['background','Background'],['notes','Notes'],['security','Security Concerns'],['equipment','Equipment']];
   const id=()=>globalThis.crypto.randomUUID();
-  function blank(){return {id:id(),revision:0,title:'',team:'Water Treatment',effectiveDate:'',version:'1.0',preparedBy:'',approvedBy:'',purpose:'',background:'',notes:'',security:'',equipment:'',revisionHistory:[],groups:[{id:id(),title:'',steps:[]}]};}
+  function blank(){return {id:id(),revision:0,title:'',team:'Water Treatment',effectiveDate:'',preparedBy:'',approvedBy:'',purpose:'',background:'',notes:'',security:'',equipment:'',revisionHistory:[],groups:[{id:id(),title:'',steps:[]}]};}
+  function revisedDate(doc){return (doc.revisionHistory||[]).map(row=>row.date).filter(date=>typeof date==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(date)&&Number.isFinite(Date.parse(date+'T12:00:00Z'))&&new Date(date+'T12:00:00Z').toISOString().slice(0,10)===date).sort().at(-1)||'';}
   const step=()=>({id:id(),instruction:'',substeps:[],photos:[],tables:[]});
   const table=()=>({id:id(),caption:'',headers:['Column 1','Column 2'],rows:[['',''],['','']]});
   function validate(input){
@@ -12,7 +13,7 @@
     if(!input||typeof input!=='object')fail('Choose a valid SOP file.');
     if(!Number.isSafeInteger(input.revision)||input.revision<0)fail('Invalid document revision.');
     const result={id:key(input.id),revision:input.revision};
-    for(const name of ['title','team','effectiveDate','version','preparedBy','approvedBy',...sections.map(s=>s[0])])result[name]=text(input[name],sections.some(s=>s[0]===name)?20000:300);
+    for(const name of ['title','team','effectiveDate','preparedBy','approvedBy',...sections.map(s=>s[0])])result[name]=text(input[name],sections.some(s=>s[0]===name)?20000:300);
     if(result.effectiveDate&&(!/^\d{4}-\d{2}-\d{2}$/.test(result.effectiveDate)||!Number.isFinite(Date.parse(result.effectiveDate+'T12:00:00Z'))||new Date(result.effectiveDate+'T12:00:00Z').toISOString().slice(0,10)!==result.effectiveDate))fail('Choose a valid effective date.');
     let photoBytes=0,stepCount=0;const ids=new Set([result.id]);
     const unique=value=>{key(value);if(ids.has(value))fail('Duplicate step or photo identifier.');ids.add(value);return value;};
@@ -53,6 +54,6 @@
     });
     return result;
   }
-  const api={sections,blank,step,table,validate};
+  const api={sections,blank,step,table,revisedDate,validate};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.SOPModel=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

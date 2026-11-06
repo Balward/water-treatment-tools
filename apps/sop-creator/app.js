@@ -32,7 +32,7 @@
     });
   }
   function status(){
-    $('save-status').textContent=saving?'Saving SOP…':dirty?'Unsaved Changes'+(localSaved?' · Draft Kept In This Browser':''):doc.revision?'Saved · Version '+doc.version:'New SOP';
+    $('save-status').textContent=saving?'Saving SOP…':dirty?'Unsaved Changes'+(localSaved?' · Draft Kept In This Browser':''):doc.revision?'Saved':'New SOP';
     $('save-button').disabled=saving;
     for(const id of ['new-button','library-button','files-button'])$(id).disabled=saving;
   }
@@ -112,7 +112,7 @@
   }
   $('add-revision').onclick=()=>{
     if(doc.revisionHistory.length>=100)return message('Use up to 100 revision entries per SOP.',true);
-    const row={id:crypto.randomUUID(),version:doc.revisionHistory.length?'':doc.version,date:doc.effectiveDate,summary:'',revisedBy:doc.preparedBy,approvedBy:''};
+    const row={id:crypto.randomUUID(),version:doc.revisionHistory.length?'':'1.0',date:doc.effectiveDate,summary:'',revisedBy:doc.preparedBy,approvedBy:''};
     doc.revisionHistory.push(row);changed();renderRevisions();$('revision-entries').querySelector('[data-revision="'+row.id+'"]').focus();
   };
   $('revision-entries').addEventListener('click',event=>{
@@ -148,9 +148,10 @@
   },true);
   function renderPreview(){
     clearTimeout(previewWindowTimer);previewWindowTimer=setTimeout(updatePreviewWindow,100);
+    $('revised-date').value=model.revisedDate(doc)||'Not Recorded';
     document.title=(doc.title.trim()||'SOP Creator')+' | Northglenn Operations';
     let count=0;
-    const metadata=[['Team',doc.team],['Effective',doc.effectiveDate],['Version',doc.version],['Prepared By',doc.preparedBy],['Approved By',doc.approvedBy]].filter(([,value])=>value.trim());
+    const metadata=[['Team',doc.team],['Effective',doc.effectiveDate],['Revised Date',model.revisedDate(doc)||'Not Recorded'],['Prepared By',doc.preparedBy],['Approved By',doc.approvedBy]].filter(([,value])=>value.trim());
     $('sop-document').innerHTML='<header class="document-header"><img src="../../assets/logos/northglenn-horizontal.png" alt="City of Northglenn"><p class="document-kind">Standard Operating Procedure (SOP)</p><h1>'+escape(doc.title||'Untitled Procedure')+'</h1><dl>'+metadata.map(([label,value])=>'<div><dt>'+label+'</dt><dd>'+escape(value)+'</dd></div>').join('')+'</dl></header>'+model.sections.filter(([key])=>doc[key].trim()).map(([key,label])=>'<section class="document-section" data-preview-section="'+key+'"><h2>'+label+'</h2>'+(['notes','security','equipment'].includes(key)?'<ul>'+doc[key].split('\n').filter(s=>s.trim()).map(s=>'<li>'+escape(s)+'</li>').join('')+'</ul>':paragraphs(doc[key]))+'</section>').join('')+'<section class="document-section"><h2>Procedure</h2>'+doc.groups.map(group=>(group.title.trim()?'<h3 class="procedure-section-title">'+escape(group.title)+'</h3>':'')+'<ol class="document-steps" start="'+(count+1)+'">'+group.steps.map(step=>{count++;return '<li class="document-step" data-preview-step="'+step.id+'">'+paragraphs(step.instruction)+(step.substeps.length?'<ol class="document-substeps" type="a">'+step.substeps.map(sub=>'<li>'+escape(sub.text).replaceAll('\n','<br>')+'</li>').join('')+'</ol>':'')+previewTables(step.tables)+renderPhotos(step.photos)+'</li>';}).join('')+'</ol>').join('')+(count?'':'<p class="preview-placeholder">Add your first step to begin the procedure.</p>')+'</section>'+revisionTable();
   }
   const allSteps=()=>doc.groups.flatMap(group=>group.steps);
@@ -301,7 +302,7 @@
   function renderLibrary(){
     const query=$('library-search').value.toLowerCase();
     const matches=library.filter(item=>[item.title,item.team].some(value=>String(value||'').toLowerCase().includes(query)));
-    $('library-list').innerHTML=matches.length?matches.map(item=>'<article class="library-card"><div><h3>'+escape(item.title)+'</h3><p>'+escape([item.team,'Version '+item.version].filter(Boolean).join(' · '))+'</p><small>Saved '+escape(new Date(item.updatedAt).toLocaleString())+'</small></div><button type="button" data-open="'+item.id+'">Open SOP</button></article>').join(''):'<p class="empty">'+(library.length?'No matching SOPs.':'No saved SOPs yet. Create a procedure and choose Save SOP.')+'</p>';
+    $('library-list').innerHTML=matches.length?matches.map(item=>'<article class="library-card"><div><h3>'+escape(item.title)+'</h3><p>'+escape([item.team,item.revisedDate?'Revised '+item.revisedDate:''].filter(Boolean).join(' · '))+'</p><small>Saved '+escape(new Date(item.updatedAt).toLocaleString())+'</small></div><button type="button" data-open="'+item.id+'">Open SOP</button></article>').join(''):'<p class="empty">'+(library.length?'No matching SOPs.':'No saved SOPs yet. Create a procedure and choose Save SOP.')+'</p>';
   }
   $('library-button').onclick=async()=>{
     $('library-dialog').showModal();$('library-status').textContent='Loading SOPs…';
