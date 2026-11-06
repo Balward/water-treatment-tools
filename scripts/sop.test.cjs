@@ -1,5 +1,12 @@
 const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs/promises'),os=require('node:os'),path=require('node:path'),express=require('express');
 const model=require('../apps/sop-creator/model'),register=require('../sop-api');
+test('Creation history defaults its summary, prints its type, and contributes its date',()=>{
+  const doc=model.blank();doc.revisionHistory=[{id:crypto.randomUUID(),type:'creation',date:'2026-11-06',summary:'',revisedBy:'Author',approvedBy:''}];
+  const normalized=model.validate(doc);assert.equal(normalized.revisionHistory[0].summary,'SOP Created');
+  assert.equal(model.revisedDate(normalized),'2026-11-06');assert.equal(model.reviewStatus(normalized,'2027-11-06').needsReview,false);
+  assert.match(require('../apps/sop-creator/document').render(normalized),/<td>Creation<\/td><td>SOP Created<\/td>/);
+  doc.revisionHistory[0].summary='Initial procedure for the new equipment';assert.equal(model.validate(doc).revisionHistory[0].summary,doc.revisionHistory[0].summary);
+});
 test('Annual review flags use dated history, preserve revision dates, and handle calendar boundaries',()=>{
   const doc=model.blank();doc.effectiveDate='2024-02-29';
   assert.equal(model.reviewStatus(doc,'2025-02-28').needsReview,false);

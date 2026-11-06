@@ -160,7 +160,14 @@ const {launchBrowser,removeTemporaryDirectory}=require('./lib/browser-check.cjs'
     if(await evaluate('!!document.getElementById("confirm-dialog")?.open'))await evaluate('document.getElementById("confirm-discard").click()');
     await until('document.querySelector("[data-meta=title]")?.value==="Annual Review Test"');
     await evaluate('document.getElementById("add-revision").click()');
-    await input('[data-revision-field=type]','review');await input('[data-revision-field=revisedBy]','Reviewing Operator');
+    await input('[data-revision-field=type]','creation');
+    assert.equal(await evaluate('document.querySelector("[data-revision-field=summary]").value'),'SOP Created');
+    assert.ok(await evaluate('document.querySelector(".document-revisions").textContent.includes("Creation")'));
+    await input('[data-revision-field=summary]','Custom original issue');await input('[data-revision-field=type]','revision');await input('[data-revision-field=type]','creation');
+    assert.equal(await evaluate('document.querySelector("[data-revision-field=summary]").value'),'Custom original issue','Selecting Creation preserves a custom summary');
+    await input('[data-revision-field=summary]','N/A');await input('[data-revision-field=type]','revision');await input('[data-revision-field=type]','creation');
+    assert.equal(await evaluate('document.querySelector("[data-revision-field=summary]").value'),'SOP Created','Creation replaces the imported N/A placeholder');
+    await input('[data-revision-field=summary]','');await input('[data-revision-field=type]','review');await input('[data-revision-field=revisedBy]','Reviewing Operator');
     assert.ok(await evaluate('document.querySelector(".document-revisions").textContent.includes("Reviewed - No Changes")'));
     assert.equal(await evaluate('document.getElementById("revised-date").value'),'Not Recorded','A review does not pretend the instructions changed');
     await evaluate('document.getElementById("save-button").click()');await until('document.getElementById("save-status").textContent==="Saved"');

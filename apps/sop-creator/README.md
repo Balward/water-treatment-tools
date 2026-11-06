@@ -36,3 +36,5 @@ node scripts/check-sop-creator.cjs
 ```
 
 Library cards show Needs Review when the latest revision, review, or effective date is more than one calendar year old, or no such date is recorded. The exact anniversary is not overdue; February 29 anniversaries fall on February 28 in non-leap years. Save timestamps do not reset review reminders. Add History Entry offers Revision or Review - No Changes; record the date and reviewer and save the SOP. Older history entries remain revisions. Reviews appear in the printed history and Reviewed Date metadata without changing Revised Date.
+
+History entries also support Creation. Selecting Creation fills an empty or N/A summary with SOP Created; custom summaries stay editable and are preserved. Creation entries appear by name in previews and PDFs and count toward annual review dates. Existing history entries are unchanged.

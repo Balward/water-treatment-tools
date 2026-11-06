@@ -12,7 +12,7 @@
   });
   $('open-preview-window').onclick=()=>{
     if(previewWindow&&!previewWindow.closed){updatePreviewWindow();previewWindow.focus();return;}
-    previewWindow=window.open('./preview.html?v=20261106-review1',previewWindowName,'popup,width=1000,height=900,resizable=yes,scrollbars=yes');
+    previewWindow=window.open('./preview.html?v=20261106-creation1',previewWindowName,'popup,width=1000,height=900,resizable=yes,scrollbars=yes');
     if(!previewWindow)message('Allow pop-ups for this site to open the preview window.',true);
   };
   let doc=model.blank(),dirty=false,saving=false,sequence=0,localSaved=false,navigatingToLibrary=false,draftQueue=Promise.resolve(),confirmResolve;
@@ -127,7 +127,7 @@
   });
   $('selected-sop-tags').onclick=event=>{const button=event.target.closest('[data-remove-tag]');if(button){doc.tags=doc.tags.filter(tag=>tag!==button.dataset.removeTag);renderTagSelection();changed();}};
   function renderRevisions(){
-    $('revision-entries').innerHTML=doc.revisionHistory.length?doc.revisionHistory.map((row,index)=>'<section class="revision-entry"><div class="group-heading"><strong>History Entry</strong>'+controls('revision',row.id,index,doc.revisionHistory.length)+'</div><div class="fields"><div><label>Entry Type<select data-revision="'+row.id+'" data-revision-field="type"><option value="revision"'+(row.type!=='review'?' selected':'')+'>Revision</option><option value="review"'+(row.type==='review'?' selected':'')+'>Review - No Changes</option></select></label></div>'+[['date','Entry Date'],['revisedBy','Revised / Reviewed By'],['approvedBy','Approved By'],['summary','Change Summary']].map(([key,label])=>'<div class="'+(key==='summary'?'wide':'')+'">'+field(label,'data-revision="'+row.id+'" data-revision-field="'+key+'"'+(key==='date'?' type="date"':''),row[key],key==='summary')+'</div>').join('')+'</div></section>').join(''):'<p class="help">No revision entries yet.</p>';
+    $('revision-entries').innerHTML=doc.revisionHistory.length?doc.revisionHistory.map((row,index)=>'<section class="revision-entry"><div class="group-heading"><strong>History Entry</strong>'+controls('revision',row.id,index,doc.revisionHistory.length)+'</div><div class="fields"><div><label>Entry Type<select data-revision="'+row.id+'" data-revision-field="type"><option value="creation"'+(row.type==='creation'?' selected':'')+'>Creation</option><option value="revision"'+(!row.type||row.type==='revision'?' selected':'')+'>Revision</option><option value="review"'+(row.type==='review'?' selected':'')+'>Review - No Changes</option></select></label></div>'+[['date','Entry Date'],['revisedBy','Revised / Reviewed By'],['approvedBy','Approved By'],['summary','Change Summary']].map(([key,label])=>'<div class="'+(key==='summary'?'wide':'')+'">'+field(label,'data-revision="'+row.id+'" data-revision-field="'+key+'"'+(key==='date'?' type="date"':''),row[key],key==='summary')+'</div>').join('')+'</div></section>').join(''):'<p class="help">No revision entries yet.</p>';
     for(const input of $('revision-entries').querySelectorAll('[data-revision-field="summary"]'))input.maxLength=2000;
   }
   $('add-revision').onclick=()=>{
@@ -176,7 +176,13 @@
     const input=event.target,d=input.dataset;
     if(d.table){const table=allTables().find(table=>table.id===d.table),row=Number(d.tableRow),column=Number(d.tableColumn);if(row===-1)table.headers[column]=input.value;else table.rows[row][column]=input.value;}
     else if(d.tableCaption)allTables().find(table=>table.id===d.tableCaption).caption=input.value;
-    else if(d.revisionField)doc.revisionHistory.find(row=>row.id===d.revision)[d.revisionField]=input.value;
+    else if(d.revisionField){
+      const row=doc.revisionHistory.find(row=>row.id===d.revision);row[d.revisionField]=input.value;
+      if(d.revisionField==='type'&&input.value==='creation'&&(!row.summary.trim()||row.summary.trim()==='N/A')){
+        row.summary='SOP Created';
+        input.closest('.revision-entry').querySelector('[data-revision-field="summary"]').value=row.summary;
+      }
+    }
     else if(d.meta)doc[d.meta]=input.value;
     else if(d.groupTitle)doc.groups.find(g=>g.id===d.groupTitle).title=input.value;
     else if(d.stepInstruction)allSteps().find(s=>s.id===d.stepInstruction).instruction=input.value;
