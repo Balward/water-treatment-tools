@@ -33,7 +33,6 @@
         <section class="editor-panel"><h2>Document Details</h2><p class="help">One format for every procedure. Numbering and section headings are handled for you.</p>
           <div class="fields">
             <label class="wide">Title <span class="required">Required</span><input data-meta="title" maxlength="300" placeholder="Name Of The Procedure" required></label>
-            <label>Document Number<input data-meta="documentNumber" maxlength="300" placeholder="SOP-001"></label>
             <label>Team<select data-meta="team"><option>Water Treatment</option><option>Wastewater Treatment</option><option>Maintenance</option><option>Laboratory Services</option><option>General Operations</option></select></label>
             <label>Effective Date<input data-meta="effectiveDate" type="date"></label>
             <label>Version<input data-meta="version" maxlength="300"></label>
@@ -47,7 +46,7 @@
       <section id="preview" aria-label="Live SOP Preview"><div class="preview-heading"><h2>Live Preview</h2><div class="preview-heading-actions"><span>Letter · Portrait</span><button id="close-preview" type="button" aria-label="Close Live Preview">&times;</button></div></div><div class="paper-wrap"><article id="sop-document" class="sop-document"></article></div></section>
     </div>
   </main>
-  <dialog id="library-dialog" aria-labelledby="library-title"><div class="dialog-heading"><h2 id="library-title">SOP Library</h2><button data-close="library-dialog" type="button" aria-label="Close SOP Library">×</button></div><label>Find An SOP<input id="library-search" type="search" placeholder="Title, document number, or team"></label><p id="library-status" role="status"></p><div id="library-list"></div></dialog>
+  <dialog id="library-dialog" aria-labelledby="library-title"><div class="dialog-heading"><h2 id="library-title">SOP Library</h2><button data-close="library-dialog" type="button" aria-label="Close SOP Library">×</button></div><label>Find An SOP<input id="library-search" type="search" placeholder="Title or team"></label><p id="library-status" role="status"></p><div id="library-list"></div></dialog>
   <dialog id="files-dialog" aria-labelledby="files-title"><div class="dialog-heading"><h2 id="files-title">Import / Backup</h2><button data-close="files-dialog" type="button" aria-label="Close Import / Backup">×</button></div><p>Download an editable SOP backup including its photos, or open a backup as a new SOP.</p><button id="download-button" type="button">Download SOP Backup</button><label class="file-label">Import SOP Backup<input id="import-file" type="file" accept="application/json,.json"></label><p class="help">Import accepts SOP Creator JSON backups. Use the fields to create a procedure from an existing Word document.</p></dialog>
   <dialog id="confirm-dialog" aria-labelledby="confirm-title"><h2 id="confirm-title">Keep Your Draft?</h2><p>There are changes that have not been saved to the SOP library.</p><div class="confirm-actions"><button id="confirm-cancel" type="button">Keep Editing</button><button id="confirm-discard" type="button">Discard Draft</button><button id="confirm-save" type="button" class="primary">Save &amp; Continue</button></div></dialog>
 </body>

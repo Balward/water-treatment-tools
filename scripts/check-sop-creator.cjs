@@ -6,7 +6,7 @@ const {launchBrowser,removeTemporaryDirectory}=require('./lib/browser-check.cjs'
   const server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));const base='http://127.0.0.1:'+server.address().port;let browser;
   try{
     browser=await launchBrowser({acceptDialogs:true,userGesture:true});const {call,evaluate}=browser;
-    const until=async expression=>{for(let i=0;i<120;i++){if(await evaluate(expression))return;await new Promise(r=>setTimeout(r,40));}throw Error('Timed out: '+expression);};
+    const until=async expression=>{for(let i=0;i<120;i++){try{if(await evaluate(expression))return;}catch(error){if(!/Inspected target navigated or closed|Execution context was destroyed|Cannot find context/.test(error.message))throw error;}await new Promise(r=>setTimeout(r,40));}throw Error('Timed out: '+expression);};
     await call('Emulation.setDeviceMetricsOverride',{width:1600,height:1000,deviceScaleFactor:1,mobile:false});await call('Page.navigate',{url:base+'/sop-creator/'});await until('!!document.querySelector("[data-meta=purpose]")&&!document.getElementById("editor").inert');
     const input=async(selector,value)=>evaluate(`(()=>{const input=document.querySelector(${JSON.stringify(selector)});input.value=${JSON.stringify(value)};input.dispatchEvent(new Event('input',{bubbles:true}));})()`);
     const key=async(selector,key,options={})=>evaluate(`(()=>{const input=document.querySelector(${JSON.stringify(selector)});input.focus();input.setSelectionRange(${options.position??0},${options.position??0});return input.dispatchEvent(new KeyboardEvent('keydown',${JSON.stringify({key,bubbles:true,cancelable:true,...options})}));})()`);
@@ -91,7 +91,6 @@ const {launchBrowser,removeTemporaryDirectory}=require('./lib/browser-check.cjs'
     await input('[data-meta=background]','Use this procedure for a consistent routine inspection.');
     await input('[data-meta=purpose]','Confirm the sample pump is ready for operation.');
     await input('[data-meta=preparedBy]','Operations Team');
-    await input('[data-meta=documentNumber]','SOP-001');
     await evaluate('document.getElementById("message").hidden=true');
     await call('Emulation.setEmulatedMedia',{media:'print'});assert.equal(await evaluate('getComputedStyle(document.getElementById("editor")).display'),'none');assert.notEqual(await evaluate('getComputedStyle(document.getElementById("preview")).display'),'none');
     const pdf=await call('Page.printToPDF',{printBackground:true,preferCSSPageSize:true});assert.ok(Buffer.from(pdf.data,'base64').length>5000);

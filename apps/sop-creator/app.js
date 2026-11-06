@@ -124,7 +124,7 @@
     clearTimeout(previewWindowTimer);previewWindowTimer=setTimeout(updatePreviewWindow,100);
     document.title=(doc.title.trim()||'SOP Creator')+' | Northglenn Operations';
     let count=0;
-    const metadata=[['Document',doc.documentNumber],['Team',doc.team],['Effective',doc.effectiveDate],['Version',doc.version],['Prepared By',doc.preparedBy],['Approved By',doc.approvedBy]].filter(([,value])=>value.trim());
+    const metadata=[['Team',doc.team],['Effective',doc.effectiveDate],['Version',doc.version],['Prepared By',doc.preparedBy],['Approved By',doc.approvedBy]].filter(([,value])=>value.trim());
     $('sop-document').innerHTML='<header class="document-header"><img src="../../assets/logos/northglenn-horizontal.png" alt="City of Northglenn"><p class="document-kind">Standard Operating Procedure (SOP)</p><h1>'+escape(doc.title||'Untitled Procedure')+'</h1><dl>'+metadata.map(([label,value])=>'<div><dt>'+label+'</dt><dd>'+escape(value)+'</dd></div>').join('')+'</dl></header>'+model.sections.filter(([key])=>doc[key].trim()).map(([key,label])=>'<section class="document-section" data-preview-section="'+key+'"><h2>'+label+'</h2>'+(['notes','security','equipment'].includes(key)?'<ul>'+doc[key].split('\n').filter(s=>s.trim()).map(s=>'<li>'+escape(s)+'</li>').join('')+'</ul>':paragraphs(doc[key]))+'</section>').join('')+'<section class="document-section"><h2>Procedure</h2>'+doc.groups.map(group=>(group.title.trim()?'<h3 class="procedure-section-title">'+escape(group.title)+'</h3>':'')+'<ol class="document-steps" start="'+(count+1)+'">'+group.steps.map(step=>{count++;return '<li class="document-step" data-preview-step="'+step.id+'">'+paragraphs(step.instruction)+(step.substeps.length?'<ol class="document-substeps" type="a">'+step.substeps.map(sub=>'<li>'+escape(sub.text).replaceAll('\n','<br>')+'</li>').join('')+'</ol>':'')+renderPhotos(step.photos)+'</li>';}).join('')+'</ol>').join('')+(count?'':'<p class="preview-placeholder">Add your first step to begin the procedure.</p>')+'</section>';
   }
   const allSteps=()=>doc.groups.flatMap(group=>group.steps);
@@ -246,8 +246,8 @@
   $('print-button').onclick=async()=>{await Promise.all([...$('sop-document').querySelectorAll('img')].map(image=>image.decode().catch(()=>{})));await document.fonts.ready;window.print();};
   function renderLibrary(){
     const query=$('library-search').value.toLowerCase();
-    const matches=library.filter(item=>[item.title,item.team,item.documentNumber].some(value=>String(value||'').toLowerCase().includes(query)));
-    $('library-list').innerHTML=matches.length?matches.map(item=>'<article class="library-card"><div><h3>'+escape(item.title)+'</h3><p>'+escape([item.documentNumber,item.team,'Version '+item.version].filter(Boolean).join(' · '))+'</p><small>Saved '+escape(new Date(item.updatedAt).toLocaleString())+'</small></div><button type="button" data-open="'+item.id+'">Open SOP</button></article>').join(''):'<p class="empty">'+(library.length?'No matching SOPs.':'No saved SOPs yet. Create a procedure and choose Save SOP.')+'</p>';
+    const matches=library.filter(item=>[item.title,item.team].some(value=>String(value||'').toLowerCase().includes(query)));
+    $('library-list').innerHTML=matches.length?matches.map(item=>'<article class="library-card"><div><h3>'+escape(item.title)+'</h3><p>'+escape([item.team,'Version '+item.version].filter(Boolean).join(' · '))+'</p><small>Saved '+escape(new Date(item.updatedAt).toLocaleString())+'</small></div><button type="button" data-open="'+item.id+'">Open SOP</button></article>').join(''):'<p class="empty">'+(library.length?'No matching SOPs.':'No saved SOPs yet. Create a procedure and choose Save SOP.')+'</p>';
   }
   $('library-button').onclick=async()=>{
     $('library-dialog').showModal();$('library-status').textContent='Loading SOPs…';
@@ -262,7 +262,7 @@
   $('files-button').onclick=()=>$('files-dialog').showModal();
   for(const button of document.querySelectorAll('[data-close]'))button.onclick=()=>$(button.dataset.close).close();
   $('download-button').onclick=()=>{
-    const blob=new Blob([JSON.stringify({format:'northglenn-sop',version:1,document:doc},null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download=(doc.documentNumber||doc.title||'SOP').replace(/[^a-zA-Z0-9-]/g,'-').slice(0,80)+'.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+    const blob=new Blob([JSON.stringify({format:'northglenn-sop',version:1,document:doc},null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download=(doc.title||'SOP').replace(/[^a-zA-Z0-9-]/g,'-').slice(0,80)+'.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
   };
   $('import-file').onchange=async event=>{
     const file=event.target.files[0];if(!file)return;
