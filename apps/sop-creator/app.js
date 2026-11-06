@@ -15,7 +15,7 @@
     previewWindow=window.open('./preview.html?v=20261106-datehistory1',previewWindowName,'popup,width=1000,height=900,resizable=yes,scrollbars=yes');
     if(!previewWindow)message('Allow pop-ups for this site to open the preview window.',true);
   };
-  let doc=model.blank(),dirty=false,saving=false,sequence=0,localSaved=false,library=[],draftQueue=Promise.resolve(),confirmResolve;
+  let doc=model.blank(),dirty=false,saving=false,sequence=0,localSaved=false,navigatingToLibrary=false,draftQueue=Promise.resolve(),confirmResolve;
   const database=new Promise((resolve,reject)=>{
     const request=indexedDB.open('operations-sop-creator',1);
     request.onupgradeneeded=()=>request.result.createObjectStore('drafts');
@@ -324,33 +324,13 @@
   $('save-button').onclick=save;
   $('new-button').onclick=async()=>{if(!await askToLeave())return;doc=model.blank();dirty=false;sequence++;message('');renderEditor();await persist();document.querySelector('[data-meta="title"]').focus();};
   $('print-button').onclick=async()=>{await Promise.all([...$('sop-document').querySelectorAll('img')].map(image=>image.decode().catch(()=>{})));await document.fonts.ready;window.print();};
-  function libraryTagOptions(){
-    const selected=$('library-tag').value;
-    $('library-tag').innerHTML='<option value="">All Tags</option><option value="__untagged">Untagged</option>'+model.tagGroups.map(group=>'<optgroup label="'+escape(group.label)+'">'+group.tags.map(tag=>'<option value="'+escape(tag)+'">'+escape(tag)+'</option>').join('')+'</optgroup>').join('');
-    $('library-tag').value=selected;
-  }
-  function renderLibrary(){
-    const query=$('library-search').value.trim().toLowerCase(),tag=$('library-tag').value,sort=$('library-sort').value;
-    const matches=library.filter(item=>[item.title,item.team,...(item.tags||[])].some(value=>String(value||'').toLowerCase().includes(query))&&(!tag||(tag==='__untagged'?!(item.tags||[]).length:(item.tags||[]).includes(tag))));
-    const title=(a,b)=>a.title.localeCompare(b.title);
-    matches.sort((a,b)=>sort==='title'?title(a,b):sort==='tags'?(a.tags||[]).slice().sort().join(', ').localeCompare((b.tags||[]).slice().sort().join(', '))||title(a,b):sort==='revised'?(b.revisedDate||'').localeCompare(a.revisedDate||'')||title(a,b):b.updatedAt.localeCompare(a.updatedAt)||title(a,b));
-    $('library-count').textContent=matches.length+' of '+library.length+' SOPs';
-    $('library-list').innerHTML=matches.length?matches.map(item=>'<article class="library-card"><div><h3>'+escape(item.title)+'</h3><p>'+escape([item.team,item.revisedDate?'Revised '+item.revisedDate:''].filter(Boolean).join(' / '))+'</p><div class="sop-tags">'+(item.tags||[]).map(tag=>'<button type="button" data-filter-tag="'+escape(tag)+'" aria-label="Filter SOPs By '+escape(tag)+'">'+escape(tag)+'</button>').join('')+'</div><small>Saved '+escape(new Date(item.updatedAt).toLocaleString())+'</small></div><button type="button" data-open="'+item.id+'">Open SOP</button></article>').join(''):'<p class="empty">'+(library.length?'No matching SOPs. Clear filters to see all documents.':'No saved SOPs yet. Create a procedure and choose Save SOP.')+'</p>';
-  }
   $('library-button').onclick=async()=>{
-    $('library-dialog').showModal();$('library-status').textContent='Loading SOPs…';
-    try{library=await request('/api/sops');libraryTagOptions();renderLibrary();$('library-status').textContent='';}catch(error){$('library-status').textContent=error.message;}
+    if(saving||navigatingToLibrary)return;
+    await persist();
+    if(!localSaved)return message('Your draft could not be kept in this browser. Save the SOP or download a backup before opening the library.',true);
+    navigatingToLibrary=true;location.assign('./library.html');
   };
-  $('library-search').oninput=renderLibrary;
-  $('library-tag').onchange=renderLibrary;
-  $('library-sort').onchange=renderLibrary;
-  $('clear-library-filters').onclick=()=>{$('library-search').value='';$('library-tag').value='';renderLibrary();};
-  $('library-list').onclick=async event=>{
-    const tag=event.target.closest('[data-filter-tag]');if(tag){$('library-tag').value=tag.dataset.filterTag;renderLibrary();return;}
-    const button=event.target.closest('[data-open]');if(!button)return;
-    $('library-dialog').close();if(!await askToLeave())return;
-    try{const next=model.validate(await request('/api/sops/'+button.dataset.open));doc=next;dirty=false;sequence++;renderEditor();await persist();message('Opened saved SOP.');}catch(error){message(error.message,true);}
-  };
+  window.addEventListener('pageshow',()=>{navigatingToLibrary=false;});
   $('files-button').onclick=()=>$('files-dialog').showModal();
   for(const button of document.querySelectorAll('[data-close]'))button.onclick=()=>$(button.dataset.close).close();
   $('download-button').onclick=()=>{
@@ -367,7 +347,15 @@
   };
   for(const view of ['edit','preview'])$(view+'-view').onclick=()=>{document.querySelector('.sop-workspace').dataset.view=view;$('edit-view').setAttribute('aria-pressed',String(view==='edit'));$('preview-view').setAttribute('aria-pressed',String(view==='preview'));requestAnimationFrame(fitWorkspace);};
   document.addEventListener('operations:before-navigate',event=>event.detail.waitUntil((async()=>{if(saving)return false;const allowed=await askToLeave();if(allowed){dirty=false;await draftQueue;await local('delete').catch(()=>{});}return allowed;})()));
-  window.addEventListener('beforeunload',event=>{if(dirty||saving){event.preventDefault();event.returnValue='';}});
+  window.addEventListener('beforeunload',event=>{if((dirty||saving)&&!navigatingToLibrary){event.preventDefault();event.returnValue='';}});
   $('editor').inert=true;
-  (async()=>{try{const recovery=await local('get');if(recovery){doc=model.validate(recovery.doc);dirty=Boolean(recovery.dirty);localSaved=true;if(dirty)message('Restored your unfinished draft from this browser.');}}catch{message('Browser draft recovery is unavailable. Save your SOP to the library before leaving.',true);}finally{renderEditor();$('editor').inert=false;document.querySelector('main').inert=false;}})();
+  (async()=>{try{const recovery=await local('get');if(recovery){doc=model.validate(recovery.doc);dirty=Boolean(recovery.dirty);localSaved=true;if(dirty)message('Restored your unfinished draft from this browser.');}}catch{message('Browser draft recovery is unavailable. Save your SOP to the library before leaving.',true);}finally{renderEditor();$('editor').inert=false;document.querySelector('main').inert=false;}
+    const url=new URL(location.href),requested=url.searchParams.get('sop'),newSOP=url.searchParams.get('new')==='1';
+    if(requested||newSOP){
+      url.searchParams.delete('sop');url.searchParams.delete('new');history.replaceState(null,'',url);
+      if(!await askToLeave())return;
+      try{doc=newSOP?model.blank():model.validate(await request('/api/sops/'+encodeURIComponent(requested)));dirty=false;sequence++;renderEditor();await persist();if(requested)message('Opened saved SOP.');}
+      catch(error){message(error.message,true);}
+    }
+  })();
 })();
