@@ -22,7 +22,7 @@ dialog{width:min(800px,calc(100% - 32px));max-height:85dvh;overflow:auto;border:
 .document-data-table caption{text-align:left;font-weight:650;margin-bottom:6px;break-after:avoid}.document-data-table th,.document-data-table td{border:1px solid #bdcbd1;padding:6px 8px;vertical-align:top;text-align:left;white-space:pre-wrap;overflow-wrap:anywhere}.document-data-table th{background:#edf5f7;font-weight:650}.document-data-table thead{display:table-header-group}.document-data-table tr{break-inside:avoid}
 .revision-entry{border-top:1px solid var(--ops-color-line);padding-top:16px;margin-top:16px}
 .document-revisions table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:10px;line-height:1.4}
-.document-revisions .revision-version{width:12%}.document-revisions .revision-date{width:17%}.document-revisions .revision-summary{width:35%}
+.document-revisions .revision-date{width:20%}.document-revisions .revision-summary{width:40%}
 .document-revisions th,.document-revisions td{border:1px solid #c8d5dc;padding:6px 8px;text-align:left;vertical-align:top;overflow-wrap:anywhere;white-space:pre-wrap}
 .document-revisions th{background:#edf5f7;font-weight:650;font-size:9px}.document-revisions thead{display:table-header-group}.document-revisions tr{break-inside:avoid}
 .step-editor label:has(>[data-step-instruction]){font-size:0;gap:0}

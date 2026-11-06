@@ -15,8 +15,9 @@ test('SOP model preserves the template structure, photos, and ordered steps, whi
   withTable.groups[0].steps[0].tables[0].rows[0].pop();assert.throws(()=>model.validate(withTable),/column count/);
   const noTables=structuredClone(doc);delete noTables.groups[0].steps[0].tables;assert.deepEqual(model.validate(noTables).groups[0].steps[0].tables,[],'Older SOPs open without tables');
   const older=structuredClone(doc);delete older.revisionHistory;assert.deepEqual(model.validate(older).revisionHistory,[],'Existing SOPs open without a revision table');
-  const withHistory=structuredClone(doc);withHistory.revisionHistory.push({id:crypto.randomUUID(),version:'1.0',date:'2026-11-05',summary:'Initial issue',revisedBy:'Operations',approvedBy:''});
+  const withHistory=structuredClone(doc);withHistory.revisionHistory.push({id:crypto.randomUUID(),date:'2026-11-05',summary:'Initial issue',revisedBy:'Operations',approvedBy:''});
   assert.deepEqual(model.validate(withHistory),withHistory);
+  const numbered=structuredClone(withHistory);numbered.revisionHistory[0].version='1.0';assert.deepEqual(model.validate(numbered),withHistory,'Older numbered entries retain their dates and details without revision numbers');
   withHistory.revisionHistory[0].date='2026-02-30';assert.throws(()=>model.validate(withHistory),/revision effective date/);
   const legacy=structuredClone(doc);legacy.groups[0].steps[0].title='Inspect The Gauge';
   const migrated=model.validate(legacy);

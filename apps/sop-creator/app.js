@@ -12,7 +12,7 @@
   });
   $('open-preview-window').onclick=()=>{
     if(previewWindow&&!previewWindow.closed){updatePreviewWindow();previewWindow.focus();return;}
-    previewWindow=window.open('./preview.html?v=20261106-tables1',previewWindowName,'popup,width=1000,height=900,resizable=yes,scrollbars=yes');
+    previewWindow=window.open('./preview.html?v=20261106-datehistory1',previewWindowName,'popup,width=1000,height=900,resizable=yes,scrollbars=yes');
     if(!previewWindow)message('Allow pop-ups for this site to open the preview window.',true);
   };
   let doc=model.blank(),dirty=false,saving=false,sequence=0,localSaved=false,library=[],draftQueue=Promise.resolve(),confirmResolve;
@@ -102,17 +102,17 @@
     renderSteps();renderRevisions();renderPreview();status();
   }
   function renderRevisions(){
-    $('revision-entries').innerHTML=doc.revisionHistory.length?doc.revisionHistory.map((row,index)=>'<section class="revision-entry"><div class="group-heading"><strong>Entry '+(index+1)+'</strong>'+controls('revision',row.id,index,doc.revisionHistory.length)+'</div><div class="fields">'+[['version','Revision'],['date','Effective Date'],['revisedBy','Revised By'],['approvedBy','Approved By'],['summary','Change Summary']].map(([key,label])=>'<div class="'+(key==='summary'?'wide':'')+'">'+field(label,'data-revision="'+row.id+'" data-revision-field="'+key+'"'+(key==='date'?' type="date"':''),row[key],key==='summary')+'</div>').join('')+'</div></section>').join(''):'<p class="help">No revision entries yet.</p>';
+    $('revision-entries').innerHTML=doc.revisionHistory.length?doc.revisionHistory.map((row,index)=>'<section class="revision-entry"><div class="group-heading"><strong>Revision Entry</strong>'+controls('revision',row.id,index,doc.revisionHistory.length)+'</div><div class="fields">'+[['date','Revision Date'],['revisedBy','Revised By'],['approvedBy','Approved By'],['summary','Change Summary']].map(([key,label])=>'<div class="'+(key==='summary'?'wide':'')+'">'+field(label,'data-revision="'+row.id+'" data-revision-field="'+key+'"'+(key==='date'?' type="date"':''),row[key],key==='summary')+'</div>').join('')+'</div></section>').join(''):'<p class="help">No revision entries yet.</p>';
     for(const input of $('revision-entries').querySelectorAll('[data-revision-field="summary"]'))input.maxLength=2000;
   }
   function revisionTable(){
-    const rows=doc.revisionHistory.filter(row=>[row.version,row.date,row.summary,row.revisedBy,row.approvedBy].some(value=>value.trim()));
+    const rows=doc.revisionHistory.filter(row=>[row.date,row.summary,row.revisedBy,row.approvedBy].some(value=>value.trim()));
     if(!rows.length)return '';
-    return '<section class="document-section document-revisions" data-preview-section="revisions"><h2>Revision History</h2><table><colgroup><col class="revision-version"><col class="revision-date"><col class="revision-summary"><col><col></colgroup><thead><tr><th>Revision</th><th>Effective Date</th><th>Change Summary</th><th>Revised By</th><th>Approved By</th></tr></thead><tbody>'+rows.map(row=>'<tr>'+[row.version,row.date,row.summary,row.revisedBy,row.approvedBy].map(value=>'<td>'+escape(value)+'</td>').join('')+'</tr>').join('')+'</tbody></table></section>';
+    return '<section class="document-section document-revisions" data-preview-section="revisions"><h2>Revision History</h2><table><colgroup><col class="revision-date"><col class="revision-summary"><col><col></colgroup><thead><tr><th>Revision Date</th><th>Change Summary</th><th>Revised By</th><th>Approved By</th></tr></thead><tbody>'+rows.map(row=>'<tr>'+[row.date,row.summary,row.revisedBy,row.approvedBy].map(value=>'<td>'+escape(value)+'</td>').join('')+'</tr>').join('')+'</tbody></table></section>';
   }
   $('add-revision').onclick=()=>{
     if(doc.revisionHistory.length>=100)return message('Use up to 100 revision entries per SOP.',true);
-    const row={id:crypto.randomUUID(),version:doc.revisionHistory.length?'':'1.0',date:doc.effectiveDate,summary:'',revisedBy:doc.preparedBy,approvedBy:''};
+    const row={id:crypto.randomUUID(),date:doc.effectiveDate,summary:'',revisedBy:doc.preparedBy,approvedBy:''};
     doc.revisionHistory.push(row);changed();renderRevisions();$('revision-entries').querySelector('[data-revision="'+row.id+'"]').focus();
   };
   $('revision-entries').addEventListener('click',event=>{

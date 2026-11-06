@@ -36,9 +36,12 @@ const {launchBrowser,removeTemporaryDirectory}=require('./lib/browser-check.cjs'
     assert.equal(await evaluate('document.querySelectorAll("[data-meta=version]").length'),0,'Document version field is removed');
     assert.equal(await evaluate('document.getElementById("revised-date").value'),'Not Recorded');
     await evaluate('document.getElementById("add-revision").click()');
+    assert.equal(await evaluate('document.querySelectorAll("[data-revision-field=version]").length'),0,'Revision entries use dates instead of numbers');
     await input('[data-revision-field=summary]','Initial issue');await input('[data-revision-field=date]','2026-11-05');await input('[data-revision-field=revisedBy]','Operations Team');
     assert.equal(await evaluate('document.getElementById("revised-date").value'),'2026-11-05');
     assert.ok(await evaluate('document.querySelector(".document-revisions").textContent.includes("Initial issue")'),'Revision table updates live');
+    assert.equal(await evaluate('document.querySelectorAll(".document-revisions th").length'),4);
+    assert.equal(await evaluate('document.querySelector(".document-revisions th").textContent'),'Revision Date');
     await evaluate('document.getElementById("add-revision").click()');
     await input('.revision-entry:last-child [data-revision-field=date]','2026-11-06');
     assert.ok(await evaluate('document.querySelector(".document-header").textContent.includes("Revised Date")&&document.querySelector(".document-header").textContent.includes("2026-11-06")'),'Document header follows the newest revision date');

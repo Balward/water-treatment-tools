@@ -22,7 +22,7 @@
     result.revisionHistory=revisions.map(row=>{
       if(!row||typeof row!=='object')fail('Invalid revision entry.');
       const next={id:unique(row.id)};
-      for(const key of ['version','date','summary','revisedBy','approvedBy'])next[key]=text(row[key],key==='summary'?2000:300);
+      for(const key of ['date','summary','revisedBy','approvedBy'])next[key]=text(row[key],key==='summary'?2000:300);
       if(next.date&&(!/^\d{4}-\d{2}-\d{2}$/.test(next.date)||!Number.isFinite(Date.parse(next.date+'T12:00:00Z'))||new Date(next.date+'T12:00:00Z').toISOString().slice(0,10)!==next.date))fail('Choose a valid revision effective date.');
       return next;
     });
