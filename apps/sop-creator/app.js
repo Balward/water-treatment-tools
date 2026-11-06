@@ -44,7 +44,13 @@
   $('preview-size').oninput=event=>{previewWidth=Number(event.target.value);previewLayout();};
   $('close-preview').onclick=()=>{if(innerWidth<1100){$('edit-view').click();$('preview-view').focus();}else{previewVisible=false;previewLayout();$('toggle-preview').focus();}};
   previewLayout();
-  function message(text,error=false){$('message').hidden=!text;$('message').textContent=text;$('message').className=error?'error':'success';requestAnimationFrame(fitWorkspace);}
+  let messageTimer;
+  function message(text,error=false){
+    clearTimeout(messageTimer);
+    $('message').hidden=!text;$('message').textContent=text;$('message').className=error?'error':'success';
+    requestAnimationFrame(fitWorkspace);
+    if(text)messageTimer=setTimeout(()=>{$('message').hidden=true;requestAnimationFrame(fitWorkspace);},error?7000:4000);
+  }
   function persist(){
     const snapshot={doc:structuredClone(doc),dirty};localSaved=false;
     draftQueue=draftQueue.catch(()=>{}).then(()=>local('put',snapshot)).then(()=>{localSaved=true;status();}).catch(()=>{localSaved=false;status();message('This browser could not keep a recovery draft. Save your SOP or download a backup before leaving.',true);});
