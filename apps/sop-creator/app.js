@@ -2,6 +2,19 @@
   'use strict';
   const $=id=>document.getElementById(id),model=SOPModel;
   const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  let previewWindow,previewWindowTimer;
+  const previewWindowName='sop-preview-'+crypto.randomUUID();
+  function updatePreviewWindow(){
+    if(previewWindow&&!previewWindow.closed)previewWindow.postMessage({type:'sop-preview-update',title:doc.title||'Untitled Procedure',html:$('sop-document').innerHTML},location.origin);
+  }
+  window.addEventListener('message',event=>{
+    if(event.origin===location.origin&&event.source===previewWindow&&event.data?.type==='sop-preview-ready')updatePreviewWindow();
+  });
+  $('open-preview-window').onclick=()=>{
+    if(previewWindow&&!previewWindow.closed){updatePreviewWindow();previewWindow.focus();return;}
+    previewWindow=window.open('./preview.html',previewWindowName,'popup,width=1000,height=900,resizable=yes,scrollbars=yes');
+    if(!previewWindow)message('Allow pop-ups for this site to open the preview window.',true);
+  };
   let doc=model.blank(),dirty=false,saving=false,sequence=0,localSaved=false,library=[],draftQueue=Promise.resolve(),confirmResolve;
   const database=new Promise((resolve,reject)=>{
     const request=indexedDB.open('operations-sop-creator',1);
@@ -104,6 +117,7 @@
     if(image.matches('.document-photos img')&&image.naturalHeight)image.closest('figure').style.width=(180*image.naturalWidth/image.naturalHeight)+'px';
   },true);
   function renderPreview(){
+    clearTimeout(previewWindowTimer);previewWindowTimer=setTimeout(updatePreviewWindow,100);
     document.title=(doc.title.trim()||'SOP Creator')+' | Northglenn Operations';
     let count=0;
     const metadata=[['Document',doc.documentNumber],['Team',doc.team],['Effective',doc.effectiveDate],['Version',doc.version],['Prepared By',doc.preparedBy],['Approved By',doc.approvedBy]].filter(([,value])=>value.trim());

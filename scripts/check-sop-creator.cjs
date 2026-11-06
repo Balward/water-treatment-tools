@@ -5,7 +5,7 @@ const {launchBrowser,removeTemporaryDirectory}=require('./lib/browser-check.cjs'
   app.use(express.json({limit:'16mb'}));require('../sop-api')(app,{directory});app.use('/sop-creator',express.static(path.resolve('apps/sop-creator')));app.use('/shared',express.static(path.resolve('shared')));app.use('/assets',express.static(path.resolve('assets')));
   const server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));const base='http://127.0.0.1:'+server.address().port;let browser;
   try{
-    browser=await launchBrowser({acceptDialogs:true});const {call,evaluate}=browser;
+    browser=await launchBrowser({acceptDialogs:true,userGesture:true});const {call,evaluate}=browser;
     const until=async expression=>{for(let i=0;i<120;i++){if(await evaluate(expression))return;await new Promise(r=>setTimeout(r,40));}throw Error('Timed out: '+expression);};
     await call('Emulation.setDeviceMetricsOverride',{width:1600,height:1000,deviceScaleFactor:1,mobile:false});await call('Page.navigate',{url:base+'/sop-creator/'});await until('!!document.querySelector("[data-meta=purpose]")&&!document.getElementById("editor").inert');
     const input=async(selector,value)=>evaluate(`(()=>{const input=document.querySelector(${JSON.stringify(selector)});input.value=${JSON.stringify(value)};input.dispatchEvent(new Event('input',{bubbles:true}));})()`);
@@ -36,6 +36,14 @@ const {launchBrowser,removeTemporaryDirectory}=require('./lib/browser-check.cjs'
     await evaluate(`(async()=>{const document=await(await fetch('/api/sops/${saved.id}')).json();const transfer=new DataTransfer();transfer.items.add(new File([JSON.stringify({format:'northglenn-sop',version:1,document})],'sop-backup.json',{type:'application/json'}));const input=window.document.getElementById('import-file');window.document.getElementById('files-button').click();input.files=transfer.files;input.dispatchEvent(new Event('change'));})()`);
     await until('document.getElementById("confirm-dialog").open');await evaluate('document.getElementById("confirm-discard").click()');await until('document.getElementById("message").textContent.startsWith("Backup imported")');
     await evaluate('document.getElementById("save-button").click()');await until('document.getElementById("message").textContent==="SOP saved to the library."');assert.equal((await(await fetch(base+'/api/sops')).json()).length,2,'Import creates a new SOP and preserves the original');
+    await evaluate('(()=>{const open=window.open.bind(window);window.open=(...args)=>(window.__sopPopout=open(...args));document.getElementById("open-preview-window").click();})()');
+    await until('window.__sopPopout&&!window.__sopPopout.closed&&window.__sopPopout.document.getElementById("sop-document")?.textContent.includes("Inspect The Sample Pump")');
+    await input('[data-meta=purpose]','Updated with the preview window open.');
+    await until('window.__sopPopout.document.getElementById("sop-document").textContent.includes("Updated with the preview window open.")');
+    assert.equal(await evaluate('window.__sopPopout.document.querySelectorAll(".document-photos img").length'),2,'Preview window receives photos');
+    await evaluate('document.getElementById("open-preview-window").click()');
+    assert.ok(await evaluate('!window.__sopPopout.document.getElementById("print-preview").disabled'));
+    await evaluate('window.__sopPopout.close()');
     await evaluate('document.getElementById("preview-size").value="35";document.getElementById("preview-size").dispatchEvent(new Event("input"))');
     const smallPreview=await evaluate('document.getElementById("preview").getBoundingClientRect().width');
     await evaluate('document.getElementById("preview-size").value="65";document.getElementById("preview-size").dispatchEvent(new Event("input"))');
