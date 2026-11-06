@@ -56,6 +56,7 @@ function render(){
     items.forEach(app=>{
       const link=document.createElement('a');link.className='app-card';link.dataset.app=app.id;link.href=app.href;
       link.innerHTML='<div class="card-top"><span class="card-icon">'+icons[app.icon]+'</span><span class="card-arrow" aria-hidden="true">→</span></div><h3>'+app.name+'</h3><p>'+app.description+'</p>';
+      if(app.id==='sops'){const banner=document.createElement('span');banner.className='construction-banner';banner.textContent='Under Construction';link.append(banner);}
       grid.append(link);
     });section.append(grid);directory.append(section);
   });

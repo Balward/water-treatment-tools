@@ -14,3 +14,5 @@ main{width:100%;max-width:1600px;margin-inline:auto;min-width:0;padding:46px 42p
 
 .site-header{position:sticky;top:0;z-index:5}.site-header>[data-ops-menu]{margin-left:auto}.app-card h3{font-size:var(--ops-size-card)}h1{font-size:var(--ops-size-title)}
 @media(max-width:560px){.site-header{gap:12px}.brand img{width:clamp(150px,47vw,190px)}}
+
+.category-operations .app-card[data-app=sops]{padding-top:46px}.construction-banner{position:absolute;inset:0 0 auto;padding:5px 12px;border-bottom:1px solid #e0bd61;border-radius:7px 7px 0 0;background:#fff0c2;color:#714b00;font-size:10px;font-weight:700;line-height:1.4;letter-spacing:.5px;text-align:center}
