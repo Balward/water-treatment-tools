@@ -5,7 +5,7 @@
   let previewWindow,previewWindowTimer;
   const previewWindowName='sop-preview-'+crypto.randomUUID();
   function updatePreviewWindow(){
-    if(previewWindow&&!previewWindow.closed)previewWindow.postMessage({type:'sop-preview-update',title:doc.title||'Untitled Procedure',html:$('sop-document').innerHTML},location.origin);
+    if(previewWindow&&!previewWindow.closed)previewWindow.postMessage({type:'sop-preview-update',title:doc.title||'Untitled Procedure',html:SOPDocument.render(doc)},location.origin);
   }
   window.addEventListener('message',event=>{
     if(event.origin===location.origin&&event.source===previewWindow&&event.data?.type==='sop-preview-ready')updatePreviewWindow();
@@ -162,6 +162,7 @@
     $('revised-date').value=model.revisedDate(doc)||'Not Recorded';
     document.title=(doc.title.trim()||'SOP Creator')+' | Northglenn Operations';
     $('sop-document').innerHTML=SOPDocument.render(doc);
+    SOPPreviewEditor.bind(doc);
   }
   const allSteps=()=>doc.groups.flatMap(group=>group.steps);
   const allTables=()=>allSteps().flatMap(step=>step.tables);
