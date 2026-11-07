@@ -6,7 +6,7 @@
   <link rel="icon" href="../../assets/logos/favicon.png">
   <link rel="stylesheet" href="../../shared/operations/theme.css">
   <link rel="stylesheet" href="../../shared/operations/navigation.css">
-  <link rel="stylesheet" href="styles.css?v=20261107-tour1">
+  <link rel="stylesheet" href="styles.css?v=20261107-helpheader1">
   <script src="../../shared/operations/navigation.js" defer></script>
   <script src="model.js?v=20261106-creation1" defer></script><script src="document.js?v=20261107-ownership1" defer></script><script src="preview-edit.js?v=20261107-ownership1" defer></script><script src="app.js?v=20261107-guide1" defer></script>
   <link rel="stylesheet" href="page-shell.css?v=20261107-consistency1">
@@ -47,8 +47,7 @@
   <dialog id="files-dialog" aria-labelledby="files-title"><div class="dialog-heading"><h2 id="files-title">Import / Backup</h2><button data-close="files-dialog" type="button" aria-label="Close Import / Backup">×</button></div><p>Download an editable SOP backup including its photos, or open a backup as a new SOP.</p><button id="download-button" type="button">Download SOP Backup</button><label class="file-label">Import SOP Backup<input id="import-file" type="file" accept="application/json,.json"></label><p class="help">Import accepts SOP Creator JSON backups. Use the fields to create a procedure from an existing Word document.</p></dialog>
   <dialog id="confirm-dialog" aria-labelledby="confirm-title"><h2 id="confirm-title">Keep Your Draft?</h2><p>There are changes that have not been saved to the SOP library.</p><div class="confirm-actions"><button id="confirm-cancel" type="button">Keep Editing</button><button id="confirm-discard" type="button">Discard Draft</button><button id="confirm-save" type="button" class="primary">Save &amp; Continue</button></div></dialog>
   <dialog id="writing-guide-dialog" class="writing-guide" aria-labelledby="writing-guide-title">
-    <div class="dialog-heading"><h2 id="writing-guide-title">How to Write an SOP</h2><button data-close="writing-guide-dialog" type="button" aria-label="Close Writing Guide" autofocus>&times;</button></div>
-    <div class="tutorial-help-links"><a class="library-link" href="tutorial.html#video" target="_blank" rel="noopener">Watch Walkthrough</a><a class="library-link" href="tutorial.html#guide" target="_blank" rel="noopener">Step-by-Step Screenshot Guide</a></div>
+    <div class="dialog-heading"><h2 id="writing-guide-title">How to Write an SOP</h2><div class="tutorial-help-links"><a class="library-link" href="tutorial.html#video" target="_blank" rel="noopener">Watch Walkthrough</a><a class="library-link" href="tutorial.html#guide" target="_blank" rel="noopener">Step-by-Step Guide</a></div><button data-close="writing-guide-dialog" type="button" aria-label="Close Writing Guide" autofocus>&times;</button></div>
     <p class="guide-intro">Write for a trained operator performing the task for the first time. Make the sequence clear, the actions specific, and the expected results easy to check.</p>
     <section><h3>Use Direct, Action-Based Language</h3>
       <p>Start instructions with a verb: Inspect, Close, Select, Measure, Record, or Verify. The operator is the implied subject. Avoid first person (I, we), second person (you), and third-person narration (the operator, he, she, they).</p>
