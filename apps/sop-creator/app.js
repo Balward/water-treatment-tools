@@ -48,13 +48,30 @@
     workspace.style.setProperty('--preview-share',previewWidth+'fr');
     $('toggle-preview').textContent=previewVisible?'Hide Preview':'Show Preview';
     $('toggle-preview').setAttribute('aria-expanded',String(previewVisible));
-    $('preview-size').value=previewWidth;$('preview-size').disabled=!previewVisible;
-    $('preview-size-value').textContent=previewWidth+'%';
+    $('preview-divider').setAttribute('aria-valuenow',String(Math.round(previewWidth)));
+    $('preview-divider').setAttribute('aria-valuetext',Math.round(previewWidth)+'% Preview Width');
     try{localStorage.setItem('sop-preview-layout',JSON.stringify({visible:previewVisible,width:previewWidth}));}catch{}
     requestAnimationFrame(fitWorkspace);
   }
   $('toggle-preview').onclick=()=>{previewVisible=!previewVisible;previewLayout();};
-  $('preview-size').oninput=event=>{previewWidth=Number(event.target.value);previewLayout();};
+  const divider=$('preview-divider');
+  let dragPointer=null;
+  function endResize(event){if(dragPointer!==event.pointerId)return;dragPointer=null;document.body.classList.remove('resizing-preview');}
+  divider.addEventListener('pointerdown',event=>{
+    if(event.button!==0||innerWidth<1100||!previewVisible)return;
+    event.preventDefault();divider.focus();dragPointer=event.pointerId;divider.setPointerCapture(event.pointerId);document.body.classList.add('resizing-preview');
+  });
+  divider.addEventListener('pointermove',event=>{
+    if(dragPointer!==event.pointerId)return;
+    const bounds=document.querySelector('.sop-workspace').getBoundingClientRect(),available=bounds.width-divider.offsetWidth;
+    previewWidth=Math.max(35,Math.min(65,100-(event.clientX-bounds.left-divider.offsetWidth/2)/available*100));previewLayout();
+  });
+  for(const event of ['pointerup','pointercancel','lostpointercapture'])divider.addEventListener(event,endResize);
+  divider.addEventListener('keydown',event=>{
+    if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;
+    event.preventDefault();previewWidth=event.key==='Home'?35:event.key==='End'?65:Math.max(35,Math.min(65,previewWidth+(event.key==='ArrowLeft'?1:-1)*(event.shiftKey?5:1)));previewLayout();
+  });
+  divider.addEventListener('dblclick',()=>{previewWidth=55;previewLayout();});
   $('close-preview').onclick=()=>{if(innerWidth<1100){$('edit-view').click();$('preview-view').focus();}else{previewVisible=false;previewLayout();$('toggle-preview').focus();}};
   previewLayout();
   let messageTimer;

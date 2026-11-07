@@ -28,6 +28,8 @@ Revision History is an editable table at the end of the SOP, containing revision
 
 The app uses the suite's existing access model; no new authentication is introduced. Deployment follows the repository deployment instructions.
 
+The creator toolbar ends with New SOP; Show/Hide Preview sits alongside Save, Print, and Import / Backup. The Live Preview header has an accessible pop-out icon for the separate preview window. On desktop, drag the divider between editor and preview to resize the panes (35–65% preview width). Arrow keys adjust the focused divider, Shift+Arrow adjusts in larger increments, Home/End select the limits, and double-click resets to 55%. Width and visibility are remembered in the browser. The divider is hidden on mobile and in print; mobile retains the Edit SOP / Preview tabs.
+
 Checks:
 
 ```
