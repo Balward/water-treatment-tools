@@ -28,6 +28,8 @@ Revision History is an editable table at the end of the SOP, containing revision
 
 The app uses the suite's existing access model; no new authentication is introduced. Deployment follows the repository deployment instructions.
 
+The document header shows Responsible Team, Revised Date, and Last Reviewed Date (when present). Prepared By and Approved By are maintained through the dated revision-history entries, whose Performed By column covers creation, revision, and review. Names are historical attribution; changing staff does not replace them. Legacy top-level author/approver properties remain readable in older backups but are not shown in the header or editor. Effective Date remains available in Document Details for existing review-date calculations, without appearing in the printed header.
+
 The creator toolbar ends with New SOP; Show/Hide Preview sits alongside Save, Print, and Import / Backup. The Live Preview header has an accessible pop-out icon for the separate preview window. On desktop, drag the divider between editor and preview to resize the panes (35–65% preview width). Arrow keys adjust the focused divider, Shift+Arrow adjusts in larger increments, Home/End select the limits, and double-click resets to 55%. Width and visibility are remembered in the browser. The divider is hidden on mobile and in print; mobile retains the Edit SOP / Preview tabs.
 
 Checks:

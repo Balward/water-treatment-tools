@@ -175,7 +175,7 @@ const {launchBrowser,removeTemporaryDirectory}=require('./lib/browser-check.cjs'
     }
     await input('[data-meta=background]','Use this procedure for a consistent routine inspection.');
     await input('[data-meta=purpose]','Confirm the sample pump is ready for operation.');
-    await input('[data-meta=preparedBy]','Operations Team');
+    
     await evaluate('document.getElementById("library-button").click()');await until('location.pathname.endsWith("/library.html")&&!!document.querySelector(".toolbar-actions .primary")');
     await evaluate('location.assign("./editor.html")');await until('!!document.querySelector("[data-meta=purpose]")&&!document.querySelector("main").inert');
     assert.equal(await evaluate('document.querySelector("[data-meta=purpose]").value'),'Confirm the sample pump is ready for operation.','Library navigation preserves unfinished editing');

@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="../../shared/operations/navigation.css">
   <link rel="stylesheet" href="styles.css?v=20261107-consistency1">
   <script src="../../shared/operations/navigation.js" defer></script>
-  <script src="model.js?v=20261106-creation1" defer></script><script src="document.js?v=20261106-creation1" defer></script><script src="preview-edit.js?v=20261107-divider1" defer></script><script src="app.js?v=20261107-divider1" defer></script>
+  <script src="model.js?v=20261106-creation1" defer></script><script src="document.js?v=20261107-ownership1" defer></script><script src="preview-edit.js?v=20261107-ownership1" defer></script><script src="app.js?v=20261107-ownership1" defer></script>
   <link rel="stylesheet" href="page-shell.css?v=20261107-consistency1">
 </head>
 <body data-ops-app="sops" class="sop-page">
@@ -30,11 +30,9 @@
         <section class="editor-panel"><h2>Document Details</h2><p class="help">One format for every procedure. Numbering and section headings are handled for you.</p>
           <div class="fields">
             <label class="wide">Title <span class="required">Required</span><input data-meta="title" maxlength="300" placeholder="Name Of The Procedure" required></label>
-            <label>Team<select data-meta="team"><option>Water Treatment</option><option>Wastewater Treatment</option><option>Maintenance</option><option>Laboratory Services</option><option>General Operations</option></select></label>
+            <label>Responsible Team<select data-meta="team"><option>Water Treatment</option><option>Wastewater Treatment</option><option>Maintenance</option><option>Laboratory Services</option><option>General Operations</option></select></label>
             <label>Effective Date<input data-meta="effectiveDate" type="date"></label>
             <label>Revised Date<input id="revised-date" type="text" readonly aria-describedby="revised-date-help" value="Not Recorded"><small id="revised-date-help" class="help">Latest revision date; no-change reviews are tracked separately.</small></label>
-            <label>Prepared By<input data-meta="preparedBy" maxlength="300"></label>
-            <label>Approved By<input data-meta="approvedBy" maxlength="300"></label>
           </div>
         </section>
         <section class="editor-panel"><div class="panel-heading"><h2>SOP Tags</h2><span id="tag-count"></span></div><div id="selected-sop-tags" class="sop-tags"></div><details class="tag-picker"><summary>Choose Tags</summary><label>Find A Tag<input id="tag-search" type="search" placeholder="e.g. pH, calibration, filtration"></label><div id="tag-options"></div><p id="tag-empty" hidden>No matching tags.</p></details></section>

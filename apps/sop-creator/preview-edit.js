@@ -9,7 +9,7 @@
   }
   function bind(doc){
     link(preview.querySelector('h1'),'[data-meta="title"]');
-    const metadata={'Team':'team','Effective':'effectiveDate','Prepared By':'preparedBy','Approved By':'approvedBy'};
+    const metadata={'Responsible Team':'team'};
     for(const item of preview.querySelectorAll('.document-header dl>div')){
       const label=item.querySelector('dt').textContent,key=metadata[label];
       if(key)link(item,selector('data-meta',key));
