@@ -6,7 +6,7 @@ The editor supports procedure section headings, continuously numbered steps, let
 
 Save SOP writes to the shared server library (`data/sops`, or `SOP_DATA_DIR`). Edits are also kept in IndexedDB in the current browser as a recovery draft. The library is not an approval or signature system. Prepared By and Approved By are descriptive fields. Conflicting saves preserve the current draft instead of overwriting a newer server revision. Previous server revisions are retained under `data/sops/history`. Include this directory in server backups.
 
-On desktop, Hide Preview (or the preview's close button) gives the editor the full width. Show Preview reopens it. The Preview Width slider adjusts the split between 35% and 65%; these layout preferences are remembered in the browser. They do not change document formatting or the printed PDF. On mobile, closing the preview returns to Edit SOP.
+On desktop, Hide Preview (or the preview's close button) gives the editor the full width. Show Preview reopens it. The draggable divider adjusts the split between 35% and 65%; these layout preferences are remembered in the browser. They do not change document formatting or the printed PDF. On mobile, closing the preview returns to Edit SOP.
 
 Open Preview Window opens a separate document window that updates live from the editor, including unsaved changes and photos. Move it to another monitor or print from that window. If the editor closes, it retains the last received preview. Allow pop-ups if the browser blocks the window.
 
