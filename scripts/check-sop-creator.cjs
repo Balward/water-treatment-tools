@@ -94,6 +94,23 @@ const {launchBrowser,removeTemporaryDirectory}=require('./lib/browser-check.cjs'
     await evaluate('document.getElementById("library-button").click()');await until('document.querySelectorAll("[data-open]").length===2');
     assert.equal(await evaluate('document.querySelector("[data-open]").textContent'),'Edit SOP');
     assert.equal(await evaluate('document.querySelector("[data-view]").textContent'),'View SOP');
+    assert.equal(await evaluate('document.getElementById("library-list").dataset.layout'),'list');
+    for(const layout of ['grid','list']){
+      await evaluate(`document.querySelector('[data-layout-choice="${layout}"]').click()`);
+      assert.equal(await evaluate(`document.querySelector('[data-layout-choice="${layout}"]').getAttribute('aria-pressed')`),'true');
+      for(const width of [1440,1024,768,390,320]){
+        await call('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
+        assert.ok(await evaluate('document.documentElement.scrollWidth<=innerWidth'),layout+' library fits '+width);
+      }
+    }
+    await evaluate('document.querySelector("[data-layout-choice=grid]").click()');await call('Page.reload');await until('document.querySelectorAll("[data-open]").length===2');
+    assert.equal(await evaluate('document.getElementById("library-list").dataset.layout'),'grid','Layout choice survives reload');
+    await evaluate('document.querySelector("[data-layout-choice=list]").click()');
+    await call('Emulation.setDeviceMetricsOverride',{width:1600,height:1000,deviceScaleFactor:1,mobile:false});
+    await evaluate('document.getElementById("library-review").value="review";document.getElementById("library-review").dispatchEvent(new Event("change"))');
+    assert.equal(await evaluate('document.querySelectorAll("[data-open]").length'),0,'Needs Review filter excludes current SOPs');
+    await evaluate('document.getElementById("clear-library-filters").click()');
+    assert.equal(await evaluate('document.querySelectorAll("[data-open]").length'),2);
     await evaluate('(()=>{const open=window.open.bind(window);window.open=(...args)=>(window.__savedSOPWindow=open(...args));document.querySelector("[data-view]").click();})()');
     await until('window.__savedSOPWindow?.document.getElementById("preview-window-status")?.textContent.includes("Read Only")');
     assert.ok(await evaluate('window.__savedSOPWindow.document.getElementById("sop-document").textContent.includes("Operating Limits")'),'View shows the saved document, including tables');
