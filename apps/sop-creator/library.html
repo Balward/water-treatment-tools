@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="../../shared/operations/theme.css"><link rel="stylesheet" href="../../shared/operations/navigation.css">
   <link rel="stylesheet" href="styles.css?v=20261107-consistency1">
   <script src="../../shared/operations/navigation.js?v=20261106-libraryhome1" defer></script>
-  <link rel="stylesheet" href="library-layouts.css?v=20261106-listgrid1">
+  <link rel="stylesheet" href="library-layouts.css?v=20261107-sortwidth1">
   <script src="model.js?v=20261106-creation1" defer></script><script src="library.js?v=20261107-toolbar1" defer></script>
   <link rel="stylesheet" href="page-shell.css?v=20261107-consistency1">
 </head>
@@ -18,7 +18,7 @@
     <div class="library-page-heading sop-page-heading"><div><h1>SOP Library</h1><p>Find and open your saved procedures.</p></div><div class="toolbar-actions"><a class="library-link primary sop-new-action" href="./editor.html?new=1">+ New SOP</a></div></div>
     <section class="filters" aria-label="Find SOPs">
       <label class="search-field">Find An SOP<input id="library-search" type="search" placeholder="Title, team, or tag"></label>
-      <label class="tag-field">Filter By Tag<select id="library-tag"></select></label><label class="review-field">Review Status<select id="library-review"><option value="">All SOPs</option><option value="review">Needs Review</option><option value="current">Current</option></select></label><label class="sort-field">Sort By<select id="library-sort"><option value="title">Title A–Z</option><option value="saved">Last Saved</option><option value="title-desc">Title Z&ndash;A</option><option value="review">Needs Review First</option><option value="revised">Revised Date</option></select></label><button id="clear-library-filters" type="button">Clear Filters</button>
+      <label class="tag-field">Filter By Tag<select id="library-tag"></select></label><label class="review-field">Review Status<select id="library-review"><option value="">All SOPs</option><option value="review">Needs Review</option><option value="current">Current</option></select></label><label class="sort-field">Sort By<select id="library-sort"><option value="title">Title A–Z</option><option value="title-desc">Title Z&ndash;A</option><option value="review">Needs Review First</option><option value="revised">Revised Date</option><option value="saved">Last Saved</option></select></label><button id="clear-library-filters" type="button">Clear Filters</button>
     </section>
     <p id="library-status" role="status" aria-live="polite">Loading SOPs…</p>
     <div class="results-bar"><div class="counts"><span id="library-count" class="count" role="status"></span><button id="review-shortcut" class="review-shortcut" type="button"></button></div><div class="view-toggle" role="group" aria-label="Library Layout"><button type="button" data-layout-choice="list" aria-pressed="true">☷ List</button><button type="button" data-layout-choice="grid" aria-pressed="false">▦ Grid</button></div></div>

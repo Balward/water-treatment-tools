@@ -201,6 +201,12 @@ const {launchBrowser,removeTemporaryDirectory}=require('./lib/browser-check.cjs'
     assert.equal(await evaluate(`document.querySelector('[data-open="${overdue.id}"]').closest('.library-card').querySelector('.needs-review').textContent`),'Needs Review');
     assert.deepEqual(await evaluate('[...document.querySelectorAll(".library-page-heading .toolbar-actions a,.library-page-heading .toolbar-actions button")].map(element=>element.textContent.trim())'),['+ New SOP'],'The landing toolbar has one clear creation action');
     assert.ok(await evaluate('![...document.getElementById("library-sort").options].some(option=>option.value==="tags")'),'Tag sorting is removed');
+    assert.deepEqual(await evaluate('[...document.getElementById("library-sort").options].map(option=>option.value)'),['title','title-desc','review','revised','saved'],'Related sort choices are grouped together');
+    for(const width of [1440,1024,800,390,320]){
+      await call('Emulation.setDeviceMetricsOverride',{width,height:900,deviceScaleFactor:1,mobile:false});await evaluate('document.fonts.ready');
+      assert.ok(await evaluate('(()=>{const select=document.getElementById("library-sort"),style=getComputedStyle(select),context=document.createElement("canvas").getContext("2d");context.font=style.font;return select.clientWidth>=context.measureText("Needs Review First").width+parseFloat(style.paddingLeft)+parseFloat(style.paddingRight)+24;})()'),'Longest sort option fits at '+width);
+    }
+    await call('Emulation.setDeviceMetricsOverride',{width:1600,height:1000,deviceScaleFactor:1,mobile:false});
     for(const layout of ['list','grid']){
       await evaluate(`document.querySelector('[data-layout-choice="${layout}"]').click();document.getElementById('library-sort').value='title-desc';document.getElementById('library-sort').dispatchEvent(new Event('change'))`);
       const titles=await evaluate('[...document.querySelectorAll(".title-copy h2")].map(element=>element.textContent)');
