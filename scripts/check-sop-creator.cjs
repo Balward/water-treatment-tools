@@ -7,7 +7,9 @@ const {launchBrowser,removeTemporaryDirectory}=require('./lib/browser-check.cjs'
   try{
     browser=await launchBrowser({acceptDialogs:true,userGesture:true});const {call,evaluate}=browser;
     const until=async expression=>{for(let i=0;i<120;i++){try{if(await evaluate(expression))return;}catch(error){if(!/Inspected target navigated or closed|Execution context was destroyed|Cannot find context/.test(error.message))throw error;}await new Promise(r=>setTimeout(r,40));}throw Error('Timed out: '+expression);};
-    await call('Emulation.setDeviceMetricsOverride',{width:1600,height:1000,deviceScaleFactor:1,mobile:false});await call('Page.navigate',{url:base+'/sop-creator/'});await until('!!document.querySelector("[data-meta=purpose]")&&!document.getElementById("editor").inert');
+    await call('Page.navigate',{url:base+'/sop-creator/'});await until('location.pathname.endsWith("/library.html")&&!!document.getElementById("library-list")');
+    await evaluate('document.querySelector(".toolbar-actions .primary").click()');await until('location.pathname.endsWith("/editor.html")&&!!document.querySelector("[data-meta=title]")&&!document.querySelector("main").inert');
+    await call('Emulation.setDeviceMetricsOverride',{width:1600,height:1000,deviceScaleFactor:1,mobile:false});await call('Page.navigate',{url:base+'/sop-creator/editor.html'});await until('!!document.querySelector("[data-meta=purpose]")&&!document.getElementById("editor").inert');
     const input=async(selector,value)=>evaluate(`(()=>{const input=document.querySelector(${JSON.stringify(selector)});input.value=${JSON.stringify(value)};input.dispatchEvent(new Event('input',{bubbles:true}));})()`);
     const key=async(selector,key,options={})=>evaluate(`(()=>{const input=document.querySelector(${JSON.stringify(selector)});input.focus();input.setSelectionRange(${options.position??0},${options.position??0});return input.dispatchEvent(new KeyboardEvent('keydown',${JSON.stringify({key,bubbles:true,cancelable:true,...options})}));})()`);
     await evaluate('document.querySelector("[data-action=add-step]").click()');

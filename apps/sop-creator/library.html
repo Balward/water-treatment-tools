@@ -6,15 +6,15 @@
   <link rel="icon" href="../../assets/logos/favicon.png">
   <link rel="stylesheet" href="../../shared/operations/theme.css"><link rel="stylesheet" href="../../shared/operations/navigation.css">
   <link rel="stylesheet" href="styles.css?v=20261106-delete1">
-  <script src="../../shared/operations/navigation.js?v=20261106-soplibrary1" defer></script>
+  <script src="../../shared/operations/navigation.js?v=20261106-libraryhome1" defer></script>
   <link rel="stylesheet" href="library-layouts.css?v=20261106-listgrid1">
-  <script src="model.js?v=20261106-creation1" defer></script><script src="library.js?v=20261106-listgrid1" defer></script>
+  <script src="model.js?v=20261106-creation1" defer></script><script src="library.js?v=20261106-libraryhome1" defer></script>
 </head>
 <body data-ops-app="sops" class="library-page">
   <a class="skip-link" href="#library">Skip To SOP Library</a>
   <header class="site-header"><a class="brand" href="/" aria-label="Operations Home"><img src="../../assets/logos/northglenn-horizontal.png" alt="City of Northglenn" width="300" height="69"></a><div class="facility"><strong>Water Treatment Facility</strong><span>SOP LIBRARY</span></div><button data-ops-menu type="button">Apps</button></header>
   <main id="library">
-    <div class="library-page-heading"><div><h1>SOP Library</h1><p>Find and open your saved procedures.</p></div><div class="toolbar-actions"><a class="library-link" data-return-editor href="./">Return To Editor</a><a class="library-link primary" href="./?new=1">+ New SOP</a><button id="refresh-library" type="button">Refresh</button></div></div>
+    <div class="library-page-heading"><div><h1>SOP Library</h1><p>Find and open your saved procedures.</p></div><div class="toolbar-actions"><a class="library-link" data-return-editor href="./editor.html">Resume Draft</a><a class="library-link primary" href="./editor.html?new=1">+ New SOP</a><button id="refresh-library" type="button">Refresh</button></div></div>
     <section class="filters" aria-label="Find SOPs">
       <label class="search-field">Find An SOP<input id="library-search" type="search" placeholder="Title, team, or tag"></label>
       <label class="tag-field">Filter By Tag<select id="library-tag"></select></label><label class="review-field">Review Status<select id="library-review"><option value="">All SOPs</option><option value="review">Needs Review</option><option value="current">Current</option></select></label><label class="sort-field">Sort By<select id="library-sort"><option value="title">Title A–Z</option><option value="saved">Last Saved</option><option value="tags">Tags A–Z</option><option value="revised">Revised Date</option></select></label><button id="clear-library-filters" type="button">Clear Filters</button>
