@@ -1,0 +1,122 @@
+[
+  {
+    "title": "Start From the SOP Library",
+    "text": "Select + New SOP to start a procedure. Existing procedures use Edit SOP or View SOP.",
+    "image": "step-01.png",
+    "point": {
+      "x": 1404,
+      "y": 161.75
+    },
+    "start": 0
+  },
+  {
+    "title": "Name the Procedure",
+    "text": "Enter an Equipment or Process — Task title. Select the responsible team and enter an effective date when applicable.",
+    "image": "step-02.png",
+    "point": {
+      "x": 583.9375,
+      "y": 370
+    },
+    "start": 8
+  },
+  {
+    "title": "Choose Searchable Tags",
+    "text": "Open Choose Tags and select relevant topics. Tags help operators find procedures in the library.",
+    "image": "step-03.png",
+    "point": {
+      "x": 583.9375,
+      "y": 10
+    },
+    "start": 16
+  },
+  {
+    "title": "Add Context and Preparation",
+    "text": "Use Purpose for the goal, Background for useful context, and separate fields for equipment, safety, security, and notes. Leave unused fields empty.",
+    "image": "step-04.png",
+    "point": {
+      "x": 583.9375,
+      "y": 478
+    },
+    "start": 24
+  },
+  {
+    "title": "Organize Sections and Steps",
+    "text": "Name the phase, then add a numbered step. Write one main action per step. The creator handles numbering.",
+    "image": "step-05.png",
+    "point": {
+      "x": 568.9375,
+      "y": 494.46875
+    },
+    "start": 32
+  },
+  {
+    "title": "Add Supporting Substeps",
+    "text": "Use Add Substep for smaller actions belonging to the parent task. Enter starts the next item; Shift+Enter adds a line break.",
+    "image": "step-06.png",
+    "point": {
+      "x": 568.9375,
+      "y": 494.46875
+    },
+    "start": 40
+  },
+  {
+    "title": "Use a Table for Repeated Information",
+    "text": "Select Add Table. Edit headings and cells directly, and use the row and column controls as needed.",
+    "image": "step-07.png",
+    "point": {
+      "x": 568.9375,
+      "y": 297.46875
+    },
+    "start": 48
+  },
+  {
+    "title": "Attach a Photo and Caption",
+    "text": "Use Add Photo on the relevant step. Add a caption explaining what the image shows. Multiple photos are arranged automatically.",
+    "image": "step-08.png",
+    "point": {
+      "x": 568.9375,
+      "y": 363.46875
+    },
+    "start": 56
+  },
+  {
+    "title": "Edit Through the Live Preview",
+    "text": "Click highlighted text in Live Preview to jump to its entry field. Drag the center divider to resize; use the pop-out icon for a separate window.",
+    "image": "step-09.png",
+    "point": {
+      "x": 1307,
+      "y": 445.453125
+    },
+    "start": 64
+  },
+  {
+    "title": "Record Creation, Revisions, and Reviews",
+    "text": "Choose the history entry type, date, and person. Creation starts with SOP Created. Record an approver only after approval occurs.",
+    "image": "step-10.png",
+    "point": {
+      "x": 583.9375,
+      "y": 435.96875
+    },
+    "start": 72
+  },
+  {
+    "title": "Save the SOP",
+    "text": "Select Save SOP to store the document in the library. A browser draft is a recovery copy, not a saved library SOP.",
+    "image": "step-11.png",
+    "point": {
+      "x": 1275.171875,
+      "y": 161.75
+    },
+    "start": 80
+  },
+  {
+    "title": "View or Edit the Saved Procedure",
+    "text": "Use View SOP for the saved read-only document and Print / Save PDF. Use the pencil to edit. This walkthrough saved only to isolated training storage.",
+    "image": "step-12.png",
+    "point": {
+      "x": 1381,
+      "y": 547.5
+    },
+    "start": 88
+  }
+]

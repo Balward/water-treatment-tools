@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>SOP Creator Walkthrough | Northglenn Operations</title>
+  <link rel="icon" href="../../assets/logos/favicon.png">
+  <link rel="stylesheet" href="../../shared/operations/theme.css"><link rel="stylesheet" href="../../shared/operations/navigation.css">
+  <link rel="stylesheet" href="styles.css?v=20261107-infobutton1"><link rel="stylesheet" href="page-shell.css?v=20261107-consistency1"><link rel="stylesheet" href="tutorial.css?v=20261107-tour1">
+  <script src="../../shared/operations/navigation.js" defer></script><script src="tutorial.js?v=20261107-tour1" defer></script>
+</head>
+<body data-ops-app="sops" class="sop-page tutorial-page">
+  <a class="skip-link" href="#guide">Skip to Step-by-Step Guide</a>
+  <header class="site-header"><a class="brand" href="/" aria-label="Operations Home"><img src="../../assets/logos/northglenn-horizontal.png" alt="City of Northglenn" width="300" height="69"></a><div class="facility"><strong>Water Treatment Facility</strong><span>SOP CREATOR TUTORIAL</span></div><button data-ops-menu type="button">Apps</button></header>
+  <main>
+    <div class="sop-page-heading"><div><h1>Using the SOP Creator</h1><p>Watch the walkthrough or follow the screenshots at your own pace.</p></div><div class="toolbar-actions"><a class="library-link" href="library.html">SOP Library</a><a class="library-link" href="editor.html">Back to Creator</a></div></div>
+    <nav class="tutorial-tabs" aria-label="Tutorial Format"><a href="#video">Watch Video</a><a href="#guide">Step-by-Step Guide</a></nav>
+    <section id="video" class="tutorial-panel" aria-labelledby="video-title">
+      <div class="tutorial-panel-heading"><h2 id="video-title">Captioned Walkthrough</h2><a href="tutorial-assets/sop-creator-walkthrough.webm" download>Download Video</a></div>
+      <p>A 1 minute, 36 second visual walkthrough with highlighted controls and on-screen instructions. No audio is required.</p>
+      <video id="tutorial-video" controls playsinline preload="metadata" poster="tutorial-assets/step-01.png" aria-label="SOP Creator captioned walkthrough"><source src="tutorial-assets/sop-creator-walkthrough.webm" type="video/webm">Your browser cannot play this video. Use the screenshot guide below.</video>
+      <p class="tutorial-note">Captured with an isolated training example. This tutorial does not create or change a procedure in your library.</p>
+    </section>
+    <section id="guide" class="tutorial-panel" aria-labelledby="guide-title">
+      <h2 id="guide-title">Step-by-Step Guide</h2>
+      <div class="guide-controls"><button id="previous-step" type="button" disabled>← Previous</button><label for="tutorial-step">Choose a Step<select id="tutorial-step" disabled><option>Loading…</option></select></label><button id="next-step" type="button" disabled>Next →</button></div>
+      <div id="step-description" aria-live="polite" aria-atomic="true"><p id="tutorial-status" role="status">Loading the guide…</p><h3 id="step-title"></h3><p id="step-text"></p></div>
+      <a id="screenshot-link" target="_blank" rel="noopener" hidden><img id="step-image" width="1440" height="900" alt=""></a>
+      <p class="tutorial-note">The blue outline identifies the control or field. Select a screenshot to open it at full size.</p>
+      <button id="watch-step" type="button" disabled>Watch This Step</button>
+    </section>
+    <details class="tutorial-panel"><summary>All Steps / Video Transcript</summary><ol id="tutorial-transcript"></ol></details>
+  </main>
+</body>
+</html>
