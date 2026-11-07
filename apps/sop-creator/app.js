@@ -359,12 +359,14 @@
   window.addEventListener('beforeunload',event=>{if((dirty||saving)&&!navigatingToLibrary){event.preventDefault();event.returnValue='';}});
   $('editor').inert=true;
   (async()=>{try{const recovery=await local('get');if(recovery){doc=model.validate(recovery.doc);dirty=Boolean(recovery.dirty);localSaved=true;if(dirty)message('Restored your unfinished draft from this browser.');}}catch{message('Browser draft recovery is unavailable. Save your SOP to the library before leaving.',true);}finally{renderEditor();$('editor').inert=false;document.querySelector('main').inert=false;}
-    const url=new URL(location.href),requested=url.searchParams.get('sop'),newSOP=url.searchParams.get('new')==='1';
+    const url=new URL(location.href),requested=url.searchParams.get('sop'),newSOP=url.searchParams.get('new')==='1',importSOP=url.searchParams.get('import')==='1';
+    if(importSOP){url.searchParams.delete('import');history.replaceState(null,'',url);}
     if(requested||newSOP){
       url.searchParams.delete('sop');url.searchParams.delete('new');history.replaceState(null,'',url);
       if(!await askToLeave())return;
       try{doc=newSOP?model.blank():model.validate(await request('/api/sops/'+encodeURIComponent(requested)));dirty=false;sequence++;renderEditor();await persist();if(requested)message('Opened saved SOP.');}
       catch(error){message(error.message,true);}
     }
+    if(importSOP){$('files-dialog').showModal();$('import-file').focus();}
   })();
 })();

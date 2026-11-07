@@ -8,6 +8,11 @@ const {launchBrowser,removeTemporaryDirectory}=require('./lib/browser-check.cjs'
     browser=await launchBrowser({acceptDialogs:true,userGesture:true});const {call,evaluate}=browser;
     const until=async expression=>{for(let i=0;i<120;i++){try{if(await evaluate(expression))return;}catch(error){if(!/Inspected target navigated or closed|Execution context was destroyed|Cannot find context/.test(error.message))throw error;}await new Promise(r=>setTimeout(r,40));}throw Error('Timed out: '+expression);};
     await call('Page.navigate',{url:base+'/sop-creator/'});await until('location.pathname.endsWith("/library.html")&&!!document.getElementById("library-list")');
+    await evaluate('document.querySelector(".toolbar-actions a:not(.primary)").click()');
+    await until('!!document.getElementById("files-dialog")?.open&&!document.querySelector("main").inert');
+    assert.equal(await evaluate('document.activeElement.id'),'import-file','Library import opens the existing import dialog and focuses file selection');
+    await evaluate('document.querySelector("[data-close=files-dialog]").click();document.getElementById("library-button").click()');
+    await until('location.pathname.endsWith("/library.html")&&!!document.querySelector(".toolbar-actions .primary")');
     await evaluate('document.querySelector(".toolbar-actions .primary").click()');await until('location.pathname.endsWith("/editor.html")&&!!document.querySelector("[data-meta=title]")&&!document.querySelector("main").inert');
     await call('Emulation.setDeviceMetricsOverride',{width:1600,height:1000,deviceScaleFactor:1,mobile:false});await call('Page.navigate',{url:base+'/sop-creator/editor.html'});await until('!!document.querySelector("[data-meta=purpose]")&&!document.getElementById("editor").inert');
     const input=async(selector,value)=>evaluate(`(()=>{const input=document.querySelector(${JSON.stringify(selector)});input.value=${JSON.stringify(value)};input.dispatchEvent(new Event('input',{bubbles:true}));})()`);
@@ -199,7 +204,7 @@ const {launchBrowser,removeTemporaryDirectory}=require('./lib/browser-check.cjs'
     assert.equal((await fetch(base+'/api/sops/'+overdue.id,{method:'PUT',headers:{'Content-Type':'application/json',Origin:base},body:JSON.stringify(overdue)})).status,200);
     await evaluate('document.getElementById("library-button").click()');await until('!!document.querySelector(".needs-review")');
     assert.equal(await evaluate(`document.querySelector('[data-open="${overdue.id}"]').closest('.library-card').querySelector('.needs-review').textContent`),'Needs Review');
-    assert.deepEqual(await evaluate('[...document.querySelectorAll(".library-page-heading .toolbar-actions a,.library-page-heading .toolbar-actions button")].map(element=>element.textContent.trim())'),['+ New SOP'],'The landing toolbar has one clear creation action');
+    assert.deepEqual(await evaluate('[...document.querySelectorAll(".library-page-heading .toolbar-actions a,.library-page-heading .toolbar-actions button")].map(element=>element.textContent.trim())'),['Import SOP','+ New SOP'],'The landing toolbar offers import with New SOP at the end');
     assert.ok(await evaluate('![...document.getElementById("library-sort").options].some(option=>option.value==="tags")'),'Tag sorting is removed');
     assert.deepEqual(await evaluate('[...document.getElementById("library-sort").options].map(option=>option.value)'),['title','title-desc','review','revised','saved'],'Related sort choices are grouped together');
     for(const width of [1440,1024,800,390,320]){
