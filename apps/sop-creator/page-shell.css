@@ -1,0 +1,11 @@
+/* Shared library/editor page headings and primary actions. */
+.sop-page main{max-width:1900px;margin:auto;padding:24px 28px 60px}
+.sop-page .sop-page-heading{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:24px}
+.sop-page .sop-page-heading h1{font-size:30px;line-height:1.2;font-weight:700;letter-spacing:-.7px;margin:0 0 6px}
+.sop-page .sop-page-heading p{font-size:13px;line-height:1.5;margin:0;color:var(--ops-color-muted)}
+.sop-page .sop-new-action{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:42px;padding:10px 14px;font-size:14px;line-height:1.4;font-weight:600;border:1px solid #00677f;border-radius:7px;background:#00677f;color:#fff;text-decoration:none}
+.sop-page .sop-new-action:hover{background:#00546a;border-color:#00546a}
+.sop-page #save-button{background:#6554a0;border-color:#6554a0;color:#fff}
+.sop-page #save-button:hover{background:#514280;border-color:#514280}
+@media(max-width:1099px){.sop-page main{padding:20px}.sop-page .sop-page-heading{align-items:flex-start;flex-direction:column}}
+@media(max-width:480px){.sop-page main{padding:16px}}
