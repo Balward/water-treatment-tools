@@ -133,7 +133,7 @@ const {launchBrowser,removeTemporaryDirectory}=require('./lib/browser-check.cjs'
     assert.equal(await evaluate('document.querySelectorAll("[data-open]").length'),2);
     await evaluate('document.getElementById("library-tag").value="Filtration";document.getElementById("library-tag").dispatchEvent(new Event("change"))');assert.equal(await evaluate('document.querySelectorAll("[data-open]").length'),0,'Tag filter excludes nonmatching SOPs');
     await evaluate('document.getElementById("clear-library-filters").click();document.querySelector("[data-filter-tag]").click()');assert.equal(await evaluate('document.getElementById("library-tag").value'),'pH','Tag chips filter the library');
-    await evaluate('document.getElementById("library-sort").value="tags";document.getElementById("library-sort").dispatchEvent(new Event("change"));document.querySelector("[data-return-editor]").click()');await until('!!document.querySelector("[data-meta=purpose]")&&!document.querySelector("main").inert');
+    await evaluate('document.getElementById("library-sort").value="title-desc";document.getElementById("library-sort").dispatchEvent(new Event("change"));location.assign("./editor.html")');await until('!!document.querySelector("[data-meta=purpose]")&&!document.querySelector("main").inert');
     await evaluate('(()=>{const open=window.open.bind(window);window.open=(...args)=>(window.__sopPopout=open(...args));document.getElementById("open-preview-window").click();})()');
     await until('window.__sopPopout&&!window.__sopPopout.closed&&window.__sopPopout.document.getElementById("sop-document")?.textContent.includes("Inspect The Sample Pump")');
     await input('[data-meta=purpose]','Updated with the preview window open.');
@@ -167,8 +167,8 @@ const {launchBrowser,removeTemporaryDirectory}=require('./lib/browser-check.cjs'
     await input('[data-meta=background]','Use this procedure for a consistent routine inspection.');
     await input('[data-meta=purpose]','Confirm the sample pump is ready for operation.');
     await input('[data-meta=preparedBy]','Operations Team');
-    await evaluate('document.getElementById("library-button").click()');await until('location.pathname.endsWith("/library.html")&&!!document.querySelector("[data-return-editor]")');
-    await evaluate('document.querySelector("[data-return-editor]").click()');await until('!!document.querySelector("[data-meta=purpose]")&&!document.querySelector("main").inert');
+    await evaluate('document.getElementById("library-button").click()');await until('location.pathname.endsWith("/library.html")&&!!document.querySelector(".toolbar-actions .primary")');
+    await evaluate('location.assign("./editor.html")');await until('!!document.querySelector("[data-meta=purpose]")&&!document.querySelector("main").inert');
     assert.equal(await evaluate('document.querySelector("[data-meta=purpose]").value'),'Confirm the sample pump is ready for operation.','Library navigation preserves unfinished editing');
     assert.ok(await evaluate('document.getElementById("save-status").textContent.includes("Unsaved Changes")'));
     await evaluate('document.getElementById("message").hidden=true');
@@ -182,6 +182,18 @@ const {launchBrowser,removeTemporaryDirectory}=require('./lib/browser-check.cjs'
     assert.equal((await fetch(base+'/api/sops/'+overdue.id,{method:'PUT',headers:{'Content-Type':'application/json',Origin:base},body:JSON.stringify(overdue)})).status,200);
     await evaluate('document.getElementById("library-button").click()');await until('!!document.querySelector(".needs-review")');
     assert.equal(await evaluate(`document.querySelector('[data-open="${overdue.id}"]').closest('.library-card').querySelector('.needs-review').textContent`),'Needs Review');
+    assert.deepEqual(await evaluate('[...document.querySelectorAll(".library-page-heading .toolbar-actions a,.library-page-heading .toolbar-actions button")].map(element=>element.textContent.trim())'),['+ New SOP'],'The landing toolbar has one clear creation action');
+    assert.ok(await evaluate('![...document.getElementById("library-sort").options].some(option=>option.value==="tags")'),'Tag sorting is removed');
+    for(const layout of ['list','grid']){
+      await evaluate(`document.querySelector('[data-layout-choice="${layout}"]').click();document.getElementById('library-sort').value='title-desc';document.getElementById('library-sort').dispatchEvent(new Event('change'))`);
+      const titles=await evaluate('[...document.querySelectorAll(".title-copy h2")].map(element=>element.textContent)');
+      assert.deepEqual(titles,[...titles].sort((a,b)=>b.localeCompare(a)),'Z–A ordering works in '+layout);
+      await evaluate('document.getElementById("library-sort").value="review";document.getElementById("library-sort").dispatchEvent(new Event("change"))');
+      const flags=await evaluate('[...document.querySelectorAll(".entry>.status")].map(element=>element.classList.contains("needs-review"))');
+      assert.ok(flags.includes(true)&&flags.includes(false));assert.deepEqual(flags,[...flags].sort((a,b)=>Number(b)-Number(a)),'Needs Review sorts before Current in '+layout);
+    }
+    await call('Page.reload');await until('!!document.querySelector(".needs-review")');
+    assert.equal(await evaluate('document.getElementById("library-sort").value'),'review','Review sort survives a reload');
     await evaluate(`document.querySelector('[data-open="${overdue.id}"]').click()`);
     await until('document.getElementById("confirm-dialog")?.open||document.querySelector("[data-meta=title]")?.value==="Annual Review Test"');
     if(await evaluate('!!document.getElementById("confirm-dialog")?.open'))await evaluate('document.getElementById("confirm-discard").click()');
@@ -232,7 +244,7 @@ const {launchBrowser,removeTemporaryDirectory}=require('./lib/browser-check.cjs'
     const beforeDelete=await(await fetch(base+'/api/sops/'+mobileDoc.id)).json();await fetch(base+'/api/sops/'+mobileDoc.id,{method:'PUT',headers:{Origin:base,'Content-Type':'application/json'},body:JSON.stringify({...beforeDelete,title:'Changed SOP Title'})});
     await input('#delete-sop-confirmation','DELETE');await evaluate('document.getElementById("confirm-delete-sop").click()');await until('document.getElementById("delete-sop-error").textContent.includes("changed")');
     assert.ok(await evaluate('document.getElementById("delete-sop-dialog").open'));
-    await evaluate('document.getElementById("cancel-delete-sop").click();document.getElementById("refresh-library").click()');await until(`document.querySelector('[data-delete="${mobileDoc.id}"]')?.closest('.library-card').textContent.includes('Changed SOP Title')`);
+    await evaluate('document.getElementById("cancel-delete-sop").click();location.reload()');await until(`document.querySelector('[data-delete="${mobileDoc.id}"]')?.closest('.library-card').textContent.includes('Changed SOP Title')`);
     await evaluate(`document.querySelector('[data-delete="${mobileDoc.id}"]').click()`);assert.equal(await evaluate('document.getElementById("delete-sop-title").textContent'),'Changed SOP Title');
     await call('Emulation.setDeviceMetricsOverride',{width:320,height:844,deviceScaleFactor:1,mobile:true});assert.ok(await evaluate('document.documentElement.scrollWidth<=document.documentElement.clientWidth'));
     await input('#delete-sop-confirmation','DELETE');await evaluate('document.getElementById("confirm-delete-sop").click()');await until('!document.getElementById("delete-sop-dialog").open');

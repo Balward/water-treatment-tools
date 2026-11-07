@@ -10,13 +10,13 @@
   const query=new URLSearchParams(location.search);
   $('library-search').value=query.get('q')||'';
   if(model.tags.includes(query.get('tag'))||query.get('tag')==='__untagged')$('library-tag').value=query.get('tag');
-  if(['saved','title','tags','revised'].includes(query.get('sort')))$('library-sort').value=query.get('sort');
+  if(['saved','title','title-desc','review','revised'].includes(query.get('sort')))$('library-sort').value=query.get('sort');
   if(['review','current'].includes(query.get('review')))$('library-review').value=query.get('review');
   function render(){
     const search=$('library-search').value.trim().toLowerCase(),tag=$('library-tag').value,sort=$('library-sort').value,review=$('library-review').value;
     const matches=library.filter(item=>[item.title,item.team,...(item.tags||[])].some(value=>String(value||'').toLowerCase().includes(search))&&(!tag||(tag==='__untagged'?!(item.tags||[]).length:(item.tags||[]).includes(tag)))&&(!review||model.reviewStatus(item).needsReview===(review==='review')));
     const title=(a,b)=>a.title.localeCompare(b.title);
-    matches.sort((a,b)=>sort==='title'?title(a,b):sort==='tags'?(a.tags||[]).slice().sort().join(', ').localeCompare((b.tags||[]).slice().sort().join(', '))||title(a,b):sort==='revised'?(b.revisedDate||'').localeCompare(a.revisedDate||'')||title(a,b):b.updatedAt.localeCompare(a.updatedAt)||title(a,b));
+    matches.sort((a,b)=>sort==='title'?title(a,b):sort==='title-desc'?title(b,a):sort==='review'?Number(model.reviewStatus(b).needsReview)-Number(model.reviewStatus(a).needsReview)||title(a,b):sort==='revised'?(b.revisedDate||'').localeCompare(a.revisedDate||'')||title(a,b):b.updatedAt.localeCompare(a.updatedAt)||title(a,b));
     $('library-count').textContent=matches.length+(matches.length===library.length?' SOPs':' of '+library.length+' SOPs');
     $('review-shortcut').innerHTML=icons.warning+library.filter(item=>model.reviewStatus(item).needsReview).length+' Need Review';
     $('library-list').dataset.layout=layout;document.querySelectorAll('[data-layout-choice]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.layoutChoice===layout)));
@@ -28,16 +28,15 @@
   }
 
   async function load(){
-    if(loading)return;loading=true;$('refresh-library').disabled=true;$('library-status').textContent='Loading SOPs…';
-    try{const response=await fetch('/api/sops',{cache:'no-store'});if(!response.ok)throw Error('Unable to load your SOPs. Choose Refresh to try again.');const records=await response.json();if(!Array.isArray(records))throw Error('The SOP library response was unavailable. Choose Refresh to try again.');library=records;render();$('library-status').textContent='';}
+    if(loading)return;loading=true;$('library-status').textContent='Loading SOPs…';
+    try{const response=await fetch('/api/sops',{cache:'no-store'});if(!response.ok)throw Error('Unable to load your SOPs. Reload the page to try again.');const records=await response.json();if(!Array.isArray(records))throw Error('The SOP library response was unavailable. Reload the page to try again.');library=records;render();$('library-status').textContent='';}
     catch(error){$('library-status').textContent=error.message;}
-    finally{loading=false;$('refresh-library').disabled=false;}
+    finally{loading=false;}
   }
   $('library-search').oninput=render;$('library-tag').onchange=render;$('library-sort').onchange=render;$('library-review').onchange=render;
   $('clear-library-filters').onclick=()=>{$('library-search').value='';$('library-tag').value='';$('library-review').value='';render();};
   document.querySelectorAll('[data-layout-choice]').forEach(button=>button.onclick=()=>{layout=button.dataset.layoutChoice;try{localStorage.setItem('sop-library-layout',layout);}catch{}render();});
   $('review-shortcut').onclick=()=>{$('library-review').value=$('library-review').value==='review'?'':'review';render();};
-  $('refresh-library').onclick=load;
   $('library-list').onclick=event=>{const remove=event.target.closest('[data-delete]');if(remove){
     const item=library.find(item=>item.id===remove.dataset.delete);if(!item)return;
     deleteTarget={...item};$('delete-sop-title').textContent=item.title;$('delete-sop-confirmation').value='';$('delete-sop-error').textContent='';$('confirm-delete-sop').disabled=true;
@@ -58,5 +57,6 @@
     finally{deleting=false;$('cancel-delete-sop').disabled=false;$('delete-sop-confirmation').disabled=false;$('confirm-delete-sop').disabled=$('delete-sop-confirmation').value!=='DELETE';}
   };
   window.addEventListener('pageshow',event=>{if(event.persisted)load();});
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!$('delete-sop-dialog').open)load();});
   load();
 })();
