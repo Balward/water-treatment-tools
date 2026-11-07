@@ -24,8 +24,6 @@ window.startTutorialRecording=()=>{(async()=>{try{
     ctx.fillStyle='rgba(255,168,0,.28)';ctx.beginPath();ctx.arc(x,y,28,0,Math.PI*2);ctx.fill();
     for(const [radius,color,width] of [[29,'#fff',10],[29,'#d84800',6],[32+pulse*26,'rgba(216,72,0,'+(1-pulse)+')',5]]){ctx.beginPath();ctx.arc(x,y,radius,0,Math.PI*2);ctx.strokeStyle=color;ctx.lineWidth=width;ctx.stroke();}
     ctx.save();ctx.translate(x+4,y+4);ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(0,34);ctx.lineTo(9,25);ctx.lineTo(17,41);ctx.lineTo(25,37);ctx.lineTo(17,21);ctx.lineTo(30,21);ctx.closePath();ctx.fillStyle='#172127';ctx.strokeStyle='#fff';ctx.lineWidth=3;ctx.fill();ctx.stroke();ctx.restore();
-    const label='FOCUS HERE',labelX=Math.max(10,Math.min(1120,x-65)),labelY=y>730?y-58:y+66;
-    ctx.fillStyle='#d84800';ctx.fillRect(labelX,labelY-21,132,30);ctx.fillStyle='#fff';ctx.font='bold 17px sans-serif';ctx.fillText(label,labelX+10,labelY);
     ctx.fillStyle='#172127';ctx.fillRect(0,800,1280,280);ctx.fillStyle='#fff';ctx.font='bold 25px sans-serif';ctx.fillText((index+1)+' / '+steps.length+'   '+step.title,30,839);ctx.font='22px sans-serif';wrap(step.text,30,880,1220,30);
     // Reserve the bottom 110px so playback controls cannot cover instructions.
     ctx.fillStyle='#9fb5c0';ctx.font='16px sans-serif';ctx.fillText('Pause whenever needed  •  '+step.duration+' seconds per step',30,965);

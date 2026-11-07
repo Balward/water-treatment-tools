@@ -7,7 +7,7 @@
       "x": 1359.0859375,
       "y": 166.75
     },
-    "duration": 16,
+    "duration": 12,
     "start": 0
   },
   {
@@ -18,8 +18,8 @@
       "x": 320.46875,
       "y": 376
     },
-    "duration": 16,
-    "start": 16
+    "duration": 12,
+    "start": 12
   },
   {
     "title": "Choose Searchable Tags",
@@ -29,8 +29,8 @@
       "x": 189.734375,
       "y": 513
     },
-    "duration": 16,
-    "start": 32
+    "duration": 12,
+    "start": 24
   },
   {
     "title": "Add Context and Preparation",
@@ -40,8 +40,8 @@
       "x": 320.46875,
       "y": 512.390625
     },
-    "duration": 16,
-    "start": 48
+    "duration": 12,
+    "start": 36
   },
   {
     "title": "Organize Sections and Steps",
@@ -51,8 +51,8 @@
       "x": 320.46875,
       "y": 512.46875
     },
-    "duration": 16,
-    "start": 64
+    "duration": 12,
+    "start": 48
   },
   {
     "title": "Add Supporting Substeps",
@@ -62,8 +62,8 @@
       "x": 329.96875,
       "y": 512.46875
     },
-    "duration": 16,
-    "start": 80
+    "duration": 12,
+    "start": 60
   },
   {
     "title": "Use a Table for Repeated Information",
@@ -73,8 +73,8 @@
       "x": 178.984375,
       "y": 455.46875
     },
-    "duration": 16,
-    "start": 96
+    "duration": 12,
+    "start": 72
   },
   {
     "title": "Attach a Photo and Caption",
@@ -84,8 +84,8 @@
       "x": 320.46875,
       "y": 596.46875
     },
-    "duration": 16,
-    "start": 112
+    "duration": 12,
+    "start": 84
   },
   {
     "title": "Edit Through the Live Preview",
@@ -95,8 +95,8 @@
       "x": 1017.96875,
       "y": 445.078125
     },
-    "duration": 16,
-    "start": 128
+    "duration": 12,
+    "start": 96
   },
   {
     "title": "Record Creation, Revisions, and Reviews",
@@ -106,8 +106,8 @@
       "x": 181.234375,
       "y": 527.96875
     },
-    "duration": 16,
-    "start": 144
+    "duration": 12,
+    "start": 108
   },
   {
     "title": "Save the SOP",
@@ -117,8 +117,8 @@
       "x": 1235.3828125,
       "y": 166.75
     },
-    "duration": 16,
-    "start": 160
+    "duration": 12,
+    "start": 120
   },
   {
     "title": "View or Edit the Saved Procedure",
@@ -128,7 +128,7 @@
       "x": 1297,
       "y": 551.5
     },
-    "duration": 16,
-    "start": 176
+    "duration": 12,
+    "start": 132
   }
 ]

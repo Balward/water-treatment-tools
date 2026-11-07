@@ -2,7 +2,7 @@ const assert=require('node:assert/strict'),path=require('node:path'),fs=require(
 const {launchBrowser}=require('./lib/browser-check.cjs');
 (async()=>{const app=express();app.use(express.static(path.resolve('.')));const server=app.listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));let b;try{
   const assets=path.resolve('apps/sop-creator/tutorial-assets'),steps=JSON.parse(await fs.readFile(path.join(assets,'steps.json'),'utf8'));assert.equal(steps.length,12);assert.ok((await fs.stat(path.join(assets,'sop-creator-walkthrough.webm'))).size>100000);
-  assert.ok(steps.every((step,index)=>step.duration===16&&step.start===index*16),'Each step has a full 16-second reading window');
+  assert.ok(steps.every((step,index)=>step.duration===12&&step.start===index*12),'Each step has a full 12-second reading window');
   assert.ok(steps.every(step=>step.point.x>=42&&step.point.x<=1392&&step.point.y>=42&&step.point.y<=830),'Click markers stay inside the captured viewport');
   b=await launchBrowser({userGesture:true});await b.call('Page.navigate',{url:'http://127.0.0.1:'+server.address().port+'/apps/sop-creator/tutorial.html'});
   const until=async expression=>{for(let i=0;i<120;i++){if(await b.evaluate(expression))return;await new Promise(r=>setTimeout(r,60));}throw Error('Timed out: '+expression);};

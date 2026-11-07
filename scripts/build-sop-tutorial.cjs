@@ -23,8 +23,9 @@ const output=path.resolve('apps/sop-creator/tutorial-assets');
       await new Promise(r=>setTimeout(r,180));await evaluate('document.fonts.ready');
       const point=await evaluate(`(()=>{const element=document.querySelector(${JSON.stringify(selector)}),r=element.getBoundingClientRect();let left=Math.max(6,r.left),top=Math.max(6,r.top),right=Math.min(innerWidth-6,r.right),bottom=Math.min(innerHeight-6,r.bottom);for(let p=element.parentElement;p;p=p.parentElement){if(/auto|scroll|hidden/.test(getComputedStyle(p).overflowY)){const b=p.getBoundingClientRect();left=Math.max(left,b.left);top=Math.max(top,b.top);right=Math.min(right,b.right);bottom=Math.min(bottom,b.bottom);}}const h=document.createElement('div');h.id='tutorial-highlight';Object.assign(h.style,{position:'fixed',left:(left-3)+'px',top:(top-3)+'px',width:(right-left+6)+'px',height:(bottom-top+6)+'px',border:'6px solid #0969da',borderRadius:'8px',boxShadow:'0 0 0 3px #fff,0 0 0 6px #0969da55',pointerEvents:'none',zIndex:9999});document.body.append(h);const target=document.querySelector(${JSON.stringify(pointSelector)}).getBoundingClientRect(),x=Math.max(42,Math.min(innerWidth-48,target.left+target.width/2)),y=Math.max(42,Math.min(innerHeight-70,target.top+target.height/2));const dot=document.createElement('div');dot.textContent=${steps.length+1};Object.assign(dot.style,{position:'fixed',left:(x-19)+'px',top:(y-19)+'px',width:'38px',height:'38px',display:'grid',placeItems:'center',border:'3px solid white',borderRadius:'50%',background:'#d84800',color:'white',font:'bold 18px sans-serif',boxShadow:'0 0 0 3px #d84800',pointerEvents:'none',zIndex:10000});dot.id='tutorial-marker';document.body.append(dot);return {x,y};})()`);
       const shot=await call('Page.captureScreenshot',{format:'png'}),image='step-'+String(steps.length+1).padStart(2,'0')+'.png';await fs.writeFile(path.join(output,image),Buffer.from(shot.data,'base64'));
-      steps.push({title,text,image,point,duration:16,start:steps.length*16});console.log('Captured '+steps.length+': '+title);
+      steps.push({title,text,image,point,duration:12,start:steps.length*12});console.log('Captured '+steps.length+': '+title);
     }
+    if(!process.argv.includes('--render-only')){
     await call('Page.navigate',{url:base+'/sop-creator/library.html'});await until('document.getElementById("library-status").textContent===""');
     await capture('Start From the SOP Library','Select + New SOP to start a procedure. Existing procedures use Edit SOP or View SOP.','.toolbar-actions .primary');
     await click('.toolbar-actions .primary');await until('!!document.querySelector("[data-meta=title]")&&!document.querySelector("main").inert');
@@ -56,11 +57,12 @@ const output=path.resolve('apps/sop-creator/tutorial-assets');
     await capture('Save the SOP','Select Save SOP to store the document in the library. A browser draft is a recovery copy, not a saved library SOP.','#save-button');
     await click('#save-button');await until('document.getElementById("save-status").textContent==="Saved"');await click('#library-button');await until('location.pathname.endsWith("/library.html")&&!!document.querySelector(".entry .actions")');
     await capture('View or Edit the Saved Procedure','Use View SOP for the saved read-only document and Print / Save PDF. Use the pencil to edit. This walkthrough saved only to isolated training storage.','.entry .actions');
+    }else{const existing=JSON.parse(await fs.readFile(path.join(output,'steps.json'),'utf8'));steps.push(...existing.map((step,index)=>({...step,duration:12,start:index*12})));}
     await fs.writeFile(path.join(output,'steps.json'),JSON.stringify(steps,null,2));
     await call('Page.navigate',{url:base+'/sop-creator/tutorial-recorder.html'});
     // Recorder page is served from a temporary in-memory route below.
     await until('window.recorderReady===true');await evaluate('window.startTutorialRecording()');
     for(let i=0;i<280;i++){const status=await evaluate('window.recordingStatus');if(status==='done')break;if(status?.startsWith('error:'))throw Error(status);if(i===279)throw Error('Video recording timed out');if(i%30===0)console.log('Rendering video: '+i+' seconds elapsed');await new Promise(r=>setTimeout(r,1000));}
-    console.log('Created '+steps.length+' screenshots and '+steps.length*16+'-second captioned WebM with music.');
+    console.log('Created '+steps.length+' screenshots and '+steps.length*12+'-second captioned WebM with music.');
   }finally{await b?.close();server.closeAllConnections();await new Promise(r=>server.close(r));await removeTemporaryDirectory(directory);}
 })().catch(error=>{console.error(error);process.exitCode=1});
