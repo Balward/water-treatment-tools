@@ -340,6 +340,7 @@
   };
   window.addEventListener('pageshow',()=>{navigatingToLibrary=false;});
   $('files-button').onclick=()=>$('files-dialog').showModal();
+  $('writing-guide-button').onclick=()=>$('writing-guide-dialog').showModal();
   for(const button of document.querySelectorAll('[data-close]'))button.onclick=()=>$(button.dataset.close).close();
   $('download-button').onclick=()=>{
     const blob=new Blob([JSON.stringify({format:'northglenn-sop',version:1,document:doc},null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download=(doc.title||'SOP').replace(/[^a-zA-Z0-9-]/g,'-').slice(0,80)+'.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);

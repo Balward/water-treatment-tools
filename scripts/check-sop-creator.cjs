@@ -11,6 +11,14 @@ const {launchBrowser,removeTemporaryDirectory}=require('./lib/browser-check.cjs'
     await evaluate('document.querySelector(".toolbar-actions .primary").click()');await until('location.pathname.endsWith("/editor.html")&&!!document.querySelector("[data-meta=title]")&&!document.querySelector("main").inert');
     await call('Emulation.setDeviceMetricsOverride',{width:1600,height:1000,deviceScaleFactor:1,mobile:false});await call('Page.navigate',{url:base+'/sop-creator/editor.html'});await until('!!document.querySelector("[data-meta=purpose]")&&!document.getElementById("editor").inert');
     const input=async(selector,value)=>evaluate(`(()=>{const input=document.querySelector(${JSON.stringify(selector)});input.value=${JSON.stringify(value)};input.dispatchEvent(new Event('input',{bubbles:true}));})()`);
+    await evaluate('document.getElementById("writing-guide-button").click()');
+    assert.ok(await evaluate('document.getElementById("writing-guide-dialog").open&&document.getElementById("writing-guide-dialog").textContent.includes("Substeps")'),'Writing guide opens with procedure guidance');
+    assert.ok(await evaluate('document.activeElement.closest("#writing-guide-dialog")'),'Focus moves into the help dialog');
+    await call('Emulation.setDeviceMetricsOverride',{width:320,height:800,deviceScaleFactor:1,mobile:false});
+    assert.ok(await evaluate('document.getElementById("writing-guide-dialog").scrollWidth<=document.getElementById("writing-guide-dialog").clientWidth'),'Writing guide fits a narrow phone');
+    await evaluate('document.querySelector("#writing-guide-dialog .confirm-actions button").click()');
+    assert.ok(await evaluate('!document.getElementById("writing-guide-dialog").open'),'Back to Writing closes help');
+    await call('Emulation.setDeviceMetricsOverride',{width:1600,height:1000,deviceScaleFactor:1,mobile:false});
     const key=async(selector,key,options={})=>evaluate(`(()=>{const input=document.querySelector(${JSON.stringify(selector)});input.focus();input.setSelectionRange(${options.position??0},${options.position??0});return input.dispatchEvent(new KeyboardEvent('keydown',${JSON.stringify({key,bubbles:true,cancelable:true,...options})}));})()`);
     await evaluate('document.querySelector("[data-action=add-step]").click()');
     await input('[data-step-instruction]','Inspect pump.Record pressure.');

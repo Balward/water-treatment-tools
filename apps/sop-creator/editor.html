@@ -6,9 +6,9 @@
   <link rel="icon" href="../../assets/logos/favicon.png">
   <link rel="stylesheet" href="../../shared/operations/theme.css">
   <link rel="stylesheet" href="../../shared/operations/navigation.css">
-  <link rel="stylesheet" href="styles.css?v=20261107-consistency1">
+  <link rel="stylesheet" href="styles.css?v=20261107-guide1">
   <script src="../../shared/operations/navigation.js" defer></script>
-  <script src="model.js?v=20261106-creation1" defer></script><script src="document.js?v=20261107-ownership1" defer></script><script src="preview-edit.js?v=20261107-ownership1" defer></script><script src="app.js?v=20261107-ownership1" defer></script>
+  <script src="model.js?v=20261106-creation1" defer></script><script src="document.js?v=20261107-ownership1" defer></script><script src="preview-edit.js?v=20261107-ownership1" defer></script><script src="app.js?v=20261107-guide1" defer></script>
   <link rel="stylesheet" href="page-shell.css?v=20261107-consistency1">
 </head>
 <body data-ops-app="sops" class="sop-page">
@@ -21,7 +21,7 @@
   <main inert>
     <div class="toolbar sop-page-heading">
       <div><h1>SOP Creator</h1><p id="save-status" role="status" aria-live="polite">New SOP</p></div>
-      <div class="toolbar-actions"><button id="library-button" type="button">SOP Library</button><button id="print-button" type="button">Print / Save PDF</button><button id="files-button" type="button" aria-haspopup="dialog">Import / Backup</button><button id="toggle-preview" type="button" aria-expanded="true" aria-controls="preview">Hide Preview</button><div class="toolbar-save-actions"><button id="save-button" class="primary" type="button">Save SOP</button><button id="new-button" class="sop-new-action" type="button">+ New SOP</button></div></div>
+      <div class="toolbar-actions"><button id="library-button" type="button">SOP Library</button><button id="writing-guide-button" type="button" aria-haspopup="dialog" aria-controls="writing-guide-dialog">How to Write an SOP</button><button id="print-button" type="button">Print / Save PDF</button><button id="files-button" type="button" aria-haspopup="dialog">Import / Backup</button><button id="toggle-preview" type="button" aria-expanded="true" aria-controls="preview">Hide Preview</button><div class="toolbar-save-actions"><button id="save-button" class="primary" type="button">Save SOP</button><button id="new-button" class="sop-new-action" type="button">+ New SOP</button></div></div>
     </div>
     <p id="message" role="status" aria-live="polite" hidden></p>
     <div class="mobile-switch" role="group" aria-label="Workspace View"><button id="edit-view" aria-pressed="true" type="button">Edit SOP</button><button id="preview-view" aria-pressed="false" type="button">Preview</button></div>
@@ -46,5 +46,46 @@
   </main>
   <dialog id="files-dialog" aria-labelledby="files-title"><div class="dialog-heading"><h2 id="files-title">Import / Backup</h2><button data-close="files-dialog" type="button" aria-label="Close Import / Backup">×</button></div><p>Download an editable SOP backup including its photos, or open a backup as a new SOP.</p><button id="download-button" type="button">Download SOP Backup</button><label class="file-label">Import SOP Backup<input id="import-file" type="file" accept="application/json,.json"></label><p class="help">Import accepts SOP Creator JSON backups. Use the fields to create a procedure from an existing Word document.</p></dialog>
   <dialog id="confirm-dialog" aria-labelledby="confirm-title"><h2 id="confirm-title">Keep Your Draft?</h2><p>There are changes that have not been saved to the SOP library.</p><div class="confirm-actions"><button id="confirm-cancel" type="button">Keep Editing</button><button id="confirm-discard" type="button">Discard Draft</button><button id="confirm-save" type="button" class="primary">Save &amp; Continue</button></div></dialog>
+  <dialog id="writing-guide-dialog" class="writing-guide" aria-labelledby="writing-guide-title">
+    <div class="dialog-heading"><h2 id="writing-guide-title">How to Write an SOP</h2><button data-close="writing-guide-dialog" type="button" aria-label="Close Writing Guide" autofocus>&times;</button></div>
+    <p class="guide-intro">Write for a trained operator performing the task for the first time. Make the sequence clear, the actions specific, and the expected results easy to check.</p>
+    <section><h3>Use Direct, Action-Based Language</h3>
+      <p>Start instructions with a verb: Inspect, Close, Select, Measure, Record, or Verify. The operator is the implied subject. Avoid first person (I, we), second person (you), and third-person narration (the operator, he, she, they).</p>
+      <div class="guide-example"><p><strong>Instead of:</strong> “I then check the probe for damage.”</p><p><strong>Write:</strong> “Inspect the probe for damage.”</p><p><strong>Instead of:</strong> “The operator should write down the result.”</p><p><strong>Write:</strong> “Record the result in the calibration log.”</p></div>
+      <p>Use present tense and plain words. Replace vague instructions such as “check that it looks good” with the specific condition to verify. Name the equipment instead of using an unclear “it.” Identify a responsible role when assigning work to someone else: “Notify the shift supervisor.”</p>
+    </section>
+    <section><h3>Set Up the Document</h3>
+      <ul><li><strong>Title:</strong> Use Equipment or Process — Task, such as “pH Probe (DPD1P1) — Calibration.” Keep dates and “SOP” out of the title.</li>
+      <li><strong>Responsible Team:</strong> Select the team that maintains the procedure.</li><li><strong>Tags:</strong> Choose relevant equipment, process, and task tags, such as pH, Calibration, and Instrumentation.</li></ul>
+    </section>
+    <section><h3>Give Each Context Field a Job</h3>
+      <ul><li><strong>Purpose:</strong> State what the procedure accomplishes and its scope in one or two sentences. Example: “Describe the process for calibrating the DPD1P1 pH probe.”</li>
+      <li><strong>Background:</strong> Explain essential context or why the task is needed. Keep operating actions in the steps. Leave this field empty when it adds no useful context.</li>
+      <li><strong>Equipment:</strong> List required tools, materials, and reference documents, one item per line.</li>
+      <li><strong>Safety Concerns:</strong> Identify relevant hazards, required PPE, and precautions before starting. Repeat critical precautions in the step where they apply.</li>
+      <li><strong>Security Concerns:</strong> Describe applicable access restrictions or security precautions.</li>
+      <li><strong>Notes:</strong> Add useful supporting information that does not belong in a numbered action.</li></ul>
+      <p>Leave unused fields empty. The creator omits empty context sections from the document.</p>
+    </section>
+    <section><h3>Divide the Procedure Into Sections</h3>
+      <p>Use Add Section for meaningful phases, such as Preparation, Calibration, and Return to Service. Use short descriptive headings. A short procedure may need only one section, with its heading left blank. Step numbering continues automatically across sections.</p>
+    </section>
+    <section><h3>Write Steps and Substeps</h3>
+      <p>Give each numbered step one main action or a closely related task. Put actions in the order they must occur. Include the equipment or control name, required value and unit, expected result, and where to record the result when applicable.</p>
+      <p>Use lettered substeps for smaller actions that belong to the parent step. For example, “Inspect the probe assembly” can contain “Inspect the cable for damage” and “Inspect the connector for corrosion.” Use a new numbered step when the main task changes. Avoid placing an unrelated phase inside a substep.</p>
+      <p>State conditions explicitly: “If [condition], [action].” Describe what to do when a required check fails, including when to stop and who to notify. Keep required actions out of general Notes.</p>
+      <p>Do not type step numbers or substep letters into instructions. The creator supplies them. Enter creates the next item; Shift+Enter inserts a line break. Use Add Substep to group supporting actions beneath a step.</p>
+    </section>
+    <section><h3>Use Photos and Tables Where They Help</h3>
+      <p>Attach photos to the step they explain. Add a short caption identifying the control, connection, or condition shown. Keep the written instructions complete enough to use without interpreting a photo alone.</p>
+      <p>Use a table for repeated comparisons, reference values, or several related readings. Include units in column headings and a caption when needed. Enter content in the table cells instead of aligning text with spaces.</p>
+    </section>
+    <section><h3>Review and Record the Change</h3>
+      <p>Walk through the draft with an operator familiar with the task. Check equipment names, sequence, units, limits, warnings, and the return-to-service actions against current facility requirements and manufacturer instructions. Do not guess missing technical details.</p>
+      <p>In Revision History, use <strong>Creation</strong> for the original procedure, <strong>Revision</strong> for changes, or <strong>Review - No Changes</strong> when checking an unchanged procedure. Record the date, the person who performed the work, and an accurate summary. Record an approver only after approval actually occurs. Keep historical names when staff change; the Responsible Team maintains the SOP.</p>
+      <p>Check the Live Preview and Print / Save PDF before saving. The creator keeps context, sections, steps, substeps, photos, tables, and history in separate fields, so use those fields rather than pasting the entire SOP into one instruction box.</p>
+    </section>
+    <div class="confirm-actions"><button data-close="writing-guide-dialog" type="button">Back to Writing</button></div>
+  </dialog>
 </body>
 </html>
