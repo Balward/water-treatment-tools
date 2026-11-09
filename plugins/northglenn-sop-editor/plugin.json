@@ -1,0 +1,28 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "northglenn-sop-editor",
+  "version": "0.2.0",
+  "description": "Review SOP JSON backups and convert Word SOPs with embedded images.",
+  "author": {
+    "name": "Plugin owner"
+  },
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Northglenn SOP Editor",
+        "shortDescription": "Convert Word and review SOPs",
+        "longDescription": "Convert Word DOCX SOPs into validated Northglenn SOP Creator JSON with embedded images and an image-placement audit. Review existing JSON backups using the approval-controlled, lossless revision workflow.",
+        "developerName": "Plugin owner",
+        "category": "Business & Operations",
+        "capabilities": [
+          "Interactive"
+        ],
+        "defaultPrompt": [
+          "Review this uploaded Northglenn SOP JSON backup. Show the entire proposed SOP and hold export until I explicitly approve.",
+          "Continue technical review of this SOP, showing changes and unresolved questions."
+        ]
+      },
+      "requires_local_executor": true
+    }
+  }
+}
