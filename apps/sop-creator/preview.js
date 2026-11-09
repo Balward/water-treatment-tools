@@ -5,7 +5,7 @@
   let connected=false;
   documentView.addEventListener('load',event=>{
     const image=event.target;
-    if(image.matches('.document-photos img')&&image.naturalHeight)image.closest('figure').style.width=(180*image.naturalWidth/image.naturalHeight)+'px';
+    SOPDocument.sizePhoto(image);
   },true);
   window.addEventListener('message',event=>{
     if(savedId||event.origin!==location.origin||event.source!==editor||event.data?.type!=='sop-preview-update'||typeof event.data.html!=='string')return;

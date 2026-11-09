@@ -67,6 +67,19 @@ test('SOP model preserves the template structure, photos, and ordered steps, whi
   assert.throws(()=>model.validate({...doc,groups:[{...doc.groups[0],id:step.id}]}),/Duplicate/);
   step.photos[0].data='data:image/svg+xml;base64,aGVsbG8=';assert.throws(()=>model.validate(doc),/Photos/);
 });
+test('SOP photo sizes retain legacy defaults and survive validation and JSON backups',()=>{
+  const doc=model.blank(),step=model.step();doc.groups[0].steps.push(step);
+  step.photos.push({id:crypto.randomUUID(),data:'data:image/png;base64,aGVsbG8=',caption:'Gauge'});
+  const render=require('../apps/sop-creator/document').render;
+  assert.match(render(model.validate(doc)),/--photo-height:180px/);
+  for(const scale of [25,50,100,150,200]){
+    step.photos[0].scale=scale;
+    const restored=model.validate(JSON.parse(JSON.stringify({format:'northglenn-sop',version:1,document:doc})).document);
+    assert.equal(restored.groups[0].steps[0].photos[0].scale,scale);
+    assert.match(render(restored),new RegExp('--photo-height:'+180*scale/100+'px'));
+  }
+  for(const scale of [0,24,201,50.5,'100',null]){step.photos[0].scale=scale;assert.throws(()=>model.validate(doc),/Photo size/);}
+});
 test('SOP deletion requires exact confirmation and current details, preserves recovery data, and blocks stale recreation',async t=>{
   const directory=await fs.mkdtemp(path.join(os.tmpdir(),'sop-delete-')),app=express();app.use(express.json({limit:'16mb'}));register(app,{directory});
   const server=app.listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));const base='http://127.0.0.1:'+server.address().port;

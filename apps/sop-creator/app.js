@@ -161,7 +161,7 @@
   });
   function renderSteps(){
     let number=0;
-    $('procedure-groups').innerHTML=doc.groups.map((group,gi)=>'<section class="procedure-group" data-group="'+group.id+'"><div class="group-heading"><strong>Section '+(gi+1)+'</strong>'+controls('section',group.id,gi,doc.groups.length)+'</div>'+field('Section Heading (Optional)','data-group-title="'+group.id+'"',group.title)+'<div class="steps">'+group.steps.map((step,si)=>'<article class="step-editor" data-step="'+step.id+'"><div class="step-heading"><h3>Step '+(++number)+'</h3>'+controls('step',step.id,si,group.steps.length)+'</div>'+field('Instructions','data-step-instruction="'+step.id+'"',step.instruction,true)+'<div class="substeps">'+step.substeps.map((sub,i)=>'<div class="substep-editor">'+field('Substep '+String.fromCharCode(97+i),'data-substep="'+sub.id+'"',sub.text,true)+controls('substep',sub.id,i,step.substeps.length)+'</div>').join('')+'</div>'+editTables(step.tables)+'<div class="photos">'+step.photos.map((photo,i)=>'<figure class="photo-editor"><img src="'+photo.data+'" alt="Step photo '+(i+1)+'">'+field('Photo Caption','data-caption="'+photo.id+'"',photo.caption)+controls('photo',photo.id,i,step.photos.length)+'</figure>').join('')+'</div><div class="step-actions"><button type="button" data-action="add-substep" data-id="'+step.id+'">+ Add Substep</button><button type="button" data-action="add-table" data-id="'+step.id+'">+ Add Table</button><label class="photo-upload">+ Add Photo<input type="file" data-photo="'+step.id+'" accept="image/png,image/jpeg,image/webp" aria-label="Add Photo To Step '+number+'"></label></div></article>').join('')+'</div><button class="add-step" type="button" data-action="add-step" data-id="'+group.id+'">+ Add Step</button></section>').join('');
+    $('procedure-groups').innerHTML=doc.groups.map((group,gi)=>'<section class="procedure-group" data-group="'+group.id+'"><div class="group-heading"><strong>Section '+(gi+1)+'</strong>'+controls('section',group.id,gi,doc.groups.length)+'</div>'+field('Section Heading (Optional)','data-group-title="'+group.id+'"',group.title)+'<div class="steps">'+group.steps.map((step,si)=>'<article class="step-editor" data-step="'+step.id+'"><div class="step-heading"><h3>Step '+(++number)+'</h3>'+controls('step',step.id,si,group.steps.length)+'</div>'+field('Instructions','data-step-instruction="'+step.id+'"',step.instruction,true)+'<div class="substeps">'+step.substeps.map((sub,i)=>'<div class="substep-editor">'+field('Substep '+String.fromCharCode(97+i),'data-substep="'+sub.id+'"',sub.text,true)+controls('substep',sub.id,i,step.substeps.length)+'</div>').join('')+'</div>'+editTables(step.tables)+'<div class="photos">'+step.photos.map((photo,i)=>'<figure class="photo-editor"><img src="'+photo.data+'" alt="Step photo '+(i+1)+'">'+field('Photo Caption','data-caption="'+photo.id+'"',photo.caption)+'<label class="photo-size" for="photo-size-'+photo.id+'"><span>Photo Size</span><input type="range" id="photo-size-'+photo.id+'" data-photo-size="'+photo.id+'" min="25" max="200" step="5" value="'+(photo.scale??100)+'" aria-valuetext="'+(photo.scale??100)+' percent"><output for="photo-size-'+photo.id+'">'+(photo.scale??100)+'%</output></label>'+controls('photo',photo.id,i,step.photos.length)+'</figure>').join('')+'</div><div class="step-actions"><button type="button" data-action="add-substep" data-id="'+step.id+'">+ Add Substep</button><button type="button" data-action="add-table" data-id="'+step.id+'">+ Add Table</button><label class="photo-upload">+ Add Photo<input type="file" data-photo="'+step.id+'" accept="image/png,image/jpeg,image/webp" aria-label="Add Photo To Step '+number+'"></label></div></article>').join('')+'</div><button class="add-step" type="button" data-action="add-step" data-id="'+group.id+'">+ Add Step</button></section>').join('');
     for(const input of $('procedure-groups').querySelectorAll('[data-step-instruction],[data-substep]')){
       input.rows=1;input.placeholder=input.dataset.stepInstruction?'Type step instructions...':'Type substep instructions...';input.setAttribute('aria-describedby','procedure-shortcuts');sizeWritingField(input);
     }
@@ -172,7 +172,7 @@
   }
   $('sop-document').addEventListener('load',event=>{
     const image=event.target;
-    if(image.matches('.document-photos img')&&image.naturalHeight)image.closest('figure').style.width=(180*image.naturalWidth/image.naturalHeight)+'px';
+    SOPDocument.sizePhoto(image);
   },true);
   function renderPreview(){
     clearTimeout(previewWindowTimer);previewWindowTimer=setTimeout(updatePreviewWindow,100);
@@ -206,6 +206,11 @@
     else if(d.stepInstruction)allSteps().find(s=>s.id===d.stepInstruction).instruction=input.value;
     else if(d.substep)allSteps().flatMap(s=>s.substeps).find(s=>s.id===d.substep).text=input.value;
     else if(d.caption)allSteps().flatMap(s=>s.photos).find(p=>p.id===d.caption).caption=input.value;
+    else if(d.photoSize){
+      const photo=allSteps().flatMap(s=>s.photos).find(p=>p.id===d.photoSize);photo.scale=Number(input.value);
+      input.closest('.photo-size').querySelector('output').value=photo.scale+'%';
+      input.setAttribute('aria-valuetext',photo.scale+' percent');
+    }
     else return;
     if(d.stepInstruction||d.substep)sizeWritingField(input);
     changed();

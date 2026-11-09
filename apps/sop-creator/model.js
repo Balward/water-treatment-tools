@@ -72,7 +72,8 @@
           const data=text(photo.data,3000000);photoBytes+=data.length;
           if(!/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/]+=*$/.test(data))fail('Photos must be PNG, JPEG, or WebP images.');
           if(photoBytes>12000000)fail('Photos are too large for one SOP. Use fewer or smaller photos.');
-          return {id:unique(photo.id),data,caption:text(photo.caption,1000)};
+          if(photo.scale!==undefined&&(!Number.isInteger(photo.scale)||photo.scale<25||photo.scale>200))fail('Photo size must be between 25% and 200%.');
+          return {id:unique(photo.id),data,caption:text(photo.caption,1000),...(photo.scale===undefined?{}:{scale:photo.scale})};
         })};
       })};
     });

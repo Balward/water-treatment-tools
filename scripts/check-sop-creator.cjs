@@ -94,6 +94,12 @@ const {launchBrowser,removeTemporaryDirectory}=require('./lib/browser-check.cjs'
     await until('document.querySelectorAll(".photo-editor").length===2');await input('[data-caption]','Pump Gauge');assert.equal(await evaluate('document.querySelector("figcaption").textContent'),'Pump Gauge');
     assert.ok(await evaluate('(()=>{const images=[...document.querySelectorAll(".document-photos img")];return images.length===2&&images.every(img=>img.getBoundingClientRect().height===180&&getComputedStyle(img).objectFit==="contain")&&Math.abs(images[0].getBoundingClientRect().top-images[1].getBoundingClientRect().top)<1})()'),'Photos share a row and a consistent height without cropping');
     assert.ok(await evaluate('(()=>{const row=document.querySelector(".document-photo-row"),images=[...row.querySelectorAll("img")].map(img=>img.getBoundingClientRect()),bounds=document.getElementById("sop-document").getBoundingClientRect();return Math.abs(images[1].left-images[0].right-8)<1&&Math.abs((images[0].left+images[1].right)/2-(bounds.left+bounds.right)/2)<1&&images[1].width<images[0].width})()'),'Different photo shapes stay close together and the pair is centered on the page');
+    await input('[data-photo-size]','50');
+    await until('document.querySelector(".document-photos img").complete&&document.querySelector(".document-photos img").getBoundingClientRect().height===90');
+    assert.equal(await evaluate('document.querySelector(".photo-size output").value'),'50%','Slider reports its selected size');
+    assert.equal(await evaluate('document.querySelectorAll(".document-photos img")[1].getBoundingClientRect().height'),180,'Sizing one photo preserves the other photo');
+    await input('[data-photo-size]','150');
+    await until('document.querySelector(".document-photos img").complete&&document.querySelector(".document-photos img").getBoundingClientRect().height===270');
     assert.ok(await evaluate(`(()=>{const targets=[...document.querySelectorAll('#sop-document [data-edit-target]')];return targets.length>15&&targets.every(element=>{const field=document.querySelector(element.dataset.editTarget);element.click();return document.activeElement===field;});})()`),'Every preview edit target focuses its matching entry, including table cells, photos and history');
     await evaluate('document.querySelector("#sop-document h1").dispatchEvent(new KeyboardEvent("keydown",{key:"Enter",bubbles:true,cancelable:true}))');
     assert.equal(await evaluate('document.activeElement.dataset.meta'),'title','Preview targets support keyboard activation');
@@ -105,6 +111,7 @@ const {launchBrowser,removeTemporaryDirectory}=require('./lib/browser-check.cjs'
     await until('document.getElementById("save-status").textContent.includes("Draft Kept")');await evaluate('window.__oldSOPPage=true');await call('Page.reload');await until('!window.__oldSOPPage&&!!document.querySelector("[data-meta=purpose]")&&!document.getElementById("editor").inert&&document.querySelectorAll(".photo-editor").length===2');assert.equal(await evaluate('document.querySelector("[data-meta=title]").value'),'Inspect The Sample Pump');
     await evaluate('document.getElementById("save-button").click()');await until('document.getElementById("message").textContent==="SOP saved to the library."');
     const records=await(await fetch(base+'/api/sops')).json();assert.equal(records.length,1);const saved=await(await fetch(base+'/api/sops/'+records[0].id)).json();assert.equal(saved.groups[0].steps[0].photos.length,2);assert.equal(saved.revisionHistory[0].summary,'Initial issue','Revision entries are saved with the SOP');assert.equal(saved.groups[0].steps[0].tables[0].rows[0][1],'45 psi','Table cells survive recovery and saving');
+    assert.equal(saved.groups[0].steps[0].photos[0].scale,150,'Photo size survives recovery and server saving');
     await evaluate('document.getElementById("new-button").click();document.getElementById("library-button").click()');await until('location.pathname.endsWith("/library.html")&&!!document.querySelector("[data-open]")');assert.equal(await evaluate('document.getElementById("library-dialog")'),null,'Library is a page rather than a dialog');for(const width of [1440,390,320]){await call('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});assert.ok(await evaluate('document.documentElement.scrollWidth<=innerWidth'),'Library page fits '+width);}await call('Emulation.setDeviceMetricsOverride',{width:1600,height:1000,deviceScaleFactor:1,mobile:false});await evaluate('document.querySelector("[data-open]").click()');await until('document.querySelector("[data-meta=title]").value==="Inspect The Sample Pump"');
     assert.equal(await evaluate('document.querySelectorAll("#selected-sop-tags button").length'),3,'SOP tags survive saving, library loading and reopening');
     // Unsaved drafts survive failed saves; stale revisions cannot overwrite a newer server version.
@@ -152,6 +159,10 @@ const {launchBrowser,removeTemporaryDirectory}=require('./lib/browser-check.cjs'
     await input('[data-meta=purpose]','Updated with the preview window open.');
     await until('window.__sopPopout.document.getElementById("sop-document").textContent.includes("Updated with the preview window open.")');
     assert.equal(await evaluate('window.__sopPopout.document.querySelectorAll(".document-photos img").length'),2,'Preview window receives photos');
+    await until('window.__sopPopout.document.querySelector(".document-photos img").getBoundingClientRect().height===270');
+    await call('Emulation.setEmulatedMedia',{media:'print'});
+    assert.equal(await evaluate('document.querySelector(".document-photos img").getBoundingClientRect().height'),270,'Printing retains adjusted photo size');
+    await call('Emulation.setEmulatedMedia',{media:''});
     await evaluate('document.getElementById("open-preview-window").click()');
     assert.ok(await evaluate('!window.__sopPopout.document.getElementById("print-preview").disabled'));
     await evaluate('window.__sopPopout.close()');

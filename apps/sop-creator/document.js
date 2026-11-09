@@ -14,7 +14,7 @@
   function renderPhotos(photos){
     if(!photos.length)return '';
     const rows=[];
-    for(let index=0;index<photos.length;index+=2)rows.push('<div class="document-photo-row">'+photos.slice(index,index+2).map(photo=>'<figure><img src="'+photo.data+'" alt="'+escape(photo.caption||'Procedure illustration')+'">'+(photo.caption.trim()?'<figcaption>'+escape(photo.caption)+'</figcaption>':'')+'</figure>').join('')+'</div>');
+    for(let index=0;index<photos.length;index+=2)rows.push('<div class="document-photo-row">'+photos.slice(index,index+2).map(photo=>{const scale=Number.isInteger(photo.scale)&&photo.scale>=25&&photo.scale<=200?photo.scale:100;return '<figure style="--photo-height:'+(180*scale/100)+'px"><img data-photo-scale="'+scale+'" src="'+photo.data+'" alt="'+escape(photo.caption||'Procedure illustration')+'">'+(photo.caption.trim()?'<figcaption>'+escape(photo.caption)+'</figcaption>':'')+'</figure>';}).join('')+'</div>');
     return '<div class="document-photos">'+rows.join('')+'</div>';
   }
   function render(doc){
@@ -22,5 +22,8 @@
     const metadata=[['Responsible Team',doc.team],['Revised Date',model.revisedDate(doc)||'Not Recorded'],['Reviewed Date',model.reviewedDate(doc)]].filter(([,value])=>value.trim());
     return '<header class="document-header"><img src="../../assets/logos/northglenn-horizontal.png" alt="City of Northglenn"><p class="document-kind">Standard Operating Procedure (SOP)</p><h1>'+escape(doc.title||'Untitled Procedure')+'</h1><dl>'+metadata.map(([label,value])=>'<div><dt>'+label+'</dt><dd>'+escape(value)+'</dd></div>').join('')+'</dl></header>'+model.sections.filter(([key])=>doc[key].trim()).map(([key,label])=>'<section class="document-section" data-preview-section="'+key+'"><h2>'+label+'</h2>'+(['notes','safety','security','equipment'].includes(key)?'<ul>'+doc[key].split('\n').filter(s=>s.trim()).map(s=>'<li>'+escape(s)+'</li>').join('')+'</ul>':paragraphs(doc[key]))+'</section>').join('')+'<section class="document-section"><h2>Procedure</h2>'+doc.groups.map(group=>(group.title.trim()?'<h3 class="procedure-section-title">'+escape(group.title)+'</h3>':'')+'<ol class="document-steps" start="'+(count+1)+'">'+group.steps.map(step=>{count++;return '<li class="document-step" data-preview-step="'+step.id+'">'+paragraphs(step.instruction)+(step.substeps.length?'<ol class="document-substeps" type="a">'+step.substeps.map(sub=>'<li>'+escape(sub.text).replaceAll('\n','<br>')+'</li>').join('')+'</ol>':'')+previewTables(step.tables)+renderPhotos(step.photos)+'</li>';}).join('')+'</ol>').join('')+(count?'':'<p class="preview-placeholder">Add your first step to begin the procedure.</p>')+'</section>'+revisionTable(doc);
   }
-  const api={render};if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.SOPDocument=api;
+  function sizePhoto(image){
+    if(image.matches('.document-photos img')&&image.naturalHeight)image.closest('figure').style.width=(180*Number(image.dataset.photoScale||100)/100*image.naturalWidth/image.naturalHeight)+'px';
+  }
+  const api={render,sizePhoto};if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.SOPDocument=api;
 })(typeof globalThis!=='undefined'?globalThis:this);
