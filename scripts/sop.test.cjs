@@ -67,6 +67,14 @@ test('SOP model preserves the template structure, photos, and ordered steps, whi
   assert.throws(()=>model.validate({...doc,groups:[{...doc.groups[0],id:step.id}]}),/Duplicate/);
   step.photos[0].data='data:image/svg+xml;base64,aGVsbG8=';assert.throws(()=>model.validate(doc),/Photos/);
 });
+test('New SOP setup fills document details and records a single creation with the creator and effective date',()=>{
+  const doc=model.create({title:'  Pump Inspection  ',team:'Maintenance',effectiveDate:'2026-11-09',preparedBy:'  Alex Operator  '});
+  assert.equal(doc.title,'Pump Inspection');assert.equal(doc.team,'Maintenance');assert.equal(doc.preparedBy,'Alex Operator');assert.equal(doc.effectiveDate,'2026-11-09');
+  assert.equal(doc.revisionHistory.length,1);
+  assert.deepEqual({...doc.revisionHistory[0],id:undefined},{id:undefined,type:'creation',date:'2026-11-09',summary:'SOP Created',revisedBy:'Alex Operator',approvedBy:''});
+  assert.deepEqual(model.validate(doc),doc);assert.equal(model.revisedDate(doc),'2026-11-09');
+  for(const bad of [{title:' '},{preparedBy:' '},{team:''},{effectiveDate:''},{effectiveDate:'2026-02-30'}])assert.throws(()=>model.create({title:'Pump',team:'Maintenance',effectiveDate:'2026-11-09',preparedBy:'Alex',...bad}));
+});
 test('SOP photo sizes retain legacy defaults and survive validation and JSON backups',()=>{
   const doc=model.blank(),step=model.step();doc.groups[0].steps.push(step);
   step.photos.push({id:crypto.randomUUID(),data:'data:image/png;base64,aGVsbG8=',caption:'Gauge'});

@@ -14,7 +14,32 @@ const {launchBrowser,removeTemporaryDirectory}=require('./lib/browser-check.cjs'
     await evaluate('document.querySelector("[data-close=files-dialog]").click();document.getElementById("library-button").click()');
     await until('location.pathname.endsWith("/library.html")&&!!document.querySelector(".toolbar-actions .primary")');
     await evaluate('document.querySelector(".toolbar-actions .primary").click()');await until('location.pathname.endsWith("/editor.html")&&!!document.querySelector("[data-meta=title]")&&!document.querySelector("main").inert');
+    await until('document.getElementById("new-sop-dialog").open');
+    assert.equal(await evaluate('document.activeElement.id'),'new-sop-name','New SOP setup focuses its title');
+    for(const width of [320,390,1600]){
+      await call('Emulation.setDeviceMetricsOverride',{width,height:900,deviceScaleFactor:1,mobile:false});
+      assert.ok(await evaluate('(()=>{const d=document.getElementById("new-sop-dialog"),r=d.getBoundingClientRect();return r.left>=0&&r.right<=innerWidth&&d.scrollWidth<=d.clientWidth+1})()'),'New SOP setup fits '+width);
+    }
+    await evaluate('document.getElementById("new-sop-form").requestSubmit()');
+    assert.ok(await evaluate('document.getElementById("new-sop-dialog").open'),'Required fields prevent empty setup');
+    const createSOP=async(title='Inspect The Sample Pump')=>{
+      await until('document.getElementById("new-sop-dialog").open');
+      await evaluate(`document.getElementById('new-sop-name').value=${JSON.stringify(title)};document.getElementById('new-sop-team').value='Maintenance';document.getElementById('new-sop-date').value='2026-11-04';document.getElementById('new-sop-creator').value='Alex Operator';document.getElementById('new-sop-form').requestSubmit()`);
+      await until('!document.getElementById("new-sop-dialog").open&&document.querySelectorAll(".revision-entry").length===1');
+    };
+    await createSOP('Setup Test');
+    assert.equal(await evaluate('document.querySelector("[data-meta=preparedBy]").value'),'Alex Operator');
+    assert.equal(await evaluate('document.querySelector("[data-meta=team]").value'),'Maintenance');
+    assert.equal(await evaluate('document.querySelector("[data-meta=effectiveDate]").value'),'2026-11-04');
+    assert.equal(await evaluate('document.querySelector("[data-revision-field=type]").value'),'creation');
+    assert.equal(await evaluate('document.querySelector("[data-revision-field=revisedBy]").value'),'Alex Operator');
+    await until('document.getElementById("save-status").textContent.includes("Draft Kept")');
     await call('Emulation.setDeviceMetricsOverride',{width:1600,height:1000,deviceScaleFactor:1,mobile:false});await call('Page.navigate',{url:base+'/sop-creator/editor.html'});await until('!!document.querySelector("[data-meta=purpose]")&&!document.getElementById("editor").inert');
+    assert.ok(await evaluate('!document.getElementById("new-sop-dialog").open&&document.querySelectorAll(".revision-entry").length===1'),'Recovery preserves a single creation entry without showing setup again');
+    await evaluate('document.getElementById("new-button").click();document.getElementById("confirm-discard").click()');
+    await until('document.getElementById("new-sop-dialog").open');
+    await evaluate('document.querySelector("#new-sop-dialog [data-close]").click()');
+    assert.equal(await evaluate('document.querySelector("[data-meta=title]").value'),'Setup Test','Cancelling setup leaves the previous draft intact');
     const input=async(selector,value)=>evaluate(`(()=>{const input=document.querySelector(${JSON.stringify(selector)});input.value=${JSON.stringify(value)};input.dispatchEvent(new Event('input',{bubbles:true}));})()`);
     await evaluate('document.getElementById("writing-guide-button").click()');
     assert.ok(await evaluate('document.getElementById("writing-guide-dialog").open&&document.getElementById("writing-guide-dialog").textContent.includes("Substeps")'),'Writing guide opens with procedure guidance');
@@ -46,14 +71,14 @@ const {launchBrowser,removeTemporaryDirectory}=require('./lib/browser-check.cjs'
     await input('.step-editor:last-child [data-step-instruction]','One line\n'.repeat(15));
     assert.ok(await evaluate('document.querySelector(".step-editor:last-child [data-step-instruction]").clientHeight>200'),'Writing fields grow to fit text');
     await evaluate('document.getElementById("new-button").click();document.getElementById("confirm-discard").click()');
+    await createSOP();
     await input('[data-meta=title]','Inspect The Sample Pump');await input('[data-meta=purpose]','Check that the pump is ready.');await input('[data-meta=notes]','First note\nSecond note');
     await evaluate('document.querySelector(".tag-picker").open=true;for(const tag of ["pH","Calibration","Instrumentation"]){const checkbox=[...document.querySelectorAll("[data-sop-tag]")].find(input=>input.dataset.sopTag===tag);checkbox.checked=true;checkbox.dispatchEvent(new Event("change",{bubbles:true}));}');
     assert.equal(await evaluate('document.querySelectorAll("#selected-sop-tags button").length'),3);
     await input('#tag-search','calibration');assert.equal(await evaluate('[...document.querySelectorAll(".tag-option")].filter(label=>!label.hidden).length'),1);await input('#tag-search','');
-    assert.equal(await evaluate('document.querySelectorAll(".document-revisions").length'),0,'Empty revision table is omitted');
+    assert.equal(await evaluate('document.querySelectorAll(".revision-entry").length'),1,'Setup adds exactly one Creation entry');
     assert.equal(await evaluate('document.querySelectorAll("[data-meta=version]").length'),0,'Document version field is removed');
-    assert.equal(await evaluate('document.getElementById("revised-date").textContent'),'Not Recorded');
-    await evaluate('document.getElementById("add-revision").click()');
+    assert.equal(await evaluate('document.getElementById("revised-date").textContent'),'2026-11-04');
     assert.equal(await evaluate('document.querySelectorAll("[data-revision-field=version]").length'),0,'Revision entries use dates instead of numbers');
     await input('[data-revision-field=summary]','Initial issue');await input('[data-revision-field=date]','2026-11-05');await input('[data-revision-field=revisedBy]','Operations Team');
     assert.equal(await evaluate('document.getElementById("revised-date").textContent'),'2026-11-05');
@@ -112,7 +137,8 @@ const {launchBrowser,removeTemporaryDirectory}=require('./lib/browser-check.cjs'
     await evaluate('document.getElementById("save-button").click()');await until('document.getElementById("message").textContent==="SOP saved to the library."');
     const records=await(await fetch(base+'/api/sops')).json();assert.equal(records.length,1);const saved=await(await fetch(base+'/api/sops/'+records[0].id)).json();assert.equal(saved.groups[0].steps[0].photos.length,2);assert.equal(saved.revisionHistory[0].summary,'Initial issue','Revision entries are saved with the SOP');assert.equal(saved.groups[0].steps[0].tables[0].rows[0][1],'45 psi','Table cells survive recovery and saving');
     assert.equal(saved.groups[0].steps[0].photos[0].scale,150,'Photo size survives recovery and server saving');
-    await evaluate('document.getElementById("new-button").click();document.getElementById("library-button").click()');await until('location.pathname.endsWith("/library.html")&&!!document.querySelector("[data-open]")');assert.equal(await evaluate('document.getElementById("library-dialog")'),null,'Library is a page rather than a dialog');for(const width of [1440,390,320]){await call('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});assert.ok(await evaluate('document.documentElement.scrollWidth<=innerWidth'),'Library page fits '+width);}await call('Emulation.setDeviceMetricsOverride',{width:1600,height:1000,deviceScaleFactor:1,mobile:false});await evaluate('document.querySelector("[data-open]").click()');await until('document.querySelector("[data-meta=title]").value==="Inspect The Sample Pump"');
+    assert.equal(saved.preparedBy,'Alex Operator','Creator survives saving');assert.equal(saved.revisionHistory[0].type,'creation');assert.equal(saved.team,'Maintenance');
+    await evaluate('document.getElementById("library-button").click()');await until('location.pathname.endsWith("/library.html")&&!!document.querySelector("[data-open]")');assert.equal(await evaluate('document.getElementById("library-dialog")'),null,'Library is a page rather than a dialog');for(const width of [1440,390,320]){await call('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});assert.ok(await evaluate('document.documentElement.scrollWidth<=innerWidth'),'Library page fits '+width);}await call('Emulation.setDeviceMetricsOverride',{width:1600,height:1000,deviceScaleFactor:1,mobile:false});await evaluate('document.querySelector("[data-open]").click()');await until('document.querySelector("[data-meta=title]").value==="Inspect The Sample Pump"');
     assert.equal(await evaluate('document.querySelectorAll("#selected-sop-tags button").length'),3,'SOP tags survive saving, library loading and reopening');
     // Unsaved drafts survive failed saves; stale revisions cannot overwrite a newer server version.
     const updated=await fetch(base+'/api/sops/'+saved.id,{method:'PUT',headers:{'Content-Type':'application/json',Origin:base},body:JSON.stringify({...saved,purpose:'Server update'})});assert.equal(updated.status,200);

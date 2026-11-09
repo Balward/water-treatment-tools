@@ -6,9 +6,9 @@
   <link rel="icon" href="../../assets/logos/favicon.png">
   <link rel="stylesheet" href="../../shared/operations/theme.css">
   <link rel="stylesheet" href="../../shared/operations/navigation.css">
-  <link rel="stylesheet" href="styles.css?v=20261109-reviseddisplay1">
+  <link rel="stylesheet" href="styles.css?v=20261109-newsetup1">
   <script src="../../shared/operations/navigation.js" defer></script>
-  <script src="model.js?v=20261109-photosize1" defer></script><script src="document.js?v=20261109-photosize1" defer></script><script src="preview-edit.js?v=20261107-ownership1" defer></script><script src="app.js?v=20261109-reviseddisplay1" defer></script>
+  <script src="model.js?v=20261109-newsetup1" defer></script><script src="document.js?v=20261109-photosize1" defer></script><script src="preview-edit.js?v=20261107-ownership1" defer></script><script src="app.js?v=20261109-newsetup1" defer></script>
   <link rel="stylesheet" href="page-shell.css?v=20261107-consistency1">
 </head>
 <body data-ops-app="sops" class="sop-page">
@@ -32,6 +32,7 @@
             <label class="wide">Title <span class="required">Required</span><input data-meta="title" maxlength="300" placeholder="Name Of The Procedure" required></label>
             <label>Responsible Team<select data-meta="team"><option>Water Treatment</option><option>Wastewater Treatment</option><option>Maintenance</option><option>Laboratory Services</option><option>General Operations</option></select></label>
             <label>Effective Date<input data-meta="effectiveDate" type="date"></label>
+            <label>Created By<input data-meta="preparedBy" maxlength="300" autocomplete="name"></label>
             <div class="document-detail"><span id="revised-date-label">Revised Date</span><output id="revised-date" aria-labelledby="revised-date-label" aria-describedby="revised-date-help">Not Recorded</output><small id="revised-date-help" class="help">Updated automatically from the latest revision history entry. Reviews with no changes are tracked separately.</small></div>
           </div>
         </section>
@@ -44,6 +45,20 @@
       <section id="preview" aria-label="Live SOP Preview"><div class="preview-heading"><h2>Live Preview</h2><div class="preview-heading-actions"><span>Letter · Portrait</span><button id="open-preview-window" type="button" aria-label="Open Preview In New Window" title="Open Preview In New Window"><svg viewBox="0 0 24 24" aria-hidden="true" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 3h7v7M21 3l-10 10M10 5H4v15h15v-6"/></svg></button><button id="close-preview" type="button" aria-label="Close Live Preview">&times;</button></div></div><div class="paper-wrap"><article id="sop-document" class="sop-document"></article></div></section>
     </div>
   </main>
+  <dialog id="new-sop-dialog" aria-labelledby="new-sop-title" aria-describedby="new-sop-help">
+    <form id="new-sop-form">
+      <div class="dialog-heading"><h2 id="new-sop-title">Create New SOP</h2><button type="button" data-close="new-sop-dialog" aria-label="Cancel New SOP">&times;</button></div>
+      <p id="new-sop-help" class="help">Enter the document details to get started. A Creation history entry will be added with the effective date and your name.</p>
+      <div class="fields">
+        <label class="wide">Title<input id="new-sop-name" name="title" maxlength="300" required autofocus placeholder="Name Of The Procedure"></label>
+        <label>Responsible Team<select id="new-sop-team" name="team" required></select></label>
+        <label>Effective Date<input id="new-sop-date" name="effectiveDate" type="date" required></label>
+        <label class="wide">Your Name<input id="new-sop-creator" name="preparedBy" maxlength="300" autocomplete="name" required></label>
+      </div>
+      <p id="new-sop-error" role="alert"></p>
+      <div class="confirm-actions"><button type="button" data-close="new-sop-dialog">Cancel</button><button type="submit" class="primary">Create SOP</button></div>
+    </form>
+  </dialog>
   <dialog id="files-dialog" aria-labelledby="files-title"><div class="dialog-heading"><h2 id="files-title">Import / Backup</h2><button data-close="files-dialog" type="button" aria-label="Close Import / Backup">×</button></div><p>Download an editable SOP backup including its photos, or open a backup as a new SOP.</p><button id="download-button" type="button">Download SOP Backup</button><label class="file-label">Import SOP Backup<input id="import-file" type="file" accept="application/json,.json"></label><p class="help">Import accepts SOP Creator JSON backups. Use the fields to create a procedure from an existing Word document.</p></dialog>
   <dialog id="confirm-dialog" aria-labelledby="confirm-title"><h2 id="confirm-title">Keep Your Draft?</h2><p>There are changes that have not been saved to the SOP library.</p><div class="confirm-actions"><button id="confirm-cancel" type="button">Keep Editing</button><button id="confirm-discard" type="button">Discard Draft</button><button id="confirm-save" type="button" class="primary">Save &amp; Continue</button></div></dialog>
   <dialog id="writing-guide-dialog" class="writing-guide" aria-labelledby="writing-guide-title">

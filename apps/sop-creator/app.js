@@ -335,7 +335,22 @@
     }catch(error){message(error.message,true);}finally{input.value='';}
   });
   $('save-button').onclick=save;
-  $('new-button').onclick=async()=>{if(!await askToLeave())return;doc=model.blank();dirty=false;sequence++;message('');renderEditor();await persist();document.querySelector('[data-meta="title"]').focus();};
+  function beginNewSOP(){
+    $('new-sop-form').reset();$('new-sop-error').textContent='';
+    $('new-sop-team').innerHTML=document.querySelector('[data-meta="team"]').innerHTML;
+    $('new-sop-team').value=doc.team;
+    const now=new Date();$('new-sop-date').value=[now.getFullYear(),String(now.getMonth()+1).padStart(2,'0'),String(now.getDate()).padStart(2,'0')].join('-');
+    $('new-sop-dialog').showModal();$('new-sop-name').focus();
+  }
+  $('new-sop-form').onsubmit=event=>{
+    event.preventDefault();
+    try{
+      const next=model.create(Object.fromEntries(new FormData(event.target)));
+      doc=next;sequence++;message('');renderEditor();changed();$('new-sop-dialog').close();
+      document.querySelector('[data-meta="purpose"]').focus();
+    }catch(error){$('new-sop-error').textContent=error.message;}
+  };
+  $('new-button').onclick=async()=>{if(await askToLeave())beginNewSOP();};
   $('print-button').onclick=async()=>{await Promise.all([...$('sop-document').querySelectorAll('img')].map(image=>image.decode().catch(()=>{})));await document.fonts.ready;window.print();};
   $('library-button').onclick=async()=>{
     if(saving||navigatingToLibrary)return;
@@ -363,15 +378,17 @@
   document.addEventListener('operations:before-navigate',event=>event.detail.waitUntil((async()=>{if(saving)return false;const allowed=await askToLeave();if(allowed){dirty=false;await draftQueue;await local('delete').catch(()=>{});}return allowed;})()));
   window.addEventListener('beforeunload',event=>{if((dirty||saving)&&!navigatingToLibrary){event.preventDefault();event.returnValue='';}});
   $('editor').inert=true;
-  (async()=>{try{const recovery=await local('get');if(recovery){doc=model.validate(recovery.doc);dirty=Boolean(recovery.dirty);localSaved=true;if(dirty)message('Restored your unfinished draft from this browser.');}}catch{message('Browser draft recovery is unavailable. Save your SOP to the library before leaving.',true);}finally{renderEditor();$('editor').inert=false;document.querySelector('main').inert=false;}
+  (async()=>{let recovered=false;try{const recovery=await local('get');if(recovery){doc=model.validate(recovery.doc);recovered=true;dirty=Boolean(recovery.dirty);localSaved=true;if(dirty)message('Restored your unfinished draft from this browser.');}}catch{message('Browser draft recovery is unavailable. Save your SOP to the library before leaving.',true);}finally{renderEditor();$('editor').inert=false;document.querySelector('main').inert=false;}
     const url=new URL(location.href),requested=url.searchParams.get('sop'),newSOP=url.searchParams.get('new')==='1',importSOP=url.searchParams.get('import')==='1';
     if(importSOP){url.searchParams.delete('import');history.replaceState(null,'',url);}
     if(requested||newSOP){
       url.searchParams.delete('sop');url.searchParams.delete('new');history.replaceState(null,'',url);
       if(!await askToLeave())return;
-      try{doc=newSOP?model.blank():model.validate(await request('/api/sops/'+encodeURIComponent(requested)));dirty=false;sequence++;renderEditor();await persist();if(requested)message('Opened saved SOP.');}
+      if(newSOP){beginNewSOP();return;}
+      try{doc=model.validate(await request('/api/sops/'+encodeURIComponent(requested)));dirty=false;sequence++;renderEditor();await persist();message('Opened saved SOP.');}
       catch(error){message(error.message,true);}
     }
     if(importSOP){$('files-dialog').showModal();$('import-file').focus();}
+    else if(!requested&&!recovered)beginNewSOP();
   })();
 })();

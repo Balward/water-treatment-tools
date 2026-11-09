@@ -24,6 +24,11 @@
     return {needsReview:current>dueDate,lastDate,dueDate};
   }
   const step=()=>({id:id(),instruction:'',substeps:[],photos:[],tables:[]});
+  function create(details){
+    const title=String(details.title||'').trim(),team=String(details.team||'').trim(),preparedBy=String(details.preparedBy||'').trim(),effectiveDate=details.effectiveDate;
+    if(!title||!team||!preparedBy||!validDate(effectiveDate))throw Error('Enter a title, team, effective date, and your name.');
+    return validate({...blank(),title,team,effectiveDate,preparedBy,revisionHistory:[{id:id(),type:'creation',date:effectiveDate,summary:'SOP Created',revisedBy:preparedBy,approvedBy:''}]});
+  }
   const table=()=>({id:id(),caption:'',headers:['Column 1','Column 2'],rows:[['',''],['','']]});
   function validate(input){
     const fail=message=>{throw Error(message);};
@@ -79,6 +84,6 @@
     });
     return result;
   }
-  const api={sections,tagGroups,tags,blank,step,table,revisedDate,reviewedDate,reviewStatus,validate};
+  const api={sections,tagGroups,tags,blank,create,step,table,revisedDate,reviewedDate,reviewStatus,validate};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.SOPModel=api;
 })(typeof globalThis!=='undefined'?globalThis:this);
