@@ -176,7 +176,7 @@
   },true);
   function renderPreview(){
     clearTimeout(previewWindowTimer);previewWindowTimer=setTimeout(updatePreviewWindow,100);
-    $('revised-date').value=model.revisedDate(doc)||'Not Recorded';
+    $('revised-date').textContent=model.revisedDate(doc)||'Not Recorded';
     document.title=(doc.title.trim()||'SOP Creator')+' | Northglenn Operations';
     $('sop-document').innerHTML=SOPDocument.render(doc);
     SOPPreviewEditor.bind(doc);

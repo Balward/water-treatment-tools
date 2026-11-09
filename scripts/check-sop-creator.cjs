@@ -52,11 +52,11 @@ const {launchBrowser,removeTemporaryDirectory}=require('./lib/browser-check.cjs'
     await input('#tag-search','calibration');assert.equal(await evaluate('[...document.querySelectorAll(".tag-option")].filter(label=>!label.hidden).length'),1);await input('#tag-search','');
     assert.equal(await evaluate('document.querySelectorAll(".document-revisions").length'),0,'Empty revision table is omitted');
     assert.equal(await evaluate('document.querySelectorAll("[data-meta=version]").length'),0,'Document version field is removed');
-    assert.equal(await evaluate('document.getElementById("revised-date").value'),'Not Recorded');
+    assert.equal(await evaluate('document.getElementById("revised-date").textContent'),'Not Recorded');
     await evaluate('document.getElementById("add-revision").click()');
     assert.equal(await evaluate('document.querySelectorAll("[data-revision-field=version]").length'),0,'Revision entries use dates instead of numbers');
     await input('[data-revision-field=summary]','Initial issue');await input('[data-revision-field=date]','2026-11-05');await input('[data-revision-field=revisedBy]','Operations Team');
-    assert.equal(await evaluate('document.getElementById("revised-date").value'),'2026-11-05');
+    assert.equal(await evaluate('document.getElementById("revised-date").textContent'),'2026-11-05');
     assert.ok(await evaluate('document.querySelector(".document-revisions").textContent.includes("Initial issue")'),'Revision table updates live');
     assert.equal(await evaluate('document.querySelectorAll(".document-revisions th").length'),5);
     assert.equal(await evaluate('document.querySelector(".document-revisions th").textContent'),'Date');
@@ -65,7 +65,7 @@ const {launchBrowser,removeTemporaryDirectory}=require('./lib/browser-check.cjs'
     assert.ok(await evaluate('document.querySelector(".document-header").textContent.includes("Revised Date")&&document.querySelector(".document-header").textContent.includes("2026-11-06")'),'Document header follows the newest revision date');
     await evaluate('document.querySelector(".revision-entry:last-child [data-action=revision-remove]").click()');
     await until('document.querySelectorAll(".revision-entry").length===1');
-    assert.equal(await evaluate('document.getElementById("revised-date").value'),'2026-11-05','Removing the newest entry recalculates Revised Date');
+    assert.equal(await evaluate('document.getElementById("revised-date").textContent'),'2026-11-05','Removing the newest entry recalculates Revised Date');
     await evaluate('document.querySelector("[data-action=add-step]").click()');await input('[data-step-instruction]','Look for damage.\nRecord any issues.');
     await evaluate('document.querySelector("[data-action=add-substep]").click()');await input('[data-substep]','Record the pressure.');
     await evaluate('document.querySelector("[data-action=add-step]").click()');await input('.step-editor:last-child [data-step-instruction]','Check The Motor');
@@ -247,7 +247,7 @@ const {launchBrowser,removeTemporaryDirectory}=require('./lib/browser-check.cjs'
     assert.equal(await evaluate('document.querySelector("[data-revision-field=summary]").value'),'SOP Created','Creation replaces the imported N/A placeholder');
     await input('[data-revision-field=summary]','');await input('[data-revision-field=type]','review');await input('[data-revision-field=revisedBy]','Reviewing Operator');
     assert.ok(await evaluate('document.querySelector(".document-revisions").textContent.includes("Reviewed - No Changes")'));
-    assert.equal(await evaluate('document.getElementById("revised-date").value'),'Not Recorded','A review does not pretend the instructions changed');
+    assert.equal(await evaluate('document.getElementById("revised-date").textContent'),'Not Recorded','A review does not pretend the instructions changed');
     await evaluate('document.getElementById("save-button").click()');await until('document.getElementById("save-status").textContent==="Saved"');
     const reviewed=await(await fetch(base+'/api/sops/'+overdue.id)).json();assert.equal(reviewed.revisionHistory[0].type,'review');assert.equal(reviewed.revisionHistory[0].revisedBy,'Reviewing Operator');
     await evaluate('document.getElementById("library-button").click()');await until('!!document.querySelector("[data-open]")');
