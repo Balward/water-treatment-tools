@@ -13,10 +13,21 @@ try{
  Add-Type -AssemblyName System.IO.Compression.FileSystem
  [IO.Directory]::CreateDirectory([IO.Path]::GetDirectoryName($archive))|Out-Null
  if(Test-Path -LiteralPath $archive){Remove-Item -LiteralPath $archive}
- [IO.Compression.ZipFile]::CreateFromDirectory($source,$archive)
+ # Use portable forward-slash member names; .NET on Windows can emit backslashes.
+ $stream=[IO.File]::Create($archive)
+ $writer=[IO.Compression.ZipArchive]::new($stream,[IO.Compression.ZipArchiveMode]::Create)
+ try{
+  foreach($file in Get-ChildItem -LiteralPath $source -Recurse -File -Force){
+   $relative=$file.FullName.Substring($source.Length).TrimStart([char[]]'\/').Replace('\','/')
+   $entry=$writer.CreateEntry($relative,[IO.Compression.CompressionLevel]::Optimal)
+   $inputStream=[IO.File]::OpenRead($file.FullName);$outputStream=$entry.Open()
+   try{$inputStream.CopyTo($outputStream)}finally{$outputStream.Dispose();$inputStream.Dispose()}
+  }
+ }finally{$writer.Dispose();$stream.Dispose()}
  $zip=[IO.Compression.ZipFile]::OpenRead($archive)
  try{
-  $names=@($zip.Entries | ForEach-Object {$_.FullName.Replace('\','/')})
+  $names=@($zip.Entries | ForEach-Object {$_.FullName})
+  if($names | Where-Object {$_.Contains('\') -or $_.StartsWith('/') -or ($_.Split('/') -contains '..')}){throw 'Archive contains a nonportable or unsafe member path.'}
   foreach($required in @('plugin.json','.codex-plugin/plugin.json','skills/sop-review-and-revision/SKILL.md','skills/word-sop-conversion/SKILL.md','skills/word-sop-conversion/scripts/docx-to-sop.mjs','skills/word-sop-conversion/scripts/sop-model.cjs')){
    if($required -notin $names){throw "Missing plugin component: $required"}
   }
