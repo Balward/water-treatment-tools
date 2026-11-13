@@ -59,7 +59,7 @@ function createInitialLiveOpsState() {
         { id: 'waste-pumps-south-waste-pump', name: 'South Waste' },
       ],
     },
-    { key: 'thickened-solid-pumps', label: 'Thickened Solid Pumps', names: ['North TSPS', 'South TSPS'] },
+    { key: 'thickened-solid-pumps', label: 'Thickened Solids Pumps', names: ['North TSPS', 'South TSPS'] },
   ];
 
   const now = new Date().toISOString();
