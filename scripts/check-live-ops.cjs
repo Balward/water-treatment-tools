@@ -45,8 +45,11 @@ const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
     const chooseOperator=async name=>{for(let i=0;i<100;i++){if(await evaluate('!!document.getElementById("opsOperatorSelect")&&!document.getElementById("opsOperatorSelect").disabled'))break;await wait(50);}await evaluate('document.getElementById("opsOperatorSelect").value='+JSON.stringify(name)+';document.querySelector(".ops-operator-dialog form").requestSubmit()');};
     await call('Emulation.setDeviceMetricsOverride',{width:1920,height:1080,deviceScaleFactor:1,mobile:false});
     await call('Page.navigate',{url:'http://127.0.0.1:8781/live-operations-dashboard/?mode=tv'});
-    for(let i=0;i<100;i++){if(await evaluate('document.querySelectorAll(".equipment-card").length===27&&document.readyState==="complete"'))break;await wait(100)}
-    assert.equal(await evaluate('document.querySelectorAll(".equipment-card").length'),27);
+    for(let i=0;i<100;i++){if(await evaluate('document.querySelectorAll(".equipment-card").length===29&&document.readyState==="complete"'))break;await wait(100)}
+    assert.equal(await evaluate('document.querySelectorAll(".equipment-card").length'),29);
+    const migrated=await(await fetch('http://127.0.0.1:3191/api/live-ops/state')).json();
+    assert.deepEqual(migrated.equipment.filter(e=>e.groupKey==='thickened-solid-pumps').map(e=>e.name),['North TSPS','South TSPS']);
+    for(const original of fixture.equipment){const current=migrated.equipment.find(e=>e.id===original.id);assert.equal(current.note,original.note);assert.equal(current.status,original.status);}
     assert.equal(await evaluate('[...document.querySelectorAll(".legend-key span")].map(n=>n.textContent).join(",")'),'In Service,Warning,Out Of Service,Maintenance,Offline');
     await evaluate('document.fonts.ready');
     assert.ok(await evaluate('document.fonts.check("16px Inter")&&getComputedStyle(document.body).fontFamily.startsWith("Inter")'));
@@ -79,7 +82,7 @@ const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
     for(const [width,height] of [[3840,2160],[2560,1440],[1920,1440],[1920,900],[1920,720],[1366,768],[1280,720],[1280,600],[1024,768],[1024,600],[900,600]]){
       await call('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:false});await wait(120);
       assert.ok(await evaluate('document.documentElement.scrollHeight<=innerHeight&&document.documentElement.scrollWidth<=innerWidth'),'Desktop fits '+width+'x'+height);
-      assert.equal(await evaluate('document.querySelectorAll(".equipment-card").length'),27);
+      assert.equal(await evaluate('document.querySelectorAll(".equipment-card").length'),29);
       assert.ok(await evaluate('(()=>{const f=document.querySelector(".wall-footer").getBoundingClientRect(),b=document.getElementById("wallHeaderToggle").getBoundingClientRect();return Math.abs(f.right-b.right)<2&&b.bottom<=innerHeight})()'),'Header control stays at the far right at '+width+'x'+height);
       assert.ok(await evaluate('(()=>{const cards=[...document.querySelectorAll(".pump-groups-row .equipment-card")];return cards.length===8&&new Set(cards.map(c=>Math.round(c.getBoundingClientRect().top))).size===1})()'),'High Zone and Booster Pumps share one eight-card row');
       const commentSizes=await evaluate('[...document.querySelector(".comments-board").children].map(e=>[e.className,e.clientHeight,getComputedStyle(e).display])');
@@ -104,7 +107,9 @@ const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
         assert.ok(sizes.note>=30&&sizes.note>baselineType.note*1.5&&sizes.icon>=40,'4K notes and status icons scale together: '+JSON.stringify(sizes));
         const shot=await call('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});fs.writeFileSync(path.join(root,'preview/wall-readable-4k.png'),Buffer.from(shot.data,'base64'));console.log('4K typography:',sizes);
       }
-      console.log('All 27 equipment tiles fit '+width+'x'+height);
+      console.log('All 29 equipment tiles fit '+width+'x'+height);
+      assert.ok(await evaluate('(()=>{const row=document.querySelector(".residuals-pumps-row"),cards=[...row.querySelectorAll(".equipment-card")];return cards.length===6&&new Set(cards.map(c=>Math.round(c.getBoundingClientRect().top))).size===1})()'),'Reclaim, Waste and TSPS share one six-card row');
+      assert.ok(await evaluate('[...document.querySelectorAll(".residuals-pumps-row .group-header")].every(h=>{const t=h.querySelector(".group-title").getBoundingClientRect(),s=h.querySelector(".group-stats").getBoundingClientRect();return t.right<=s.left&&t.bottom<=h.getBoundingClientRect().bottom+1})'),'Pump group headings fit without overlap');
       if(width===1280&&height===600){const shot=await call('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});fs.writeFileSync(path.join(root,'preview/live-ops-compact.png'),Buffer.from(shot.data,'base64'));}
     }
     await call('Emulation.setDeviceMetricsOverride',{width:1920,height:1080,deviceScaleFactor:1,mobile:false});await wait(120);
@@ -137,7 +142,7 @@ const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
     await evaluate('document.getElementById("wallThemeToggle").click()');
     assert.ok(await evaluate('document.body.classList.contains("wall-dark")&&document.getElementById("wallThemeToggle").getAttribute("aria-label")==="Switch To Light Mode"'),'Icon toggle switches to dark mode and announces its next action');
     assert.ok(await evaluate('(()=>{const t=document.getElementById("wallThemeToggle").getBoundingClientRect(),h=document.getElementById("wallHeaderToggle").getBoundingClientRect();return t.width===30&&t.right<h.left&&Math.abs(t.top+t.height/2-h.top-h.height/2)<2})()'),'Compact theme icon sits beside Show Header');
-    await call('Page.reload');for(let i=0;i<100;i++){if(await evaluate('document.readyState==="complete"&&document.querySelectorAll(".equipment-card").length===27'))break;await wait(50)}
+    await call('Page.reload');for(let i=0;i<100;i++){if(await evaluate('document.readyState==="complete"&&document.querySelectorAll(".equipment-card").length===29'))break;await wait(50)}
     assert.equal(await evaluate('document.body.classList.contains("header-hidden")'),true,'Header preference survives reload');
     assert.ok(await evaluate('document.body.classList.contains("wall-dark")'),'Theme preference survives reload');
     await evaluate('document.getElementById("wallThemeToggle").click()');
@@ -169,7 +174,7 @@ const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
     assert.ok(await evaluate('document.getElementById("equipmentReadDialog").open'));
     assert.ok(await evaluate('document.getElementById("equipmentReadNote").textContent.includes("maintenance")'));
     await call('Page.navigate',{url:'http://127.0.0.1:8781/live-operations-dashboard/'});
-    for(let i=0;i<100;i++){if(await evaluate('document.readyState==="complete"&&document.querySelectorAll(".equipment-card").length===27'))break;await wait(100)}
+    for(let i=0;i<100;i++){if(await evaluate('document.readyState==="complete"&&document.querySelectorAll(".equipment-card").length===29'))break;await wait(100)}
     for(const [width,height] of [[1366,768],[1280,600],[1024,600],[900,600]]){
       await call('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:false});await wait(120);
       assert.ok(await evaluate('document.documentElement.scrollHeight<=innerHeight'),'Editable desktop fits '+width+'x'+height);
@@ -250,7 +255,7 @@ const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
     for(const dark of [false,true]){
       await evaluate('localStorage.setItem("live-ops-wall-theme",'+JSON.stringify(dark?'dark':'light')+')');
       await call('Page.reload');
-      for(let i=0;i<100;i++){if(await evaluate('document.readyState==="complete"&&document.querySelectorAll(".equipment-card").length===27'))break;await wait(100)}
+      for(let i=0;i<100;i++){if(await evaluate('document.readyState==="complete"&&document.querySelectorAll(".equipment-card").length===29'))break;await wait(100)}
       assert.equal(await evaluate('document.body.classList.contains("wall-dark")'),dark);
       assert.ok((await evaluate('(()=>{const rgb=s=>s.match(/\\d+/g).slice(0,3).map(Number);const lum=s=>rgb(s).map(v=>{v/=255;return v<=.04045?v/12.92:((v+.055)/1.055)**2.4}).reduce((sum,v,i)=>sum+v*[.2126,.7152,.0722][i],0);return [...document.querySelectorAll(".equipment-card")].map(c=>{const bg=lum(getComputedStyle(c).backgroundColor),fg=lum(getComputedStyle(c.querySelector(".equipment-name")).color);return(Math.max(bg,fg)+.05)/(Math.min(bg,fg)+.05)})})()')).every(ratio=>ratio>=4.5),'Tile contrast passes in both themes');
       await wait(100);
@@ -288,8 +293,8 @@ const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
     for(let i=0;i<100;i++){if(await evaluate('document.readyState==="complete"&&document.getElementById("equipmentContainer").textContent.includes("unavailable")'))break;await wait(50)}
     assert.equal(await evaluate('document.querySelectorAll(".equipment-card").length'),0,'Initial failure has no fake equipment statuses');
     refuseState=refuseStream=false;await evaluate('window.dispatchEvent(new Event("online"))');
-    for(let i=0;i<100;i++){if(await evaluate('document.querySelectorAll(".equipment-card").length===27&&document.getElementById("connectionAlert").hidden'))break;await wait(50)}
-    assert.equal(await evaluate('document.querySelectorAll(".equipment-card").length'),27,'A fresh snapshot recovers after initial API failure');
+    for(let i=0;i<100;i++){if(await evaluate('document.querySelectorAll(".equipment-card").length===29&&document.getElementById("connectionAlert").hidden'))break;await wait(50)}
+    assert.equal(await evaluate('document.querySelectorAll(".equipment-card").length'),29,'A fresh snapshot recovers after initial API failure');
     assert.equal(await evaluate('document.getElementById("connectionAlert").hidden'),true);
     await call('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:'reduce'}]});await wait(100);
     assert.equal(await evaluate('getComputedStyle(document.querySelector(".recent-change"),"::after").animationName'),'none');
@@ -310,7 +315,7 @@ const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
     assert.equal((await fetch(logUrl,{method:'DELETE',headers:{'Content-Type':'application/json'},body:'{}'})).status,409,'A stale or missing entry snapshot cannot delete history');
     assert.equal((await fetch(logUrl,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({expectedEntry:logEntry,updatedBy:'Test',changes:[]})})).status,400,'Invalid history edits are rejected');
     await call('Page.navigate',{url:'http://127.0.0.1:8781/live-operations-dashboard/'});
-    for(let i=0;i<100;i++){if(await evaluate('document.readyState==="complete"&&document.querySelectorAll(".equipment-card").length===27'))break;await wait(50)}
+    for(let i=0;i<100;i++){if(await evaluate('document.readyState==="complete"&&document.querySelectorAll(".equipment-card").length===29'))break;await wait(50)}
     await evaluate('document.querySelector(".equipment-card[data-id=filters-filter-1]").click();document.getElementById("assetLogDetails").open=true;document.querySelector(".asset-log-actions button").click();document.querySelector(".asset-log-form input").value="Corrected operator";document.querySelectorAll(".asset-log-form textarea")[1].value="Corrected historical note";document.querySelector(".asset-log-form").requestSubmit()');
     let editedLog;
     for(let i=0;i<80;i++){editedLog=(await (await fetch('http://127.0.0.1:3191/api/live-ops/state')).json()).equipment.find(e=>e.id===logEquipmentId);if(editedLog.changeLog[0].updatedBy==='Corrected operator')break;await wait(50)}
@@ -340,13 +345,21 @@ const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
     for(let i=0;i<80;i++){if(await evaluate('document.querySelectorAll("#userList .manage-item").length===8'))break;await wait(50);}
     assert.ok((await(await fetch('http://127.0.0.1:3191/api/plant-rounds/users')).json()).users.some(user=>user.name==='Suite Operator'),'Central management additions reach the Plant Rounds directory');
     assert.ok(!JSON.parse(fs.readFileSync(path.join(temp,'live-ops-state.json'),'utf8')).equipment.find(e=>e.id===logEquipmentId).changeLog.some(e=>e.id===logEntry.id),'Deletion is persisted to disk');
+    for(const side of ['north','south']){
+      const id='thickened-solid-pumps-'+side+'-tsps';
+      for(const status of ['operational','warning','offline','out-of-service','maintenance']){
+        const response=await fetch('http://127.0.0.1:3191/api/live-ops/equipment/'+id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({status,note:'TSPS test note',updatedBy:'Test operator'})});assert.ok(response.ok);
+        const saved=(await response.json()).equipment;assert.equal(saved.status,status);assert.equal(saved.note,'TSPS test note');assert.equal(saved.changeLog[0].updatedBy,'Test operator');
+      }
+      const persisted=JSON.parse(fs.readFileSync(path.join(temp,'live-ops-state.json'),'utf8')).equipment.find(e=>e.id===id);assert.equal(persisted.status,'maintenance');assert.equal(persisted.changeLog.length,5);
+    }
     assert.equal(errors.length,0,JSON.stringify(errors));
     // A real named heartbeat must reach clients without editing any equipment.
     const controller=new AbortController();const stream=await fetch('http://127.0.0.1:3191/api/live-ops/stream',{signal:controller.signal});
     const reader=stream.body.getReader();let text='';const timer=setTimeout(()=>controller.abort(),28000);
     try {while(!text.includes('event: heartbeat')){const chunk=await reader.read();if(chunk.done)break;text+=new TextDecoder().decode(chunk.value)}}finally{clearTimeout(timer);controller.abort()}
     assert.ok(text.includes('event: heartbeat'),'Real SSE heartbeat delivered');
-    console.log('Passed: 27 stationary tiles, single-line equipment names, 4.5:1 contrast in both themes, bottom comments, persistent hide-header control and pinning, actual API edits/audit/SSE, interrupted/stalled/initial-failure recovery, reduced motion, editor and phone layouts.');
+    console.log('Passed: 29 stationary tiles, single-line equipment names, 4.5:1 contrast in both themes, bottom comments, persistent hide-header control and pinning, actual API edits/audit/SSE, interrupted/stalled/initial-failure recovery, reduced motion, editor and phone layouts.');
   } finally {
     try { await browser?.close(); } finally {
       api.kill();await new Promise(resolve=>{if(api.exitCode!==null||api.signalCode!==null)resolve();else api.once("exit",resolve)});

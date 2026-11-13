@@ -1,3 +1,8 @@
+/* Keep the three residuals pump headings readable on compact desktop displays. */
+@media (min-width:900px) {
+  body .residuals-pumps-row .group-header { gap:4px; }
+  body .residuals-pumps-row .group-title,body.mode-tv .residuals-pumps-row .group-title { font-size:clamp(12px,min(1.3vw,1.9vh),44px);white-space:nowrap; }
+}
 /* Wall-only geometry; the editor keeps the standard Operations header. */
 body { --wall-muted:#425965; }
 body.wall-dark { --wall-muted:#c2d3dc; }

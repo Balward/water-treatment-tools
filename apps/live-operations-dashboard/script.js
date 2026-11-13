@@ -853,15 +853,17 @@
       }
 
       if (group.key === 'reclaim-pumps') {
-        const wasteGroup = grouped.find((item) => item.key === 'waste-pumps');
-        if (wasteGroup) {
+        const relatedGroups = ['reclaim-pumps', 'waste-pumps', 'thickened-solid-pumps']
+          .map((key) => grouped.find((item) => item.key === key)).filter(Boolean);
+        if (relatedGroups.length > 1) {
           const pairedGroupsRow = document.createElement('div');
-          pairedGroupsRow.className = 'paired-groups-row';
-          pairedGroupsRow.appendChild(buildGroupNode(group));
-          pairedGroupsRow.appendChild(buildGroupNode(wasteGroup));
+          pairedGroupsRow.className = 'paired-groups-row residuals-pumps-row';
+          pairedGroupsRow.style.setProperty('--pump-group-count', relatedGroups.length);
+          for (const relatedGroup of relatedGroups) {
+            pairedGroupsRow.appendChild(buildGroupNode(relatedGroup));
+            renderedGroupKeys.add(relatedGroup.key);
+          }
           equipmentContainer.appendChild(pairedGroupsRow);
-          renderedGroupKeys.add(group.key);
-          renderedGroupKeys.add(wasteGroup.key);
           continue;
         }
       }

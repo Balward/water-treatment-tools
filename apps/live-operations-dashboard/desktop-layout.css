@@ -18,6 +18,7 @@
   body .group-title,body.mode-tv .group-title { font-size:clamp(15px,1.9vh,20px); }
   body .group-stats,body.mode-tv .group-stats { font-size:clamp(10px,1.3vh,13px); }
   body .equipment-layout .paired-groups-row,body.mode-tv .equipment-layout .paired-groups-row { height:100%;min-height:0;grid-template-columns:1fr 1fr; }
+  body .equipment-layout .residuals-pumps-row,body.mode-tv .equipment-layout .residuals-pumps-row { grid-template-columns:repeat(var(--pump-group-count,3),minmax(0,1fr)); }
   body .equipment-layout .pump-groups-row .card-grid,body.mode-tv .equipment-layout .pump-groups-row .card-grid { grid-template-columns:repeat(4,minmax(0,1fr)); }
   body .card-grid,body.mode-tv .card-grid { min-height:0;padding:clamp(3px,.65vh,7px) 8px;grid-template-rows:minmax(0,1fr); }
   body .group--filters>.card-grid,body.mode-tv .group--filters>.card-grid { grid-template-columns:repeat(8,minmax(0,1fr)); }
