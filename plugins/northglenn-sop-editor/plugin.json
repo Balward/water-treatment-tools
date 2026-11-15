@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "northglenn-sop-editor",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Review SOP JSON backups and convert Word SOPs with embedded images.",
   "author": {
     "name": "Plugin owner"

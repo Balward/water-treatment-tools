@@ -13,7 +13,7 @@ For an uploaded Word DOCX or a request to convert Word to SOP JSON, use the sibl
 
 ## Phase 1 — Import and inspection
 
-1. Require a user-uploaded JSON backup. Parse the complete file, retaining an untouched source copy, including unknown keys, array order, nulls, HTML/rich text, image objects, and embedded data. Check `format === "northglenn-sop"`, `version === 1`, and `document` is an object; otherwise stop and explain.
+1. Use the user-uploaded JSON backup or the verified extraction backup produced from the Word source by the sibling conversion skill. Parse the complete file, retaining an untouched source copy, including unknown keys, array order, nulls, HTML/rich text, image objects, and embedded data. Check `format === "northglenn-sop"`, `version === 1`, and `document` is an object; otherwise stop and explain.
 2. Inventory Purpose, Background, Notes, Safety, Equipment, all procedure groups, steps, substeps, images, metadata, revision history, and IDs, wherever they actually occur. Do not assume guessed field names are authoritative. See `references/json-structure.md`.
 3. Report absent or unfamiliar fields as such. Distinguish not present from not yet inspected. Establish an immutable source snapshot for later structural comparison. Never use the example fixture as a schema definition.
 
@@ -21,7 +21,7 @@ For an uploaded Word DOCX or a request to convert Word to SOP JSON, use the sibl
 
 Review grammar, clarity, terminology, consistency, safety ambiguity, and direct imperative phrasing. Prefer one action per step when this does not alter sequencing. Preserve numerical values, units, thresholds, timing, pressure, concentrations, chemical identities, PPE, interlocks, valve positions, process sequence, equipment names, acceptance criteria, and disposal requirements exactly unless the user specifically authorizes a change. Do not infer plant-specific facts. Flag technical uncertainty instead of correcting it by assumption. Use `references/writing-conventions.md`.
 
-Maintain an edit ledger: source JSON pointer, original text, proposed text, rationale, classification (editorial/technical), decision (proposed/approved/rejected/unresolved), and the user's authorization evidence. A proposal is not approval.
+Maintain an edit ledger with the source JSON pointer, original text, proposed text, rationale, classification (editorial/technical), decision (proposed/approved/rejected/unresolved), and the user's authorization evidence. For proposed section, step, or substep changes, record the source IDs and destinations, including where affected photos and tables will stay. A proposal is not approval.
 
 ## Phase 3 — Proposed SOP
 
@@ -37,11 +37,11 @@ Explicitly ask: "Do you authorize generation of the final JSON backup using the 
 
 ## Phase 6 — JSON generation
 
-Only after explicit export authorization, deep-copy the original parsed JSON and apply **only** ledger-approved textual replacements at verified JSON pointers. Never reconstruct the document from the rendered SOP. Preserve `format`, `version`, document schema, all IDs, images, embedded data, tags, revision numbers, revision history, metadata, keys, arrays, and ordering. Never increment revision or insert approval records. Preserve unapproved text exactly. If an authorized edit requires structural change, request separate explicit authorization for that exact change; the default is text-only.
+Only after explicit export authorization, deep-copy the original parsed JSON and apply **only** the ledger-approved changes at verified JSON pointers. Never reconstruct the document from the rendered SOP. Preserve `format`, `version`, document schema, images, embedded data, tags, revisions, history, and metadata. Never increment revision or insert approval records. Preserve unapproved text exactly. The default is text-only. For an exact structural change authorized separately, preserve IDs for retained objects, allocate unique IDs only for new entries, and move existing photos and tables as intact objects only to the approved destinations.
 
 ## Phase 7 — Validation and export
 
-Perform actual machine-readable JSON parse validation and compare against the original. Verify root wrapper and document object; compute a recursive path-level diff with type awareness. Every changed leaf must match an explicitly approved ledger entry; no added/deleted keys, reordered arrays, or changes to IDs, images, metadata, tags, revision fields/history, or embedded objects. Compare protected subtrees deeply. A text field containing rich text may be changed only with exact authorization and no unintended embedded changes. When possible, re-import/round-trip parse the serialized file and repeat comparison. Refer to `references/validation.md`.
+Perform actual machine-readable JSON parse validation and compare against the original. Verify the wrapper and document object. For text-only revisions, compute the recursive path-level diff and match every changed leaf to an approved ledger entry. For explicitly approved structure changes, also compare retained objects by ID, account for all added, removed or moved entries against the ledger, and verify the approved destinations and sequence. Compare photos and tables deeply, including image bytes, captions and dimensions. Compare protected metadata, tags, revision fields and history deeply. A rich-text field requires exact authorization and preservation of its embedded objects. Re-import or round-trip parse the serialized file when possible and repeat the comparison. Refer to `references/validation.md`.
 
 If execution/file tools are unavailable, do not claim machine validation or provide a supposedly validated export. Explain the limitation and request an execution-capable environment. If validation fails, **do not** provide the file as import-ready; report exact differences and correct them from the original snapshot. On success, provide a downloadable `.json` backup plus a concise ledger summary and specific validation checks actually performed. Never claim validation without executing it.
 

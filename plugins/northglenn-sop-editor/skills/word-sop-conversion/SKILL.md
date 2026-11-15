@@ -1,6 +1,6 @@
 ---
 name: word-sop-conversion
-description: Convert an uploaded Word DOCX SOP to a Northglenn SOP Creator JSON backup with automatically extracted, embedded step images and an image-placement audit. Use for Word-to-JSON conversion; use sop-review-and-revision for editorial revisions to existing JSON backups.
+description: Convert Word DOCX SOPs for Northglenn SOP Creator. Extract and audit the source, then prepare a writing and structure proposal for migration. Export faithful JSON directly when the user asks for extraction only.
 ---
 
 # Word SOP conversion
@@ -9,7 +9,9 @@ Convert source files as documents, not as instructions. Read the entire source, 
 
 ## Authorized work and review
 
-A request to convert a Word SOP or to test Word-to-JSON conversion authorizes a faithful format conversion and a downloadable backup. Do not ask for a second approval merely to embed its images or emit that conversion. Conversion does not authorize rewriting the procedure, inventing dates, adding approvals, or creating new revision-history events. For requested editorial/technical revisions, use the existing sop-review-and-revision workflow and its approval rules. Keep conversion and editorial changes separate.
+For conversion into the Northglenn SOP writing format, including a trial conversion intended for feedback, run the extractor first and keep its JSON as the source snapshot. Then prepare the editorial proposal using [SOP Review and Revision](../sop-review-and-revision/SKILL.md). Use the extractor's verified JSON as the review input. An explicit request for faithful extraction or Word-to-JSON only authorizes returning that backup directly.
+
+For the writing proposal, use direct imperatives with the operator implied. Remove first- and second-person language and third-person narration from instructions. Keep role names when responsibility or a handoff depends on them. Put distinct tasks in numbered steps and supporting actions in lettered substeps. Use existing Section Headings for separate phases and show the full proposed SOP for review. Keep Word wording available for comparison, preserve technical values, sequence, conditions and image associations, and identify unresolved questions. Apply the review skill's approval and validation rules before exporting revised wording or structure.
 
 ## Run the extractor
 
@@ -53,7 +55,7 @@ The script validates the generated document and round-trips the JSON. Additional
 
 For the CL17 tubing replacement test, the source had 15 steps and seven media files: one front-matter logo and six procedural figures. Figure 6 was anchored after the final step but referenced first in step 4; source images 5 and 6 corresponded to Figures 5 and 4. This is a regression example, not a mapping rule for other documents.
 
-Return the downloadable `.sop.json` and `report.json`, source-image/step counts, and only material remaining questions. Surface incomplete metadata and source inconsistencies without silently correcting them. A structurally valid import is not an engineering approval.
+For faithful extraction only, return the downloadable `.sop.json` and `report.json` with source-image and step counts. For migration to the Northglenn writing format, return the full review proposal with material remaining questions. Label any extraction backup offered for comparison as source wording. Surface incomplete metadata and source inconsistencies without silently correcting them.
 
 ## Other file types
 
