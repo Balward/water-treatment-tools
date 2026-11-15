@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Read-only DOCX conversion. No Office automation, network calls, or dependencies.
 import {readFileSync,writeFileSync,mkdirSync,existsSync} from 'node:fs';
-import {inflateRawSync} from 'node:zlib';
+import zlib from 'node:zlib';
 import {createHash,randomUUID} from 'node:crypto';
 import {dirname,join,resolve,posix} from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -47,7 +47,7 @@ export function parseXml(xml){
   }
   if(stack.length!==1)throw Error('Unclosed XML tag.');return children(root)[0];
 }
-function crc32(bytes){let c=0xffffffff;for(const b of bytes){c^=b;for(let j=0;j<8;j++)c=(c>>>1)^((c&1)?0xedb88320:0);}return(c^0xffffffff)>>>0;}
+const crc32=zlib.crc32 ?? function(bytes){let c=0xffffffff;for(const b of bytes){c^=b;for(let j=0;j<8;j++)c=(c>>>1)^((c&1)?0xedb88320:0);}return(c^0xffffffff)>>>0;};
 export function unzip(buffer){
   if(buffer.length>64000000)throw Error('Choose a DOCX under 64 MB.');
   let eocd=-1;for(let i=buffer.length-22;i>=Math.max(0,buffer.length-65557);i--)if(buffer.readUInt32LE(i)===0x06054b50&&i+22+buffer.readUInt16LE(i+20)===buffer.length){eocd=i;break;}
@@ -65,7 +65,7 @@ export function unzip(buffer){
     if(start+30>offset||buffer.readUInt32LE(start)!==0x04034b50)throw Error('Invalid ZIP entry.');
     const dataStart=start+30+buffer.readUInt16LE(start+26)+buffer.readUInt16LE(start+28);
     if(dataStart+compressed>offset)throw Error('Invalid ZIP content bounds.');
-    const packed=buffer.subarray(dataStart,dataStart+compressed),bytes=method===0?Buffer.from(packed):inflateRawSync(packed,{maxOutputLength:24000000});
+    const packed=buffer.subarray(dataStart,dataStart+compressed),bytes=method===0?Buffer.from(packed):zlib.inflateRawSync(packed,{maxOutputLength:24000000});
     if(bytes.length!==size||crc32(bytes)!==crc)throw Error('Corrupt DOCX content: '+name);
     entries.set(name,bytes);
   }
@@ -140,9 +140,13 @@ function dateValue(raw){
 }
 export function convertDocx(buffer,{team='',effectiveDate=''}={}){
   const source=inspectDocx(buffer),doc=model.blank();doc.team=team;
-  const report={sourceSha256:source.sourceSha256,sourceBlocks:source.blocks,supplementalText:source.supplementalText,metadata:[],images:[],warnings:[...source.warnings],unmapped:[],steps:[]};
+  const report={sourceSha256:source.sourceSha256,sourceBlocks:source.blocks,sourceMedia:source.media,supplementalText:source.supplementalText,metadata:[],images:[],warnings:[...source.warnings],unmapped:[],steps:[]};
   let section='',group=doc.groups[0],current=null;const stepBlocks=new Map(),metadataBlocks=new Set(),sectionAtBlock=new Map();
   const addWarning=(kind,message,extra={})=>report.warnings.push({kind,message,...extra});
+  const blockConversion=message=>{
+    report.validation='Blocked: '+message;
+    throw Object.assign(Error(message),{report,source});
+  };
   for(const block of source.blocks){
     sectionAtBlock.set(block.index,section);
     if(block.kind==='table'){
@@ -154,6 +158,15 @@ export function convertDocx(buffer,{team='',effectiveDate=''}={}){
     const normalized=value.toLowerCase().replace(/\s*:\s*$/,'').trim();
     if(headings.has(normalized)){section=headings.get(normalized);current=null;continue;}
     if(/^(?:standard operating procedure\s*\(sop\)|standard operating procedure|sop)$/i.test(value))continue;
+    const headingStyle=/^heading[1-6]$/i.test(block.style);
+    const headingText=value.replace(/\s*:\s*$/,'');
+    if(doc.title&&block.level===null&&headingText.length<=80&&/^[\p{L}\p{N}][\p{L}\p{N} &/()-]+ procedures?$/iu.test(headingText)
+      &&(headingStyle||headingText===headingText.toUpperCase())){
+      section='procedure';current=null;
+      if(group.title||group.steps.length){group={id:randomUUID(),title:headingText,steps:[]};doc.groups.push(group);}
+      else group.title=headingText;
+      continue;
+    }
     const meta=block.level===null?/^(effective(?:\s+date)?|author|prepared\s+by|approval|approved\s+by|date|version|remarks)\s*(?::\s*|\s+)(.*)$/i.exec(value):null;
     if(meta){
       const key=meta[1].toLowerCase(),raw=meta[2].trim();report.metadata.push({field:key,value:raw,block:block.index});metadataBlocks.add(block.index);
@@ -165,15 +178,15 @@ export function convertDocx(buffer,{team='',effectiveDate=''}={}){
     }
     if(!section){if(!doc.title)doc.title=value;else report.unmapped.push({block:block.index,reason:'Unclassified front matter.',text:value});continue;}
     if(section!=='procedure'){doc[section]+=(doc[section]?'\n':'')+value;continue;}
-    if(/^heading[1-6]$/i.test(block.style)&&block.level===null){group={id:randomUUID(),title:value,steps:[]};doc.groups.push(group);current=null;continue;}
+    if(headingStyle&&block.level===null){group={id:randomUUID(),title:value,steps:[]};doc.groups.push(group);current=null;continue;}
     if(block.level!==null&&block.level>0&&current){current.substeps.push({id:randomUUID(),text:value});stepBlocks.set(block.index,current);if(block.level>1)addWarning('nested-substeps','Nested list flattened to the app’s one substep level; inspect this paragraph.',{block:block.index});}
     else if(block.level===null&&current){current.instruction+='\n\n'+value;stepBlocks.set(block.index,current);}
     else{current=model.step();current.instruction=value;group.steps.push(current);stepBlocks.set(block.index,current);report.steps.push({id:current.id,block:block.index,number:report.steps.length+1});}
   }
   if(effectiveDate){const date=dateValue(effectiveDate);if(!date)throw Error('Use a valid complete effective date.');doc.effectiveDate=date;report.metadata.push({field:'effective date override',value:date});}
   if(!team)addWarning('team-not-in-source','Responsible Team is blank because it was not specified. Choose it in the SOP Creator or pass --team.');
-  if(!doc.title||!report.steps.length)throw Error('Could not identify both a title and procedure steps. Inspect the source before converting.');
   const steps=doc.groups.flatMap(g=>g.steps),stepNumber=new Map(report.steps.map(s=>[s.id,s.number]));
+  const procedureStart=report.steps[0]?.block;
   let photoBytes=0;
   for(const occurrence of source.occurrences){
     const audit={...occurrence,sha256:source.media.find(m=>m.path===occurrence.target)?.sha256,step:null,reason:''};
@@ -186,40 +199,55 @@ export function convertDocx(buffer,{team='',effectiveDate=''}={}){
     if(!target&&references.length)target=references[0];
     if(!target){
       const prior=source.blocks.filter(b=>b.index<occurrence.block&&stepBlocks.has(b.index)).at(-1);
-      const procedureStart=report.steps[0].block;
-      if(occurrence.block<procedureStart&&!sectionAtBlock.get(occurrence.block)){audit.reason='Front matter image retained separately (for example the source logo).';}
+      if(procedureStart===undefined){audit.reason='No procedure step identified for image placement.';report.unmapped.push(audit);}
+      else if(occurrence.block<procedureStart&&!sectionAtBlock.get(occurrence.block)){audit.reason='Front matter image retained separately (for example the source logo).';}
       else if(occurrence.block<procedureStart){audit.reason='Image is in a context section which cannot embed pictures. Explicit placement is required.';report.unmapped.push(audit);}
       else if(prior&&!source.blocks.some(b=>b.index>prior.index&&b.index<occurrence.block&&metadataBlocks.has(b.index))){target=stepBlocks.get(prior.index);addWarning('image-placement','Image has no direct step or figure reference; provisionally assigned to its preceding step.',{image:occurrence.index});}
-      else audit.reason='Image placement could not be resolved.';
+      else {audit.reason='Image placement could not be resolved.';report.unmapped.push(audit);}
     }
     if(target){
-      const data=`data:image/${type};base64,${bytes.toString('base64')}`;photoBytes+=data.length;
-      if(data.length>3000000||photoBytes>12000000||target.photos.length>=8)throw Error('Images exceed SOP Creator limits. Resize/compress supported originals and rerun; no images were omitted.');
+      const prefix=`data:image/${type};base64,`;
+      const encodedLength=prefix.length+4*Math.ceil(bytes.length/3);
+      if(encodedLength>3000000||photoBytes+encodedLength>12000000||target.photos.length>=8){
+        audit.reason='Image exceeds an SOP Creator size or per-step photo limit.';
+        audit.candidateStep=stepNumber.get(target.id);
+        audit.encodedLength=encodedLength;
+        report.unmapped.push(audit);report.images.push(audit);continue;
+      }
+      const data=prefix+bytes.toString('base64');photoBytes+=encodedLength;
       const photo={id:randomUUID(),data,caption:occurrence.caption||'',scale:100};target.photos.push(photo);
       audit.step=stepNumber.get(target.id);audit.photoId=photo.id;audit.referenceSteps=references.map(s=>stepNumber.get(s.id));audit.reason=stepBlocks.has(occurrence.block)?'Image anchored in this step paragraph.':references.length?'Matched to the first step explicitly referencing its figure number.':'Preceding step (review required).';
-    }else if(occurrence.block>=report.steps[0].block)report.unmapped.push(audit);
+    }
     report.images.push(audit);
   }
   for(const media of source.media)if(!source.occurrences.some(o=>o.target===media.path))addWarning('unreferenced-media','Media is retained separately but was not referenced in the main document body.',{path:media.path});
-  if(report.unmapped.length||report.warnings.some(w=>['unsupported-table-image','unsupported-body-element','unsupported-floating-text'].includes(w.kind)))throw Object.assign(Error('Unmapped content needs review before an import-ready backup can be generated.'),{report,source});
-  const validated=model.validate(doc),backup={format:'northglenn-sop',version:1,document:validated};
-  model.validate(JSON.parse(JSON.stringify(backup)).document);
   report.counts={steps:steps.length,embeddedPhotos:steps.reduce((sum,s)=>sum+s.photos.length,0),sourceMedia:source.media.length};
-  report.sourceMedia=source.media;report.validation='Passed the bundled SOP Creator model and a JSON round trip. No technical wording was rewritten.';
+  if(!doc.title||!steps.length)blockConversion('Could not identify both a title and procedure steps. Inspect the source before converting.');
+  if(report.unmapped.length||report.warnings.some(w=>['unsupported-table-image','unsupported-body-element','unsupported-floating-text'].includes(w.kind)))blockConversion('Unmapped content needs review before an import-ready backup can be generated.');
+  let backup;
+  try{
+    backup={format:'northglenn-sop',version:1,document:model.validate(doc)};
+    model.validate(JSON.parse(JSON.stringify(backup)).document);
+  }catch(error){blockConversion(error.message);}
   report.procedureTextPreserved=[...stepBlocks].every(([blockIndex,step])=>[step.instruction,...step.substeps.map(s=>s.text)].some(t=>t.includes(source.blocks[blockIndex].text)));
-  if(!report.procedureTextPreserved)throw Error('Procedure text verification failed.');
+  if(!report.procedureTextPreserved)blockConversion('Procedure text verification failed.');
+  report.validation='Passed the bundled SOP Creator model and a JSON round trip. No technical wording was rewritten.';
   return {backup,report,source};
 }
 function main(){
   const args=process.argv.slice(2),input=args.shift();if(!input||!args.includes('--out'))throw Error('Usage: node docx-to-sop.mjs source.docx --out OUTPUT_DIRECTORY [--team TEAM] [--effective-date YYYY-MM-DD] [--inspect-only]');
   const option=name=>{const at=args.indexOf(name);return at<0?undefined:args[at+1];},out=resolve(option('--out'));
   if(existsSync(join(out,'converted.sop.json'))||existsSync(join(out,'report.json')))throw Error('Output already exists. Choose a new output directory to preserve earlier results.');
-  const bytes=readFileSync(resolve(input));mkdirSync(out,{recursive:true});let result;
-  if(args.includes('--inspect-only')){const source=inspectDocx(bytes);result={source,report:{sourceSha256:source.sourceSha256,blocks:source.blocks,images:source.occurrences,media:source.media,warnings:source.warnings}};}
-  else try{result=convertDocx(bytes,{team:option('--team'),effectiveDate:option('--effective-date')});}catch(error){if(error.report)writeFileSync(join(out,'report.json'),JSON.stringify(error.report,null,2));throw error;}
+  const bytes=readFileSync(resolve(input));mkdirSync(out,{recursive:true});let result,conversionError;
+  if(args.includes('--inspect-only')){const source=inspectDocx(bytes);result={source,report:{sourceSha256:source.sourceSha256,blocks:source.blocks,images:source.occurrences,media:source.media,supplementalText:source.supplementalText,warnings:source.warnings}};}
+  else try{result=convertDocx(bytes,{team:option('--team'),effectiveDate:option('--effective-date')});}catch(error){
+    if(!error.report||!error.source)throw error;
+    result={source:error.source,report:error.report};conversionError=error;
+  }
   mkdirSync(join(out,'source-media'),{recursive:true});
   const extracted=[];for(const [index,m]of result.source.media.entries()){const ext=m.type==='jpeg'?'jpg':m.type||'bin',name=`image-${index+1}.${ext}`;writeFileSync(join(out,'source-media',name),result.source.entries.get(m.path));extracted.push({...m,file:'source-media/'+name});}
   result.report.extractedMedia=extracted;writeFileSync(join(out,'report.json'),JSON.stringify(result.report,null,2));
+  if(conversionError)throw conversionError;
   if(result.backup)writeFileSync(join(out,'converted.sop.json'),JSON.stringify(result.backup,null,2));
   console.log(JSON.stringify({output:out,counts:result.report.counts,warningCount:result.report.warnings.length,inspectionOnly:!result.backup}));
 }

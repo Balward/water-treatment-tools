@@ -14,7 +14,7 @@
     ]
   },
   "name": "northglenn-sop-editor",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Review SOP JSON backups and convert Word SOPs with embedded images.",
   "author": {
     "name": "Plugin owner"

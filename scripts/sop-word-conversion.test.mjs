@@ -9,9 +9,9 @@ function zip(files){const locals=[],central=[];let offset=0;for(const [name,valu
 const p=(text,number=false)=>`<w:p>${number?'<w:pPr><w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr></w:pPr>':''}<w:r><w:t>${text}</w:t></w:r></w:p>`;
 const picture=id=>`<w:r><w:drawing><a:blip r:embed="${id}"/></w:drawing></w:r>`;
 const caption=n=>`<mc:AlternateContent><mc:Choice Requires="wps"><w:drawing><w:txbxContent>${p('Figure '+n)}</w:txbxContent></w:drawing></mc:Choice><mc:Fallback><w:pict><w:txbxContent>${p('Figure '+n)}</w:txbxContent></w:pict></mc:Fallback></mc:AlternateContent>`;
-function fixture(extra='',relationships=''){
+function fixture(extra='',relationships='',adjustBody=body=>body){
  const body=p('Tubing Replacement').replace('</w:p>',picture('logo')+'</w:p>')+p('STANDARD OPERATING PROCEDURE (SOP)')+p('EFFECTIVE 4.2025')+p('PURPOSE')+p('Keep the exact source wording &amp; values.')+p('SAFETY CONCERNS')+p('Wear gloves.')+p('PROCEDURE:')+p('Close the valve (Figure 1).',true).replace('</w:p>',caption(1)+picture('one')+'</w:p>')+p('Read 45 psi. Use Figure 6.',true)+p('Date the sample bottle.',true)+`<w:p>${picture('six')}</w:p>`+p('Figure 6')+extra+p('AUTHOR: Example Operator')+p('DATE: 4/10/2025')+p('APPROVAL: Source Approver')+p('VERSION: 1.2024');
- const document=`<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"><w:body>${body}</w:body></w:document>`;
+ const document=`<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"><w:body>${adjustBody(body)}</w:body></w:document>`;
  return zip({'word/document.xml':document,'word/_rels/document.xml.rels':`<Relationships>${['logo','one','six'].map(id=>`<Relationship Id="${id}" Target="media/${id}.PNG" Type="image"/>`).join('')}${relationships}</Relationships>`,'word/media/logo.PNG':png,'word/media/one.PNG':png,'word/media/six.PNG':png});
 }
 test('Word images, AlternateContent captions, first explicit references and exact source bytes survive conversion',()=>{
@@ -31,6 +31,25 @@ test('unmapped floating text and table images cannot be silently omitted',()=>{
  assert.throws(()=>convertDocx(fixture(float)),/Unmapped content/);
  const table=`<w:tbl><w:tr><w:tc><w:p>${picture('one')}</w:p></w:tc></w:tr></w:tbl>`;
  assert.throws(()=>convertDocx(fixture(table)),/Unmapped content/);
+});
+test('named procedure headings preserve groups, step order and figure references',()=>{
+ const {backup,report}=convertDocx(fixture('','',body=>body
+   .replace('PROCEDURE:','SAMPLING PROCEDURE:')
+   .replace(p('Read 45 psi. Use Figure 6.',true),p('VERIFICATION PROCEDURE')+p('Read 45 psi. Use Figure 6.',true))));
+ assert.deepEqual(backup.document.groups.map(g=>[g.title,g.steps.length]),[['SAMPLING PROCEDURE',1],['VERIFICATION PROCEDURE',2]]);
+ assert.equal(backup.document.groups[1].steps[0].photos[0].caption,'Figure 6');
+ assert.equal(report.procedureTextPreserved,true);
+});
+test('a document with no identifiable procedure returns the source and a blocked audit',()=>{
+ assert.throws(()=>convertDocx(fixture('','',body=>body.replace('PROCEDURE:','OTHER CONTENT'))),error=>{
+   assert.match(error.message,/procedure steps/);
+   assert.match(error.report.validation,/^Blocked:/);
+   assert.equal(error.report.counts.steps,0);
+   assert.equal(error.report.sourceMedia.length,3);
+   assert.deepEqual(error.source.entries.get('word/media/logo.PNG'),png);
+   assert.ok(error.report.images.every(image=>image.reason));
+   return true;
+ });
 });
 test('parser rejects DTDs, malformed XML, corrupt ZIP content and unsafe member paths',()=>{
  assert.throws(()=>parseXml('<!DOCTYPE a [<!ENTITY x SYSTEM "file:///secret">]><a/>'),/DTD/);

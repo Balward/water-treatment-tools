@@ -15,9 +15,11 @@ const {launchBrowser,removeTemporaryDirectory}=require('./lib/browser-check.cjs'
   assert.equal(await evaluate('document.querySelector("[data-meta=title]").value'),expected.title);
   assert.equal(await evaluate('document.querySelector("[data-meta=preparedBy]").value'),expected.preparedBy);
   assert.equal(await evaluate('document.querySelectorAll(".step-editor").length'),steps.length);
+  assert.deepEqual(await evaluate('[...document.querySelectorAll("[data-group-title]")].map(input=>input.value)'),expected.groups.map(group=>group.title));
+  assert.deepEqual(await evaluate('[...document.querySelectorAll(".procedure-section-title")].map(heading=>heading.textContent)'),expected.groups.map(group=>group.title).filter(title=>title.trim()));
   assert.deepEqual(await evaluate('[...document.querySelectorAll(".step-editor")].map(s=>[...s.querySelectorAll("[data-caption]")].map(c=>c.value))'),steps.map(s=>s.photos.map(p=>p.caption)));
   assert.deepEqual(await evaluate('[...document.querySelectorAll(".document-step")].map(s=>[...s.querySelectorAll(".document-photos img")].map(i=>i.src))'),steps.map(s=>s.photos.map(p=>p.data)));
   assert.deepEqual(browser.errors,[]);assert.equal((await fsp.readdir(directory)).filter(n=>n.endsWith('.json')).length,0,'Import does not save to the shared library');
-  console.log('Word conversion browser passed: '+steps.length+' steps, '+steps.reduce((n,s)=>n+s.photos.length,0)+' photos, exact embedded bytes, captions, image placement, creator and title. No shared-library writes.');
+  console.log('Word conversion browser passed: '+steps.length+' steps, '+steps.reduce((n,s)=>n+s.photos.length,0)+' photos, section headings, exact embedded bytes, captions, image placement, creator and title. No shared-library writes.');
  }finally{if(browser)await browser.close();server.closeAllConnections();await new Promise(r=>server.close(r));await removeTemporaryDirectory(directory);}
 })().catch(e=>{console.error(e);process.exitCode=1;});

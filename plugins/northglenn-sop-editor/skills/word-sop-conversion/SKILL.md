@@ -24,6 +24,8 @@ A request to convert a Word SOP or to test Word-to-JSON conversion authorizes a 
    The paths above are relative to this skill. Pass arguments directly or use proper shell quoting for spaces. Optional `--team <team>` and `--effective-date YYYY-MM-DD` are allowed only with explicit source or user evidence. `--inspect-only` inventories blocks, images, captions and source hashes without creating an import backup. Never overwrite an existing conversion output.
 4. Read `report.json` in full, the metadata and all source paragraphs, plus the complete generated JSON. Inspect `source-media/` using the session's image viewer. Verify captions and step placement against the document, not filenames or an assumed figure order. Source media filenames can differ from figure numbers. Inspect floating text boxes, grouped drawings and AlternateContent fallbacks; the script selects one representation to avoid duplicate pictures/captions.
 
+If conversion is blocked after extraction, use `report.json` and `source-media/` from that run to review the source evidence. The converter withholds the import backup. Named procedure headings written in uppercase or using a Word Heading style, such as “SAMPLING PROCEDURE,” can become procedure groups. Verify the group boundaries and the step order against the source.
+
 ## Match every image
 
 Each image occurrence must be accounted for: embedded in a step, explicitly identified as front matter (for example the Northglenn logo already supplied by the app), or flagged as unresolved. The report retains each source image separately with its SHA-256 hash.

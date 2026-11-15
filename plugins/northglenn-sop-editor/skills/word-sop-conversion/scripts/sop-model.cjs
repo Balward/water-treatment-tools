@@ -4,9 +4,13 @@
   const tagGroups=[
     {label:'Treatment Processes',tags:['Raw Water','Coagulation','Flocculation','Sedimentation','Filtration','Backwashing','Disinfection','Clearwells & Storage','Pumping','Residuals Handling']},
     {label:'Instrumentation & Water Quality',tags:['pH','Turbidity','Chlorine','Conductivity','Dissolved Oxygen','ORP','Temperature','Flow','Pressure','Level','Instrumentation']},
-    {label:'Chemicals',tags:['Alum','Polymer','Sodium Hypochlorite','Sodium Permanganate','Sodium Hydroxide','Chemical Feed','Chemical Handling']},
-    {label:'Tasks',tags:['Calibration','Verification','Sampling','Laboratory Testing','Inspection','Preventive Maintenance','Cleaning','Troubleshooting','Startup','Shutdown']},
-    {label:'Systems & Safety',tags:['SCADA','Historian','WIMS','Electrical','Mechanical','Safety','Emergency Response']}
+    {label:'Chemicals',tags:['Alum','Polymer','Sodium Hypochlorite','Sodium Permanganate','Sodium Hydroxide','Chemical Feed','Chemical Handling','Chemical Delivery','Chemical Transfer','Chemical Dilution','Salt & Brine']},
+    {label:'Tasks',tags:['Calibration','Verification','Sampling','Laboratory Testing','Inspection','Preventive Maintenance','Cleaning','Troubleshooting','Startup','Shutdown','Flushing','Parts Replacement','Jar Testing','Manual Operation']},
+    {label:'Systems & Safety',tags:['SCADA','Historian','WIMS','Electrical','Mechanical','Safety','Emergency Response','Remote Access','Alarm Response','Power Outage','Lockout/Tagout','Confined Space','Fall Protection','Air Quality Monitoring','Spill Response']},
+    {label:'Weather & Seasonal Operations',tags:['Weather Reporting','Weather Station','Precipitation','Snow & Ice Control','Seasonal Operations','National Weather Service (NWS)','WxCoder']},
+    {label:'Reporting & Records',tags:['Reporting','Recordkeeping','Operations Log','Whiteboard','Data Import','Regulatory Reporting','Monthly Operating Report (MOR)','CT Reporting','Water Accounting']},
+    {label:'Operator Duties & Communication',tags:['Daily Duties','Night Shift','Weekly Duties','Monthly Closeout','Year-End Closeout','Phone Procedures','After-Hours Callouts','Public Inquiries','Operator Certification','Reimbursement']},
+    {label:'Facilities & Collection Systems',tags:['Site Security','CCTV','Access Gates','Wildlife Control','Reservoirs','Wastewater','Lift Stations','Sewer Interconnects','Traffic Signals']}
   ];
   const tags=tagGroups.flatMap(group=>group.tags);
   const id=()=>globalThis.crypto.randomUUID();
