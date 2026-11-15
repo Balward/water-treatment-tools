@@ -31,8 +31,8 @@ async function main() {
       const id = ++sequence;
       return new Promise((resolve,reject) => { requests.set(id,{resolve,reject}); socket.send(JSON.stringify({id,method,params,...(sessionId ? {sessionId} : {})})); });
     }
-    async function evaluate(expression) {
-      const result = await call('Runtime.evaluate',{expression,awaitPromise:true,returnByValue:true});
+    async function evaluate(expression,userGesture = false) {
+      const result = await call('Runtime.evaluate',{expression,awaitPromise:true,returnByValue:true,userGesture});
       if (result.exceptionDetails) throw new Error(JSON.stringify(result.exceptionDetails));
       return result.result.value;
     }
@@ -75,11 +75,31 @@ async function main() {
     assert.equal(await evaluate('document.querySelectorAll("[data-bin-card]").length'),1);
     await evaluate('document.querySelector("[data-bin-card]").click()');
     assert.equal(await evaluate('selectedBinCards.size'),39,'Filtering does not discard hidden selections');
-    await evaluate('document.getElementById("clear-bin-cards").click();document.getElementById("bin-card-search").value="";document.getElementById("bin-card-search").dispatchEvent(new Event("input"));window.open=(url)=>{window.lastPrintUrl=url}');
+    await evaluate('document.getElementById("clear-bin-cards").click()');
     assert.equal(await evaluate('document.querySelectorAll("[data-bin-card]:checked").length'),0);
-    await evaluate('document.querySelector("[data-bin-card=s1-r7]").click();document.getElementById("print-selected-bin-cards").click()');
-    assert.deepEqual(new URL(await evaluate('lastPrintUrl'),base).searchParams.getAll('id'),['s1-r7']);
+    await evaluate('document.querySelector("[data-bin-card=s1-r7]").click()');
+    await evaluate('document.getElementById("print-selected-bin-cards").click()',true);
+    const managerSession = sessionId;
+    const getTargets = async () => (await call('Target.getTargets')).targetInfos;
+    let popup;
+    for (let attempt = 0; attempt < 50 && !popup; attempt++) {
+      popup = (await getTargets()).find(target => target.url.startsWith(base + '/bin-cards.html?'));
+      if (!popup) await new Promise(resolve => setTimeout(resolve,100));
+    }
+    assert.ok(popup,'Preview opens in a separate tab: ' + JSON.stringify(await getTargets()));
+    assert.deepEqual(new URL(popup.url).searchParams.getAll('id'),['s1-r7']);
+    sessionId = (await call('Target.attachToTarget',{targetId:popup.targetId,flatten:true})).sessionId;
+    await until('document.documentElement.dataset.cardsReady === "true"');
+    await evaluate('setTimeout(() => document.getElementById("back-to-management").click(),100)');
+    sessionId = managerSession;
+    for (let attempt = 0; attempt < 50 && (await getTargets()).some(target => target.targetId === popup.targetId); attempt++) {
+      await new Promise(resolve => setTimeout(resolve,100));
+    }
+    assert.ok(!(await getTargets()).some(target => target.targetId === popup.targetId),'Back closes the preview tab');
+    assert.equal(await evaluate('document.getElementById("bin-card-search").value'),'2770120');
+    assert.equal(await evaluate('document.querySelector("[data-bin-card]:checked").dataset.binCard'),'s1-r7');
     await screenshot('bin-card-management-mobile');
+    await evaluate('window.open=(url)=>{window.lastPrintUrl=url}');
     await evaluate('document.getElementById("manage-items-tab").click();document.getElementById("manager-worksheet").value="operating";document.getElementById("manager-worksheet").dispatchEvent(new Event("change"));document.querySelector("[data-print-bin-card=s1-r5]").click()');
     assert.deepEqual(new URL(await evaluate('lastPrintUrl'),base).searchParams.getAll('id'),['s1-r5']);
     const catalog = await (await fetch(base + '/api/catalog')).json();
@@ -121,6 +141,9 @@ async function main() {
     await until('document.documentElement.dataset.cardsReady === "true"');
     assert.ok(await evaluate('document.getElementById("print-cards").disabled'));
     assert.equal(await evaluate('document.querySelectorAll(".bin-card").length'),0);
+    await evaluate('document.getElementById("back-to-management").click()');
+    await until('document.getElementById("print-bin-cards-tab")?.getAttribute("aria-pressed") === "true"');
+    assert.ok(await evaluate('!document.getElementById("item-manager").hidden'));
     assert.deepEqual(await (await fetch(base + '/api/inventories')).json(),[]);
     assert.equal(errors.length,0,JSON.stringify(errors));
     console.log('Bin-card browser checks passed: selection, individual printing, live edits, 40 card layouts, print sizing, missing metadata, Operating Supplies restriction, and mobile/desktop navigation.');

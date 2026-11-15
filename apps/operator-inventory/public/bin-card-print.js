@@ -1,11 +1,27 @@
 'use strict';
-const requestedCards = new Set(new URLSearchParams(location.search).getAll('id'));
+const query = new URLSearchParams(location.search);
+const requestedCards = new Set(query.getAll('id'));
+const sourceSection = query.get('from');
+const backLink = document.getElementById('back-to-management');
 const printButton = document.getElementById('print-cards');
 const reloadButton = document.getElementById('reload-cards');
 const printStatus = document.getElementById('print-status');
 const warnings = document.getElementById('print-warnings');
 const sheets = document.getElementById('bin-sheets');
 let printable = false;
+if (sourceSection === 'items') {
+  backLink.href = './?view=manage';
+  backLink.textContent = '← Back to Supply Items';
+}
+if (sourceSection === 'cards' || sourceSection === 'items') {
+  backLink.addEventListener('click',event => {
+    if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    window.close();
+    // Some browsers refuse to close a tab. The link still returns to Management.
+    setTimeout(() => location.replace(backLink.href),100);
+  });
+}
 function fitCards() {
   const overflow = [];
   for (const card of document.querySelectorAll('.bin-card')) {

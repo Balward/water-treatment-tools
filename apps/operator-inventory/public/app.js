@@ -806,7 +806,18 @@ $('refresh').addEventListener('click', () => history().catch(error => notify(err
 window.addEventListener('pageshow', event => { if (event.persisted) history().catch(error => notify(error.message)); });
 window.addEventListener('beforeunload', event => { if (saving || Object.keys(pending).length || invalid.size) { event.preventDefault(); event.returnValue = ''; } });
 async function init() {
-  try { [catalog,emailConfig,orderList] = await Promise.all([api('/api/catalog'),api('/api/email-config'),api('/api/order-list')]); renderOrderList(); renderHome(); const requestedView=new URLSearchParams(location.search).get('view'); showMode(['home','history','order-list','order-history','manage'].includes(requestedView)?requestedView:'home'); if(mode==='manage')await openManager(); await history(); }
+  try {
+    [catalog,emailConfig,orderList] = await Promise.all([api('/api/catalog'),api('/api/email-config'),api('/api/order-list')]);
+    renderOrderList(); renderHome();
+    const query = new URLSearchParams(location.search);
+    const requestedView = query.get('view');
+    showMode(['home','history','order-list','order-history','manage'].includes(requestedView) ? requestedView : 'home');
+    if (mode === 'manage') {
+      await openManager();
+      if (query.get('section') === 'cards') managementSection('cards');
+    }
+    await history();
+  }
   catch (error) { notify('Could not load inventory: ' + error.message); }
 }
 init();
@@ -815,11 +826,11 @@ init();
 let editingItem = null, removingItem = null, itemRevision = 0, itemBusy = false;
 const itemFields = ['description','countSize','parNote','company','itemNumber','caseSize','productUrl'];
 const selectedBinCards = new Set();
-function openBinCardPreview(ids) {
+function openBinCardPreview(ids, from) {
   const allowed = new Set(InventoryBinCards.items(catalog).map(i => i.id));
   const selected = ids.filter(id => allowed.has(id));
   if (!selected.length) return;
-  const query = new URLSearchParams();
+  const query = new URLSearchParams({from});
   selected.forEach(id => query.append('id',id));
   window.open('./bin-cards.html?' + query.toString(),'_blank','noopener,noreferrer');
 }
@@ -902,7 +913,7 @@ $('bin-card-list').addEventListener('change',event => {
 });
 $('select-all-bin-cards').addEventListener('click',() => { InventoryBinCards.items(catalog).forEach(i => selectedBinCards.add(i.id)); renderBinCardPicker(); });
 $('clear-bin-cards').addEventListener('click',() => { selectedBinCards.clear(); renderBinCardPicker(); });
-$('print-selected-bin-cards').addEventListener('click',() => openBinCardPreview([...selectedBinCards]));
+$('print-selected-bin-cards').addEventListener('click',() => openBinCardPreview([...selectedBinCards],'cards'));
 $('manager-back').addEventListener('click',() => navigate('home'));
 $('manager-worksheet').addEventListener('change',renderManager);
 $('item-worksheet').addEventListener('change',() => itemLocations($('item-location').value));
@@ -933,7 +944,7 @@ $('item-form').addEventListener('submit',async event => {
 });
 $('manager-list').addEventListener('click',event => {
   const print = event.target.closest('[data-print-bin-card]');
-  if (print) { openBinCardPreview([print.dataset.printBinCard]); return; }
+  if (print) { openBinCardPreview([print.dataset.printBinCard],'items'); return; }
   const edit = event.target.closest('[data-edit-item]'), remove = event.target.closest('[data-remove-item]');
   if (edit) editItem(catalog.items.find(i => i.id === edit.dataset.editItem));
   if (remove) {
