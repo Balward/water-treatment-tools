@@ -102,6 +102,13 @@ code { overflow-wrap: anywhere; }
 .import p { color: var(--muted); margin: 7px 0; overflow-wrap: anywhere; }
 .import label { display: block; font-weight: 650; margin: 13px 0 5px; }
 .import input { width: 100%; }
+.raw-history { margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border); }
+.raw-history h3 { font-size: var(--ops-size-card); }
+.raw-history p { margin-top: 8px; color: var(--muted); font-size: 13px; line-height: 1.55; }
+.raw-history form { margin: 12px 0; }
+.raw-history label { display: block; margin-bottom: 6px; font-weight: 600; }
+.raw-history input { max-width: 100%; }
+.raw-history td, .raw-history th { overflow-wrap: anywhere; }
 details { margin-top: 16px; font-size: 13px; }
 details summary { color: var(--accent); font-weight: 650; }
 details p { margin-top: 8px; line-height: 1.6; color: var(--muted); }
