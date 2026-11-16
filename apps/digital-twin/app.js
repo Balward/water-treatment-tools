@@ -1,5 +1,47 @@
 'use strict';
 
+const processIcons = {
+  inlet: `
+    <path class="vessel-land" d="M5 29 17 14l8 6 10-13 11 10 7-6 18 18Z"/>
+    <path class="vessel-water" d="M6 30c9-6 17-5 25-2 8 3 16 3 22-1 6-3 12-1 17 3l-6 14-14 5H25L13 44Z"/>
+    <path class="vessel-ripple" d="M14 35c5-2 8-2 13 0m7 0c5 2 9 2 14 0m7 1c4-2 7-2 10-1M23 42c5-2 9-2 14 0m6 0c5 1 9 0 13-1"/>`,
+  mix: `
+    <path class="vessel-water vessel-fill" d="M12 28h52v16c0 4-3 7-7 7H19c-4 0-7-3-7-7Z"/>
+    <path d="M12 20v24c0 4 3 7 7 7h38c4 0 7-3 7-7V20M12 28h18m16 0h18M23 17h30"/>
+    <rect class="vessel-solid" x="33" y="6" width="10" height="11" rx="2"/>
+    <path d="M38 17v22"/>
+    <path class="vessel-solid" d="m38 37-12-3v5l12 3 12-3v-5Z"/>
+    <path class="vessel-ripple" d="M18 38c0-3 2-5 5-6m34 7c0 3-2 5-5 6"/>`,
+  floc: `
+    <path class="vessel-water vessel-fill" d="M8 26h60v20c0 3-2 5-5 5H13c-3 0-5-2-5-5Z"/>
+    <path d="M8 19v27c0 3 2 5 5 5h50c3 0 5-2 5-5V19M8 26h11m38 0h11M9 32h58"/>
+    <path class="vessel-paddle" d="m25 20 26 24m0-24L25 44"/>
+    <path class="vessel-paddle-tip" d="m22 23 6-6m20 0 6 6M22 41l6 6m20 0 6-6"/>
+    <circle class="vessel-solid" cx="38" cy="32" r="3.5"/>`,
+  settle: `
+    <path class="vessel-water" d="M7 23v10c0 4 8 8 14 10l13 9h8l13-9c6-2 14-6 14-10V23Z"/>
+    <ellipse class="vessel-surface" cx="38" cy="23" rx="31" ry="9"/>
+    <path d="M13 29c5 4 15 7 25 7s20-3 25-7M25 43l13 8 13-8M38 9v9"/>
+    <path class="vessel-surface" d="M33 18h10v6c0 3-10 3-10 0Z"/>
+    <path d="M29 23H17m4-3-4 3 4 3m26-3h12m-4-3 4 3-4 3"/>`,
+  contact: `
+    <path class="vessel-water vessel-fill" d="M11 26h54v17c0 4-3 7-7 7H18c-4 0-7-3-7-7Z"/>
+    <path d="M11 16v27c0 4 3 7 7 7h40c4 0 7-3 7-7V16M11 26h54"/>
+    <path class="vessel-ripple" d="M20 34c4-2 8-2 12 0m6 0c4 2 8 2 12 0m-25 8c4-2 8-2 12 0m6 0c4 2 8 2 12 0"/>`,
+  filter: `
+    <path class="vessel-water vessel-fill" d="M12 16h52v34H12Z"/>
+    <path class="vessel-media-upper" d="M12 26h52v8H12Z"/>
+    <path class="vessel-media-middle" d="M12 34h52v8H12Z"/>
+    <path class="vessel-media-lower" d="M12 42h52v8H12Z"/>
+    <path d="M12 11v39h52V11M12 16h52M12 26h52m-52 8h52m-52 8h52"/>
+    <path class="vessel-grains" d="M19 30h2m9 0h3m8 0h2m9 0h3M17 38h4m10 0h2m10 0h3m8 0h4m-38 8h3m9 0h4m9 0h4m8 0h2"/>`,
+  storage: `
+    <rect class="vessel-water" x="7" y="12" width="62" height="36" rx="3"/>
+    <path class="vessel-baffle" d="M22 12v27m16-18v27m16-36v27"/>
+    <path class="vessel-ripple" d="M2 21h12v22h16V17h16v26h16V23h12m-4-4 4 4-4 4"/>
+    <path d="m27 31 3-4 3 4m10-3 3 4 3-4"/>`
+};
+
 const stages = [
   {
     name: 'Raw water', icon: 'inlet', note: 'Influent conditions',
@@ -77,7 +119,7 @@ $('controls').innerHTML = Twin.inputs.map(({ key, label, unit, min, max, step })
 
 $('train').innerHTML = stages.map(({ name, icon, note }, i) => `
   <li><button type="button" class="stage" data-stage="${i}" aria-pressed="false">
-    <span class="vessel ${icon}" aria-hidden="true"><i></i><i></i><i></i></span>
+    <svg class="vessel" viewBox="0 0 76 56" aria-hidden="true" focusable="false">${processIcons[icon]}</svg>
     <strong>${name}</strong><small>${note}</small><span class="stage-value" id="stage-${i}"></span>
   </button></li>`).join('');
 
