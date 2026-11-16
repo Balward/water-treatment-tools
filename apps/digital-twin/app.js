@@ -168,5 +168,18 @@ $('csv').addEventListener('change', async event => {
   }
 });
 
+const menuButton = document.querySelector('[data-ops-menu]');
+if (window.Operations) menuButton.hidden = false;
+
+const sectionLinks = [...document.querySelectorAll('.sidebar .nav-item')];
+function updateSectionLink() {
+  const current = sectionLinks.find(link => link.hash === location.hash) ?? sectionLinks[0];
+  for (const link of sectionLinks) {
+    if (link === current) link.setAttribute('aria-current', 'location');
+    else link.removeAttribute('aria-current');
+  }
+}
+window.addEventListener('hashchange', updateSectionLink);
+updateSectionLink();
 selectStage(selected);
 render();

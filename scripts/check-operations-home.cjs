@@ -16,6 +16,10 @@ assert.ok(await evaluate('[...document.images].every(image=>image.complete&&imag
 assert.equal(await evaluate('document.querySelector(".app-card[data-app=inventory]").href'),'https://inventory.gibbhub.io/');
 assert.equal(await evaluate('document.querySelector(".app-card[data-app=equipment]").pathname'),'/live-operations-dashboard/');
 assert.equal(await evaluate('document.querySelector(".app-card[data-app=digital-twin]").pathname'),'/apps/digital-twin/index.html');
+for(const id of ['digital-twin','sops']){
+ const selector=JSON.stringify('.app-card[data-app='+id+'] .construction-banner');
+ assert.equal(await evaluate('document.querySelector('+selector+').textContent'),'Under Construction');
+}
 assert.equal(await evaluate('document.body.textContent.includes("Design Preview")'),false);
 await evaluate('document.querySelector("[data-category=water]").click()');assert.equal(await evaluate('document.querySelectorAll(".app-card").length'),7);
 await evaluate('document.getElementById("toolSearch").value="hydrometer";document.getElementById("toolSearch").dispatchEvent(new Event("input"))');assert.equal(await evaluate('document.querySelectorAll(".app-card").length'),1);
@@ -31,7 +35,31 @@ for(const [name,width,height]of [['desktop',1440,1000],['mobile',390,844],['smal
  assert.equal(await evaluate('document.querySelector(".ops-app-menu [aria-current=page]").dataset.opsDestination'),'home');
  assert.equal(await evaluate('document.querySelectorAll(".ops-app-menu [data-ops-destination]").length'),19);
  assert.ok(await evaluate('(()=>{const b=document.getElementById("opsAppMenu").getBoundingClientRect();return b.left>=0&&b.right<=innerWidth&&b.bottom<=innerHeight})()'));
+ for(const id of ['digital-twin','sops']){
+  const selector=JSON.stringify('[data-ops-destination='+id+'] .ops-app-menu-construction');
+  assert.equal(await evaluate('document.querySelector('+selector+').textContent'),'Under Construction');
+ }
+ assert.equal(await evaluate('document.querySelector("[data-ops-destination=digital-twin]").pathname'),'/apps/digital-twin/index.html');
+ assert.ok(await evaluate('(()=>{const card=document.querySelector(".app-card[data-app=digital-twin]");return card.querySelector(".card-icon").getBoundingClientRect().top>=card.querySelector(".construction-banner").getBoundingClientRect().bottom})()'));
  await evaluate('document.querySelector(".ops-app-menu-close").click();new Promise(r=>requestAnimationFrame(r))');
 }
+await evaluate('document.querySelector("[data-ops-menu]").click()');
+await evaluate('document.querySelector("[data-ops-destination=digital-twin]").click(); true');
+for(let i=0;i<100;i++){if(await evaluate('document.querySelectorAll(".stage").length===7'))break;await new Promise(r=>setTimeout(r,50));}
+assert.match(await evaluate('document.title'),/Plant Digital Twin/);
+assert.equal(await evaluate('document.querySelectorAll(".stage").length'),7);
+assert.equal(await evaluate('document.querySelector(".construction-status").textContent'),'Under Construction');
+for(const width of [1440,1024,768,390,320]){
+ await call('Emulation.setDeviceMetricsOverride',{width,height:980,deviceScaleFactor:1,mobile:false});
+ assert.equal(await evaluate('document.querySelector(".site-header").getBoundingClientRect().height'),width<=800?144:112);
+ assert.ok(await evaluate('document.documentElement.scrollWidth<=innerWidth'),'Digital Twin overflow at '+width);
+}
+await evaluate('document.querySelector(".sidebar .nav-item:last-child").click(); new Promise(requestAnimationFrame)');
+assert.equal(await evaluate('document.querySelector(".sidebar [aria-current]").hash'),'#data');
+const originalReading=await evaluate('document.getElementById("settled").textContent');
+await evaluate('(()=>{const slider=document.getElementById("alum");slider.value=36;slider.dispatchEvent(new Event("input",{bubbles:true}));})()');
+assert.notEqual(await evaluate('document.getElementById("settled").textContent'),originalReading);
+await evaluate('document.querySelector("[data-ops-menu]").click()');
+assert.equal(await evaluate('document.querySelector(".ops-app-menu [aria-current=page]").dataset.opsDestination'),'digital-twin');
 assert.equal(errors.length,0,JSON.stringify(errors));console.log('Operations Home cached-HTML migration and normal checks passed: 16 applications, correct inventory/equipment/digital twin destinations, shared font and menu, search/filter/reset, desktop/mobile/320px layouts, no runtime errors.');
 }finally{await harness.close();}})().catch(e=>{console.error(e);process.exitCode=1});
