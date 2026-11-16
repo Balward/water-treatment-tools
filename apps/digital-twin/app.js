@@ -13,7 +13,7 @@ const stages = [
     name: 'Rapid mix', icon: 'mix', note: 'Alum + polymer',
     detail: 'Plant Flow maps alum and polymer feeds at rapid mix. Confirm the exact taps and injection order.',
     points: [
-      ['Streaming current', 'Mapped to rapid mix · verify sample tap and sample-line delay'],
+      ['Streaming current', 'Sample drawn from rapid mix · sample-line delay to confirm'],
       ['Rapid-mix pH', 'Floc Vault on Plant Rounds'],
       ['Zeta potential', 'In historian export · sampling point to confirm']
     ]
