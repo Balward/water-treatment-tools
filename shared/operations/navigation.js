@@ -12,6 +12,7 @@
     {id:'permanganate',category:'water',name:'Permanganate Dose Predictor',description:'Explore dose estimates using historical plant data.',icon:'dose',path:'/dose-predictor/?v=20261022-dose1'},
     {id:'alum',category:'water',name:'Alum Hydrometer Conversion',description:'Correct density readings and estimate dry alum strength.',icon:'meter',path:'/alum-hydrometer-conversion/'},
     {id:'explorer',category:'water',name:'Water Data Explorer',description:'Find trends and correlations in your water-quality data.',icon:'chart',path:'/water-data-explorer/?v=20261022-explorer1'},
+    {id:'digital-twin',category:'water',name:'Plant Digital Twin',description:'Explore alum and cationic polymer scenarios and map plant sample points.',icon:'flow',path:'/apps/digital-twin/index.html'},
     {id:'detention',category:'water',name:'Detention Time',description:'Follow flow through the plant and compare basin detention times.',icon:'flow',path:'/plant-flow/?v=20261022-plant1'},
     {id:'mwat',category:'wastewater',name:'MWAT & DM Calculator',description:'Review temperature records and calculate weekly averages.',icon:'thermometer',path:'/mwat-calculator/'},
     {id:'loading',category:'wastewater',name:'NH3 Loading Insight',description:'Compare loading patterns and identify peak hours.',icon:'chart',path:'/nh4-loading/'},

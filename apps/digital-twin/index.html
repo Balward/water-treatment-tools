@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Plant Digital Twin | Water Treatment Tools</title>
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="model.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <header class="top">
+    <div class="shell top-inner">
+      <div class="brand"><span class="brand-icon" aria-hidden="true"><i></i><i></i><i></i></span> Water Treatment Tools</div>
+      <nav aria-label="Dashboard"><a href="#process">Plant diagram</a><a href="#data">Data inventory</a></nav>
+    </div>
+  </header>
+  <main class="shell">
+    <header class="intro">
+      <div><p class="eyebrow">NORTHGLENN WATER TREATMENT</p><h1>Plant Digital Twin</h1><p>Explore how flow, source water, and chemical doses could affect treatment.</p></div>
+      <span class="badge"><i></i> Simulation sandbox</span>
+    </header>
+    <p class="notice"><strong>Demonstration model.</strong> Scenario results use synthetic relationships. Use for exploration only. Historical files are reviewed separately and do not calibrate the simulation.</p>
+    <div class="workspace">
+      <aside class="panel controls" aria-labelledby="controls-title">
+        <div class="panel-head"><h2 id="controls-title">Scenario inputs</h2><button id="reset" type="button" class="quiet">Reset</button></div>
+        <div id="controls"></div>
+        <div class="control-actions"><button id="pin" type="button" class="primary">Set comparison baseline</button><p id="baseline-label" role="status">Comparing with the demo baseline</p></div>
+      </aside>
+      <div class="results">
+        <section class="panel diagram" id="process" aria-labelledby="map-title">
+          <header class="panel-head map-head"><div><h2 id="map-title">Treatment train</h2><p>Select a stage to see its sample points and readings.</p></div><span class="flow-key">Direction of flow <b aria-hidden="true">→</b></span></header>
+          <ol id="train" class="train"></ol>
+          <p class="reclaim"><span aria-hidden="true">↳</span> <strong>Solids handling / reclaim</strong> · Reclaim flow is tracked. Verify the return connection on the process drawing.</p>
+          <section class="stage-detail" aria-labelledby="stage-name" aria-live="polite">
+            <div><p class="eyebrow">SELECTED STAGE</p><h3 id="stage-name"></h3><p id="stage-description"></p></div>
+            <ul id="instruments"></ul>
+          </section>
+        </section>
+        <section class="summary" aria-label="Scenario versus baseline">
+          <article class="panel metric"><h2>Settled turbidity</h2><div><output id="settled"></output> <span>NTU</span></div><p id="settled-delta"></p></article>
+          <article class="panel metric"><h2>Combined filter turbidity</h2><div><output id="filtered"></output> <span>NTU</span></div><p id="filtered-delta"></p></article>
+          <article class="panel metric"><h2>Chemical feed mass</h2><div><output id="mass"></output> <span>lb/day</span></div><p id="mass-delta"></p></article>
+          <article class="panel metric"><h2>Nominal time to filters</h2><div><output id="time"></output></div><p id="time-delta"></p></article>
+        </section>
+      </div>
+    </div>
+    <section class="panel data" id="data" aria-labelledby="data-title">
+      <header class="panel-head"><div><h2 id="data-title">Data inventory</h2><p>Start with synchronized process history, then add records that explain changes.</p></div></header>
+      <div class="data-grid">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th scope="col">Dataset</th><th scope="col">What to bring in</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Historian</th><td>Start with <code>Streaming_Current_Data.xlsx</code>. 6,008 rows at 15-minute intervals, July 29–September 30, 2025. Alum varies across eight reported values. Catfloc 8103+ is constant, so this export cannot identify polymer dose response. Reconcile the overlapping <code>Week1SC.xlsx</code> before merging.</td></tr>
+              <tr><th scope="row">Tag and sample-point map</th><td><code>Variable Locations.xlsx</code> maps variables to process areas. Add the physical tap, instrument location, line or filter ID, engineering units, sample lag, and quality flag.</td></tr>
+              <tr><th scope="row">RoboJar and lab</th><td>Prioritize tests with varied polymer and alum doses. Join source-water chemistry, test time, dose pair, product basis, mixing conditions, and measured endpoints for each jar. Include raw alkalinity, TOC, and temperature.</td></tr>
+              <tr><th scope="row">Dosing and operations</th><td>Add actual and commanded feed, product concentration and density, pump calibration, flow split, reclaim, filter/backwash events, and analyzer service or bad-quality intervals.</td></tr>
+              <tr><th scope="row">Performance and cost</th><td>Add individual filter effluent turbidity, headloss, run length, unit filter run volume (UFRV), and chemical unit prices.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <form class="import" id="import-form">
+          <h3>Check a historian CSV</h3>
+          <p>Export a normalized CSV using the template. Use an explicit time zone offset or UTC for each timestamp.</p>
+          <a id="download" download="digital-twin-historian-template.csv">Download CSV template</a>
+          <label for="csv">Choose a CSV to check</label>
+          <input type="file" id="csv" accept=".csv,text/csv">
+          <p id="import-result" role="status">Checks run in this browser.</p>
+        </form>
+      </div>
+      <details><summary>Calibration and verification</summary><p>Confirm chemical injection points, exact analyzer taps, doses as product or active ingredient, and historian clock. Match dose changes to downstream samples using travel time and sample-line lag. Fit the two-dose response using plant and jar-test data, then validate it on later runs, including different source-water conditions. Define approved dose ranges and performance constraints with operators before ranking cost and treatment outcomes.</p><p>Nominal travel uses Plant Flow volumes with all units in service and equal flow splits through parallel basins and filters. It is a hydraulic screening estimate. The demo combines both entered doses on a common mass basis. <a href="https://www.epa.gov/sites/default/files/2020-06/documents/swtr_turbidity_gm_final_508.pdf">EPA turbidity and treatment optimization guidance</a></p></details>
+    </section>
+  </main>
+</body>
+</html>
