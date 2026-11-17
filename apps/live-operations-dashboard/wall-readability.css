@@ -1,12 +1,11 @@
 /* Keep the three residuals pump headings readable on compact desktop displays. */
 @media (min-width:900px) {
   body .residuals-pumps-row .group-header { gap:4px; }
-  body .residuals-pumps-row .group-title,body.mode-tv .residuals-pumps-row .group-title { font-size:clamp(12px,min(1.3vw,1.9vh),44px);white-space:nowrap; }
 }
 /* Wall-only geometry; the editor keeps the standard Operations header. */
 body { --wall-muted:#425965; }
 body.wall-dark { --wall-muted:#c2d3dc; }
-.status-operational { --tile-color:#08673e; }
+.status-operational { --tile-color:#245443; }
 .status-out-of-service { --tile-color:#a5243a; }
 .status-maintenance { --tile-color:#08677d; }
 .status-offline { --tile-color:#4c5969; }
@@ -296,42 +295,64 @@ body .equipment-card.recent-change::after{z-index:2}
 body .equipment-note-preview,body.mode-tv .equipment-note-preview{padding-right:0}
 body .more-notes{font-weight:700;text-decoration:none;white-space:nowrap}
 
-/* TV appearance: keep exceptions prominent and visually separate equipment groups. */
-body.mode-tv .status-operational {
-  --tile-color: #245443;
-}
-
-body.mode-tv .equipment-card:has(.equipment-note-preview:not([hidden])) .equipment-status-symbol {
+/* Keep status symbols readable without competing with operating notes. */
+body .equipment-card:has(.equipment-note-preview:not([hidden])) .equipment-status-symbol {
   opacity: .035;
 }
 
+body .status-legend .legend-key {
+  grid-template-columns: max-content minmax(0, max-content) max-content;
+  justify-content: center;
+  gap: clamp(4px, .4vw, 12px);
+  padding-inline: clamp(5px, .6vw, 16px);
+}
+
+body .equipment-layout .low-zone-section[data-partition="A"]::before {
+  content: "";
+  position: absolute;
+}
+
 @media (min-width: 900px) {
-  body.mode-tv .equipment-layout .paired-groups-row {
+  body .equipment-layout .paired-groups-row {
     column-gap: clamp(8px, .65vw, 24px);
   }
 
-  body.mode-tv .equipment-layout .group-title {
+  body .equipment-layout .group-header .group-title {
     font-size: clamp(12px, min(1.45vw, 1.95vh), 44px);
+    white-space: nowrap;
   }
 
-  body.mode-tv .low-zone-layout {
+  body .equipment-layout .low-zone-layout {
     --clearwell-gap: clamp(16px, 1.25vw, 44px);
     column-gap: var(--clearwell-gap);
   }
 
-  body.mode-tv .low-zone-section[data-partition="A"]::before {
-    content: "";
-    position: absolute;
+  body .equipment-layout .low-zone-section[data-partition="A"]::before {
     inset-block: 0;
     inset-inline-start: calc(-.5 * var(--clearwell-gap));
     border-inline-start: 1px solid var(--wall-border);
   }
+}
 
-  body.mode-tv .legend-key {
-    grid-template-columns: max-content minmax(0, max-content) max-content;
-    justify-content: center;
-    gap: clamp(4px, .4vw, 12px);
-    padding-inline: clamp(5px, .6vw, 16px);
+@media (max-width: 899px) {
+  body .equipment-layout,
+  body .equipment-layout .paired-groups-row {
+    row-gap: 12px;
+  }
+
+  body .equipment-layout .low-zone-layout {
+    --clearwell-gap: 14px;
+    row-gap: var(--clearwell-gap);
+  }
+
+  body .equipment-layout .low-zone-section[data-partition="A"]::before {
+    inset-block-start: calc(-.5 * var(--clearwell-gap));
+    inset-inline: 0;
+    border-block-start: 1px solid var(--wall-border);
+  }
+
+  body .status-legend .legend-key {
+    justify-content: start;
   }
 }
 
