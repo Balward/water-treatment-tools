@@ -295,6 +295,46 @@ body .equipment-head,body .equipment-note-preview{position:relative;z-index:1}
 body .equipment-card.recent-change::after{z-index:2}
 body .equipment-note-preview,body.mode-tv .equipment-note-preview{padding-right:0}
 body .more-notes{font-weight:700;text-decoration:none;white-space:nowrap}
+
+/* TV appearance: keep exceptions prominent and visually separate equipment groups. */
+body.mode-tv .status-operational {
+  --tile-color: #245443;
+}
+
+body.mode-tv .equipment-card:has(.equipment-note-preview:not([hidden])) .equipment-status-symbol {
+  opacity: .035;
+}
+
+@media (min-width: 900px) {
+  body.mode-tv .equipment-layout .paired-groups-row {
+    column-gap: clamp(8px, .65vw, 24px);
+  }
+
+  body.mode-tv .equipment-layout .group-title {
+    font-size: clamp(12px, min(1.45vw, 1.95vh), 44px);
+  }
+
+  body.mode-tv .low-zone-layout {
+    --clearwell-gap: clamp(16px, 1.25vw, 44px);
+    column-gap: var(--clearwell-gap);
+  }
+
+  body.mode-tv .low-zone-section[data-partition="A"]::before {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: calc(-.5 * var(--clearwell-gap));
+    border-inline-start: 1px solid var(--wall-border);
+  }
+
+  body.mode-tv .legend-key {
+    grid-template-columns: max-content minmax(0, max-content) max-content;
+    justify-content: center;
+    gap: clamp(4px, .4vw, 12px);
+    padding-inline: clamp(5px, .6vw, 16px);
+  }
+}
+
 /* Give the latest equipment update priority in the simplified footer. */
 body .wall-footer #recentEquipmentChange{font-size:clamp(16px,1.5vh,32px);font-weight:750;line-height:1.2;flex:1 1 auto}
 
