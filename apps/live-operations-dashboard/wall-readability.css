@@ -313,6 +313,14 @@ body .equipment-layout .low-zone-section[data-partition="A"]::before {
 }
 
 @media (min-width: 900px) {
+  body .ops-page .equipment-layout {
+    --equipment-section-gap: clamp(var(--equipment-gap), calc(1.5vh - 8.2px), 8px);
+    box-sizing: border-box;
+    row-gap: var(--equipment-section-gap);
+    /* The page grid already contributes part of the gap above General Comments. */
+    padding-block-end: calc(var(--equipment-section-gap) - var(--equipment-gap));
+  }
+
   body .equipment-layout .paired-groups-row {
     column-gap: clamp(8px, .65vw, 24px);
   }
