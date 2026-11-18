@@ -318,7 +318,13 @@ body .equipment-layout .card-grid {
 }
 
 body .equipment-layout .equipment-card {
-  border-radius: 0;
+  border-radius: 3px;
+}
+
+body .equipment-layout .group,
+body .ops-page .status-legend,
+body .ops-page .comments-board {
+  border-radius: 5px;
 }
 
 @media (min-width: 900px) {
