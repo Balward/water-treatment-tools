@@ -18,15 +18,16 @@
   body .group-title,body.mode-tv .group-title { font-size:clamp(15px,1.9vh,20px); }
   body .group-stats,body.mode-tv .group-stats { font-size:clamp(10px,1.3vh,13px); }
   body .equipment-layout .paired-groups-row,body.mode-tv .equipment-layout .paired-groups-row { height:100%;min-height:0;grid-template-columns:1fr 1fr; }
+  body .equipment-layout .low-zone-pumps-row,body.mode-tv .equipment-layout .low-zone-pumps-row {
+    grid-template-columns: var(--clearwell-columns);
+  }
+  body .equipment-layout .low-zone-pumps-row .card-grid,body.mode-tv .equipment-layout .low-zone-pumps-row .card-grid {
+    grid-template-columns: repeat(var(--clearwell-pump-count), minmax(0, 1fr));
+  }
   body .equipment-layout .residuals-pumps-row,body.mode-tv .equipment-layout .residuals-pumps-row { grid-template-columns:repeat(var(--pump-group-count,3),minmax(0,1fr)); }
   body .equipment-layout .pump-groups-row .card-grid,body.mode-tv .equipment-layout .pump-groups-row .card-grid { grid-template-columns:repeat(4,minmax(0,1fr)); }
   body .card-grid,body.mode-tv .card-grid { min-height:0;padding:clamp(3px,.65vh,7px);grid-template-rows:minmax(0,1fr); }
   body .group--filters>.card-grid,body.mode-tv .group--filters>.card-grid { grid-template-columns:repeat(8,minmax(0,1fr)); }
-  body .low-zone-layout,body.mode-tv .low-zone-layout { height:100%;grid-template-columns:4fr 3fr;padding:clamp(3px,.65vh,7px); }
-  body .low-zone-section,body.mode-tv .low-zone-section { height:100%;min-height:0; }
-  body .low-zone-section .card-grid,body.mode-tv .low-zone-section .card-grid { height:100%;padding:0; }
-  body .low-zone-section[data-partition=A] .card-grid,body.mode-tv .low-zone-section[data-partition=A] .card-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
-  body .low-zone-title,body.mode-tv .low-zone-title { position:absolute;top:calc(-1 * var(--equipment-heading-height) - 1px);left:35%;margin:0;color:#e3edf2;font-size:clamp(10px,1.3vh,13px); }
   body .equipment-card,body.mode-tv .equipment-card,body.mode-tv .equipment-card--pump {
     height:100%;min-height:0;padding:clamp(3px,.65vh,7px) clamp(6px,.65vw,12px);
   }

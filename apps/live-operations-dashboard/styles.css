@@ -632,43 +632,6 @@ body.mode-tv .card-grid {
   gap: 0.2rem;
 }
 
-.low-zone-layout {
-  display: grid;
-  grid-template-columns: 4fr 3fr;
-  gap: 0.4rem;
-  align-items: start;
-}
-
-body.mode-tv .low-zone-layout {
-  gap: 0.28rem;
-}
-
-.low-zone-section {
-  display: grid;
-  gap: 0.2rem;
-}
-
-.low-zone-section[data-partition="B"] {
-  padding-right: 0.22rem;
-}
-
-.low-zone-section[data-partition="A"] {
-  padding-left: 0.12rem;
-}
-
-.low-zone-title {
-  margin: 0;
-  font-size: 0.74rem;
-  text-transform: none;
-  letter-spacing: 0.03em;
-  color: #4f6888;
-  font-weight: 800;
-}
-
-body.mode-tv .low-zone-title {
-  font-size: 0.64rem;
-}
-
 .equipment-card {
   position: relative;
   border: 1px solid rgba(116, 150, 185, 0.16);
@@ -1546,10 +1509,6 @@ body.mode-tv .equipment-card--pump {
   background: linear-gradient(180deg, #d3a33c 0%, #a97a23 100%);
 }
 
-.low-zone-title {
-  color: #d1e2f4;
-}
-
 .hover-popup {
   background: linear-gradient(180deg, rgba(21, 31, 36, 0.98) 0%, rgba(15, 24, 28, 0.98) 100%);
   border-color: rgba(224, 169, 59, 0.56);
@@ -1891,22 +1850,6 @@ body.mode-tv .equipment-card--pump {
 
   .add-comment-button {
     width: 100%;
-  }
-
-  .low-zone-layout {
-    grid-template-columns: 1fr;
-    gap: 0.6rem;
-  }
-
-  .low-zone-section[data-partition="B"] {
-    padding-right: 0;
-    border-right: 0;
-  }
-
-  .low-zone-section[data-partition="A"] {
-    padding-left: 0;
-    margin-top: 0.15rem;
-    padding-top: 0.45rem;
   }
 
   .status-options {

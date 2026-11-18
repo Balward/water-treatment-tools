@@ -32,7 +32,6 @@ body .wall-footer { text-align:left;display:flex;flex-direction:column;gap:2px; 
 .comments-overflow-hint { position:absolute;bottom:3px;right:12px;z-index:1;margin:0;padding:2px 5px;background:var(--wall-panel);color:var(--wall-muted);font-size:11px;pointer-events:none; }
 body .ops-page .comments-board { position:relative; }
 @media (min-width:900px) {
-  body .low-zone-section[data-partition=A],body .low-zone-section[data-partition=B] { padding:0;margin:0; }
   body:not(.mode-tv) .wall-footer { display:block; }
   body:not(.mode-tv) #recentEquipmentChange { display:inline;font-size:12px;line-height:1.25;margin-right:12px; }
   body:not(.mode-tv) .wall-source-note { display:inline;font-size:10px;line-height:1.25; }
@@ -59,10 +58,8 @@ body .ops-page .comments-board { position:relative; }
   body.mode-tv .equipment-status-symbol { height:24px;width:24px;top:6px;right:6px; }
   body.mode-tv .equipment-name { max-width:calc(100% - 25px); }
   body.mode-tv .group-title { font-size:clamp(18px,1.4vw,24px); }
-  body.mode-tv .group-stats,body.mode-tv .low-zone-title { font-size:14px; }
-  body.mode-tv .card-grid,body.mode-tv .low-zone-layout { padding:4px; }
-  body.mode-tv .low-zone-section .card-grid { padding:0; }
-  body.mode-tv .low-zone-section[data-partition=A],body.mode-tv .low-zone-section[data-partition=B] { padding:0;margin:0; }
+  body.mode-tv .group-stats { font-size:14px; }
+  body.mode-tv .card-grid { padding:4px; }
   body.mode-tv .status-legend { min-height:44px;padding-block:4px; }
   body.mode-tv .legend-total strong,body.mode-tv .legend-key b { font-size:26px; }
   body.mode-tv .legend-key i { width:23px;height:23px; }
@@ -90,7 +87,7 @@ body .ops-page .comments-board { position:relative; }
   body.mode-tv .header-qr-image { height:68px;width:68px; }
   body.mode-tv .ops-titles h1 { font-size:24px; }
   body.mode-tv .ops-page { grid-template-rows:auto auto minmax(0,1fr) 110px auto; }
-  body.mode-tv .card-grid,body.mode-tv .low-zone-layout { padding:1px; }
+  body.mode-tv .card-grid { padding:1px; }
   body.mode-tv .equipment-card { padding-block:2px; }
   body.mode-tv .equipment-note-preview { font-size:16px;line-height:20px; }
   body.mode-tv .group-title { font-size:18px; }
@@ -146,8 +143,7 @@ body .ops-page .comments-board { position:relative; }
   body:not(.mode-tv).header-hidden .ops-page { grid-template-rows:0 auto minmax(0,1fr) 118px auto; }
   body:not(.mode-tv) .comments-board-header { min-height:46px;padding-block:1px; }
   body:not(.mode-tv) .comments-board-actions { top:1px; }
-  body:not(.mode-tv) .card-grid,body:not(.mode-tv) .low-zone-layout { padding:2px; }
-  body:not(.mode-tv) .low-zone-section .card-grid { padding:0; }
+  body:not(.mode-tv) .card-grid { padding:2px; }
   body:not(.mode-tv) .equipment-card { padding-block:2px; }
 }
 
@@ -274,7 +270,7 @@ body.wall-viewing .comment-card-body { grid-template-columns:minmax(0,1fr); }
 @media(min-width:1900px) and (min-height:1200px){
   body,body.mode-tv{--equipment-heading-height:clamp(30px,3vh,64px);--board-comments-height:clamp(150px,10.2vh,224px);--board-legend-icon:clamp(26px,2.4vh,52px)}
   body .group-title,body.mode-tv .group-title{font-size:clamp(24px,2vh,44px)}
-  body .group-stats,body.mode-tv .group-stats,body .low-zone-title,body.mode-tv .low-zone-title{font-size:clamp(15px,1.3vh,28px)}
+  body .group-stats,body.mode-tv .group-stats{font-size:clamp(15px,1.3vh,28px)}
   body .legend-total strong,body .legend-key b,body.mode-tv .legend-total strong,body.mode-tv .legend-key b{font-size:clamp(32px,2.5vh,56px)}
   body .legend-key,body.mode-tv .legend-key{font-size:clamp(15px,1.4vh,30px);grid-template-columns:var(--board-legend-icon) minmax(0,1fr) auto}
   body .legend-key i,body.mode-tv .legend-key i{width:var(--board-legend-icon);height:var(--board-legend-icon)}
@@ -304,11 +300,6 @@ body .status-legend .legend-key {
   justify-content: center;
   gap: clamp(4px, .4vw, 12px);
   padding-inline: clamp(5px, .6vw, 16px);
-}
-
-body .equipment-layout .low-zone-section[data-partition="A"]::before {
-  content: "";
-  position: absolute;
 }
 
 /* Tile borders separate adjacent equipment; gutters separate the groups. */
@@ -343,22 +334,10 @@ body .ops-page .comments-board {
     font-size: clamp(12px, min(1.45vw, 1.95vh), 44px);
     white-space: nowrap;
   }
-
-  body .equipment-layout .low-zone-layout {
-    --clearwell-gap: clamp(16px, 1.25vw, 44px);
-    column-gap: var(--clearwell-gap);
-  }
-
-  body .equipment-layout .low-zone-section[data-partition="A"]::before {
-    inset-block: 0;
-    inset-inline-start: calc(-.5 * var(--clearwell-gap));
-    border-inline-start: 1px solid var(--wall-border);
-  }
 }
 
 @media (max-width: 899px) {
-  body .equipment-layout .group > .card-grid,
-  body .equipment-layout .low-zone-layout {
+  body .equipment-layout .group > .card-grid {
     padding: 7px;
   }
 
@@ -367,15 +346,8 @@ body .ops-page .comments-board {
     row-gap: 12px;
   }
 
-  body .equipment-layout .low-zone-layout {
-    --clearwell-gap: 14px;
-    row-gap: var(--clearwell-gap);
-  }
-
-  body .equipment-layout .low-zone-section[data-partition="A"]::before {
-    inset-block-start: calc(-.5 * var(--clearwell-gap));
-    inset-inline: 0;
-    border-block-start: 1px solid var(--wall-border);
+  body .equipment-layout .low-zone-pumps-row {
+    grid-template-columns: minmax(0, 1fr);
   }
 
   body .status-legend .legend-key {
@@ -421,7 +393,7 @@ body .wall-comment-count{color:#e3edf2}
 }
 
 @media(max-width:360px){
-  body .equipment-layout .card-grid,body.mode-tv .equipment-layout .card-grid,body .low-zone-section[data-partition=A] .card-grid,body.mode-tv .low-zone-section[data-partition=A] .card-grid{grid-template-columns:minmax(0,1fr)}
+  body .equipment-layout .card-grid,body.mode-tv .equipment-layout .card-grid{grid-template-columns:minmax(0,1fr)}
 }
 
 /* Desktop equipment editor: history has its own full-height reading column. */
