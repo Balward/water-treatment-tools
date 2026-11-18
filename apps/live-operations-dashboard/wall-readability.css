@@ -59,7 +59,7 @@ body .ops-page .comments-board { position:relative; }
   body.mode-tv .equipment-name { max-width:calc(100% - 25px); }
   body.mode-tv .group-title { font-size:clamp(18px,1.4vw,24px); }
   body.mode-tv .group-stats { font-size:14px; }
-  body.mode-tv .card-grid { padding:4px; }
+  body.mode-tv .card-grid { --equipment-tile-spacing:4px; }
   body.mode-tv .status-legend { min-height:44px;padding-block:4px; }
   body.mode-tv .legend-total strong,body.mode-tv .legend-key b { font-size:26px; }
   body.mode-tv .legend-key i { width:23px;height:23px; }
@@ -87,7 +87,7 @@ body .ops-page .comments-board { position:relative; }
   body.mode-tv .header-qr-image { height:68px;width:68px; }
   body.mode-tv .ops-titles h1 { font-size:24px; }
   body.mode-tv .ops-page { grid-template-rows:auto auto minmax(0,1fr) 110px auto; }
-  body.mode-tv .card-grid { padding:1px; }
+  body.mode-tv .card-grid { --equipment-tile-spacing:1px; }
   body.mode-tv .equipment-card { padding-block:2px; }
   body.mode-tv .equipment-note-preview { font-size:16px;line-height:20px; }
   body.mode-tv .group-title { font-size:18px; }
@@ -143,7 +143,7 @@ body .ops-page .comments-board { position:relative; }
   body:not(.mode-tv).header-hidden .ops-page { grid-template-rows:0 auto minmax(0,1fr) 118px auto; }
   body:not(.mode-tv) .comments-board-header { min-height:46px;padding-block:1px; }
   body:not(.mode-tv) .comments-board-actions { top:1px; }
-  body:not(.mode-tv) .card-grid { padding:2px; }
+  body:not(.mode-tv) .card-grid { --equipment-tile-spacing:2px; }
   body:not(.mode-tv) .equipment-card { padding-block:2px; }
 }
 
@@ -302,9 +302,10 @@ body .status-legend .legend-key {
   padding-inline: clamp(5px, .6vw, 16px);
 }
 
-/* Tile borders separate adjacent equipment; gutters separate the groups. */
+/* Match the space around each grid to the space between its tiles. */
 body .equipment-layout .card-grid {
-  gap: 0;
+  padding: var(--equipment-tile-spacing, 7px);
+  gap: var(--equipment-tile-spacing, 7px);
 }
 
 body .equipment-layout .equipment-card {
@@ -337,10 +338,6 @@ body .ops-page .comments-board {
 }
 
 @media (max-width: 899px) {
-  body .equipment-layout .group > .card-grid {
-    padding: 7px;
-  }
-
   body .equipment-layout,
   body .equipment-layout .paired-groups-row {
     row-gap: 12px;
