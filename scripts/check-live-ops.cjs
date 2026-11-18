@@ -72,7 +72,7 @@ const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
     fs.mkdirSync(path.join(root,'preview'),{recursive:true});fs.writeFileSync(path.join(root,'preview/live-ops-qr.png'),Buffer.from(qrShot.data,'base64'));
     await wait(250);
     const firstWallShot=await call('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});fs.writeFileSync(path.join(root,'preview/wall-readable-1080.png'),Buffer.from(firstWallShot.data,'base64'));
-    assert.ok(await evaluate('[...document.querySelectorAll(".equipment-card")].every(card=>card.offsetHeight>=145)'),'Full-width wall cards retain substantial height alongside the matching comments panel');
+    assert.ok(await evaluate('[...document.querySelectorAll(".equipment-card")].every(card=>card.offsetHeight>=140)'),'1080p cards retain at least 140px of height with the wider section gaps');
     console.log('Layout:',await evaluate('({height:document.documentElement.scrollHeight,groups:[...document.querySelectorAll(".group")].map(n=>n.offsetHeight),tiles:[...document.querySelectorAll(".equipment-card")].map(n=>n.offsetHeight)})'));
     assert.ok(await evaluate('document.documentElement.scrollHeight<=1080'),'TV fits 1080p');
     assert.equal(await evaluate('new Set([...document.querySelectorAll(".group")].map(n=>n.offsetHeight)).size'),1);
@@ -88,6 +88,17 @@ const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
       const commentSizes=await evaluate('[...document.querySelector(".comments-board").children].map(e=>[e.className,e.clientHeight,getComputedStyle(e).display])');
       assert.ok(await evaluate('document.querySelector(".comments-list").clientHeight>=18'),'Comment list retains at least one readable line at '+width+'x'+height+' '+JSON.stringify(commentSizes));
       assert.ok(await evaluate('(()=>{const p=document.querySelector(".comments-board").getBoundingClientRect(),e=document.querySelector(".equipment-layout").getBoundingClientRect();return p.top>=e.bottom&&p.width>innerWidth*.95&&e.width>innerWidth*.95})()'),'Comments sit below full-width equipment');
+      assert.ok(await evaluate(`(() => {
+        const board = document.querySelector(".equipment-layout");
+        const pumps = board.querySelector(".pump-groups-row");
+        const [highZone, booster] = [...pumps.children].map(section => section.getBoundingClientRect());
+        const rows = [...board.children].map(row => row.getBoundingClientRect());
+        const comments = document.querySelector(".comments-board").getBoundingClientRect();
+        const horizontalGap = booster.left - highZone.right;
+        const verticalGaps = rows.slice(1).map((row, index) => row.top - rows[index].bottom);
+        verticalGaps.push(comments.top - rows.at(-1).bottom);
+        return verticalGaps.every(gap => Math.abs(gap - horizontalGap) < 1);
+      })()`),'Vertical section gaps match the High Zone and Booster gap');
       if(width>=1900&&height>=900){const d=await evaluate('(()=>{const l=document.querySelector(".comments-list");return {height:l.clientHeight,scroll:l.scrollHeight,cards:[...l.children].map(c=>({height:c.clientHeight,width:c.clientWidth,message:c.querySelector(".comment-card-message")?.clientHeight,body:c.firstElementChild?.clientHeight}))}})()');assert.ok(d.scroll<=d.height+2,'Typical notes fit across the bottom '+JSON.stringify(d));}
       assert.ok(await evaluate('parseFloat(getComputedStyle(document.querySelector(".equipment-name")).fontSize)>=14'),'Equipment names retain a readable minimum while fitting one line');
       const clippedNames=await evaluate('[...document.querySelectorAll(".equipment-card")].flatMap(card=>{const r=card.getBoundingClientRect(),g=card.closest(".group").getBoundingClientRect(),name=card.querySelector(".equipment-name").getBoundingClientRect();return r.height>20&&r.bottom<=innerHeight&&r.bottom<=g.bottom+1&&name.bottom<=r.bottom+1?[]:[{name:card.querySelector(".equipment-name").textContent,card:[r.top,r.bottom],nameBounds:[name.top,name.bottom],font:getComputedStyle(card.querySelector(".equipment-name")).fontSize}]})');

@@ -320,7 +320,8 @@ body .ops-page .comments-board {
 
 @media (min-width: 900px) {
   body .ops-page .equipment-layout {
-    --equipment-section-gap: clamp(var(--equipment-gap), calc(1.5vh - 8.2px), 8px);
+    /* Limit both directions on short displays so the comments can still fit. */
+    --equipment-section-gap: min(clamp(8px, .65vw, 24px), clamp(4px, 10vh - 56px, 24px));
     box-sizing: border-box;
     row-gap: var(--equipment-section-gap);
     /* The page grid already contributes part of the gap above General Comments. */
@@ -328,7 +329,7 @@ body .ops-page .comments-board {
   }
 
   body .equipment-layout .paired-groups-row {
-    column-gap: clamp(8px, .65vw, 24px);
+    column-gap: var(--equipment-section-gap);
   }
 
   body .equipment-layout .group-header .group-title {
