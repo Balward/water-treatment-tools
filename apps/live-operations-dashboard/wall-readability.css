@@ -312,6 +312,15 @@ body .equipment-layout .low-zone-section[data-partition="A"]::before {
   position: absolute;
 }
 
+/* Tile borders separate adjacent equipment; gutters separate the groups. */
+body .equipment-layout .card-grid {
+  gap: 0;
+}
+
+body .equipment-layout .equipment-card {
+  border-radius: 0;
+}
+
 @media (min-width: 900px) {
   body .ops-page .equipment-layout {
     --equipment-section-gap: clamp(var(--equipment-gap), calc(1.5vh - 8.2px), 8px);
