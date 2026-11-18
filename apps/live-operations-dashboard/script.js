@@ -397,7 +397,7 @@
   }
 
   function getLowZonePartition(item) {
-    const name = (item.name || '').toUpperCase();
+    const name = (item.name || '').trim().toUpperCase();
     if (name.endsWith('B')) {
       return 'B';
     }
@@ -575,42 +575,27 @@
     return card;
   }
 
-  function renderLowZoneLayout(groupNode, group) {
-    const lowZoneLayout = document.createElement('div');
-    lowZoneLayout.className = 'low-zone-layout';
+  function getLowZoneSections(group) {
+    return ['B', 'A', 'Other'].map((partition) => ({
+      key: `low-zone-pumps-${partition.toLowerCase()}`,
+      label: partition === 'Other' ? 'Other Low Zone Pumps' : `Clearwell ${partition} Low Zone Pumps`,
+      equipment: group.equipment.filter((item) => getLowZonePartition(item) === partition),
+    })).filter((section) => section.equipment.length);
+  }
 
-    const partitionOrder = ['B', 'A', 'Other'];
-    const partitionLabels = {
-      B: 'Clearwell B',
-      A: 'Clearwell A',
-      Other: 'Other',
-    };
-
-    for (const partition of partitionOrder) {
-      const items = group.equipment.filter((item) => getLowZonePartition(item) === partition);
-      if (!items.length) {
-        continue;
-      }
-
-      const section = document.createElement('section');
-      section.className = 'low-zone-section';
-      section.dataset.partition = partition;
-
-      const title = document.createElement('h3');
-      title.className = 'low-zone-title';
-      title.textContent = partitionLabels[partition];
-      section.appendChild(title);
-
-      const grid = document.createElement('div');
-      grid.className = 'card-grid';
-      for (const item of items) {
-        grid.appendChild(buildEquipmentCard(item));
-      }
-      section.appendChild(grid);
-      lowZoneLayout.appendChild(section);
+  function buildLowZoneRow(group) {
+    const sections = getLowZoneSections(group);
+    const row = document.createElement('div');
+    row.className = 'paired-groups-row low-zone-pumps-row';
+    row.style.setProperty('--clearwell-columns', sections.map(
+      (section) => `minmax(0, ${section.equipment.length}fr)`
+    ).join(' '));
+    for (const section of sections) {
+      const node = buildGroupNode(section);
+      node.style.setProperty('--clearwell-pump-count', section.equipment.length);
+      row.appendChild(node);
     }
-
-    groupNode.appendChild(lowZoneLayout);
+    return row;
   }
 
   function buildGroupNode(group) {
@@ -623,13 +608,8 @@
     groupNode.querySelector('.group-stats').textContent = `${onlineCount} / ${group.equipment.length} in service`;
 
     const defaultGrid = groupNode.querySelector('.card-grid');
-    if (group.key === 'low-zone-pumps') {
-      defaultGrid.remove();
-      renderLowZoneLayout(groupNode, group);
-    } else {
-      for (const item of group.equipment) {
-        defaultGrid.appendChild(buildEquipmentCard(item));
-      }
+    for (const item of group.equipment) {
+      defaultGrid.appendChild(buildEquipmentCard(item));
     }
 
     return groupNode;
@@ -868,7 +848,7 @@
         }
       }
 
-      equipmentContainer.appendChild(buildGroupNode(group));
+      equipmentContainer.appendChild(group.key === 'low-zone-pumps' ? buildLowZoneRow(group) : buildGroupNode(group));
       renderedGroupKeys.add(group.key);
     }
 
@@ -888,7 +868,9 @@
       closeCommentDrawer();
     }
 
-    const grouped = groupEquipment(liveState.equipment);
+    const grouped = groupEquipment(liveState.equipment).flatMap(
+      (group) => group.key === 'low-zone-pumps' ? getLowZoneSections(group) : [group]
+    );
     for (const group of grouped) {
       const titleNode = Array.from(document.querySelectorAll('.group')).find(
         (node) => node.querySelector('.group-title')?.textContent === group.label

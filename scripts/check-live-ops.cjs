@@ -109,7 +109,14 @@ const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
       }
       console.log('All 29 equipment tiles fit '+width+'x'+height);
       assert.ok(await evaluate('(()=>{const row=document.querySelector(".residuals-pumps-row"),cards=[...row.querySelectorAll(".equipment-card")];return cards.length===6&&new Set(cards.map(c=>Math.round(c.getBoundingClientRect().top))).size===1})()'),'Reclaim, Waste and TSPS share one six-card row');
-      assert.ok(await evaluate('[...document.querySelectorAll(".residuals-pumps-row .group-header")].every(h=>{const t=h.querySelector(".group-title").getBoundingClientRect(),s=h.querySelector(".group-stats").getBoundingClientRect();return t.right<=s.left&&t.bottom<=h.getBoundingClientRect().bottom+1})'),'Pump group headings fit without overlap');
+      const clearwells = await evaluate(`[...document.querySelectorAll(".low-zone-pumps-row > .group")].map(section => ({
+        title: section.querySelector(".group-title").textContent,
+        pumps: section.querySelectorAll(".equipment-card").length,
+        row: section.getBoundingClientRect().top
+      }))`);
+      assert.deepEqual(clearwells.map(({title,pumps})=>[title,pumps]),[['Clearwell B Low Zone Pumps',4],['Clearwell A Low Zone Pumps',3]]);
+      assert.equal(clearwells[0].row,clearwells[1].row,'Clearwell sections share one desktop row');
+      assert.ok(await evaluate('[...document.querySelectorAll(".residuals-pumps-row .group-header,.low-zone-pumps-row .group-header")].every(h=>{const t=h.querySelector(".group-title").getBoundingClientRect(),s=h.querySelector(".group-stats").getBoundingClientRect();return t.right<=s.left&&t.bottom<=h.getBoundingClientRect().bottom+1})'),'Pump group headings fit without overlap');
       if(width===1280&&height===600){const shot=await call('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});fs.writeFileSync(path.join(root,'preview/live-ops-compact.png'),Buffer.from(shot.data,'base64'));}
     }
     await call('Emulation.setDeviceMetricsOverride',{width:1920,height:1080,deviceScaleFactor:1,mobile:false});await wait(120);
@@ -153,6 +160,10 @@ const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
     await call('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:1,mobile:false});await wait(100);
     assert.equal(await evaluate('document.body.classList.contains("header-hidden")'),false,'Phone keeps its normal header');
     assert.equal(await evaluate('getComputedStyle(document.querySelector(".header-qr")).display'),'none','Phone hides the editor QR');
+    assert.ok(await evaluate(`(() => {
+      const [first, second] = document.querySelectorAll(".low-zone-pumps-row > .group");
+      return second.getBoundingClientRect().top > first.getBoundingClientRect().bottom;
+    })()`),'Clearwell sections stack with space between them on phones');
     await call('Emulation.setDeviceMetricsOverride',{width:1920,height:1080,deviceScaleFactor:1,mobile:false});await wait(150);
     assert.equal(await evaluate('document.body.classList.contains("header-hidden")'),true,'Returning to desktop restores the preference');
     await evaluate('document.getElementById("wallHeaderToggle").click()');await wait(150);
@@ -330,7 +341,10 @@ const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
     assert.ok(!deletedLog.changeLog.some(e=>e.id===logEntry.id),'Browser deletes only the selected entry');
     assert.equal(deletedLog.status,logUpdate.equipment.status);
     assert.equal(deletedLog.note,logUpdate.equipment.note,'Deleting history leaves the current note unchanged');
-    const durationTarget=(await(await fetch('http://127.0.0.1:3191/api/live-ops/state')).json()).equipment.find(e=>e.status==='operational');
+    const durationTarget=(await(await fetch('http://127.0.0.1:3191/api/live-ops/state')).json()).equipment.find(e=>e.groupKey==='low-zone-pumps'&&e.name.endsWith('B')&&e.status==='operational');
+    const clearwellCount = key => evaluate('document.querySelector(".group--low-zone-pumps-'+key+' .group-stats").textContent');
+    const countA = await clearwellCount('a');
+    const countB = Number.parseInt(await clearwellCount('b'),10);
     const durationEndpoint='http://127.0.0.1:3191/api/live-ops/equipment/'+durationTarget.id;
     const unavailable=await(await fetch(durationEndpoint,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:'out-of-service',updatedBy:'Blaine Alward'})})).json();
     assert.ok(Number.isFinite(Date.parse(unavailable.equipment.statusSince)),'Status transition records a separate start time');
@@ -338,6 +352,8 @@ const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
     assert.equal(noteOnly.equipment.statusSince,unavailable.equipment.statusSince,'Note edits do not restart unavailable duration');
     for(let i=0;i<50;i++){if(await evaluate('!!document.querySelector("[data-id='+durationTarget.id+'] .equipment-duration")'))break;await wait(50);}
     assert.ok(await evaluate('document.querySelector("[data-id='+durationTarget.id+'] .equipment-duration").textContent.includes("Out of Service")'),'Duration appears on the out-of-service card');
+    assert.equal(await clearwellCount('a'),countA,'Clearwell A count holds when Clearwell B changes');
+    assert.equal(await clearwellCount('b'),(countB-1)+' / 4 in service','Clearwell B count updates from the live status change');
     await call('Page.navigate',{url:'http://127.0.0.1:8781/operations-management/'});
     for(let i=0;i<80;i++){if(await evaluate('!!document.getElementById("addUser")&&!document.getElementById("addUser").disabled'))break;await wait(50);}
     assert.equal(await evaluate('document.querySelectorAll("#userList .manage-item").length'),7,'Central management starts with the existing operator names');
