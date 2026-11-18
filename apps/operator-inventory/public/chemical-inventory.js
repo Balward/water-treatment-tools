@@ -6,6 +6,20 @@
   const dateLabel=date=>new Date(date+'T12:00:00').toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'});
   let saved={revision:0,records:[]},dirty=false,busy=false,loaded=false,summaryDate=null;
   let saveTimer,activeSave=null,editVersion=0,saveFailed=false,editingCompleted=false;
+  let emailConfig={enabled:false,defaultTo:''},sendingEmail=false;
+  function emailControls(){
+    $('chemical-email-send').disabled=$('chemical-email-recipient').disabled=!emailConfig.enabled||sendingEmail;
+  }
+  $('chemical-email-form').addEventListener('submit',async event=>{
+    event.preventDefault();if(sendingEmail||!emailConfig.enabled||!summaryDate)return;
+    const date=summaryDate,revision=saved.revision;
+    sendingEmail=true;emailControls();$('chemical-email-status').textContent='Sending order report...';
+    try{
+      const result=await request('/api/chemicals/records/'+date+'/email',{method:'POST',body:JSON.stringify({to:$('chemical-email-recipient').value.trim(),revision})});
+      if(summaryDate===date)$('chemical-email-status').textContent='Email accepted for delivery to '+result.to+'.';
+    }catch(error){if(summaryDate===date)$('chemical-email-status').textContent=error.message;}
+    finally{sendingEmail=false;emailControls();}
+  });
   const complete=record=>!!record&&(record.status||'complete')==='complete';
   const current=()=>saved.records.find(r=>r.date===$('chemical-date').value);
   const phone=navigator.userAgentData?.mobile===true||/iPhone|iPod|Android.*Mobile/i.test(navigator.userAgent);
@@ -75,6 +89,8 @@
   }
   function showSummary(date,justSaved=false){
     const record=saved.records.find(r=>r.date===date);if(!record)return;
+    if(!$('chemical-email-recipient').value)$('chemical-email-recipient').value=emailConfig.defaultTo;
+    emailControls();$('chemical-email-status').textContent=emailConfig.enabled?'Sends this saved report when you press the button.':'Email sending is not enabled yet. Ask the app administrator to set it up.';
     history.replaceState(null,'','?date='+encodeURIComponent(date)+'&view=report');
     editingCompleted=false;selectedDate=$('chemical-date').value=date;summaryDate=date;tab(false);$('chemical-entry').hidden=true;$('chemical-summary').hidden=false;
     $('entry-tab').hidden=false;$('entry-tab').setAttribute('aria-pressed','false');$('chemical-saved-banner').hidden=!justSaved;
@@ -103,7 +119,7 @@
     }).join(''):'<div class="empty">No chemical readings recorded yet.</div>';ChemicalTrends.render(saved.records);controls();
   }
   async function refresh(){busy=true;controls();try{
-    saved=await request('/api/chemicals');loaded=true;
+    [saved,emailConfig]=await Promise.all([request('/api/chemicals'),request('/api/email-config')]);loaded=true;
     const query=new URLSearchParams(location.search),requested=query.get('date'),unfinished=saved.records.find(r=>r.status==='draft');
     const explicitRecord=requested&&saved.records.find(r=>r.date===requested);
     editingCompleted=!!explicitRecord&&complete(explicitRecord)&&query.get('view')==='edit';

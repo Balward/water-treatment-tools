@@ -22,6 +22,8 @@ Chemical usage and a received-delivery ledger are not tracked. Chemicals have no
 
 ## To Order List Integration
 
+Each saved chemical report includes **Send order report by email**, using the same server email settings and default recipient as Operating Supplies. Enter one recipient address and send the saved date's stock levels and order guidance, including reorder levels, delivery sizes and available forecast dates. Draft reports are marked provisional and missing readings remain unrecorded. Emailing does not record an order as placed. A changed inventory requires reopening the report before sending; duplicate sends share the existing email cooldown.
+
 The existing To Order List now combines supply purchases and chemical recommendations with All / Chemicals / Supplies filters. Supply photos and product links remain intact. The latest completed app-entered chemical inventory supplies the on-hand values; earlier completed readings, including workbook snapshots, inform recent usage. Imported workbook history alone does not create purchases. Draft readings do not affect recommendations.
 
 A chemical appears when it reaches the reorder level, or its forecast order date is due. Forecast dates account for seven-day lead time and capacity for a standard delivery. Recommendations show the reading date, on-hand gallons, reorder level, recent usage, suggested quantity, expected delivery and capacity/stale-reading cautions. Polymer and permanganate default to one 265-gallon tote; bulk deliveries use the facility's configured standard load.

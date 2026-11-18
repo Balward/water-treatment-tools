@@ -4,7 +4,8 @@ const {launchBrowser,removeTemporaryDirectory}=require('../../../scripts/lib/bro
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 (async()=>{
   const dataDir=fs.mkdtempSync(path.join(os.tmpdir(),'chemical-browser-'));
-  let server=createApp({dataDir,chemicalHistory:[]});
+  let sentEmail;
+  let server=createApp({dataDir,chemicalHistory:[],mailer:{enabled:true,defaultTo:'staff@example.com',send:async(to,report)=>{sentEmail={to,report};}}});
   await new Promise(r=>server.listen(0,'127.0.0.1',r));let base='http://127.0.0.1:'+server.address().port;
   let browser;
   try{
@@ -49,6 +50,12 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
     assert.ok(await evaluate('document.querySelector(".chemical-report-details").textContent.includes("25 bags")&&document.querySelector(".chemical-report-details").textContent.includes("530 gal")'),'Saved report retains entered levels, tote conversions and salt equivalents');
     assert.ok(await evaluate('document.querySelector(".chemical-report-readings").textContent.includes("31.3 in")&&document.querySelector(".chemical-report-readings").textContent.includes("530 gal")&&!document.querySelector(".chemical-report-readings").closest("details")'),'Report shows inch readings and stored gallons without expanding details');
     assert.equal(await evaluate('document.querySelectorAll("[data-order-chemical]").length'),5,'Report includes order guidance for each chemical');
+    assert.equal(await evaluate('document.getElementById("chemical-email-recipient").value'),'staff@example.com');
+    await evaluate('document.getElementById("chemical-email-form").requestSubmit()');
+    for(let i=0;i<100;i++){if(await evaluate('document.getElementById("chemical-email-status").textContent.includes("accepted for delivery")'))break;await wait(50);}
+    assert.equal(sentEmail?.to,'staff@example.com','Report email uses the configured recipient');
+    assert.match(sentEmail.report.subject,/DRAFT - Order Needed: Chemical Inventory/);
+    assert.match(sentEmail.report.text,/614.15 gal/,'Email uses saved chemical totals');
     assert.ok(await evaluate('[...document.querySelectorAll("[data-order-chemical]")].find(el=>el.dataset.orderChemical==="alum").textContent.includes("Order Now")'),'Report flags alum below its reorder level');
     for(const width of [1440,390,320]){
       await call('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});await wait(80);

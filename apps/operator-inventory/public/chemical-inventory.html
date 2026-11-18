@@ -32,6 +32,7 @@
     <section id="chemical-summary" hidden aria-labelledby="chemical-summary-title">
       <p id="chemical-saved-banner" class="chemical-saved-banner" role="status" hidden>✓ Readings Saved Successfully</p>
       <h2 id="chemical-summary-title" tabindex="-1">Saved Inventory</h2>
+      <form id="chemical-email-form" class="email-report-form"><label for="chemical-email-recipient">Email this order report to</label><input id="chemical-email-recipient" type="email" inputmode="email" autocomplete="email" maxlength="254" placeholder="recipient@example.com" required><button id="chemical-email-send" class="primary" type="submit" disabled>Send order report by email</button><p id="chemical-email-status" class="report-note" role="status" aria-live="polite"></p></form>
       <div id="chemical-summary-content"></div>
       <div class="chemical-actions"><button id="summary-edit" type="button" class="primary">Edit Readings</button><button id="summary-history" type="button">View All History</button></div>
     </section>

@@ -6,12 +6,13 @@
     {id:'rounds',category:'operations',name:'Plant Rounds',description:'Record AM and PM checks, compare readings, and share daily handoff notes.',icon:'board',path:'/plant-rounds/'},
     {id:'equipment',category:'operations',name:'Equipment Status Board',description:'Check equipment availability and share operating notes.',icon:'board',path:'/live-operations-dashboard/'},
     {id:'inventory',category:'operations',name:'Supply Inventory',description:'Count supplies, check PAR levels, and manage your order list.',icon:'box',external:'https://inventory.gibbhub.io/'},
-    {id:'sops',category:'operations',name:'SOP Library',description:'Find and view procedures, or create and edit SOPs.',icon:'book',path:'/sop-creator/library.html'},
+    {id:'sops',category:'operations',status:'Under Construction',name:'SOP Library',description:'Find and view procedures, or create and edit SOPs.',icon:'book',path:'/sop-creator/library.html'},
     {id:'robojar',category:'water',name:'RoboJar Analyzer',description:'Compare jar-test results and review coagulant performance.',icon:'jar',path:'/robojar-analyzer/?v=20261022-robo1'},
     {id:'hypo',category:'water',name:'Sodium Hypochlorite Calculator',description:'Calculate chlorine dose and chemical feed requirements.',icon:'water',path:'/sodium-hypochlorite-calculator/?v=20261022-hypo1'},
     {id:'permanganate',category:'water',name:'Permanganate Dose Predictor',description:'Explore dose estimates using historical plant data.',icon:'dose',path:'/dose-predictor/?v=20261022-dose1'},
     {id:'alum',category:'water',name:'Alum Hydrometer Conversion',description:'Correct density readings and estimate dry alum strength.',icon:'meter',path:'/alum-hydrometer-conversion/'},
     {id:'explorer',category:'water',name:'Water Data Explorer',description:'Find trends and correlations in your water-quality data.',icon:'chart',path:'/water-data-explorer/?v=20261022-explorer1'},
+    {id:'digital-twin',category:'water',status:'Under Construction',name:'Plant Digital Twin',description:'Explore alum and cationic polymer scenarios and map plant sample points.',icon:'flow',path:'/apps/digital-twin/index.html'},
     {id:'detention',category:'water',name:'Detention Time',description:'Follow flow through the plant and compare basin detention times.',icon:'flow',path:'/plant-flow/?v=20261022-plant1'},
     {id:'mwat',category:'wastewater',name:'MWAT & DM Calculator',description:'Review temperature records and calculate weekly averages.',icon:'thermometer',path:'/mwat-calculator/'},
     {id:'loading',category:'wastewater',name:'NH3 Loading Insight',description:'Compare loading patterns and identify peak hours.',icon:'chart',path:'/nh4-loading/'},
@@ -19,6 +20,7 @@
     {id:'videos',category:'training',name:'Class A Training Videos',description:'Watch lessons and refresh your treatment knowledge.',icon:'video',path:'/video-tutorials/?v=20261022-videos1'},
     {id:'flashcards',category:'training',name:'Water Treatment Flashcards',description:'Practice key terms, formulas, and treatment concepts.',icon:'cards',path:'/water-treatment-flashcards/?v=20261022-study1'}
   ];
+  if(location.protocol==='file:')return;
   const host=document.body.dataset.opsApp || 'home';
   // Public subdomains may point at a standalone app; the directory lives on water.
   const suiteOrigin=host==='inventory'||/\.gibbhub\.io$/i.test(location.hostname)?'https://water.gibbhub.io':location.origin;
@@ -33,15 +35,16 @@
   const menu=document.createElement('dialog');menu.id='opsAppMenu';menu.className='ops-app-menu';menu.setAttribute('aria-labelledby','opsAppMenuTitle');
   menu.innerHTML='<header class="ops-app-menu-header"><div><h2 id="opsAppMenuTitle" class="ops-app-menu-title">Switch Applications</h2></div><button class="ops-app-menu-close" type="button" aria-label="Close Applications Menu" autofocus><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></header><nav class="ops-app-menu-links" aria-label="Navigate Between Applications"></nav><footer class="ops-app-menu-footer">One Workspace. All Your Operations Tools.</footer>';
   const links=menu.querySelector('nav');
-  function addLink(parent,name,url,id,className=''){
+  function addLink(parent,name,url,id,className='',status){
     const link=document.createElement('a');link.href=url;link.textContent=name;link.className=className;link.dataset.opsDestination=id;
+    if(status){const badge=document.createElement('small');badge.className='ops-app-menu-construction';badge.textContent=status;link.append(badge);}
     if(id===host){link.setAttribute('aria-current','page');const badge=document.createElement('small');badge.className='ops-app-menu-current';badge.textContent='Current Page';link.append(badge);}
     parent.append(link);
   }
   addLink(links,'Operations Home',homeHref,'home','ops-app-menu-home');
   addLink(links,'User Management',new URL('/operations-management/',suiteOrigin).href,'management','ops-app-menu-home');
   addLink(links,'Application Review',new URL('/application-review/',suiteOrigin).href,'applications','ops-app-menu-home');
-  categories.forEach(category=>{const section=document.createElement('section');section.className='ops-app-menu-group';const heading=document.createElement('h3');heading.textContent=category.label;section.append(heading);applications.filter(app=>app.category===category.id).forEach(app=>addLink(section,app.name,href(app),app.id));links.append(section);});
+  categories.forEach(category=>{const section=document.createElement('section');section.className='ops-app-menu-group';const heading=document.createElement('h3');heading.textContent=category.label;section.append(heading);applications.filter(app=>app.category===category.id).forEach(app=>addLink(section,app.name,href(app),app.id,'',app.status));links.append(section);});
   document.body.append(menu);
   let opener=null,leaving=false;
   buttons.forEach(button=>{

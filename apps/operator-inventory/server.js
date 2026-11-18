@@ -11,7 +11,7 @@ const chemicalOrders = require('./chemical-orders');
 const chemicalSettings = require('./public/chemical-settings');
 const {reportOrderAdvice} = require('./public/chemical-trends');
 const chemicalHistorySeed = require('./chemical-history-2026.json');
-const { createMailer, buildReportEmail, validAddress } = require('./email');
+const { createMailer, buildReportEmail, buildChemicalReportEmail, validAddress } = require('./email');
 const worksheets = [
   { id: 'operating', name: 'Operating Supplies', sourceSheet: 1 },
   { id: 'janitorial', name: 'Janitorial Supplies', sourceSheet: 2 },
@@ -333,20 +333,22 @@ function createApp({ dataDir = process.env.DATA_DIR || path.join(__dirname, 'dat
         persist({ ...state, inventories: [...state.inventories, run] }); return json(201, run);
       }
       const emailMatch = route.match(/^\/api\/inventories\/([a-f0-9-]+)\/email$/);
-      if (emailMatch && req.method === 'POST') {
+      const chemicalEmailMatch = route.match(/^\/api\/chemicals\/records\/(\d{4}-\d{2}-\d{2})\/email$/);
+      if ((emailMatch || chemicalEmailMatch) && req.method === 'POST') {
         let origin;
         try { origin = new URL(req.headers.origin); } catch { fail(403, 'Send email from the inventory app.'); }
         if (!['http:','https:'].includes(origin.protocol) || origin.host !== req.headers.host) fail(403, 'Send email from the inventory app.');
         if (!mailer.enabled) fail(503, 'Email sending has not been configured on the server.');
         const body = await bodyOf(req);
         if (!validAddress(body.to)) fail(400, 'Enter one valid recipient email address.');
-        const inventory = state.inventories.find(r => r.id === emailMatch[1]);
+        const chemicalData = chemicalEmailMatch ? chemicalState() : null;
+        const inventory = chemicalData ? chemicalData.records.find(r => r.date === chemicalEmailMatch[1]) : state.inventories.find(r => r.id === emailMatch[1]);
         if (!inventory) fail(404, 'Inventory was not found.');
-        if (body.revision !== inventory.revision) fail(409, 'This inventory changed. Reopen the report before emailing it.');
+        if (body.revision !== (chemicalData ? chemicalData.revision : inventory.revision)) fail(409, 'This inventory changed. Reopen the report before emailing it.');
         if (sendingEmail || Date.now() < nextEmailAt) fail(429, 'Please wait 30 seconds before sending another email.');
         sendingEmail = true;
         try {
-          await mailer.send(body.to, buildReportEmail(inventory, worksheets.find(w => w.id === inventory.worksheet)?.name || 'Inventory'));
+          await mailer.send(body.to, chemicalData ? buildChemicalReportEmail(inventory, chemicalData.records) : buildReportEmail(inventory, worksheets.find(w => w.id === inventory.worksheet)?.name || 'Inventory'));
           nextEmailAt = Date.now() + 30000;
           return json(200, { accepted:true, to:body.to });
         } catch (error) {

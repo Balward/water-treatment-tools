@@ -18,6 +18,8 @@
 .ops-app-menu-group{margin:25px 0 0;padding:0;border:0;background:none;box-shadow:none}
 .ops-app-menu-group h3{margin:0 14px 7px;font-size:11px;line-height:1.4;font-weight:700;letter-spacing:.2px;color:var(--ops-color-accent)}
 .ops-app-menu-group a{display:flex;align-items:center;gap:8px;min-height:44px;padding:12px 14px;border-radius:5px;font-size:13px;font-weight:400;line-height:1.5}
+.ops-app-menu-group a:has(.ops-app-menu-construction){flex-wrap:wrap}
+.ops-app-menu-construction{margin-left:auto;padding:3px 6px;border:1px solid #e0bd61;border-radius:4px;background:#fff0c2;color:#714b00;font-size:10px;font-weight:700;white-space:nowrap}
 .ops-app-menu-group a:hover,.ops-app-menu-home:hover{background:#f0f5f7;color:var(--ops-color-accent)}
 .ops-app-menu-footer{flex:none;padding:16px 28px;border-top:1px solid var(--ops-color-line);font-size:10px;line-height:1.5;color:var(--ops-color-muted);background:#f8fafb}
 .ops-app-menu :is(a,button):focus-visible,.ops-apps-button:focus-visible{outline:3px solid #008cab;outline-offset:3px}

@@ -61,6 +61,36 @@ function buildReportEmail(inventory, worksheetName) {
   const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(title)}</title></head><body style="margin:0;padding:16px;background:#f6f7f1;color:#243c33;font-family:Arial,Helvetica,sans-serif;"><div style="max-width:880px;margin:0 auto;"><h1 style="font-size:24px;color:#174e42;line-height:1.3;">${escapeHtml(title)}</h1><p>${escapeHtml(header)}</p><p style="font-size:13px;line-height:1.6;">${escapeHtml(note)}</p><h2 style="font-size:18px;">${needed.length} items at or below PAR</h2>${needed.length ? table(needed) : '<p>No counted items need ordering.</p>'}${review.length ? '<h2 style="font-size:18px;">Review as needed</h2><p style="font-size:13px;">These items have no numeric PAR.</p>' + table(review,true) : ''}<p style="font-size:12px;color:#46594b;">This is an inventory report. No orders have been placed.</p></div></body></html>`;
   return { subject:title.replace(/[\r\n]/g,' '), text, html, attachments };
 }
+function buildChemicalReportEmail(record, records) {
+  const model = require('./public/chemical-math');
+  const advice = require('./public/chemical-trends').reportOrderAdvice(records, record);
+  const dateAt = days => Math.abs(days) <= 3650 ? new Date(Date.parse(record.date) + Math.floor(days) * 86400000).toISOString().slice(0,10) : 'Beyond 10-year estimate';
+  const format = value => value === null || value === undefined ? 'Not recorded' : value.toLocaleString('en-US', {maximumFractionDigits:2});
+  const draft = (record.status || 'complete') !== 'complete';
+  const subject = `${draft ? 'DRAFT - ' : ''}Order Needed: Chemical Inventory - ${record.date}`;
+  const header = `${record.date} | ${record.operator}`;
+  const note = `Order guidance as of the reading date. ${draft ? 'Draft guidance is provisional; blank readings are excluded. ' : ''}Check current levels, supplier availability and tank space before arranging delivery. Estimates assume recent net drawdown continues without replenishment. This report does not place an order.`;
+  const rows = advice.map(({key,decision,plan,forecast}) => {
+    const name = model.chemicals.find(c => c.id === key).name;
+    const details = plan ? [
+      `Reorder level: ${format(plan.threshold)} gal`,
+      `Delivery size: ${format(plan.delivery)} gal`,
+      ...(plan.orderDays !== undefined ? [`Order by: ${decision === 'Order Now' ? 'Now' : dateAt(plan.orderDays)}`, `Target delivery: ${dateAt(Math.ceil(plan.deliveryDays))}`] : []),
+      forecast.available ? `Recent net drawdown: ${format(forecast.ratePerDay)} gal/day` : forecast.reason,
+      ...(plan.deliveryLevel < plan.threshold ? ['Coordinate delivery timing or a smaller load so it fits.'] : []),
+      ...(plan.storedField ? ['Confirm a free tote position; partial totes still occupy a position.'] : []),
+      ...(plan.daysToZero !== undefined && plan.daysToZero < plan.leadDays ? [`Less than ${plan.leadDays} days of estimated supply remain. Contact the supplier to arrange delivery.`] : []),
+      ...(plan.gallons > plan.capacity ? ['Recorded stock exceeds approximate usable capacity. Verify levels and capacity.'] : [])
+    ].filter(Boolean).join('\n') : 'Enter the required readings to assess ordering.';
+    return [name, format(plan?.gallons) + (plan ? ' gal' : ''), decision, details];
+  });
+  const needed = advice.filter(item => item.decision === 'Order Now').length;
+  const summary = `${needed} ${needed === 1 ? 'chemical needs' : 'chemicals need'} ordering.`;
+  const text = [subject,header,note,summary,...rows.map(row => row.join('\n')),record.notes && `Notes: ${record.notes}`].filter(Boolean).join('\n\n');
+  const cell = 'padding:10px;border:1px solid #ccd9ce;text-align:left;vertical-align:top;overflow-wrap:anywhere;';
+  const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body style="font-family:Arial,sans-serif;color:#243c33;padding:16px"><h1>${escapeHtml(subject)}</h1><p>${escapeHtml(header)}</p><p>${escapeHtml(note)}</p><h2>${escapeHtml(summary)}</h2><table width="100%" style="border-collapse:collapse;table-layout:fixed;font-size:13px"><thead><tr>${['Chemical','On hand','Order guidance','Planning details'].map(label => `<th style="${cell}">${label}</th>`).join('')}</tr></thead><tbody>${rows.map(row => `<tr>${row.map(value => `<td style="${cell}">${escapeHtml(value).replace(/\n/g,'<br>')}</td>`).join('')}</tr>`).join('')}</tbody></table>${record.notes ? `<p>Notes: ${escapeHtml(record.notes)}</p>` : ''}</body></html>`;
+  return {subject:subject.replace(/[\r\n]/g,' '),text,html};
+}
 function createMailer(env = process.env, createTransport) {
   const user = env.SMTP_USER?.trim() || '';
   const port = Number(env.SMTP_PORT || 465);
@@ -81,4 +111,4 @@ function createMailer(env = process.env, createTransport) {
     }
   };
 }
-module.exports = { validAddress, buildReportEmail, createMailer };
+module.exports = { validAddress, buildReportEmail, buildChemicalReportEmail, createMailer };
