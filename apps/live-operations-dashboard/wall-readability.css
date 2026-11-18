@@ -60,8 +60,8 @@ body .ops-page .comments-board { position:relative; }
   body.mode-tv .equipment-name { max-width:calc(100% - 25px); }
   body.mode-tv .group-title { font-size:clamp(18px,1.4vw,24px); }
   body.mode-tv .group-stats,body.mode-tv .low-zone-title { font-size:14px; }
-  body.mode-tv .card-grid,body.mode-tv .low-zone-layout { padding-block:4px; }
-  body.mode-tv .low-zone-section .card-grid { padding-block:0; }
+  body.mode-tv .card-grid,body.mode-tv .low-zone-layout { padding:4px; }
+  body.mode-tv .low-zone-section .card-grid { padding:0; }
   body.mode-tv .low-zone-section[data-partition=A],body.mode-tv .low-zone-section[data-partition=B] { padding:0;margin:0; }
   body.mode-tv .status-legend { min-height:44px;padding-block:4px; }
   body.mode-tv .legend-total strong,body.mode-tv .legend-key b { font-size:26px; }
@@ -90,8 +90,7 @@ body .ops-page .comments-board { position:relative; }
   body.mode-tv .header-qr-image { height:68px;width:68px; }
   body.mode-tv .ops-titles h1 { font-size:24px; }
   body.mode-tv .ops-page { grid-template-rows:auto auto minmax(0,1fr) 110px auto; }
-  body.mode-tv .card-grid,body.mode-tv .low-zone-layout { padding-block:1px; }
-  body.mode-tv .low-zone-section .card-grid { padding-block:0; }
+  body.mode-tv .card-grid,body.mode-tv .low-zone-layout { padding:1px; }
   body.mode-tv .equipment-card { padding-block:2px; }
   body.mode-tv .equipment-note-preview { font-size:16px;line-height:20px; }
   body.mode-tv .group-title { font-size:18px; }
@@ -147,8 +146,8 @@ body .ops-page .comments-board { position:relative; }
   body:not(.mode-tv).header-hidden .ops-page { grid-template-rows:0 auto minmax(0,1fr) 118px auto; }
   body:not(.mode-tv) .comments-board-header { min-height:46px;padding-block:1px; }
   body:not(.mode-tv) .comments-board-actions { top:1px; }
-  body:not(.mode-tv) .card-grid,body:not(.mode-tv) .low-zone-layout { padding-block:2px; }
-  body:not(.mode-tv) .low-zone-section .card-grid { padding-block:0; }
+  body:not(.mode-tv) .card-grid,body:not(.mode-tv) .low-zone-layout { padding:2px; }
+  body:not(.mode-tv) .low-zone-section .card-grid { padding:0; }
   body:not(.mode-tv) .equipment-card { padding-block:2px; }
 }
 
@@ -358,6 +357,11 @@ body .ops-page .comments-board {
 }
 
 @media (max-width: 899px) {
+  body .equipment-layout .group > .card-grid,
+  body .equipment-layout .low-zone-layout {
+    padding: 7px;
+  }
+
   body .equipment-layout,
   body .equipment-layout .paired-groups-row {
     row-gap: 12px;

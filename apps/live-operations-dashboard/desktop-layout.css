@@ -20,9 +20,9 @@
   body .equipment-layout .paired-groups-row,body.mode-tv .equipment-layout .paired-groups-row { height:100%;min-height:0;grid-template-columns:1fr 1fr; }
   body .equipment-layout .residuals-pumps-row,body.mode-tv .equipment-layout .residuals-pumps-row { grid-template-columns:repeat(var(--pump-group-count,3),minmax(0,1fr)); }
   body .equipment-layout .pump-groups-row .card-grid,body.mode-tv .equipment-layout .pump-groups-row .card-grid { grid-template-columns:repeat(4,minmax(0,1fr)); }
-  body .card-grid,body.mode-tv .card-grid { min-height:0;padding:clamp(3px,.65vh,7px) 8px;grid-template-rows:minmax(0,1fr); }
+  body .card-grid,body.mode-tv .card-grid { min-height:0;padding:clamp(3px,.65vh,7px);grid-template-rows:minmax(0,1fr); }
   body .group--filters>.card-grid,body.mode-tv .group--filters>.card-grid { grid-template-columns:repeat(8,minmax(0,1fr)); }
-  body .low-zone-layout,body.mode-tv .low-zone-layout { height:100%;grid-template-columns:4fr 3fr;padding:clamp(3px,.65vh,7px) 8px; }
+  body .low-zone-layout,body.mode-tv .low-zone-layout { height:100%;grid-template-columns:4fr 3fr;padding:clamp(3px,.65vh,7px); }
   body .low-zone-section,body.mode-tv .low-zone-section { height:100%;min-height:0; }
   body .low-zone-section .card-grid,body.mode-tv .low-zone-section .card-grid { height:100%;padding:0; }
   body .low-zone-section[data-partition=A] .card-grid,body.mode-tv .low-zone-section[data-partition=A] .card-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
