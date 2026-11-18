@@ -2,6 +2,8 @@
 
 Use `/live-operations-dashboard/?mode=tv` for unattended viewing. The regular URL retains the equipment and comment editors. The header QR opens that regular editor on a phone.
 
+TV Mode reloads the page every 15 minutes so a TV browser can pick up deployed code and layout changes without an extension. Before reloading, it checks that the board page is reachable. If that check fails, the display stays open and checks again after one minute. Open or refresh TV Mode once to start the timer. Equipment updates continue to arrive live between reloads.
+
 ## Readability
 
 The wall layout keeps all 27 equipment tiles stationary in four full-width rows, with High Zone and Booster Pumps sharing one eight-card row. General Comments is below the equipment. The desktop wall header is 82px high; the regular editor retains the standard Operations header. At 1920 by 1080, wall cards are approximately 149px tall with the header shown and 165px with it hidden.
