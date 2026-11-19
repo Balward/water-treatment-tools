@@ -6,6 +6,7 @@
   const dateLabel=date=>new Date(date+'T12:00:00').toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'});
   let saved={revision:0,records:[]},dirty=false,busy=false,loaded=false,summaryDate=null;
   let saveTimer,activeSave=null,editVersion=0,saveFailed=false,editingCompleted=false;
+  let manualNwos='';
   let emailConfig={enabled:false,defaultTo:''},sendingEmail=false;
   function emailControls(){
     $('chemical-email-send').disabled=$('chemical-email-recipient').disabled=!emailConfig.enabled||sendingEmail;
@@ -30,6 +31,8 @@
     $('reload-chemicals').disabled=busy||!!activeSave;
     for(const input of $('chemical-form').querySelectorAll('input,textarea'))input.disabled=busy||!loaded||!current()||(complete(current())&&!editingCompleted);
     $('chemical-date').disabled=true;
+    $('reading-nwos').readOnly=$('nwos-pump-off').checked;
+    if(!model.previousReading(saved.records,$('chemical-date').value,'nwos')&&!current()?.nwosPumpOff)$('nwos-pump-off').disabled=true;
     const count=model.fields.filter(([id])=>{const input=$('reading-'+id);return input.value!==''&&input.validity.valid;}).length;
     $('complete-chemical').hidden=editingCompleted;
     $('save-chemical').textContent=editingCompleted?'Save Changes':'Save Draft';
@@ -42,11 +45,38 @@
   }
   async function request(url,options={}){const response=await fetch(url,{...options,headers:{'Content-Type':'application/json'}});const result=await response.json();if(!response.ok)throw new Error(result.error||'Could not load chemical inventory.');return result;}
   function numeric(id){const input=$(id);return input.value===''?null:input.valueAsNumber;}
-  function draft(){return{...(current()?.source?.type==='workbook'?{recordedGallons:Object.fromEntries(model.chemicals.map(c=>[c.id,numeric('snapshot-'+c.id)]))}:{}),date:$('chemical-date').value,operator:$('chemical-operator').value.trim(),notes:$('chemical-notes').value,readings:Object.fromEntries(model.fields.map(([id])=>[id,numeric('reading-'+id)]))};}
+  function draft(){return{...(current()?.source?.type==='workbook'?{recordedGallons:Object.fromEntries(model.chemicals.map(c=>[c.id,numeric('snapshot-'+c.id)]))}:{}),date:$('chemical-date').value,operator:$('chemical-operator').value.trim(),notes:$('chemical-notes').value,nwosPumpOff:$('nwos-pump-off').checked,readings:Object.fromEntries(model.fields.map(([id])=>[id,numeric('reading-'+id)]))};}
   $('chemical-fields').innerHTML=model.chemicals.map(c=>'<section class="chemical-card"><h2>'+escape(c.name)+'</h2><div class="chemical-inputs">'+c.fields.map(([id,label,unit])=>'<label><span>'+escape(label)+'<small>'+escape(unit)+'</small></span><input id="reading-'+id+'" data-reading="'+id+'" type="number" inputmode="decimal" min="0" max="1000000000" step="any"></label>').join('')+'</div></section>').join('');
   const snapshotFields=document.createElement('section');snapshotFields.id='chemical-snapshot-fields';snapshotFields.className='chemical-card';snapshotFields.hidden=true;
   snapshotFields.innerHTML='<h2>Recorded Gallons</h2><p class="report-note">Correct the original workbook totals directly. Historical tank formulas are preserved.</p><div class="chemical-inputs">'+model.chemicals.map(c=>'<label><span>'+escape(c.name)+'<small>gal</small></span><input id="snapshot-'+c.id+'" type="number" min="0" max="1000000000" step="any" inputmode="decimal"></label>').join('')+'</div>';
   $('chemical-fields').before(snapshotFields);
+  for(const [id,,unit] of model.fields){
+    const reference=document.createElement('small');reference.className='chemical-previous';reference.id='previous-'+id;
+    $('reading-'+id).setAttribute('aria-describedby',reference.id);$('reading-'+id).after(reference);
+  }
+  $('reading-nwos').closest('section').insertAdjacentHTML('beforeend','<label class="nwos-off-option"><input id="nwos-pump-off" type="checkbox" aria-describedby="nwos-off-note"> Pump off — use previous meter reading</label><p id="nwos-off-note" class="report-note"></p>');
+  function previousReferences(){
+    for(const chemical of model.chemicals){
+      const input=$('snapshot-'+chemical.id),referenceId='previous-snapshot-'+chemical.id;
+      if(!$(referenceId)){const reference=document.createElement('small');reference.id=referenceId;reference.className='chemical-previous';input.after(reference);input.setAttribute('aria-describedby',referenceId);}
+      const previous=saved.records.filter(r=>r.date<$('chemical-date').value&&complete(r)&&Number.isFinite(r.totals?.[chemical.id]?.gallons)).sort((a,b)=>b.date.localeCompare(a.date))[0];
+      $(referenceId).textContent=previous?'Previous: '+number(previous.totals[chemical.id].gallons)+' gal · '+dateLabel(previous.date):'Previous: No recorded inventory';
+    }
+    for(const [id,,unit] of model.fields){
+      const previous=model.previousReading(saved.records,$('chemical-date').value,id);
+      $('previous-'+id).textContent=previous?'Previous: '+number(previous.readings[id])+' '+unit+' · '+dateLabel(previous.date)+(id==='nwos'&&previous.nwosPumpOff?' · Pump off, carried forward':''):'Previous: No recorded reading';
+    }
+    const source=model.previousReading(saved.records,$('chemical-date').value,'nwos');
+    const carryDate=current()?.nwosPumpOff?current().nwosCarryFrom:source?.date;
+    $('nwos-off-note').textContent=carryDate?'When the pump is off and the totalizer cannot be read, carry forward the meter reading from '+dateLabel(carryDate)+'. Uncheck when a fresh reading is available.':'A previous completed meter reading is required before Pump off can be selected.';
+  }
+  $('nwos-pump-off').addEventListener('input',()=>{
+    if($('nwos-pump-off').checked){
+      manualNwos=$('reading-nwos').value;
+      const source=model.previousReading(saved.records,$('chemical-date').value,'nwos');
+      $('reading-nwos').value=current()?.nwosPumpOff?current().readings.nwos:source?.readings.nwos??'';
+    }else $('reading-nwos').value=manualNwos;
+  });
   function loadDate(){
     const record=current();
     if(complete(record)&&!editingCompleted){dirty=false;showSummary(record.date);return;}
@@ -55,13 +85,15 @@
     for(const id of ['salt','nwos'])$('reading-'+id).closest('section').hidden=imported;
     for(const chemical of model.chemicals)$('snapshot-'+chemical.id).value=record?.recordedGallons?.[chemical.id]??'';
     for(const [id]of model.fields)$('reading-'+id).value=record?.readings[id]??'';
+    $('nwos-pump-off').checked=record?.nwosPumpOff===true;manualNwos=record?.nwosPumpOff?'':$('reading-nwos').value;
+    previousReferences();
     $('chemical-operator').value=record?.operator||$('chemical-operator').value;$('chemical-notes').value=record?.notes||'';
     $('chemical-existing').textContent=record?'Editing saved readings · '+record.operator:'';
     dirty=false;saveFailed=false;editVersion++;controls();
   }
   function tab(view){const history=view===true||view==='history',trends=view==='trends';$('chemical-summary').hidden=true;$('chemical-entry').hidden=history||trends;$('chemical-history').hidden=!history;$('chemical-trends').hidden=!trends;$('entry-tab').setAttribute('aria-pressed',String(!history&&!trends));$('history-tab').setAttribute('aria-pressed',String(history));$('trends-tab').setAttribute('aria-pressed',String(trends));if(trends)ChemicalTrends.render(saved.records);$('trends-tab').parentElement.querySelector('[aria-pressed="true"]')?.scrollIntoView({block:'nearest',inline:'nearest'});}
   function inventoryTable(record,large=false){return'<div class="chemical-table-wrap"><table class="chemical-table'+(large?' chemical-summary-table':'')+'"><thead><tr><th>Chemical</th><th>On Hand (gal)</th></tr></thead><tbody>'+model.chemicals.map(c=>'<tr><th scope="row">'+escape(c.name)+'</th><td>'+number(record.totals[c.id].gallons)+'</td></tr>').join('')+'</tbody></table></div>';}
-  function extraInventory(record){return'<p class="chemical-summary-meta">Salt: '+number(record.readings.salt)+' pallets<br>East permanganate (10% batch): '+number(record.readings.permEast)+' in<br>Northwest Open Space meter: '+number(record.readings.nwos)+' × 1,000 gal<br>Water used: '+(record.nwosReset?'Review meter reset':number(record.nwosUsed)+' gal')+'</p>';}
+  function extraInventory(record){return'<p class="chemical-summary-meta">Salt: '+number(record.readings.salt)+' pallets<br>East permanganate (10% batch): '+number(record.readings.permEast)+' in<br>Northwest Open Space meter: '+number(record.readings.nwos)+' × 1,000 gal'+(record.nwosPumpOff?' · Pump off; carried forward from '+escape(dateLabel(record.nwosCarryFrom)):'')+'<br>Water used: '+(record.nwosReset?'Review meter reset':number(record.nwosUsed)+' gal')+'</p>';}
   function reportDetails(record){
     if(record.source?.type==='workbook')return '';
     return '<details class="chemical-report-details"><summary>Readings &amp; Calculation Details</summary>'+model.chemicals.map(c=>'<section><h3>'+escape(c.name)+'</h3><dl>'+c.fields.map(([id,label,unit])=>'<div><dt>'+escape(label)+'</dt><dd>'+number(record.readings[id])+' '+escape(unit)+'</dd></div>').join('')+'</dl><p>'+escape(record.settingsSnapshot?ChemicalSettings.formula(record.settingsSnapshot[c.id]):c.formula)+'</p>'+(c.note?'<p>'+escape(c.note)+'</p>':'')+(['polymer','permanganate'].includes(c.id)?'<p>1 IBC tote = '+number(record.settingsSnapshot?.[c.id]?.delivery??265)+' gal.</p>':'')+'</section>').join('')+'<p>Salt: 49 bags of 50 lb per pallet.'+(record.readings.salt===null?'':' Approximately '+Math.round(record.readings.salt*49).toLocaleString()+' bags / '+number(record.readings.salt*2450)+' lb.')+'</p><p>Calculations use the settings saved with this inventory. Original baseline: Weekly Chemical Inventory, October 21, 2026.</p></details>';

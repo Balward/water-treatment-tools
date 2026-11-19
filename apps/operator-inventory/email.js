@@ -86,10 +86,11 @@ function buildChemicalReportEmail(record, records) {
   });
   const needed = advice.filter(item => item.decision === 'Order Now').length;
   const summary = `${needed} ${needed === 1 ? 'chemical needs' : 'chemicals need'} ordering.`;
-  const text = [subject,header,note,summary,...rows.map(row => row.join('\n')),record.notes && `Notes: ${record.notes}`].filter(Boolean).join('\n\n');
+  const nwosNote = record.nwosPumpOff ? `NWOS pump off: meter ${format(record.readings.nwos)} × 1,000 gal carried forward from ${record.nwosCarryFrom}.` : '';
+  const text = [subject,header,note,nwosNote,summary,...rows.map(row => row.join('\n')),record.notes && `Notes: ${record.notes}`].filter(Boolean).join('\n\n');
   const cell = 'padding:10px;border:1px solid #ccd9ce;text-align:left;vertical-align:top;overflow-wrap:anywhere;';
   const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body style="font-family:Arial,sans-serif;color:#243c33;padding:16px"><h1>${escapeHtml(subject)}</h1><p>${escapeHtml(header)}</p><p>${escapeHtml(note)}</p><h2>${escapeHtml(summary)}</h2><table width="100%" style="border-collapse:collapse;table-layout:fixed;font-size:13px"><thead><tr>${['Chemical','On hand','Order guidance','Planning details'].map(label => `<th style="${cell}">${label}</th>`).join('')}</tr></thead><tbody>${rows.map(row => `<tr>${row.map(value => `<td style="${cell}">${escapeHtml(value).replace(/\n/g,'<br>')}</td>`).join('')}</tr>`).join('')}</tbody></table>${record.notes ? `<p>Notes: ${escapeHtml(record.notes)}</p>` : ''}</body></html>`;
-  return {subject:subject.replace(/[\r\n]/g,' '),text,html};
+  return {subject:subject.replace(/[\r\n]/g,' '),text,html:nwosNote?html.replace('</body>',`<p>${escapeHtml(nwosNote)}</p></body>`):html};
 }
 function createMailer(env = process.env, createTransport) {
   const user = env.SMTP_USER?.trim() || '';

@@ -11,6 +11,9 @@
   ];
   const fields=[...chemicals.flatMap(c=>c.fields),['salt','Salt Inventory','pallets'],['nwos','Northwest Open Space Meter','1,000 gal']];
   const present=n=>typeof n==='number'&&Number.isFinite(n)&&n>=0;
+  function previousReading(records,date,key){
+    return records.filter(r=>r.date<date&&(r.status||'complete')==='complete'&&present(r.readings?.[key])).sort((a,b)=>b.date.localeCompare(a.date))[0]||null;
+  }
   function volume(chemical,readings){return(chemical.required||chemical.fields.map(f=>f[0])).every(key=>present(readings[key]))?chemical.volume(readings):null;}
   function calculate(records){
     const sorted=[...records].sort((a,b)=>a.date.localeCompare(b.date));
@@ -22,5 +25,5 @@
       return{...record,totals,nwosUsed,nwosPreviousDate:Object.hasOwn(record,'recordedWaterPreviousDate')?record.recordedWaterPreviousDate:previous?.date||null,nwosReset:nwosUsed!==null&&nwosUsed<0};
     }).reverse();
   }
-  return{chemicals,fields,volume,calculate,formulaVersion:'2026-10-21'};
+  return{chemicals,fields,volume,calculate,previousReading,formulaVersion:'2026-10-21'};
 });

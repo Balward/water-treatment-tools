@@ -175,13 +175,27 @@ function createApp({ dataDir = process.env.DATA_DIR || path.join(__dirname, 'dat
             return Object.fromEntries(keys.map(key=>{const value=input[key]??null;if(value!==null&&(typeof value!=='number'||!Number.isFinite(value)||value<0||value>1000000000))fail(400,'Enter a nonnegative number, up to 1,000,000,000, or leave the field blank.');return[key,value];}));
           };
           const readings=numericMap(body.readings,chemicals.fields.map(f=>f[0]));
+          if(body.nwosPumpOff!==undefined&&typeof body.nwosPumpOff!=='boolean')fail(400,'Pump off must be checked or unchecked.');
+          const nwosPumpOff=body.nwosPumpOff??previous?.nwosPumpOff??false;
+          let nwosCarryFrom=null;
+          if(nwosPumpOff){
+            if(previous?.nwosPumpOff&&Number.isFinite(previous.readings.nwos)&&previous.nwosCarryFrom){
+              readings.nwos=previous.readings.nwos;nwosCarryFrom=previous.nwosCarryFrom;
+            }else{
+              const source=chemicals.previousReading(records,date,'nwos');
+              if(!source)fail(400,'No earlier completed NWOS meter reading is available to carry forward. Enter a readable meter value first.');
+              readings.nwos=source.readings.nwos;nwosCarryFrom=source.date;
+            }
+          }
           const status=previous&&(previous.status||'complete')==='complete'?'complete':body.status??'draft';
           if(!['draft','complete'].includes(status))fail(400,'Choose draft or complete status.');
           if(status==='complete'&&Object.values(readings).some(v=>v===null))fail(400,'Enter every reading before completing chemical inventory. Use 0 for an empty tank or no stored stock.');
           if(typeof body.notes!=='string'||body.notes.length>2000)fail(400,'Notes must be up to 2,000 characters.');
           const now=new Date().toISOString();
           const version=previous?null:chemicalSettings.resolve(state.chemicalSettings?.versions,date);
-          records.push({date,operator:body.operator.trim(),readings,notes:body.notes.trim(),status,settingsVersion:previous?.settingsVersion||version?.id||chemicalSettings.baseline.id,settingsSnapshot:previous?.settingsSnapshot||version?.chemicals||chemicalSettings.clone(chemicalSettings.defaults),createdAt:previous?.createdAt||previous?.updatedAt||now,updatedAt:now,...(status==='complete'?{completedAt:previous?.completedAt||now}:{})});
+          // Store the copied value and its source so later corrections never silently rewrite it.
+          const nwosMetadata={nwosPumpOff,nwosCarryFrom};
+          records.push({date,operator:body.operator.trim(),readings,...nwosMetadata,notes:body.notes.trim(),status,settingsVersion:previous?.settingsVersion||version?.id||chemicalSettings.baseline.id,settingsSnapshot:previous?.settingsSnapshot||version?.chemicals||chemicalSettings.clone(chemicalSettings.defaults),createdAt:previous?.createdAt||previous?.updatedAt||now,updatedAt:now,...(status==='complete'?{completedAt:previous?.completedAt||now}:{})});
         }
         persist({...state,chemicalInventory:{...current,revision:current.revision+1,records}});
         return json(200,chemicalState());
