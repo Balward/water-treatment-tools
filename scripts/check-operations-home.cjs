@@ -15,7 +15,7 @@ assert.equal(await evaluate('document.querySelectorAll(".app-card").length'),17)
 assert.ok(await evaluate('[...document.images].every(image=>image.complete&&image.naturalWidth>0)'));
 assert.equal(await evaluate('document.querySelector(".app-card[data-app=inventory]").href'),'https://inventory.gibbhub.io/');
 assert.equal(await evaluate('document.querySelector(".app-card[data-app=equipment]").pathname'),'/live-operations-dashboard/');
-assert.equal(await evaluate('document.querySelector(".app-card[data-app=chemical-ledger]").href'),'https://chemical-ledger-blain-2026.justtoucan1.chatgpt.site/');
+assert.equal(await evaluate('document.querySelector(".app-card[data-app=chemical-ledger]").pathname'),'/chemical-ledger/');
 assert.equal(await evaluate('document.querySelector(".app-card[data-app=digital-twin]").pathname'),'/apps/digital-twin/index.html');
 for(const id of ['digital-twin','sops']){
  const selector=JSON.stringify('.app-card[data-app='+id+'] .construction-banner');
@@ -41,7 +41,7 @@ for(const [name,width,height]of [['desktop',1440,1000],['mobile',390,844],['smal
   assert.equal(await evaluate('document.querySelector('+selector+').textContent'),'Under Construction');
  }
  assert.equal(await evaluate('document.querySelector("[data-ops-destination=digital-twin]").pathname'),'/apps/digital-twin/index.html');
- assert.equal(await evaluate('document.querySelector("[data-ops-destination=chemical-ledger]").href'),'https://chemical-ledger-blain-2026.justtoucan1.chatgpt.site/');
+ assert.equal(await evaluate('document.querySelector("[data-ops-destination=chemical-ledger]").pathname'),'/chemical-ledger/');
  assert.ok(await evaluate('(()=>{const card=document.querySelector(".app-card[data-app=digital-twin]");return card.querySelector(".card-icon").getBoundingClientRect().top>=card.querySelector(".construction-banner").getBoundingClientRect().bottom})()'));
  await evaluate('document.querySelector(".ops-app-menu-close").click();new Promise(r=>requestAnimationFrame(r))');
 }

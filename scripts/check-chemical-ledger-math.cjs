@@ -1,0 +1,15 @@
+const assert=require('node:assert/strict'),L=require('../apps/chemical-ledger/engine.js');
+const s=L.initial();assert(L.validState(s));
+s.deliveries.push({id:'d1',date:'2026-02-01',chemical:'hydroxide',quantity:1000,price:.36});
+s.usage.push({id:'u1',date:'2026-09-30',chemical:'hydroxide',quantity:900},{id:'u2',date:'2025-12-31',chemical:'hydroxide',quantity:600},{id:'u3',date:'2024-12-31',chemical:'hydroxide',quantity:300});
+s.history={2026:{months:9,weight:3},2025:{months:12,weight:2},2024:{months:12,weight:1}};
+assert.equal(L.totals(s,2026)[1].spend,360);assert.equal(L.totals(s,2026)[1].used,900);
+assert.equal(L.weighted(s,'hydroxide',2026).annual,850);
+assert.equal(L.weighted(s,'alum',2026).annual,null);
+const p={months:12,growth:10,reserve:100,opening:50,price:.36,escalation:5};
+const r=L.forecast(850,p);assert(Math.abs(r.quantity-985)<1e-8);assert(Math.abs(r.cost-372.33)<1e-8);
+assert.equal(L.forecast(100,{...p,growth:0,reserve:0,opening:500}).quantity,0);
+s.history[2026].weight=0;assert.equal(L.weighted(s,'hydroxide',2026).annual,500);
+s.chemicals[1].price=.50;assert.equal(L.totals(s,2026)[1].spend,360);
+assert(L.validState(s));s.deliveries[0].quantity=-1;assert(!L.validState(s));
+console.log('Passed: weighted history, partial-year annualization, absent history, PO adjustments, zero floor, preserved invoice prices, backup validation.');

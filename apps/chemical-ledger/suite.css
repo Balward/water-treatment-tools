@@ -1,0 +1,7 @@
+:root{font-family:var(--ops-font-family,Inter,Arial,sans-serif)}
+.suite-links{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:-20px 0 26px}
+.suite-links .ops-home-link{color:#c5e8e3;font-size:.875rem;text-decoration:none}
+.suite-links .ops-home-link:hover{text-decoration:underline}
+.ops-app-menu-header{margin:0}
+.ops-app-menu-footer{margin:0}
+@media(max-width:780px){.suite-links{margin:0 0 18px}}

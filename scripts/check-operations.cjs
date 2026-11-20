@@ -2,6 +2,8 @@
 const path = require('node:path');
 const { spawnSync } = require('node:child_process');
 const checks = {
+  'chemical-ledger': 'scripts/check-chemical-ledger.cjs',
+  'chemical-ledger-math': 'scripts/check-chemical-ledger-math.cjs',
   sops: 'scripts/check-sop-creator.cjs',
   'rounds-api': 'scripts/check-plant-rounds-api.cjs',
   'rounds-pdf': 'scripts/check-plant-rounds-pdf.cjs',

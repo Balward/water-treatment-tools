@@ -19,6 +19,9 @@ try {
             Invoke-Checked 'node' @('--check',$file)
         }
         Invoke-Checked 'node' @('--check','apps/sop-creator/preview.js')
+        Invoke-Checked 'node' @('--check','apps/chemical-ledger/app.js')
+        Invoke-Checked 'node' @('--check','apps/chemical-ledger/engine.js')
+        Invoke-Checked 'node' @('scripts/check-chemical-ledger-math.cjs')
         Invoke-Checked 'node' @('--check','apps/sop-creator/document.js')
         Invoke-Checked 'node' @('--check','apps/sop-creator/library.js')
         Invoke-Checked 'node' @('--test','scripts/sop.test.cjs')

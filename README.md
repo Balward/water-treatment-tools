@@ -10,7 +10,7 @@ A collection of focused, single-page web apps that help operators analyze data, 
 - `apps/operator-inventory/` - Docker-ready supplies inventory with location selection, dated operator counts, automatic draft saves, PAR flags, and inventory history. See its README for Unraid setup.
 
 - `apps/dashboard/` – Launch pad with city branding and links to every tool.
-- **Chemical Ledger** – Hosted dashboard linked under Water Treatment in Operations Home and the Apps menu. Tracks invoice-unit deliveries, usage, and weighted historical PO estimates at https://chemical-ledger-blain-2026.justtoucan1.chatgpt.site/. Access remains owner-private; records are stored in the browser with JSON backup/restore.
+- `apps/chemical-ledger/` – Chemical deliveries, invoice prices, usage, and weighted historical PO estimates at `/chemical-ledger/` on the suite. Records are saved in the browser with JSON backup/restore. To move records from the original standalone dashboard, download its backup and restore it here; browser storage does not transfer between domains.
 - `apps/plant-flow/` – Interactive detention-time model; toggle basins, adjust flow, and see chemical travel times and cumulative detention. Mobile-friendly with in-app help.
 - `apps/robojar-analyzer/` – Analyze RoboJar particle reports; charts, stats, forecasting, export to PNG/PDF.
 - `apps/dose-predictor/` – Permanganate dose predictor using historical patterns.
