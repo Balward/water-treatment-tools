@@ -38,9 +38,13 @@ try{
  await evaluate('(()=>{const f=document.getElementById("recordForm");f.elements.date.value="2025-12-31";f.elements.quantity.value="200";f.requestSubmit()})()');
  await evaluate('document.querySelector("[data-add=usage]").click()');
  await evaluate('(()=>{const f=document.getElementById("recordForm");f.elements.date.value="2026-09-30";f.elements.quantity.value="300";f.requestSubmit()})()');
+ await evaluate('(()=>{const saved=JSON.parse(localStorage.getItem("chemical-ledger-v1"));saved.chemicals.find(c=>c.id==="alum").unit="dry lb";localStorage.setItem("chemical-ledger-v1",JSON.stringify(saved))})()');
  await call('Page.reload');
  for(let i=0;i<100;i++){if(await evaluate('document.querySelectorAll(".metric").length===4'))break;await new Promise(r=>setTimeout(r,50));}
  assert.equal(await evaluate('JSON.parse(localStorage.getItem("chemical-ledger-v1")).usage.length'),2,'Records survive reload');
+ assert.equal(await evaluate('document.getElementById("storageError").hidden'),true,'Legacy unit loads without blocking saved records');
+ assert.match(await evaluate('document.getElementById("content").textContent'),/dry US ton/);
+ assert.match(await evaluate('document.getElementById("notice").textContent'),/Saved quantities and prices were kept/);
  assert.equal(await evaluate('document.querySelector(".metric strong").textContent'),'$182.00','Overview includes delivery charges');
  assert.equal(await evaluate('JSON.parse(localStorage.getItem("chemical-ledger-v1")).deliveries[0].superfundTax'),12.34);
  await evaluate('document.querySelector("[data-tab=planner]").click()');
