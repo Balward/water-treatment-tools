@@ -15,8 +15,13 @@ try{
  assert.equal(await evaluate('getComputedStyle(document.querySelector(".primary")).backgroundColor'),'rgb(0, 103, 127)');
  await evaluate('document.querySelector("[data-add=deliveries]").click()');
  assert.equal(await evaluate('document.getElementById("recordDialog").open'),true);
- await evaluate('(()=>{const f=document.getElementById("recordForm");f.elements.date.value="2026-02-01";f.elements.quantity.value="100";f.elements.reference.value="TEST-001";f.requestSubmit()})()');
+ assert.deepEqual(await evaluate('[...document.querySelector("select[name=supplier]").options].map(o=>o.value)'),['','PVS DX, INC','Harcros','Nalco','Chemtrade']);
+ await evaluate('(()=>{const f=document.getElementById("recordForm");f.elements.date.value="2026-02-01";f.elements.quantity.value="100";f.elements.reference.value="TEST-001";f.elements.supplier.value="Harcros";f.requestSubmit()})()');
  assert.equal(await evaluate('JSON.parse(localStorage.getItem("chemical-ledger-v1")).deliveries[0].price'),1.64);
+ assert.equal(await evaluate('JSON.parse(localStorage.getItem("chemical-ledger-v1")).deliveries[0].supplier'),'Harcros');
+ await evaluate('document.querySelector("[data-tab=deliveries]").click();document.querySelector("[data-edit]").click()');
+ assert.equal(await evaluate('document.getElementById("recordForm").elements.supplier.value'),'Harcros');
+ await evaluate('document.getElementById("closeDialog").click()');
  await evaluate('document.querySelector("[data-tab=usage]").click();document.querySelector("[data-add=usage]").click()');
  await evaluate('(()=>{const f=document.getElementById("recordForm");f.elements.date.value="2025-12-31";f.elements.quantity.value="200";f.requestSubmit()})()');
  await evaluate('document.querySelector("[data-add=usage]").click()');
