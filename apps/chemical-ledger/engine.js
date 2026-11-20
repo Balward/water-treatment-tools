@@ -4,13 +4,15 @@
     {id:'permanganate',name:'Sodium permanganate',unit:'lb',price:1.64,color:'#8055bb'},
     {id:'hydroxide',name:'Sodium hydroxide',unit:'active lb',price:.36,color:'#357b9e'},
     {id:'hypochlorite',name:'Sodium hypochlorite',unit:'gal',price:2.56,color:'#b47b18'},
-    {id:'polymer',name:'Polymer',unit:'lb',price:2.34,color:'#278c7a'},
+    {id:'polymer',name:'Catfloc 8103+ Polymer',unit:'lb',price:2.34,color:'#278c7a'},
     {id:'alum',name:'Aluminum sulfate',unit:'dry US ton',price:661,color:'#5b6e9b'}
   ];
   function initial(){return {version:1,chemicals:chemicals.map(c=>({...c})),deliveries:[],usage:[],plans:{},history:{}};}
   function migrateState(s){
     const next=structuredClone(s),alum=Array.isArray(next?.chemicals)?next.chemicals.find(c=>c?.id==='alum'):null;
     if(alum?.unit==='dry lb'){alum.unit='dry US ton';next.alumUnitCorrected=true;}
+    const polymer=Array.isArray(next?.chemicals)?next.chemicals.find(c=>c?.id==='polymer'):null;
+    if(polymer?.name==='Polymer')polymer.name='Catfloc 8103+ Polymer';
     return next;
   }
   const cents=n=>Math.round((n+Number.EPSILON)*100)/100;
