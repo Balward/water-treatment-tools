@@ -1,7 +1,90 @@
-:root{font-family:var(--ops-font-family,Inter,Arial,sans-serif)}
-.suite-links{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:-20px 0 26px}
-.suite-links .ops-home-link{color:#c5e8e3;font-size:.875rem;text-decoration:none}
-.suite-links .ops-home-link:hover{text-decoration:underline}
-.ops-app-menu-header{margin:0}
-.ops-app-menu-footer{margin:0}
-@media(max-width:780px){.suite-links{margin:0 0 18px}}
+/* Chemical Ledger adapter for the shared Northglenn Operations design system. */
+:root{--navy:var(--ops-color-ink);--teal:var(--ops-color-accent);--line:var(--ops-color-line);font-family:var(--ops-font-family);color:var(--ops-color-ink);background:var(--ops-color-canvas)}
+body{display:block;background:var(--ops-color-canvas);color:var(--ops-color-ink);font-size:14px}
+.skip-link{position:absolute;left:16px;top:-100px;z-index:20;padding:12px 18px;background:white;color:var(--ops-color-accent)}
+.skip-link:focus{top:16px}
+.site-header{margin:0;position:sticky;top:0;z-index:5}
+.workspace{display:grid;grid-template-columns:var(--ops-sidebar-width) minmax(0,1fr);min-height:calc(100dvh - var(--ops-header-height))}
+aside.sidebar{inset:auto;display:flex;flex-direction:column;width:auto;min-width:0;background:var(--ops-color-ink);color:#bdcbd1;margin:0;position:sticky;top:var(--ops-header-height);height:calc(100dvh - var(--ops-header-height));padding:var(--ops-sidebar-padding);overflow-y:auto;gap:16px}
+.sidebar .nav-caption{margin:0;padding:0 14px;color:#91a7b3;font-size:9px;line-height:14px;letter-spacing:1.5px;font-weight:600}
+.sidebar nav{display:grid;gap:var(--ops-sidebar-row-gap)}
+.sidebar .nav-item{display:flex;align-items:center;gap:12px;min-height:var(--ops-sidebar-row-height);padding:12px 14px;border:0;border-radius:6px;color:#bdcbd1;background:transparent;font-size:13px;line-height:1.4;font-weight:600;text-align:left}
+.sidebar .nav-item svg{width:22px;height:22px;flex-shrink:0}
+.sidebar .nav-item:hover{background:#25353e;color:white}
+.sidebar .nav-item.active{background:var(--ops-color-accent);color:white;border:0}
+.sidebar .storage{margin-top:auto;padding:20px 12px 0;font-size:12px;color:#91a7b3}
+.sidebar .storage b{color:#d5e0e5;font-weight:600}
+.sidebar .storage button{min-height:44px;border-color:#536a76;border-radius:6px;font-size:12px;color:#e3edf1}
+.sidebar .restore{font-size:12px;min-height:44px}
+main#main{margin:0;width:100%;max-width:none;min-width:0;padding:36px 40px 24px}
+main>header{margin:0 0 28px;align-items:center}
+main>header .eyebrow{display:none}
+h1{font-size:38px;line-height:1.15;font-weight:700;letter-spacing:-1.2px;color:var(--ops-color-ink);margin:0 0 10px}
+header p{font-size:14px;color:var(--ops-color-muted)}
+h2{font-size:20px;font-weight:700;color:var(--ops-color-ink)}
+h3{color:var(--ops-color-ink)}
+button{min-height:44px;font-size:13px;font-weight:600;border-radius:var(--ops-radius-small);border-color:var(--ops-color-line);color:var(--ops-color-ink)}
+input,select,textarea{min-height:44px;border-radius:var(--ops-radius-small);border-color:var(--ops-color-line);color:var(--ops-color-ink);font-size:14px}
+label{font-size:12px;color:var(--ops-color-muted)}
+.primary{background:var(--ops-color-accent);border-color:var(--ops-color-accent);color:white}
+.year{font-size:12px;min-width:150px}
+.year select{color:var(--ops-color-ink)}
+.metrics{gap:16px;margin-bottom:24px}
+.metric,.panel{border-radius:var(--ops-radius-card);border-color:var(--ops-color-line);box-shadow:none}
+.metric{padding:20px 24px}
+.metric .label{font-size:12px;color:var(--ops-color-muted)}
+.metric strong{font-size:28px;line-height:1.3;letter-spacing:-.7px;margin:12px 0 8px;color:var(--ops-color-ink)}
+.metric small{font-size:12px;color:var(--ops-color-muted)}
+.metric.highlight{background:var(--ops-color-soft);border-color:var(--ops-color-line)}
+.metric.highlight strong{color:var(--ops-color-accent)}
+.panelHead{padding:22px 24px;border-color:var(--ops-color-line)}
+.panelHead p{color:var(--ops-color-muted);font-size:13px}
+th{font-size:11px;color:var(--ops-color-muted);background:#f6f8f9;padding:14px 20px}
+td{font-size:13px;padding:18px 20px;border-color:#e0e7eb}
+.unit,.hint{font-size:12px;color:var(--ops-color-muted)}
+.chartRow{font-size:12px}
+.track{background:var(--ops-color-canvas)}
+.callout{font-size:14px;color:var(--ops-color-muted)}
+.callout strong,.planResult strong{color:var(--ops-color-ink)}
+.pill{color:var(--ops-color-accent);background:var(--ops-color-soft);border-color:#c6dbe1;font-size:11px}
+.planFields label{font-size:12px;color:var(--ops-color-muted)}
+.planResult{font-size:13px;color:var(--ops-color-muted)}
+.planResult .cost{color:var(--ops-color-accent)}
+.planHead{align-items:start;flex-wrap:wrap}
+.priceRow label{font-size:12px}
+footer{color:var(--ops-color-muted);font-size:12px}
+.ops-app-menu-header,.ops-app-menu-footer{margin:0}
+.ops-app-menu .ops-app-menu-title{font-size:23px}
+@media(max-width:1200px){main#main{padding:28px 24px}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.split{grid-template-columns:1fr}}
+@media(max-width:899px){
+ .workspace{display:block}
+ aside.sidebar{position:static;height:auto;display:block;padding:12px 16px;width:100%}
+ .sidebar .nav-caption{display:none}
+ .sidebar nav{display:flex;overflow-x:auto;gap:6px}
+ .sidebar .nav-item{min-height:44px;white-space:nowrap;flex-shrink:0;padding:10px 12px;font-size:12px}
+ .sidebar .nav-item svg{width:18px;height:18px}
+ .sidebar .storage{display:flex;align-items:center;flex-wrap:wrap;gap:14px;margin:10px 0 0;padding:0}
+ .sidebar .storage b,.sidebar .storage p{display:none}
+ .sidebar .storage button{width:auto;min-height:36px;padding:6px 12px}
+ .sidebar .restore{padding:6px;min-height:36px}
+}
+@media(max-width:600px){
+ main#main{padding:24px 16px}
+ main>header{align-items:start;gap:12px;flex-wrap:wrap;margin-bottom:24px}
+ h1{font-size:32px;letter-spacing:-.9px}
+ .year{min-width:120px;width:140px}
+ .metrics{gap:12px}
+ .metric{padding:16px}
+ .metric strong{font-size:23px;overflow-wrap:anywhere}
+ .panelHead{padding:18px 16px}
+ h2{font-size:18px}
+ .chart{padding:16px}
+ .chartRow{grid-template-columns:minmax(95px,1.3fr) minmax(20px,1fr) minmax(70px,auto);gap:8px}
+ .planFields{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .planCard{padding:20px 16px}
+ .planHead .pill{max-width:100%;white-space:normal}
+ .formgrid{grid-template-columns:1fr}
+ .planResult .cost{margin:0;width:100%}
+ .pricing{padding:18px 16px}
+ .priceRow{grid-template-columns:minmax(0,1fr) 110px;gap:12px}
+}

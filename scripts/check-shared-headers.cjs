@@ -4,7 +4,7 @@ const {createBrowserCheck}=require('./lib/browser-check.cjs');
 
 for(const width of [1920,1440,1024,900,899,850,768,390,320]){
  const measurements=[];
- for(const [name,url] of [['home','http://127.0.0.1:8782/'],['inventory','http://127.0.0.1:'+inventory.address().port],['inventory-live-server','http://127.0.0.1:8782/apps/operator-inventory/public/index.html'],['rounds','http://127.0.0.1:8782/apps/plant-rounds/index.html'],['alum','http://127.0.0.1:8782/apps/alum-hydrometer-conversion/index.html'],['plant-production','http://127.0.0.1:8782/apps/plant-flow/index.html']]){
+ for(const [name,url] of [['home','http://127.0.0.1:8782/'],['chemical-ledger','http://127.0.0.1:8782/apps/chemical-ledger/index.html'],['inventory','http://127.0.0.1:'+inventory.address().port],['inventory-live-server','http://127.0.0.1:8782/apps/operator-inventory/public/index.html'],['rounds','http://127.0.0.1:8782/apps/plant-rounds/index.html'],['alum','http://127.0.0.1:8782/apps/alum-hydrometer-conversion/index.html'],['plant-production','http://127.0.0.1:8782/apps/plant-flow/index.html']]){
   await call('Emulation.setDeviceMetricsOverride',{width,height:1080,deviceScaleFactor:1,mobile:false});await call('Page.navigate',{url});
   for(let i=0;i<100;i++){if(await evaluate('document.readyState==="complete"&&document.querySelector(".site-header,.topbar")'))break;await new Promise(r=>setTimeout(r,50));}
   await evaluate('document.fonts.ready');await evaluate('new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))');

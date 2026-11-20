@@ -4,6 +4,8 @@ The source of truth is `shared/operations/`. Inventory, Equipment Status Board, 
 
 ## Typography
 
+Chemical Ledger uses the shared city banner, Apps menu, Inter typography, teal actions, and sidebar dimensions. Its `suite.css` adapts the invoice and planning views to these tokens. Run `node scripts/check-operations.cjs chemical-ledger headers` to verify its workflows and compare its banner and sidebar to Operations Home.
+
 Use **Inter** throughout the interface. A second UI font is unnecessary: size, weight, spacing, and contrast provide the hierarchy. Use tabular numbers for counts and status totals. A monospace font is reserved for actual code or diagnostic output, not ordinary labels.
 
 | Role | Size | Weight | Use |

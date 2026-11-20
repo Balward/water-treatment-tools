@@ -1,4 +1,4 @@
-const assert=require('node:assert/strict');
+const assert=require('node:assert/strict'),fs=require('node:fs');
 const {createBrowserCheck}=require('./lib/browser-check.cjs');
 (async()=>{const h=await createBrowserCheck();const {call,evaluate,errors}=h;
 try{
@@ -7,6 +7,12 @@ try{
  for(let i=0;i<100;i++){if(await evaluate('document.querySelectorAll(".metric").length===4'))break;await new Promise(r=>setTimeout(r,50));}
  assert.equal(await evaluate('document.querySelectorAll(".metric").length'),4);
  assert.equal(await evaluate('document.querySelectorAll(".chemical").length'),5);
+ await evaluate('document.fonts.ready');
+ assert(await evaluate('document.fonts.check("16px Inter")'));
+ assert.equal(await evaluate('document.querySelector(".site-header .brand img").naturalWidth>0'),true);
+ assert.equal(await evaluate('document.querySelector(".site-header").getBoundingClientRect().height'),112);
+ assert.equal(await evaluate('document.querySelector(".sidebar").getBoundingClientRect().width'),222);
+ assert.equal(await evaluate('getComputedStyle(document.querySelector(".primary")).backgroundColor'),'rgb(0, 103, 127)');
  await evaluate('document.querySelector("[data-add=deliveries]").click()');
  assert.equal(await evaluate('document.getElementById("recordDialog").open'),true);
  await evaluate('(()=>{const f=document.getElementById("recordForm");f.elements.date.value="2026-02-01";f.elements.quantity.value="100";f.elements.reference.value="TEST-001";f.requestSubmit()})()');
@@ -24,6 +30,14 @@ try{
  assert.match(await evaluate('document.querySelector(".planCard .cost").textContent'),/524\.80/);
  for(const width of [1440,390,320]){
   await call('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
+  assert.equal(await evaluate('document.querySelector(".site-header").getBoundingClientRect().height'),width<=800?144:112);
+  for(const view of ['overview','deliveries','usage','planner','settings']){
+   await evaluate(`document.querySelector('[data-tab="${view}"]').click()`);
+   assert.equal(await evaluate('document.querySelector(".sidebar [aria-current=page]").dataset.tab'),view);
+   assert(await evaluate('document.documentElement.scrollWidth<=innerWidth'),view+' fits at '+width);
+  }
+  await evaluate('document.querySelector("[data-tab=overview]").click()');
+  if(width!==320){fs.mkdirSync('preview',{recursive:true});const shot=await call('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});fs.writeFileSync('preview/chemical-ledger-'+width+'.png',Buffer.from(shot.data,'base64'));}
   assert(await evaluate('document.documentElement.scrollWidth<=innerWidth'),'No page overflow at '+width);
   await evaluate('document.querySelector("[data-ops-menu]").click()');
   assert.equal(await evaluate('document.querySelector("#opsAppMenu [aria-current=page]").dataset.opsDestination'),'chemical-ledger');
