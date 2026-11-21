@@ -235,3 +235,7 @@ dialog::backdrop {
 }
 
 }
+.location-name {
+  display: block;
+  padding-inline-start: calc(var(--depth) * 1.5rem);
+}

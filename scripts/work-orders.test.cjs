@@ -62,10 +62,21 @@ test('shared directory, roster-free groups, issuing, frozen documents, closeout 
   await write({action:'issue',through:dates.days(today,60),revision:0},409);
   await write({action:'issue',through:dates.days(today,60)});assert.equal(db.orders.length,3);
   if(process.env.WO_BROWSER==='1'){
+    await write({action:'locations',name:'Annex'});
+    await write({action:'locations',name:'Bay 10',parent:location});
+    await write({action:'locations',name:'Bay 2',parent:location});
+    await write({action:'locations',name:'Bench',parent:db.locations[1].id});
     const chrome=await launchBrowser();t.after(()=>chrome.close());
     await chrome.call('Page.navigate',{url:origin+'/work-orders/'});
     for(let i=0;i<100 && !await chrome.evaluate('!!document.querySelector("#rows")');i++)await new Promise(r=>setTimeout(r,50));
     assert.match(await chrome.evaluate('document.getElementById("rows").innerText'),/Day Shift/);
+    await chrome.evaluate("document.querySelector('[data-tab=locations]').click()");
+    const labels=await chrome.evaluate("Array.from(document.querySelectorAll('.location-name'),el=>[el.textContent,parseFloat(getComputedStyle(el).paddingInlineStart)])");
+    assert.deepEqual(labels.map(([name])=>name),['Annex','Gallery','Bay 2','Bay 10','North','Bench']);
+    const indents=labels.map(([,indent])=>indent);
+    assert.equal(indents[0],0);
+    assert.equal(indents[1],0);
+    assert.ok(indents[2]>0 && indents[5]>indents[4]);
     await chrome.evaluate("action('plan','')");
     assert.equal(await chrome.evaluate("document.getElementById('editor').open"),true);
     await chrome.evaluate("document.getElementById('close').click(); document.querySelector('[data-tab=groups]').click(); action('edit','')");

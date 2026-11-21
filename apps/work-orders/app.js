@@ -93,6 +93,25 @@ function showQueue(){
     '<div class="filters" id="filters">'+toolbar+'</div><div class="actions">'+button('Print list','print-list')+button('Print selected sheets','packet')+button('Reload','reload')+
     field('My work name',select('profile',option('','Choose your name')+choices(users.filter(u=>u.active),currentUser)))+'</div></div><div class="panel" id="rows">'+queueRows()+'</div>';
 }
+function locationRows(locations){
+  const children=new Map();
+  const byName=new Intl.Collator('en',{numeric:true,sensitivity:'base'});
+  for(const location of [...locations].sort((a,b)=>byName.compare(a.name,b.name))){
+    const parent=location.parent || '';
+    if(!children.has(parent))children.set(parent,[]);
+    children.get(parent).push(location);
+  }
+  const rows=[];
+  function appendChildren(parent,depth){
+    for(const location of children.get(parent) || []){
+      const label='<span class="location-name" style="--depth:'+depth+'">'+esc(location.name)+'</span>';
+      rows.push([label,depth?'Sublocation':'Top level',button('Edit','edit',location.id)]);
+      appendChildren(location.id,depth+1);
+    }
+  }
+  appendChildren('',0);
+  return rows;
+}
 function library(){
   const rows=db[tab];
   if(tab==='schedules')return '<section class="panel"><div class="heading"><h2>Recurring schedules</h2>'+button('Create schedule','plan','','primary')+'</div>'+(!rows.length?'<p>No recurring schedules yet.</p>':table(['Task and equipment','Recurrence','Assignment','Next to issue',''],rows.map(r=>[
@@ -102,8 +121,8 @@ function library(){
   ])))+'</section>';
   const hints={locations:'Use one local name per level. Example: Filter Building › Filter Gallery.',equipment:'Use service + equipment type + unit identifier. Example: Backwash Pump 02. Keep the physical tag in its own field.',tasks:'Start with an action verb, such as Calibrate, Inspect, or Replace Electrode. Set the frequency on the schedule.',groups:'Shift groups accept assignments across rotations. Named groups appear in each member’s My Work queue.'};
   return '<section class="panel"><div class="heading"><h2>'+titles[tab]+'</h2>'+button('Add '+singular[tab],'edit','','primary')+'</div><p class="hint">'+hints[tab]+'</p>'+
-    (rows.length?table(['Name','Details',''],rows.map(r=>[tab==='equipment'?button(r.name,'asset',r.id,'link'):esc(tab==='locations'?place(r.id):r.name),
-    esc(tab==='equipment'?[r.tag,place(r.location)].filter(Boolean).join(' · '):tab==='groups'?r.kind==='shift'?'Shift group · open roster':r.members.map(personName).join(', '):tab==='tasks'?r.instructions:r.parent?'Sublocation':'Top level'),button('Edit','edit',r.id)])):'<p>No records yet.</p>')+'</section>';
+    (rows.length?table(['Name','Details',''],tab==='locations'?locationRows(rows):rows.map(r=>[tab==='equipment'?button(r.name,'asset',r.id,'link'):esc(r.name),
+    esc(tab==='equipment'?[r.tag,place(r.location)].filter(Boolean).join(' · '):tab==='groups'?r.kind==='shift'?'Shift group · open roster':r.members.map(personName).join(', '):r.instructions),button('Edit','edit',r.id)])):'<p>No records yet.</p>')+'</section>';
 }
 function render(){
   $('tabs').innerHTML=Object.entries(titles).map(([key,label])=>'<button data-tab="'+key+'" '+(tab===key?'aria-current="page"':'')+'>'+label+'</button>').join('');
