@@ -1,0 +1,237 @@
+* {
+  box-sizing:border-box
+}
+body {
+  margin:0;
+  background:#f2f6f5;
+  color:#193733;
+  font:15px/1.5 var(--ops-font-family)
+}
+main {
+  max-width:1400px;
+  padding:26px 4vw 60px;
+  margin:auto
+}
+h1 {
+  font-size:2.1rem;
+  letter-spacing:-.04em;
+  margin:0 0 16px
+}
+h2,h3,p {
+  margin:0 0 .7rem
+}
+h2 {
+  font-size:1.3rem
+}
+button,select,input,textarea {
+  font:inherit;
+  border:1px solid #96aaa5;
+  border-radius:6px;
+  padding:7px 10px;
+  color:inherit;
+  background:white
+}
+button {
+  cursor:pointer;
+  font-weight:600
+}
+button:hover {
+  border-color:#136c60
+}
+button:disabled {
+  opacity:.55;
+  cursor:wait
+}
+button.primary,#tabs button[aria-current=page] {
+  background:#155c51;
+  color:white;
+  border-color:#155c51
+}
+#tabs,.actions,.heading,.filters,footer {
+  display:flex;
+  gap:8px;
+  align-items:center;
+  flex-wrap:wrap
+}
+.heading {
+  justify-content:space-between;
+  margin-bottom:12px
+}
+#tabs {
+  border-bottom:1px solid #aebfba;
+  padding-bottom:14px
+}
+.filters {
+  align-items:end;
+  margin:12px 0
+}
+.filters label,#fields label {
+  display:grid;
+  gap:3px;
+  font-weight:600
+}
+.filters label {
+  font-size:.85rem
+}
+small,.hint {
+  color:#4e6961
+}
+.panel {
+  background:white;
+  border:1px solid #c1d0ca;
+  border-radius:10px;
+  padding:18px;
+  margin-bottom:15px
+}
+.table-wrap {
+  overflow-x:auto
+}
+table {
+  width:100%;
+  border-collapse:collapse;
+  text-align:left
+}
+th {
+  background:#eaf1ee;
+  font-size:.83rem;
+  color:#3a574e
+}
+td,th {
+  padding:10px 8px;
+  border-bottom:1px solid #d7e1dc;
+  vertical-align:top
+}
+td small {
+  display:block
+}
+.link {
+  border:none;
+  background:transparent;
+  color:#126052;
+  text-align:left;
+  text-decoration:underline;
+  padding:0
+}
+.overdue,.error {
+  color:#963727
+}
+.error:empty,#notice:empty {
+  display:none
+}
+#notice {
+  margin-top:10px
+}
+#view {
+  margin-top:18px
+}
+.photos {
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap
+}
+.photos img,.sheet img {
+  max-width:180px;
+  max-height:140px;
+  object-fit:contain
+}
+.sheet p,.preserve {
+  white-space:pre-wrap
+}
+.sheet {
+  padding:15px 0
+}
+.sheet .line {
+  min-height:38px;
+  border-bottom:1px solid #738780
+}
+.sheet .notes {
+  min-height:85px
+}
+dialog#editor {
+  border:1px solid #a9bbb4;
+  border-radius:12px;
+  color:inherit;
+  width:min(700px,95vw);
+  max-height:90vh;
+  padding:22px
+}
+dialog::backdrop {
+  background:#0f2e2bc2
+}
+#fields {
+  display:grid;
+  gap:12px
+}
+#fields input,#fields select,#fields textarea {
+  min-width:0;
+  width:100%
+}
+#fields select[multiple] {
+  min-height:95px
+}
+footer {
+  margin-top:14px;
+  justify-content:flex-end
+}
+#print {
+  display:none
+}
+.sop img {
+  max-width:100%
+}
+details {
+  margin:10px 0
+}
+summary {
+  cursor:pointer
+}
+
+@media(max-width:650px) {
+  main {
+  padding:18px 12px
+}
+.panel {
+  padding:12px
+}
+.filters label {
+  flex:1 1 135px
+}
+.filters select,.filters input {
+  width:100%
+}
+
+}
+
+@media print {
+  @page {
+  size:letter;
+  margin:.55in
+}
+body {
+  background:white;
+  color:black;
+  font:11pt/1.4 Arial
+}
+body>header,body>main,body>dialog {
+  display:none!important
+}
+#print {
+  display:block
+}
+#print article+article {
+  break-before:page
+}
+#print tr {
+  break-inside:avoid
+}
+#print thead {
+  display:table-header-group
+}
+#print a {
+  color:black
+}
+dialog::backdrop {
+  display:none
+}
+
+}

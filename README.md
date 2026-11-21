@@ -4,6 +4,8 @@ A collection of focused, single-page web apps that help operators analyze data, 
 
 ## App directory
 
+- `apps/work-orders/` — Shared equipment maintenance at `/work-orders/`. Set up locations, equipment and tasks, then assign work to a directory user, a named crew, or an open-roster shift. Schedules automatically issue the coming two weeks in plant time (America/Denver). The queue can project a year or issue through a chosen date. Order history, equipment photos, files and saved SOP revisions persist in `data/work-orders/`.
+
 - `apps/application-review/` - Four-reviewer applicant workflow with workbook import, shared notes, weighted votes, tied rankings, and print/backup exports. See [Application Review](docs/application-review.md).
 
 - `apps/plant-rounds/` - Shared AM/PM daily rounds from the plant checklist, location navigation, readings, checks, and handoff notes. Uses the suite API and persistent data mount. See [Plant Rounds](docs/plant-rounds.md).

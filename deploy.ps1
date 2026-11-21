@@ -22,6 +22,8 @@ try {
         Invoke-Checked 'node' @('--check','apps/chemical-ledger/app.js')
         Invoke-Checked 'node' @('--check','apps/chemical-ledger/shared.js')
         Invoke-Checked 'node' @('--check','apps/chemical-ledger/engine.js')
+        Invoke-Checked 'node' @('--check','apps/work-orders/app.js')
+        Invoke-Checked 'node' @('--test','scripts/work-orders.test.cjs')
         Invoke-Checked 'node' @('--check','chemical-ledger-api.js')
         Invoke-Checked 'node' @('scripts/check-chemical-ledger-api.cjs')
         Invoke-Checked 'node' @('scripts/check-chemical-ledger-math.cjs')
@@ -33,7 +35,7 @@ try {
         Invoke-Checked 'node' @('--test','scripts/application-review.test.cjs','scripts/application-review-auth.test.cjs')
         New-Item -ItemType Directory -Force -Path 'deployment' | Out-Null
         $archive = Join-Path $PSScriptRoot 'deployment\water-treatment-tools.tar.gz'
-        $files = @('chemical-ledger-api.js','sop-api.js','Dockerfile','.dockerignore','package.json','package-lock.json','.env.template','claude-proxy-server.js','application-review-api.js','application-review-auth.js','set-application-review-passphrase.js','plant-rounds-api.js','plant-rounds-pdf.js','nginx.conf','global-styles.css','apps','assets','shared','docs','sample-data','README.md','docker-compose.yml','deploy-unraid.sh','update.sh')
+        $files = @('work-orders-api.js','chemical-ledger-api.js','sop-api.js','Dockerfile','.dockerignore','package.json','package-lock.json','.env.template','claude-proxy-server.js','application-review-api.js','application-review-auth.js','set-application-review-passphrase.js','plant-rounds-api.js','plant-rounds-pdf.js','nginx.conf','global-styles.css','apps','assets','shared','docs','sample-data','README.md','docker-compose.yml','deploy-unraid.sh','update.sh')
         Invoke-Checked 'tar' (@('-czf',$archive,'--exclude=apps/operator-inventory','--exclude=*/design','--exclude=*/node_modules','--exclude=*/.env','--exclude=*/.env.backup','--exclude=*/preview','--exclude=*/data','-C',$PSScriptRoot) + $files)
         Write-Host "Suite package ready: $archive"
         if (-not $PackageOnly) {

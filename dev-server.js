@@ -43,6 +43,7 @@ const ROUTES = {
     '/dashboard/': '/apps/dashboard/dashboard.html',
     
     // App routes
+    '/work-orders/': '/apps/work-orders/index.html',
     '/plant-rounds/': '/apps/plant-rounds/index.html',
     '/operations-management/': '/apps/operations-management/index.html',
     '/application-review/': '/apps/application-review/index.html',
@@ -100,7 +101,7 @@ function handleRequest(req, res) {
     let pathname = parsedUrl.pathname;
     
     console.log(`${req.method} ${pathname}`);
-    if (pathname.startsWith('/api/plant-rounds') || /^\/(?:api\/application-review|(?:apps\/)?application-review|application-review-access)(?:\/|$)/i.test(pathname)) {
+    if (/^\/api\/(work-orders|operations|sops|plant-rounds)(\/|$)/.test(pathname) || /^\/(?:api\/application-review|(?:apps\/)?application-review|application-review-access)(?:\/|$)/i.test(pathname)) {
         const upstream=http.request({hostname:'127.0.0.1',port:Number(process.env.API_PORT)||3001,path:req.url,method:req.method,headers:req.headers},response=>{res.writeHead(response.statusCode,response.headers);response.pipe(res);});
         upstream.on('error',()=>{res.writeHead(503,{'Content-Type':'application/json'});res.end(JSON.stringify({error:'Start the API with npm start to use shared plant rounds.'}));});
         req.pipe(upstream);return;

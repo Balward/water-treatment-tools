@@ -13,6 +13,7 @@ mkdir -p "$source_dir" "$backup_dir"
 if [ "${1:-}" != '--installed-source' ]; then test -s "$archive"; fi
 if [ -f "$source_dir/data/live-ops-state.json" ]; then cp "$source_dir/data/live-ops-state.json" "$backup_dir/live-ops-state.json"; fi
 if [ -d "$source_dir/data/plant-rounds" ]; then cp -a "$source_dir/data/plant-rounds" "$backup_dir/plant-rounds"; fi
+if [ -d "$source_dir/data/work-orders" ]; then cp -a "$source_dir/data/work-orders" "$backup_dir/work-orders"; fi
 if [ -d "$source_dir/data/chemical-ledger" ]; then cp -a "$source_dir/data/chemical-ledger" "$backup_dir/chemical-ledger"; fi
 if [ -d "$source_dir/data/application-review" ]; then cp -a "$source_dir/data/application-review" "$backup_dir/application-review"; fi
 if [ -d "$source_dir/data/application-review-access" ]; then cp -a "$source_dir/data/application-review-access" "$backup_dir/application-review-access"; fi
@@ -63,6 +64,8 @@ healthy() {
           && curl --fail --silent http://127.0.0.1:6767/apps/dashboard/dashboard.js >/dev/null \
           && curl --fail --silent http://127.0.0.1:6767/shared/operations/navigation.js >/dev/null \
           && curl --fail --silent http://127.0.0.1:6767/api/chemical-ledger >/dev/null \
+          && curl --fail --silent http://127.0.0.1:6767/work-orders/ >/dev/null \
+          && curl --fail --silent http://127.0.0.1:6767/api/work-orders >/dev/null \
           && curl --fail --silent http://127.0.0.1:6767/plant-flow/ | grep -q 'operations.js' \
           && curl --fail --silent http://127.0.0.1:6767/plant-flow/operations.js >/dev/null \
           && curl --fail --silent http://127.0.0.1:6767/plant-flow/operations.css >/dev/null \

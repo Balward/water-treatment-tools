@@ -14,6 +14,8 @@ COPY .env.template ./.env.template
 # Copy the proxy server
 COPY claude-proxy-server.js ./
 COPY plant-rounds-api.js ./
+COPY work-orders-api.js ./
+COPY apps/work-orders/schedule.js ./apps/work-orders/schedule.js
 COPY chemical-ledger-api.js ./
 COPY apps/chemical-ledger/engine.js ./apps/chemical-ledger/engine.js
 COPY sop-api.js ./

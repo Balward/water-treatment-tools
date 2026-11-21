@@ -4,6 +4,7 @@
   const categories=[['operations','Daily Operations'],['water','Water Treatment'],['wastewater','Wastewater Treatment'],['training','Training & Certification']].map(([id,label])=>({id,label}));
   const applications=[
     {id:'rounds',category:'operations',name:'Plant Rounds',description:'Record AM and PM checks, compare readings, and share daily handoff notes.',icon:'board',path:'/plant-rounds/'},
+    {id:'work-orders',category:'operations',name:'Work Orders',description:'Schedule equipment maintenance, assign crews, and record completed work.',icon:'board',path:'/work-orders/'},
     {id:'equipment',category:'operations',name:'Equipment Status Board',description:'Check equipment availability and share operating notes.',icon:'board',path:'/live-operations-dashboard/'},
     {id:'inventory',category:'operations',name:'Supply Inventory',description:'Count supplies, check PAR levels, and manage your order list.',icon:'box',external:'https://inventory.gibbhub.io/'},
     {id:'sops',category:'operations',status:'Under Construction',name:'SOP Library',description:'Find and view procedures, or create and edit SOPs.',icon:'book',path:'/sop-creator/library.html'},

@@ -267,6 +267,7 @@ module.exports = function registerPlantRounds(app,options = {}) {
     day.history.push({at:now,operator:name,shift:note.shift,action:'note-delete',id:note.id,previous:{...note}});
     day.notes=day.notes.filter(item=>item.id!==note.id);
   })));
+  return async () => userResponse(await users()).users;
 };
 module.exports.validDate=validDate;
 module.exports.progress=progress;
