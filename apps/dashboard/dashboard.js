@@ -31,7 +31,7 @@ const icons = {
   video:svg('<rect x="3" y="4" width="18" height="16" rx="2"/><path d="m10 8 6 4-6 4Z"/>'),
   cards:svg('<rect x="7" y="3" width="14" height="17" rx="2"/><path d="M4 7H3v14a1 1 0 0 0 1 1h12M11 8h6M11 12h4"/>')
 };
-const categoryStyle={operations:{nav:'Daily Operations',icon:'board',description:'Your everyday starting points.'},water:{nav:'Water Treatment',icon:'water'},wastewater:{nav:'Wastewater',icon:'waves'},training:{nav:'Training',icon:'book'}};
+const categoryStyle={operations:{nav:'Daily Operations',icon:'board'},water:{nav:'Water Treatment',icon:'water'},wastewater:{nav:'Wastewater',icon:'waves'},training:{nav:'Training',icon:'book'}};
 const categories=window.Operations.categories.map(category=>({...category,...categoryStyle[category.id]}));
 const apps=window.Operations.applications.map(app=>({...app,href:window.Operations.href(app)}));
 let activeCategory = 'all';
@@ -53,7 +53,7 @@ function render(){
   categories.forEach((category,index)=>{
     const items=matches.filter(app=>app.category===category.id);if(!items.length)return;
     const section=document.createElement('section');section.className='app-section category-'+category.id;section.setAttribute('aria-labelledby','heading-'+category.id);
-    const heading=document.createElement('header');heading.className='section-heading';heading.innerHTML='<div><h2 id="heading-'+category.id+'">'+category.label+'</h2></div>'+(category.id==='operations'?'<p>'+category.description+'</p>':'<span class="section-index">'+String(index).padStart(2,'0')+'</span>');section.append(heading);
+    const heading=document.createElement('header');heading.className='section-heading';heading.innerHTML='<div><h2 id="heading-'+category.id+'">'+category.label+'</h2></div>'+(category.id==='operations'?'':'<span class="section-index">'+String(index).padStart(2,'0')+'</span>');section.append(heading);
     const grid=document.createElement('div');grid.className='app-grid';
     items.forEach(app=>{
       const link=document.createElement('a');link.className='app-card';link.dataset.app=app.id;link.href=app.href;
@@ -67,7 +67,6 @@ function render(){
     button.setAttribute('aria-pressed',String(category===activeCategory));
     button.querySelector('.nav-count').textContent=visibleApps.filter(app=>category==='all'||app.category===category).length;
   });
-  document.getElementById('resultSummary').textContent=matches.length+(matches.length===1?' Application':' Applications')+(query||activeCategory!=='all'?' Found':'');
   document.getElementById('emptyState').hidden=matches.length>0;
   document.getElementById('resetFilters').hidden=!query&&activeCategory==='all';
 }
