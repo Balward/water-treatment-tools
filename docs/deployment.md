@@ -34,6 +34,8 @@ The existing inventory deployer remains supported; the root command calls it for
 
 The suite preserves the server's Compose file so host-specific volumes, ports, and networks are retained. An intentional Compose configuration change requires updating that host file separately. Secrets remain in the existing server `.env` files. No Docker volume or proxy migration is required.
 
+Chemical Ledger uses this same data mount at `data/chemical-ledger/ledger.json`. Its previous revisions and data directory are preserved and backed up by the suite updater. Browser-only deliveries require a one-time import from the browser that holds them; see [Chemical Ledger migration](chemical-ledger.md).
+
 Suite backups are under `/mnt/user/appdata/water-treatment-tools-backups/<timestamp-pid>`; inventory backups remain under `/mnt/user/appdata/operator-inventory-backups/`. Each suite deployment also saves the previous image as `water-treatment-tools:rollback-<timestamp-pid>`. To manually return to that image:
 
 ```sh

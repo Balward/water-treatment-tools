@@ -108,10 +108,11 @@ async function launchBrowser({ acceptDialogs = false, userGesture = false } = {}
   }
 }
 
-async function createBrowserCheck({ port = 8782, serveLegacyHome = false } = {}) {
+async function createBrowserCheck({ port = 8782, serveLegacyHome = false, apiHandler = null, acceptDialogs = false } = {}) {
   const context = { root, serveLegacyHome };
   const server = http.createServer((request, response) => {
     let pathname = new URL(request.url, 'http://localhost').pathname;
+    if(apiHandler && pathname.startsWith('/api/chemical-ledger')){apiHandler(request,response);return;}
     if (pathname === '/' && context.serveLegacyHome) {
       response.writeHead(200, { 'Content-Type': 'text/html', 'Cache-Control': 'public, max-age=31536000, immutable' });
       response.end(legacyHome);
@@ -134,7 +135,7 @@ async function createBrowserCheck({ port = 8782, serveLegacyHome = false } = {})
   let browser;
   try {
     await new Promise((resolve, reject) => { server.once('error', reject); server.listen(port, '127.0.0.1', resolve); });
-    browser = await launchBrowser();
+    browser = await launchBrowser({acceptDialogs});
     Object.assign(context, browser);
     const cleanups = [];
     context.addCleanup = cleanup => cleanups.push(cleanup);

@@ -1,6 +1,6 @@
 # Water Treatment Tools
 
-A collection of focused, single-page web apps that help operators analyze data, size chemical feeds, and train staff for surface water and wastewater treatment. Most interfaces use static HTML/CSS/JS with no build step. Static tools can be opened directly; Plant Rounds, Equipment Status Board, and Inventory use their APIs for shared records.
+A collection of focused, single-page web apps that help operators analyze data, size chemical feeds, and train staff for surface water and wastewater treatment. Most interfaces use static HTML/CSS/JS with no build step. Static tools can be opened directly; Chemical Ledger, Plant Rounds, Equipment Status Board, and Inventory use their APIs for shared records.
 
 ## App directory
 
@@ -10,7 +10,7 @@ A collection of focused, single-page web apps that help operators analyze data, 
 - `apps/operator-inventory/` - Docker-ready supplies inventory with location selection, dated operator counts, automatic draft saves, PAR flags, and inventory history. See its README for Unraid setup.
 
 - `apps/dashboard/` – Launch pad with city branding and links to every tool.
-- `apps/chemical-ledger/` – Chemical deliveries, invoice prices, usage, and weighted historical PO estimates at `/chemical-ledger/` on the suite. Records are saved in the browser with JSON backup/restore. To move records from the original standalone dashboard, download its backup and restore it here; browser storage does not transfer between domains.
+- `apps/chemical-ledger/` – Chemical deliveries, invoice prices, usage, and weighted historical PO estimates at `/chemical-ledger/` on the suite. Records are shared through `/api/chemical-ledger` and persist in `data/chemical-ledger/ledger.json` on gibbhub. See [shared ledger storage and browser migration](docs/chemical-ledger.md).
   Delivery records include optional Superfund Excise Tax and Energy Surcharge amounts in dollars. Delivery spending and CSV exports include both charges; old records default to zero. PO forecasts currently estimate chemical cost only.
   Aluminum sulfate uses dry US tons (2,000 dry pounds) at a starting price of $661 per ton. Older backups labeled `dry lb` migrate the unit label while preserving recorded quantities and prices; review any older entries actually entered in pounds before forecasting.
 - `apps/plant-flow/` – Interactive detention-time model; toggle basins, adjust flow, and see chemical travel times and cumulative detention. Mobile-friendly with in-app help.

@@ -1,0 +1,28 @@
+const assert=require('node:assert/strict'),fs=require('node:fs/promises'),os=require('node:os'),path=require('node:path'),{randomUUID}=require('node:crypto');
+const express=require('express'),register=require('../chemical-ledger-api'),Ledger=require('../apps/chemical-ledger/engine.js');
+const {removeTemporaryDirectory}=require('./lib/browser-check.cjs');
+(async()=>{const directory=await fs.mkdtemp(path.join(os.tmpdir(),'chemical-ledger-api-'));let server,base;
+async function start(){const app=express();app.use(express.json({limit:'10mb'}));register(app,{directory});server=await new Promise(resolve=>{const s=app.listen(0,'127.0.0.1',()=>resolve(s));});base='http://127.0.0.1:'+server.address().port;}
+const close=()=>new Promise(resolve=>{server.closeAllConnections();server.close(resolve);});
+async function request(method='GET',body,suffix='',status=200,headers={}){const response=await fetch(base+'/api/chemical-ledger'+suffix,{method,headers:{'Content-Type':'application/json','X-Chemical-Ledger':'1',...headers},...(body?{body:JSON.stringify(body)}:{})});const value=await response.json();assert.equal(response.status,status,JSON.stringify(value));assert.match(response.headers.get('cache-control'),/no-store/);return value;}
+const payload=(current,state=current.state)=>({revision:current.revision,state,mutationId:randomUUID()});
+try{
+ await start();const blank=await request();assert.equal(blank.revision,0);assert.deepEqual(await fs.readdir(directory),[],'Read does not create an empty server file');
+ const delivery={id:'work-delivery',date:'2026-11-19',chemical:'alum',quantity:20,price:661,superfundTax:12,energySurcharge:18,supplier:'Chemtrade',notes:'',reference:'WORK-1'};
+ const next=structuredClone(blank.state);next.deliveries.push(delivery);const save=payload(blank,next),first=await request('PUT',save);assert.equal(first.revision,1);
+ assert.deepEqual((await request()).state.deliveries,[delivery],'Second client sees first client records');
+ assert.equal((await request('PUT',save)).revision,1,'Retry of completed request does not duplicate it');
+ await request('PUT',payload(blank), '',409);assert.equal((await request()).state.deliveries.length,1,'Stale blank client cannot overwrite deliveries');
+ await request('PUT',payload(first), '',403,{Origin:'https://elsewhere.example'});
+ const invalid=structuredClone(first.state);invalid.deliveries[0].superfundTax=-1;await request('PUT',payload(first,invalid),'',400);
+ const legacy=Ledger.initial();legacy.chemicals.find(c=>c.id==='alum').unit='dry lb';legacy.chemicals.find(c=>c.id==='polymer').name='Polymer';legacy.usage.push({id:'old-usage',date:'2025-12-31',chemical:'polymer',quantity:200});legacy.deliveries.push(delivery);legacy.chemicals[0].price=99;
+ const imported=await request('POST',payload(first,legacy),'/import');assert.deepEqual(imported.imported,{deliveries:0,usage:1});assert.equal(imported.state.chemicals[0].price,1.64,'Import keeps shared pricing');
+ assert.equal((await request('POST',payload(imported,legacy),'/import')).revision,imported.revision,'Repeated import does not create duplicates');
+ const conflicting=structuredClone(legacy);conflicting.deliveries[0].quantity=21;await request('POST',payload(imported,conflicting),'/import',409);assert.equal((await request()).state.deliveries[0].quantity,20);
+ const a=structuredClone(imported.state),b=structuredClone(imported.state);a.chemicals[0].price=2;b.chemicals[0].price=3;
+ const simultaneous=await Promise.all([fetch(base+'/api/chemical-ledger',{method:'PUT',headers:{'Content-Type':'application/json','X-Chemical-Ledger':'1'},body:JSON.stringify(payload(imported,a))}),fetch(base+'/api/chemical-ledger',{method:'PUT',headers:{'Content-Type':'application/json','X-Chemical-Ledger':'1'},body:JSON.stringify(payload(imported,b))})]);assert.deepEqual(simultaneous.map(r=>r.status).sort(),[200,409]);
+ const saved=await request();await close();await start();assert.deepEqual(await request(),saved,'Ledger survives server restart');
+ const file=path.join(directory,'ledger.json'),bytes=await fs.readFile(file,'utf8');assert((await fs.readdir(path.join(directory,'backups'))).length>=2,'Previous revisions have recovery copies');
+ await fs.writeFile(file,'broken');await request('GET',undefined,'',503);await request('PUT',payload(saved),'',503);assert.equal(await fs.readFile(file,'utf8'),'broken','Corrupt server records are never replaced with an empty ledger');await fs.writeFile(file,bytes);
+ console.log('Shared Chemical Ledger API passed: cross-client reads, restart persistence, atomic revisions, stale-write protection, idempotent retries, safe imports, legacy backups, recovery copies, and corrupt-file protection.');
+}finally{if(server)await close();await removeTemporaryDirectory(directory);}})().catch(e=>{console.error(e);process.exitCode=1});

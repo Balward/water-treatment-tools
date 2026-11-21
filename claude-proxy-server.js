@@ -22,10 +22,12 @@ require('./application-review-auth').register(app);
 app.use(cors());
 app.use('/api/application-review',express.json({limit:'5mb'}));
 app.use('/api/sops',express.json({limit:'16mb'}));
+app.use('/api/chemical-ledger',express.json({limit:'10mb'}));
 app.use(express.json());
 require('./sop-api')(app);
 require('./application-review-api')(app);
 require('./plant-rounds-api')(app);
+require('./chemical-ledger-api')(app);
 
 const dataDirectory = process.env.LIVE_OPS_DATA_DIR || path.join(__dirname, 'data');
 const liveOpsStatePath = path.join(dataDirectory, 'live-ops-state.json');
