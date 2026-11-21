@@ -18,3 +18,6 @@ main{width:100%;max-width:1600px;margin-inline:auto;min-width:0;padding:46px 42p
 .app-card.is-under-construction{padding-top:46px}
 @media(max-width:560px){.app-card.is-under-construction .card-icon{top:46px}.app-card.is-under-construction .card-arrow{top:48px}}
 .construction-banner{position:absolute;inset:0 0 auto;padding:5px 12px;border-bottom:1px solid #e0bd61;border-radius:7px 7px 0 0;background:#fff0c2;color:#714b00;font-size:10px;font-weight:700;line-height:1.4;letter-spacing:.5px;text-align:center}
+.directory-heading:has(.construction-filter){flex-wrap:wrap;gap:8px 16px}
+.construction-filter{margin-inline-start:auto;display:inline-flex;align-items:center;gap:7px;min-height:32px;color:var(--muted);font-size:12px;cursor:pointer}
+.construction-filter input{accent-color:var(--teal)}

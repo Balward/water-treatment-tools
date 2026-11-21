@@ -37,16 +37,18 @@ const apps=window.Operations.applications.map(app=>({...app,href:window.Operatio
 let activeCategory = 'all';
 const nav = document.getElementById('categoryNav');
 const search = document.getElementById('toolSearch');
+const showConstruction = document.getElementById('showConstruction');
 [{id:'all',nav:'All Applications',icon:'home'},...categories].forEach(category=>{
   const button=document.createElement('button');button.type='button';button.className='nav-item';button.dataset.category=category.id;
-  button.innerHTML='<span>'+icons[category.icon]+'</span><span>'+category.nav+'</span><span class="nav-count">'+apps.filter(app=>category.id==='all'||app.category===category.id).length+'</span>';
+  button.innerHTML='<span>'+icons[category.icon]+'</span><span>'+category.nav+'</span><span class="nav-count"></span>';
   button.setAttribute('aria-pressed',String(category.id===activeCategory));
   button.addEventListener('click',()=>{activeCategory=category.id;render();});nav.append(button);
 });
 document.querySelectorAll('[data-icon]').forEach(node=>node.innerHTML=icons[node.dataset.icon]);
 function render(){
   const query=search.value.trim().toLowerCase();
-  const matches=apps.filter(app=>(activeCategory==='all'||app.category===activeCategory)&&[app.name,app.description,categories.find(category=>category.id===app.category).label].join(' ').toLowerCase().includes(query));
+  const visibleApps=apps.filter(app=>showConstruction.checked || app.status!=='Under Construction');
+  const matches=visibleApps.filter(app=>(activeCategory==='all'||app.category===activeCategory)&&[app.name,app.description,categories.find(category=>category.id===app.category).label].join(' ').toLowerCase().includes(query));
   const directory=document.getElementById('directory');directory.replaceChildren();
   categories.forEach((category,index)=>{
     const items=matches.filter(app=>app.category===category.id);if(!items.length)return;
@@ -60,13 +62,18 @@ function render(){
       grid.append(link);
     });section.append(grid);directory.append(section);
   });
-  document.querySelectorAll('[data-category]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.category===activeCategory)));
+  nav.querySelectorAll('[data-category]').forEach(button=>{
+    const category=button.dataset.category;
+    button.setAttribute('aria-pressed',String(category===activeCategory));
+    button.querySelector('.nav-count').textContent=visibleApps.filter(app=>category==='all'||app.category===category).length;
+  });
   document.getElementById('resultSummary').textContent=matches.length+(matches.length===1?' Application':' Applications')+(query||activeCategory!=='all'?' Found':'');
   document.getElementById('emptyState').hidden=matches.length>0;
   document.getElementById('resetFilters').hidden=!query&&activeCategory==='all';
 }
 function reset(){search.value='';activeCategory='all';render();}
 search.addEventListener('input',render);
+showConstruction.addEventListener('change',render);
 document.getElementById('resetFilters').addEventListener('click',reset);
 document.getElementById('resetEmpty').addEventListener('click',()=>{reset();search.focus();});
 document.addEventListener('keydown',event=>{if(document.getElementById("opsAppMenu")?.open)return;if(event.key==='/'&&!event.ctrlKey&&!event.metaKey&&!event.altKey&&!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)){event.preventDefault();search.focus();}if(event.key==='Escape'&&document.activeElement===search){reset();}});

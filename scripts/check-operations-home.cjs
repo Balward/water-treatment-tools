@@ -9,7 +9,15 @@ assert.equal(await evaluate('getComputedStyle(document.querySelector(".app-butto
 harness.serveLegacyHome=false;
 assert.ok(await evaluate('fetch("/",{cache:"force-cache"}).then(r=>r.text()).then(text=>text.includes("Cached Legacy Home"))'),'Regression setup has cached old HTML');
 await call('Page.navigate',{url:'http://127.0.0.1:8782/?v=operations-home-20261021'});
-for(let i=0;i<100;i++){if(await evaluate('document.readyState==="complete"&&document.querySelectorAll(".app-card").length===18'))break;await new Promise(r=>setTimeout(r,50));}
+for(let i=0;i<100;i++){if(await evaluate('document.readyState==="complete"&&document.querySelectorAll(".app-card").length===14'))break;await new Promise(r=>setTimeout(r,50));}
+assert.equal(await evaluate('document.querySelectorAll(".app-card").length'),14);
+assert.equal(await evaluate('document.querySelectorAll(".app-card.is-under-construction").length'),0);
+assert.equal(await evaluate('document.querySelector("[data-category=water] .nav-count").textContent'),'6');
+await evaluate('document.getElementById("toolSearch").value="chemical ledger";document.getElementById("toolSearch").dispatchEvent(new Event("input"))');
+assert.equal(await evaluate('document.querySelectorAll(".app-card").length'),0);
+await evaluate('document.getElementById("showConstruction").click()');
+assert.equal(await evaluate('document.querySelector(".app-card").dataset.app'),'chemical-ledger');
+await evaluate('document.getElementById("resetFilters").click()');
 await evaluate('document.fonts.ready');assert.ok(await evaluate('document.fonts.check("16px Inter")&&getComputedStyle(document.body).fontFamily.startsWith("Inter")'));
 assert.equal(await evaluate('document.querySelectorAll(".app-card").length'),18);assert.ok(await evaluate('document.querySelector(".ops-app-menu-home").href.includes("v=operations-home-20261021")'));assert.ok(await evaluate('[...document.querySelectorAll("link[rel=stylesheet]")].some(link=>link.href.includes("operations-home.css"))'));
 assert.ok(await evaluate('[...document.images].every(image=>image.complete&&image.naturalWidth>0)'));
@@ -18,7 +26,7 @@ assert.equal(await evaluate('document.querySelector(".app-card[data-app=equipmen
 assert.equal(await evaluate('document.querySelector(".app-card[data-app=work-orders]").pathname'),'/work-orders/');
 assert.equal(await evaluate('document.querySelector(".app-card[data-app=chemical-ledger]").pathname'),'/chemical-ledger/');
 assert.equal(await evaluate('document.querySelector(".app-card[data-app=digital-twin]").pathname'),'/apps/digital-twin/index.html');
-for(const id of ['digital-twin','sops']){
+for(const id of ['digital-twin','sops','chemical-ledger','rounds']){
  const selector=JSON.stringify('.app-card[data-app='+id+'] .construction-banner');
  assert.equal(await evaluate('document.querySelector('+selector+').textContent'),'Under Construction');
 }
