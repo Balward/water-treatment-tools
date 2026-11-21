@@ -2,7 +2,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs/promises'),os=req
 const express=require('express'),register=require('../chemical-ledger-api'),Ledger=require('../apps/chemical-ledger/engine.js');
 const {removeTemporaryDirectory}=require('./lib/browser-check.cjs');
 (async()=>{const directory=await fs.mkdtemp(path.join(os.tmpdir(),'chemical-ledger-api-'));let server,base;
-async function start(){const app=express();app.use(express.json({limit:'10mb'}));register(app,{directory});server=await new Promise(resolve=>{const s=app.listen(0,'127.0.0.1',()=>resolve(s));});base='http://127.0.0.1:'+server.address().port;}
+async function start(){const app=express();app.use(express.json({limit:'10mb'}));register(app,{directory,inventorySync:false});server=await new Promise(resolve=>{const s=app.listen(0,'127.0.0.1',()=>resolve(s));});base='http://127.0.0.1:'+server.address().port;}
 const close=()=>new Promise(resolve=>{server.closeAllConnections();server.close(resolve);});
 async function request(method='GET',body,suffix='',status=200,headers={}){const response=await fetch(base+'/api/chemical-ledger'+suffix,{method,headers:{'Content-Type':'application/json','X-Chemical-Ledger':'1',...headers},...(body?{body:JSON.stringify(body)}:{})});const value=await response.json();assert.equal(response.status,status,JSON.stringify(value));assert.match(response.headers.get('cache-control'),/no-store/);return value;}
 const payload=(current,state=current.state)=>({revision:current.revision,state,mutationId:randomUUID()});

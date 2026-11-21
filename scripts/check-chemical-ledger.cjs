@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),os=require('node:os');
 const express=require('express'),register=require('../chemical-ledger-api');
 const {createBrowserCheck,removeTemporaryDirectory}=require('./lib/browser-check.cjs');
-(async()=>{const directory=fs.mkdtempSync(path.join(os.tmpdir(),'ledger-browser-data-')),api=express();api.use(express.json({limit:'10mb'}));register(api,{directory});let h,other;
+(async()=>{const directory=fs.mkdtempSync(path.join(os.tmpdir(),'ledger-browser-data-')),api=express();api.use(express.json({limit:'10mb'}));register(api,{directory,inventorySync:false,inventoryFetcher:async()=>({revision:1,records:['2026-07-01','2026-07-08'].map((date,i)=>({date,status:'complete',totals:Object.fromEntries(['naoh','hypochlorite','alum','polymer','permanganate'].map(k=>[k,{gallons:1000-i*100}]))}))})});let h,other;
 async function until(browser,expression){for(let i=0;i<160;i++){if(await browser.evaluate(expression))return;await new Promise(r=>setTimeout(r,50));}throw Error('Timed out: '+expression);}
 const settled=browser=>until(browser,'document.getElementById("sharedStatusText").textContent.startsWith("Saved on gibbhub")');
 async function reload(browser,recovery=false){await browser.evaluate('window.__ledgerReloadMarker=true');await browser.call('Page.reload');await until(browser,'!window.__ledgerReloadMarker&&document.readyState==="complete"');if(!recovery)await settled(browser);}
@@ -18,10 +18,10 @@ try{
  await evaluate('document.querySelector("[data-add=deliveries]").click()');
  assert.equal(await evaluate('document.getElementById("deliveryTotal").textContent'),'$0.00');
  assert.deepEqual(await evaluate('[...document.querySelector("select[name=supplier]").options].map(o=>o.value)'),['','PVS DX, INC','Harcros','Nalco','Chemtrade']);
- await evaluate('(()=>{const f=document.getElementById("recordForm");f.elements.date.value="2026-02-01";f.elements.quantity.value="100";f.elements.reference.value="TEST-001";f.elements.supplier.value="Harcros";f.elements.superfundTax.value="12.34";f.elements.energySurcharge.value="5.66";f.elements.energySurcharge.dispatchEvent(new Event("input",{bubbles:true}))})()');
+ await evaluate('(()=>{const f=document.getElementById("recordForm");f.elements.date.value="2026-02-01";f.elements.quantity.value="100";f.elements.receivedQuantity.value="10.392156862745098";f.elements.receivedDate.value="2026-02-02";f.elements.reference.value="TEST-001";f.elements.supplier.value="Harcros";f.elements.superfundTax.value="12.34";f.elements.energySurcharge.value="5.66";f.elements.energySurcharge.dispatchEvent(new Event("input",{bubbles:true}))})()');
  assert.equal(await evaluate('document.getElementById("deliveryTotal").textContent'),'$182.00');
  await evaluate('document.getElementById("recordForm").requestSubmit()');await settled(h);
- assert.equal((await read(h)).state.deliveries[0].supplier,'Harcros');
+ assert.equal((await read(h)).state.deliveries[0].supplier,'Harcros');assert.equal((await read(h)).state.deliveries[0].receivedDate,'2026-02-02');
  await evaluate('document.querySelector("[data-tab=deliveries]").click();document.querySelector("[data-edit]").click()');
  assert.equal(await evaluate('document.getElementById("recordForm").elements.superfundTax.value'),'12.34');
  assert.equal(await evaluate('document.getElementById("recordForm").elements.energySurcharge.value'),'5.66');
@@ -42,11 +42,16 @@ try{
  await evaluate('document.querySelector("[data-tab=planner]").click()');
  await evaluate(`(()=>{const input=document.querySelector('[data-history="2026"][data-field=months]');input.value="9";input.dispatchEvent(new Event("change",{bubbles:true}))})()`);await settled(h);
  assert.match(await evaluate('document.querySelector(".planCard .pill").textContent'),/320 lb/);assert.match(await evaluate('document.querySelector(".planCard .cost").textContent'),/524\.80/);
+ await evaluate('document.querySelector("[data-tab=inventory]").click()');await until(h,'document.getElementById("inventoryRefresh")&&!inventoryLoading');
+ await evaluate('document.getElementById("inventoryRefresh").click()');await until(h,'document.querySelector("[data-approve-interval]")&&!inventoryLoading');
+ assert.equal(await evaluate('document.querySelector("[data-approve-interval]").disabled'),false);
+ await evaluate('document.querySelector("[data-receipts-confirm]").checked=true;document.querySelector("[data-approve-interval]").click()');await until(h,'document.querySelector(".inventory-interval .pill").textContent==="Approved"');await settled(h);
+ assert.equal((await read(h)).state.usage.find(r=>r.source).quantity,100);
  for(const width of [1440,390,320]){
   await call('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
   assert.equal(await evaluate('document.querySelector(".site-header").getBoundingClientRect().height'),width<=800?144:112);
-  for(const view of ['overview','deliveries','usage','planner','settings']){await evaluate(`document.querySelector('[data-tab="${view}"]').click()`);assert(await evaluate('document.documentElement.scrollWidth<=innerWidth'),view+' fits at '+width);}
-  await evaluate('document.querySelector("[data-tab=overview]").click()');
+  for(const view of ['overview','deliveries','usage','inventory','planner','settings']){await evaluate(`document.querySelector('[data-tab="${view}"]').click()`);assert(await evaluate('document.documentElement.scrollWidth<=innerWidth'),view+' fits at '+width);}
+  await evaluate('document.querySelector("[data-tab=inventory]").click()');
   if(width!==320){fs.mkdirSync('preview',{recursive:true});const shot=await call('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});fs.writeFileSync('preview/chemical-ledger-'+width+'.png',Buffer.from(shot.data,'base64'));}
   await evaluate('document.querySelector("[data-ops-menu]").click()');assert.equal(await evaluate('document.querySelector("#opsAppMenu [aria-current=page]").dataset.opsDestination'),'chemical-ledger');await evaluate('document.querySelector(".ops-app-menu-close").click()');
  }

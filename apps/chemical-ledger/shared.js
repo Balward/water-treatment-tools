@@ -24,7 +24,7 @@ async function ledgerRequest(url,options={}){
   try{const response=await fetch(url,{cache:'no-store',...options,signal:controller.signal,headers:{'Content-Type':'application/json','X-Chemical-Ledger':'1',...(options.headers||{})}});const body=await response.json();if(!response.ok)throw Object.assign(new Error(body.error||'Unable to reach the shared ledger.'),{status:response.status});if(!Number.isSafeInteger(body.revision)||!validBackup(body.state))throw Error('The server returned an invalid ledger. Existing records have been kept.');return body;}
   finally{clearTimeout(timer);}
 }
-function acceptShared(data,{clearPending=true}={}){state=Ledger.migrateState(data.state);sharedRevision=data.revision;sharedUpdated=data.updatedAt;sharedReady=true;sharedDirty=false;pendingSave=null;sharedError='';if(clearPending)localRemove(pendingKey);render();}
+function acceptShared(data,{clearPending=true}={}){if(inventoryViewData&&data.revision!==sharedRevision&&!data.inventory)inventoryViewData=null;state=Ledger.migrateState(data.state);sharedRevision=data.revision;sharedUpdated=data.updatedAt;sharedReady=true;sharedDirty=false;pendingSave=null;sharedError='';if(clearPending)localRemove(pendingKey);render();}
 async function loadSharedLedger({silent=false,discard=false,preserveRecovery=false}={}){
   if(sharedBusy||sharedDirty&&!discard)return;
   if(silent&&($('#recordDialog').open||document.activeElement?.matches('input,select,textarea')||document.hidden))return;
