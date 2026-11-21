@@ -24,6 +24,9 @@ fi
 previous_image=$(docker inspect water-treatment-tools --format '{{.Image}}' 2>/dev/null || true)
 if [ -n "$previous_image" ]; then docker image tag "$previous_image" "water-treatment-tools:rollback-$stamp"; fi
 if [ "${1:-}" != '--installed-source' ]; then tar -xzf "$archive" -C "$source_dir"; fi
+# Remove retired Chemical Ledger scripts from overlaid packages. Saved ledger
+# records and inventory snapshots remain in the persistent data directory.
+rm -f -- "$source_dir/apps/chemical-ledger/inventory.js" "$source_dir/apps/chemical-ledger/inventory-ui.js"
 # Packages overlay existing source. Retire the removed alternate landing app so
 # it cannot be copied back into the next image from an older server checkout.
 rm -f -- "$source_dir/apps/dashboard-new/index.html" "$source_dir/apps/dashboard-new/styles.css"

@@ -11,7 +11,7 @@
     {id:'hypo',category:'water',name:'Sodium Hypochlorite Calculator',description:'Calculate chlorine dose and chemical feed requirements.',icon:'water',path:'/sodium-hypochlorite-calculator/?v=20261022-hypo1'},
     {id:'permanganate',category:'water',name:'Permanganate Dose Predictor',description:'Explore dose estimates using historical plant data.',icon:'dose',path:'/dose-predictor/?v=20261022-dose1'},
     {id:'alum',category:'water',name:'Alum Hydrometer Conversion',description:'Correct density readings and estimate dry alum strength.',icon:'meter',path:'/alum-hydrometer-conversion/'},
-    {id:'chemical-ledger',category:'water',name:'Chemical Ledger',description:'Track chemical deliveries, invoices, and usage; plan next year’s POs with weighted history.',icon:'chart',path:'/chemical-ledger/'},
+    {id:'chemical-ledger',category:'water',name:'Chemical Ledger',description:'Track chemical invoices, delivery quantities, supplier prices, taxes, and surcharges.',icon:'chart',path:'/chemical-ledger/'},
     {id:'explorer',category:'water',name:'Water Data Explorer',description:'Find trends and correlations in your water-quality data.',icon:'chart',path:'/water-data-explorer/?v=20261022-explorer1'},
     {id:'digital-twin',category:'water',status:'Under Construction',name:'Plant Digital Twin',description:'Explore alum and cationic polymer scenarios and map plant sample points.',icon:'flow',path:'/apps/digital-twin/index.html'},
     {id:'detention',category:'water',name:'Detention Time',description:'Follow flow through the plant and compare basin detention times.',icon:'flow',path:'/plant-flow/?v=20261022-plant1'},

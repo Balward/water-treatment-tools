@@ -1,63 +1,35 @@
-# Chemical Ledger shared storage
+# Chemical Ledger: invoices and deliveries
 
-Open `https://water.gibbhub.io/chemical-ledger/` on every computer. Deliveries, usage, pricing, and planning settings are stored on gibbhub. The status bar confirms a successful save. Other open browsers refresh from the server every 15 seconds when no form is being edited; **Refresh Shared Ledger** loads changes immediately.
+Open `https://water.gibbhub.io/chemical-ledger/` on every computer. The app focuses on chemical invoices, billed quantities, supplier prices, taxes, and delivery spending. Its three pages are **Annual Overview**, **Deliveries & Invoices**, and **Chemical Pricing**.
 
-## Bring in existing work records
+## Record an invoice
 
-1. Open the updated ledger in the same browser and profile used to enter the original deliveries at work.
-2. The **Bring Your Browser Records To Gibbhub** banner shows the local record counts. Select **Download Browser Backup** to keep a separate copy, then **Import This Browser**.
-3. Confirm the import. The original browser copy is kept. Open or refresh the ledger at home to see the imported records.
+Select **Record delivery**. Enter the invoice date, chemical, billed quantity, price per billing unit, supplier, invoice reference, and optional notes. Available suppliers include PVS DX, INC; Harcros; Nalco; and Chemtrade. Previously saved supplier names remain available.
 
-A JSON file from the original app can also be added through **Import Backup**. Imports keep existing shared entries, skip identical record IDs, and stop if an ID refers to a different record. They preserve shared prices and existing planning settings once the shared ledger has been used. The first import into an unused ledger brings its settings as well. Two real deliveries with different IDs remain separate even if their quantities and dates match.
+Billing units remain chemical-specific: sodium hypochlorite in gallons; sodium hydroxide in active pounds; Catfloc 8103+ Polymer and sodium permanganate in product pounds; aluminum sulfate in dry US tons (2,000 dry pounds). Default pricing is $2.56/gal, $0.36/active lb, $2.34/lb, $1.64/lb, and $661/dry US ton, respectively. Chemical Pricing changes defaults for new invoices; existing invoices retain their recorded prices.
 
-Old alum labels are corrected to dry US tons without changing numeric quantities or prices; review records entered as pounds. Polymer becomes Catfloc 8103+ Polymer while retaining its ID, records, and price.
+Enter **Superfund Excise Tax** and **Energy Surcharge** as dollar amounts for the delivery. The bold **Delivery Total** equals chemical subtotal plus both charges. Allocate invoice-wide charges once when recording multiple chemicals from one invoice. Historical records without these charges default to zero.
 
-## Save failures and simultaneous edits
+Annual Overview shows invoice spending, delivery counts, chemical subtotal, taxes/surcharges, billed quantities by chemical, and supplier totals. Average invoice unit price equals chemical subtotal divided by invoiced quantity, excluding taxes and surcharges. Quantities are never combined across chemicals with different billing units. Current-year overview totals exclude future-dated invoices; the invoice register still lists all saved invoices for the selected year. Choose an earlier reporting year to view or enter historical invoices.
 
-Each save includes a server revision. A stale browser cannot overwrite another computer's changes. A conflict or failed connection displays an unsaved warning and retains a recovery copy on that browser when storage is available. **Download Backup** exports the displayed unsaved data. **Retry Saving** retries the same save once connectivity returns; a revision conflict requires downloading a backup, refreshing shared records, and reapplying the edit.
+## Shared records and browser migration
 
-The app never switches to silently saving only on the PC. An unavailable or corrupt server file does not become an empty ledger. Keep the recovery browser data until the save succeeds or you have downloaded a backup.
+Invoices and pricing are saved centrally on gibbhub. The status bar confirms a successful save. Other open browsers refresh every 15 seconds when no form is being edited; **Refresh Shared Ledger** loads changes immediately.
 
-## Server files and deployment
+To recover deliveries entered in the original browser-only app, open the updated ledger in that same browser/profile at work. In **Bring Your Browser Records To Gibbhub**, first select **Download Browser Backup**, then **Import This Browser**. The original browser copy is retained. A saved JSON file can also be added with **Import Backup**.
 
-`chemical-ledger-api.js` writes `/app/data/chemical-ledger/ledger.json`, backed by the suite's existing `./data:/app/data` volume. On gibbhub that is `/mnt/user/appdata/water-treatment-tools/data/chemical-ledger/ledger.json`. Records survive container replacement. Previous saved revisions are retained in the adjacent `backups/` directory, and the suite deployer copies the entire chemical-ledger data directory into its timestamped backup before updating source.
+Imports preserve existing shared invoices, skip identical IDs, and stop if an ID refers to a different record. Once the shared ledger is in use, shared prices remain unchanged by imports. Older alum labels migrate to dry US tons without changing quantities or prices; review records entered as pounds. The older Polymer name migrates to Catfloc 8103+ Polymer.
 
-Writes are serialized in the suite's single Node process and replace the data file atomically. Source archives exclude runtime data. No new Docker volume or reverse-proxy destination is needed.
+Use **Export CSV** on Deliveries & Invoices for the selected year and chemical filter. CSV includes billed quantity, unit price, chemical subtotal, taxes, surcharge, bold-on-screen delivery total, invoice reference, supplier, and notes. **Download Backup** exports the complete JSON state.
 
-Validation: `node scripts/check-operations.cjs chemical-ledger-api chemical-ledger-math chemical-ledger headers`. API checks cover independent clients, restart persistence, stale writes, import conflicts, duplicate imports, recovery snapshots, and corrupt-file protection. Browser checks use two isolated profiles and temporary server data, including failed saves and reload recovery. They never write test deliveries to production.
+## Save failures and preservation
 
-## Wednesday inventory usage
+Each save includes a server revision. A stale browser cannot overwrite another computer's changes. Conflicts or failed saves retain a recovery copy in that browser. Download Backup protects unsaved entries; Retry Saving retries the same save after reconnecting. For a revision conflict, download a backup, refresh shared records, and reapply the invoice edit. An unavailable or corrupt server file never becomes an empty ledger.
 
-**Inventory Review** reads completed records from the chemical inventory app. The suite synchronizes saved readings every minute and keeps a server-side snapshot cache. **Refresh Inventory** requests the latest records immediately. Drafts are excluded; missing readings remain missing and genuine zero readings remain zero. The first completed record establishes an opening balance. Historical saved gallon totals are used as recorded, including their original inventory settings; this integration does not rewrite inventory records.
+Inventory integration, usage entry/review, physical-receipt conversion forms, and usage-based PO forecasting have been removed. The suite makes no inventory requests or scheduled synchronizations. Retired inventory API routes return HTTP 410 so older pages cannot approve usage. Earlier saved usage, planning settings, receipt metadata, and inventory snapshots are retained for recovery and old-backup compatibility; they do not affect invoice reports. Invoice edits preserve earlier receipt metadata. Old clients attempting to change usage or planning settings are rejected until reloaded.
 
-For each consecutive pair of completed inventories:
+## Server files and verification
 
-`purchased-stock withdrawal (gal) = opening stock + physical receipts − closing stock`
+`chemical-ledger-api.js` writes `/app/data/chemical-ledger/ledger.json`, backed by the suite's existing data volume at `/mnt/user/appdata/water-treatment-tools/data/chemical-ledger/`. Previous revisions remain in `backups/`. Deployments back up the entire directory, exclude runtime data from source archives, and preserve the volume during container replacement. Writes are serialized and use an atomic file replacement.
 
-Permanganate uses purchased 20% stock only. The East 10% batch is excluded. Withdrawal measures movement out of purchased stock, not treatment feed; spills, transfers, and corrections can affect this balance and require operator review.
-
-Enter **Physical Receipt** details on each ledger delivery: received gallons or pounds of product/solution, actual receiving date, and before/after-count timing for a delivery on an inventory date. These fields are separate from the invoice quantity and price. An invoice dated after delivery must use the actual receipt date for reconciliation. A delivery after the opening count or before the closing count belongs to that interval; unknown boundary timing blocks approval. Corrected invoices must update the existing delivery rather than create another physical receipt.
-
-Current conversion profiles (versioned and retained with approved usage):
-
-| Chemical | Inventory gallons to ledger billing quantity |
-| --- | --- |
-| Sodium hypochlorite | 1 gal per gal |
-| Catfloc 8103+ Polymer | 2,295 lb / 265 filled gal = 8.66037736 lb/gal |
-| Sodium permanganate | 2,550 lb / 265 filled gal = 9.62264151 product lb/gal |
-| Aluminum sulfate | Approximate SG 1.327 × 8.34 lb/gal × 0.482 / 2,000 = 0.00266719038 dry US ton/gal |
-| Sodium hydroxide | Pending confirmation of active lb/gal; approval is blocked |
-
-Alum conversion is explicitly estimated. It does not replace actual dry tons billed by the supplier. For weight-based receipts, the same product densities convert physical pounds to gallons; hypo uses the example invoice SG 1.18 × 8.34 lb/gal. Use measured received gallons when available. The caustic example's active-pound billing and printed assay need clarification before automatic conversion.
-
-Review each interval, confirm all receipts (including deliveries awaiting invoices), then select **Approve Usage**. Approval saves one usage entry with opening/closing snapshots, receipts, conversion version, review time, and fingerprint. Repeated approval cannot duplicate it. Unreviewed intervals do not contribute to totals or PO planning. Missing receipt details, missing stock readings, negative balances, and overlapping manual usage block approval. Dates other than Wednesday and intervals other than seven days are highlighted and retain their actual elapsed days.
-
-Review checkboxes use the server's connection status rather than the PC clock. Checking the box enables **Approve Usage**. Selections survive view refreshes while their source fingerprint is unchanged; changed data or an unavailable connection requires confirmation again. A paused connection displays **Refresh required** and an explanation beside the review controls.
-
-Source corrections, deleted/backfilled inventories, or changed physical receipts mark affected approved usage as needing review and exclude it from totals. Earlier records and their provenance remain available. Review and approve the replacement interval(s). Connection failures retain the last saved snapshots and prevent new approvals until a fresh sync succeeds.
-
-Manual historical usage remains supported. Add coverage start/end dates (with the entry date equal to coverage end) before combining manual totals and inventory intervals for a chemical/year. Adjacent periods may meet at a count date; overlapping periods cannot be approved. Cross-year dated quantities are allocated in proportion to elapsed days, an estimate rather than a measured daily distribution. Years with dated coverage annualize from the union of actual covered days; manual-only undated history keeps the existing months-covered setting. Relative historical weights still favor recent years. Short periods may be seasonal and should be reviewed before issuing POs.
-
-`inventory-source.json` lives beside `ledger.json` in the persistent data directory and is included in deployment backups. The default source is `https://inventory.gibbhub.io/api/chemicals`; `CHEMICAL_INVENTORY_URL` can override it in the suite's server environment. The connection is read-only. No inventory-app deployment is required.
-
-Integration validation: `node scripts/check-operations.cjs chemical-ledger-inventory chemical-ledger-api chemical-ledger-math chemical-ledger headers`. Tests use injected inventory records and temporary files, covering conversion units, receipts and count timing, zero/missing readings, overlapping history, year allocation, actual-day forecasting, approval idempotency, corrected/backfilled data, connection failure, restart persistence, and browser review at desktop/mobile sizes.
+Run `node scripts/check-operations.cjs chemical-ledger-api chemical-ledger-math chemical-ledger headers home`. Tests use temporary server data and isolated browser profiles. They cover invoice totals, unit prices, charges, year filtering, old-backup compatibility, archived-data preservation, retired integration routes, no inventory requests, cross-computer reads, imports, concurrent edits, offline recovery, and desktop/mobile layouts. Production verification does not create test invoices.

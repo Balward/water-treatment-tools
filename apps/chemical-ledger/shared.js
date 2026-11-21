@@ -15,7 +15,7 @@ function updateSharedStatus(){
   $('#restore').disabled=blocked;
   const needed=legacyRaw&&(!legacyState||localGet(importMarker)!==legacyRaw||sharedRevision===0);
   $('#localImport').hidden=!needed;
-  $('#localImportText').textContent=legacyState?`This browser has ${legacyState.deliveries.length} local deliveries and ${legacyState.usage.length} usage entries. Import them to make them available on your other computers.`:'An older browser backup could not be read. Download it before making changes to browser storage.';
+  $('#localImportText').textContent=legacyState?`This browser has ${legacyState.deliveries.length} local delivery records. Import them to make them available on your other computers.`:'An older browser backup could not be read. Download it before making changes to browser storage.';
   $('#importBrowser').disabled=blocked||!legacyState;
   $('#downloadLocal').disabled=sharedBusy;
 }
@@ -24,7 +24,7 @@ async function ledgerRequest(url,options={}){
   try{const response=await fetch(url,{cache:'no-store',...options,signal:controller.signal,headers:{'Content-Type':'application/json','X-Chemical-Ledger':'1',...(options.headers||{})}});const body=await response.json();if(!response.ok)throw Object.assign(new Error(body.error||'Unable to reach the shared ledger.'),{status:response.status});if(!Number.isSafeInteger(body.revision)||!validBackup(body.state))throw Error('The server returned an invalid ledger. Existing records have been kept.');return body;}
   finally{clearTimeout(timer);}
 }
-function acceptShared(data,{clearPending=true}={}){if(inventoryViewData&&data.revision!==sharedRevision&&!data.inventory)inventoryViewData=null;state=Ledger.migrateState(data.state);sharedRevision=data.revision;sharedUpdated=data.updatedAt;sharedReady=true;sharedDirty=false;pendingSave=null;sharedError='';if(clearPending)localRemove(pendingKey);render();}
+function acceptShared(data,{clearPending=true}={}){state=Ledger.migrateState(data.state);sharedRevision=data.revision;sharedUpdated=data.updatedAt;sharedReady=true;sharedDirty=false;pendingSave=null;sharedError='';if(clearPending)localRemove(pendingKey);render();}
 async function loadSharedLedger({silent=false,discard=false,preserveRecovery=false}={}){
   if(sharedBusy||sharedDirty&&!discard)return;
   if(silent&&($('#recordDialog').open||document.activeElement?.matches('input,select,textarea')||document.hidden))return;
@@ -44,9 +44,9 @@ async function saveSharedLedger(){
 async function importSharedState(incoming,fromBrowser=false){
   if(!sharedReady||sharedBusy||sharedDirty)return;
   incoming=Ledger.migrateState(incoming);if(!validBackup(incoming))throw Error('This is not a valid Chemical Ledger backup.');
-  if(!confirm(`Add ${incoming.deliveries.length} deliveries and ${incoming.usage.length} usage entries to the shared ledger? Existing shared records will be kept. Duplicate IDs are skipped; conflicting records stop the import. Existing shared pricing and planning settings are retained once the shared ledger is in use.${incoming.alumUnitCorrected?' Alum now uses dry US tons; imported quantities and prices are kept unchanged. Review any alum quantities entered as pounds.':''}`))return;
+  if(!confirm(`Add ${incoming.deliveries.length} delivery records to the shared ledger? Existing shared records will be kept. Duplicate IDs are skipped; conflicting records stop the import. Existing shared pricing is retained once the shared ledger is in use.${incoming.alumUnitCorrected?' Alum now uses dry US tons; imported quantities and prices are kept unchanged. Review any alum quantities entered as pounds.':''}`))return;
   sharedBusy=true;sharedError='';updateSharedStatus();
-  try{const data=await ledgerRequest('/api/chemical-ledger/import',{method:'POST',body:JSON.stringify({revision:sharedRevision,mutationId:crypto.randomUUID(),state:incoming})});acceptShared(data);if(fromBrowser)localSet(importMarker,legacyRaw);toast(`Imported ${data.imported?.deliveries||0} deliveries and ${data.imported?.usage||0} usage entries to gibbhub.`);}
+  try{const data=await ledgerRequest('/api/chemical-ledger/import',{method:'POST',body:JSON.stringify({revision:sharedRevision,mutationId:crypto.randomUUID(),state:incoming})});acceptShared(data);if(fromBrowser)localSet(importMarker,legacyRaw);toast(`Imported ${data.imported?.deliveries||0} delivery records to gibbhub.`);}
   catch(e){sharedError=e.message+' The source backup and existing shared records were kept.';}
   finally{sharedBusy=false;updateSharedStatus();}
 }
