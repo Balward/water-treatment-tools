@@ -47,7 +47,8 @@ module.exports=function register(app,options={}){
       }catch(e){inventoryCache={...inventoryCache,error:'Inventory sync failed: '+e.message};}
     })().finally(()=>{refreshing=null;});return refreshing;
   }
-  async function inventoryResponse(){await cacheReady;const current=await read();return {...current,inventory:{profiles:Inventory.profiles,sourceRevision:inventoryCache.sourceRevision,lastSuccess:inventoryCache.lastSuccess,error:inventoryCache.error,recordCount:inventoryCache.records.length,candidates:rows(current.state)}};}
+  const inventoryFresh=()=>!inventoryCache.error&&!!inventoryCache.lastSuccess&&Date.now()-Date.parse(inventoryCache.lastSuccess)<300000;
+  async function inventoryResponse(){await cacheReady;const current=await read();return {...current,inventory:{profiles:Inventory.profiles,sourceRevision:inventoryCache.sourceRevision,lastSuccess:inventoryCache.lastSuccess,error:inventoryCache.error,canApprove:inventoryFresh(),recordCount:inventoryCache.records.length,candidates:rows(current.state)}};}
   const fail=(status,message)=>{throw Object.assign(Error(message),{status});};
   function route(handler){return async(req,res)=>{
     res.set('Cache-Control','no-store');
@@ -66,7 +67,7 @@ module.exports=function register(app,options={}){
   app.post('/api/chemical-ledger/inventory/approve',route(async(req,res)=>{
     await syncInventory();
     const operation=queue.then(async()=>{
-      if(inventoryCache.error||!inventoryCache.lastSuccess||Date.now()-Date.parse(inventoryCache.lastSuccess)>300000)fail(503,'Refresh a working inventory connection before approving usage.');
+      if(!inventoryFresh())fail(503,'Refresh a working inventory connection before approving usage.');
       const current=await read(),body=req.body||{};if(body.revision!==current.revision)fail(409,'The ledger changed. Refresh Inventory Review before approving.');
       const row=rows(current.state).find(r=>r.id===body.id);if(!row||row.fingerprint!==body.fingerprint)fail(409,'The inventory or receipts changed. Review the updated interval.');
       if(!row.ready)fail(400,row.blockers.join(' '));if(body.receiptsConfirmed!==true)fail(400,'Confirm the stock dates, physical receipts, and conversion before approving.');

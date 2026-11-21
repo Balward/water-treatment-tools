@@ -44,8 +44,28 @@ try{
  assert.match(await evaluate('document.querySelector(".planCard .pill").textContent'),/320 lb/);assert.match(await evaluate('document.querySelector(".planCard .cost").textContent'),/524\.80/);
  await evaluate('document.querySelector("[data-tab=inventory]").click()');await until(h,'document.getElementById("inventoryRefresh")&&!inventoryLoading');
  await evaluate('document.getElementById("inventoryRefresh").click()');await until(h,'document.querySelector("[data-approve-interval]")&&!inventoryLoading');
+ assert.equal(await evaluate('document.querySelector("[data-receipts-confirm]").disabled'),false);
+ assert.equal(await evaluate('document.querySelector("[data-approve-interval]").disabled'),true,'Approval waits for the checkbox');
+ await evaluate('window.__originalNow=Date.now;Date.now=()=>window.__originalNow()+86400000;render()');
+ assert.equal(await evaluate('document.querySelector("[data-receipts-confirm]").disabled'),false,'PC clock skew cannot disable server-ready review');
+ async function clickConfirmation(){
+  const point=await evaluate('(()=>{const el=document.querySelector("[data-receipts-confirm]");el.scrollIntoView({block:"center"});const r=el.getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2}})()');
+  await call('Input.dispatchMouseEvent',{type:'mousePressed',...point,button:'left',clickCount:1});
+  await call('Input.dispatchMouseEvent',{type:'mouseReleased',...point,button:'left',clickCount:1});
+ }
+ await clickConfirmation();
+ assert.equal(await evaluate('document.querySelector("[data-receipts-confirm]").checked'),true,'Actual mouse click checks the box');
  assert.equal(await evaluate('document.querySelector("[data-approve-interval]").disabled'),false);
- await evaluate('document.querySelector("[data-receipts-confirm]").checked=true;document.querySelector("[data-approve-interval]").click()');await until(h,'document.querySelector(".inventory-interval .pill").textContent==="Approved"');await settled(h);
+ await evaluate('loadInventoryReview()');await settled(h);
+ assert.equal(await evaluate('document.querySelector("[data-receipts-confirm]").checked'),true,'Background refresh retains unchanged confirmation');
+ await evaluate('inventoryViewData.candidates.find(r=>r.chemical===inventoryChemical).fingerprint="changed";render()');
+ assert.equal(await evaluate('document.querySelector("[data-receipts-confirm]").checked'),false,'Changed records require a new confirmation');
+ await evaluate('inventoryViewData.canApprove=false;render()');
+ assert.equal(await evaluate('document.querySelector("[data-receipts-confirm]").disabled'),true);
+ assert.match(await evaluate('document.querySelector("#content .alert").textContent'),/Refresh Inventory/);
+ assert.equal(await evaluate('document.querySelector(".inventory-interval .pill").textContent'),'Refresh required');
+ await evaluate('loadInventoryReview()');await settled(h);await clickConfirmation();
+ await evaluate('Date.now=window.__originalNow;delete window.__originalNow;document.querySelector("[data-approve-interval]").click()');await until(h,'document.querySelector(".inventory-interval .pill").textContent==="Approved"');await settled(h);
  assert.equal((await read(h)).state.usage.find(r=>r.source).quantity,100);
  for(const width of [1440,390,320]){
   await call('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
