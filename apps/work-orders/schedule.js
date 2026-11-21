@@ -2,6 +2,13 @@
   'use strict';
   const dateOf = value => new Date(value + 'T12:00:00Z');
   const iso = date => date.toISOString().slice(0, 10);
+  const plantCalendar = new Intl.DateTimeFormat('en-US', {
+    timeZone:'America/Denver', year:'numeric', month:'2-digit', day:'2-digit'
+  });
+  function plantDate(instant=new Date()) {
+    const parts=Object.fromEntries(plantCalendar.formatToParts(instant).map(part=>[part.type,part.value]));
+    return [parts.year,parts.month,parts.day].join('-');
+  }
   function days(value, count) {
     const date = dateOf(value);
     date.setUTCDate(date.getUTCDate() + count);
@@ -41,7 +48,7 @@
     }
     return dates;
   }
-  const api = {days, months, advance, occurrences};
+  const api = {plantDate, days, months, advance, occurrences};
   if (typeof module === 'object') module.exports = api;
   else root.WorkSchedule = api;
 })(globalThis);

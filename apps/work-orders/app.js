@@ -6,7 +6,7 @@ let db, users=[], sops=[], tab='orders', currentUser=localStorage.getItem('wo-us
 let editAction, editId, draftRevision, selected=new Set();
 const titles={orders:'Work queue',equipment:'Equipment',tasks:'Tasks',schedules:'Schedules',locations:'Locations',groups:'Work groups'};
 const singular={equipment:'equipment',tasks:'task',locations:'location',groups:'work group'};
-const now=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'America/Denver'}).format(new Date());
+const now=WorkSchedule.plantDate;
 const filters={span:'14',from:'',through:'',status:'Open',owner:'',place:'',priority:'',search:''};
 const lookup=(list,id)=>list.find(item=>item.id===id);
 const button=(label,action,id='',cls='')=>'<button type="button" class="'+cls+'" data-action="'+action+'" data-id="'+esc(id)+'">'+esc(label)+'</button>';

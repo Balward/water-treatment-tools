@@ -8,6 +8,8 @@ const register = require('../work-orders-api');
 const dates = require('../apps/work-orders/schedule');
 const {removeTemporaryDirectory,launchBrowser} = require('./lib/browser-check.cjs');
 test('monthly recurrence preserves anchors across short months',()=>{
+  assert.equal(dates.plantDate(new Date('2026-11-21T06:30:00Z')),'2026-11-20');
+  assert.equal(dates.plantDate(new Date('2026-11-21T07:30:00Z')),'2026-11-21');
   const rule={start:'2028-01-31',interval:1,unit:'months'};
   assert.equal(dates.advance(rule,'2028-02-29'),'2028-03-31');
   assert.equal(dates.advance({...rule,pattern:'first-weekday'},'2028-03-01'),'2028-04-03');
@@ -26,7 +28,7 @@ test('shared directory, roster-free groups, issuing, frozen documents, closeout 
   const server=await new Promise(resolve=>{const s=app.listen(0,'127.0.0.1',()=>resolve(s));});
   t.after(()=>new Promise(resolve=>{server.closeAllConnections();server.close(resolve);}));
   const origin='http://127.0.0.1:'+server.address().port, api=origin+'/api/work-orders';
-  const today=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Denver'}).format(new Date());
+  const today=dates.plantDate();
   let db=await (await fetch(api)).json();
   const [user,second]=await operationsDirectory();
   async function write(data,status=200){

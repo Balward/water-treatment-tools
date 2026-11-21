@@ -5,7 +5,7 @@ const {randomUUID, createHash} = require('node:crypto');
 const express = require('express');
 const schedule = require('./apps/work-orders/schedule');
 const {validDate} = require('./plant-rounds-api');
-const today = () => new Intl.DateTimeFormat('en-CA', {timeZone:'America/Denver'}).format(new Date());
+const today = schedule.plantDate;
 const initial = () => ({revision:0, locations:[], equipment:[], groups:[{id:'day-shift', name:'Day Shift', kind:'shift', members:[]}], tasks:[], schedules:[], orders:[], files:[]});
 function requireValue(test, message, status=400) {
   if (!test) throw Object.assign(new Error(message), {status});
