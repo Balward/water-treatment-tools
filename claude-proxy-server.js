@@ -26,8 +26,7 @@ app.use('/api/chemical-ledger',express.json({limit:'10mb'}));
 app.use(express.json());
 require('./sop-api')(app);
 require('./application-review-api')(app);
-const operationsDirectory = require('./plant-rounds-api')(app);
-require('./work-orders-api')(app, {operationsDirectory});
+require('./plant-rounds-api')(app);
 require('./chemical-ledger-api')(app);
 
 const dataDirectory = process.env.LIVE_OPS_DATA_DIR || path.join(__dirname, 'data');

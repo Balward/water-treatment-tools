@@ -27,6 +27,12 @@ if [ -n "$previous_image" ]; then docker image tag "$previous_image" "water-trea
 if [ "${1:-}" != '--installed-source' ]; then tar -xzf "$archive" -C "$source_dir"; fi
 # Remove retired Chemical Ledger scripts from overlaid packages. Saved ledger
 # records and inventory snapshots remain in the persistent data directory.
+# Retire Work Orders source files from older installs.
+for retired_file in index.html app.js style.css schedule.js; do
+  rm -f -- "$source_dir/apps/work-orders/$retired_file"
+done
+rmdir -- "$source_dir/apps/work-orders" 2>/dev/null || true
+rm -f -- "$source_dir/work-orders-api.js"
 # The suite archive overlays the previous release. Remove retired field guide assets.
 for retired_file in chapters.json index.html lessons.pdf pages.json reader.css reader.js; do
   rm -f -- "$source_dir/apps/instrumentation/$retired_file"
@@ -68,8 +74,6 @@ healthy() {
           && curl --fail --silent http://127.0.0.1:6767/apps/dashboard/dashboard.js >/dev/null \
           && curl --fail --silent http://127.0.0.1:6767/shared/operations/navigation.js >/dev/null \
           && curl --fail --silent http://127.0.0.1:6767/api/chemical-ledger >/dev/null \
-          && curl --fail --silent http://127.0.0.1:6767/work-orders/ >/dev/null \
-          && curl --fail --silent http://127.0.0.1:6767/api/work-orders >/dev/null \
           && curl --fail --silent http://127.0.0.1:6767/plant-flow/ | grep -q 'operations.js' \
           && curl --fail --silent http://127.0.0.1:6767/plant-flow/operations.js >/dev/null \
           && curl --fail --silent http://127.0.0.1:6767/plant-flow/operations.css >/dev/null \
