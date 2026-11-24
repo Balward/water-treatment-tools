@@ -27,6 +27,10 @@ if [ -n "$previous_image" ]; then docker image tag "$previous_image" "water-trea
 if [ "${1:-}" != '--installed-source' ]; then tar -xzf "$archive" -C "$source_dir"; fi
 # Remove retired Chemical Ledger scripts from overlaid packages. Saved ledger
 # records and inventory snapshots remain in the persistent data directory.
+# The suite archive overlays the previous release. Remove retired field guide assets.
+for retired_file in chapters.json index.html lessons.pdf pages.json reader.css reader.js; do
+  rm -f -- "$source_dir/apps/instrumentation/$retired_file"
+done
 rm -f -- "$source_dir/apps/chemical-ledger/inventory.js" "$source_dir/apps/chemical-ledger/inventory-ui.js"
 # Packages overlay existing source. Retire the removed alternate landing app so
 # it cannot be copied back into the next image from an older server checkout.

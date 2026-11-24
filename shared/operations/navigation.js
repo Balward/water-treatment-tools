@@ -18,7 +18,6 @@
     {id:'detention',category:'water',name:'Detention Time',description:'Follow flow through the plant and compare basin detention times.',icon:'flow',path:'/plant-flow/?v=20261022-plant1'},
     {id:'mwat',category:'wastewater',name:'MWAT & DM Calculator',description:'Review temperature records and calculate weekly averages.',icon:'thermometer',path:'/mwat-calculator/'},
     {id:'loading',category:'wastewater',name:'NH3 Loading Insight',description:'Compare loading patterns and identify peak hours.',icon:'chart',path:'/nh4-loading/'},
-    {id:'instrumentation',category:'training',name:'Instrumentation Field Guide',description:'Search the textbook, follow reading paths, and practice signal scaling.',icon:'book',path:'/apps/instrumentation/index.html'},
     {id:'reg100',category:'training',name:'Regulation 100 Study Guide',description:'Review chaptered material for operator certification.',icon:'book',path:'/regulation-100-study/?v=20261022-reg100-2'},
     {id:'videos',category:'training',name:'Class A Training Videos',description:'Watch lessons and refresh your treatment knowledge.',icon:'video',path:'/video-tutorials/?v=20261022-videos1'},
     {id:'flashcards',category:'training',name:'Water Treatment Flashcards',description:'Practice key terms, formulas, and treatment concepts.',icon:'cards',path:'/water-treatment-flashcards/?v=20261022-study1'}
