@@ -20,6 +20,7 @@ button.primary { background:#075c60; color:white; border-color:#075c60 }
 .lane.over { outline:2px dashed #18706d }
 dialog { color:inherit; border:0; border-radius:12px; padding:25px; width:min(440px,94vw) }
 dialog::backdrop { background:#17323db3 }
+form[hidden] { display:none }
 form { display:grid; gap:16px }
 form h2 { margin:0 }
 footer { justify-content:flex-end }

@@ -9,6 +9,7 @@ const compare = new Intl.Collator('en', {numeric:true, sensitivity:'base'}).comp
 let editing = null;
 let dragging = null;
 let locations = [];
+let projects = [];
 
 function element(tag, className, text) {
   const node = document.createElement(tag);
@@ -21,13 +22,6 @@ function options(select, names, first, selection) {
   select.value = names.includes(selection) ? selection : '';
 }
 function render() {
-  const projects = [];
-  const places = new Set(defaults);
-  for (const key of Object.keys(localStorage)) {
-    if (key.startsWith(locationPrefix)) places.add(localStorage.getItem(key));
-    if (key.startsWith(projectPrefix)) projects.push(JSON.parse(localStorage.getItem(key)));
-  }
-  locations = [...places].sort(compare);
   options($('filter'), locations, 'All locations', $('filter').value);
   const visible = projects.filter(p => !$('filter').value || p.place === $('filter').value);
   visible.sort((a,b) => ($('sort').value === 'Location' && compare(a.place,b.place)) || compare(a.title,b.title));
@@ -50,39 +44,83 @@ function render() {
     if (!cards.length) lane.append(element('p','empty','No projects'));
     lane.ondragover = event => { if (dragging) { event.preventDefault(); lane.classList.add('over'); } };
     lane.ondragleave = () => lane.classList.remove('over');
-    lane.ondrop = event => {
+    lane.ondrop = async event => {
       event.preventDefault();
       lane.classList.remove('over');
       if (!dragging) return;
-      const project = JSON.parse(localStorage.getItem(projectPrefix + dragging));
+      const project = projects.find(item => item.id === dragging);
       dragging = null;
-      if (project) save(projectPrefix + project.id, JSON.stringify({...project,stage}));
+      if (project) {
+        try { await putProject({...project,stage}); await refresh(); }
+        catch(error) { report(error); }
+      }
     };
     return lane;
   }));
 }
-function save(key,value) {
-  try {
-    localStorage.setItem(key,value);
-    render();
-    $('error').hidden = true;
-    return true;
-  } catch {
-    const message = 'Could not save the board. Check browser storage and try again.';
-    if (document.querySelector('dialog[open]')) window.alert(message);
-    $('error').textContent = message;
-    $('error').hidden = false;
-    return false;
-  }
+function report(error) {
+  $('error').textContent = error.message;
+  $('error').hidden = false;
 }
+async function api(path = '', options) {
+  const response = await fetch('/api/project-board' + path,options);
+  if (response.status === 401) $('login').hidden = false;
+  if (!response.ok) {
+    const result = await response.json().catch(()=>({}));
+    throw Error(result.error || 'Server request failed (' + response.status + ').');
+  }
+  return response.json();
+}
+function post(path,data) {
+  return api(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+}
+function putProject(project, uploads = [], removed = [], migrate = false) {
+  const form = new FormData();
+  form.set('project', JSON.stringify({...project, files:undefined, revision:project.revision || 0, removed, migrate}));
+  for (const {id,file} of uploads) form.append(id,file,file.name);
+  return api('/projects/'+project.id,{method:'PUT',body:form});
+}
+async function refresh() {
+  const state = await api();
+  projects = state.projects;
+  locations = [...new Set([...defaults,...state.locations])].sort(compare);
+  render();
+  $('add').disabled = $('addLocation').disabled = false;
+}
+async function initialize() {
+  try {
+    await refresh();
+    $('login').hidden = true;
+    $('error').hidden = true;
+    if (localStorage.getItem('ng.project-board.migrated.v1')) return;
+    for (const key of Object.keys(localStorage)) {
+      if (key.startsWith(locationPrefix)) await post('/locations',{name:localStorage.getItem(key)});
+      if (key.startsWith(projectPrefix)) {
+        const project = JSON.parse(localStorage.getItem(key));
+        const files = await boardFiles.legacy(project.id);
+        await putProject(project,files,[],true);
+      }
+    }
+    localStorage.setItem('ng.project-board.migrated.v1','done');
+    await refresh();
+  } catch(error) { report(error); }
+}
+$('login').onsubmit = async event => {
+  event.preventDefault();
+  try {
+    await post('/login',{key:$('accessKey').value.trim()});
+    $('accessKey').value = '';
+    await initialize();
+  } catch(error) { report(error); }
+};
 function edit(project) {
-  editing = project?.id || null;
-  $('editorTitle').textContent = editing ? 'Edit project' : 'New project';
+  editing = project || {id:crypto.randomUUID(),revision:0};
+  $('editorTitle').textContent = project ? 'Edit project' : 'New project';
   $('title').value = project?.title || '';
   options($('place'), locations, 'No location', project?.place ?? $('filter').value);
   $('stage').value = project?.stage || stages[0];
   $('notes').value = project?.notes || '';
-  boardFiles.open(editing);
+  boardFiles.open(project);
   $('editor').showModal();
 }
 $('stage').append(...stages.map(stage => new Option(stage)));
@@ -91,7 +129,7 @@ $('addLocation').onclick = () => { $('locationForm').reset(); $('name').setCusto
 $('filter').onchange = $('sort').onchange = render;
 document.querySelectorAll('[data-close]').forEach(button => button.onclick = () => button.closest('dialog').close());
 for (const id of ['name','title']) $(id).oninput = () => $(id).setCustomValidity('');
-$('locationForm').onsubmit = event => {
+$('locationForm').onsubmit = async event => {
   event.preventDefault();
   const name = $('name').value.trim();
   if (!name || locations.some(existing => !compare(existing,name))) {
@@ -99,31 +137,26 @@ $('locationForm').onsubmit = event => {
     $('name').reportValidity();
     return;
   }
-  if (save(locationPrefix + name.toLowerCase(),name)) $('locationDialog').close();
+  try { await post('/locations',{name}); $('locationDialog').close(); await refresh(); }
+  catch(error) { $('name').setCustomValidity(error.message); $('name').reportValidity(); }
 };
-$('editor').onclose = boardFiles.reset;
+$('editor').onclose = () => { if (!$('editor').open) boardFiles.reset(); };
 $('editor').oncancel = event => { if ($('projectForm').inert) event.preventDefault(); };
 $('projectForm').onsubmit = async event => {
   event.preventDefault();
   const title = $('title').value.trim();
   if (!title) { $('title').setCustomValidity('Enter a project title.'); $('title').reportValidity(); return; }
-  const id = editing || Array.from(crypto.getRandomValues(new Uint32Array(4))).join('-');
-  const project = {id,title,place:$('place').value,stage:$('stage').value,notes:$('notes').value.trim()};
-  if ($('projectForm').inert || !save(projectPrefix + id, JSON.stringify(project))) return;
-  editing = id;
+  if ($('projectForm').inert) return;
+  const project = {...editing,title,place:$('place').value,stage:$('stage').value,notes:$('notes').value.trim()};
   $('projectForm').inert = true;
   try {
-    await boardFiles.commit(id);
+    const {uploads,removed} = boardFiles.changes();
+    await putProject(project,uploads,removed);
     $('editor').close();
-  } catch {
-    $('fileMessage').textContent = 'Project details saved. Attachment changes could not be saved. Check browser storage and try again.';
-  } finally {
-    $('projectForm').inert = false;
-  }
+    await refresh();
+  } catch(error) {
+    $('fileMessage').textContent = error.message;
+    report(error);
+  } finally { $('projectForm').inert = false; }
 };
-window.addEventListener('storage', render);
-try { render(); } catch {
-  $('error').textContent = 'Could not read the board from this browser’s storage.';
-  $('error').hidden = false;
-  $('add').disabled = $('addLocation').disabled = true;
-}
+initialize();

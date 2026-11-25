@@ -16,6 +16,7 @@ COPY claude-proxy-server.js ./
 COPY plant-rounds-api.js ./
 COPY chemical-ledger-api.js ./
 COPY apps/chemical-ledger/engine.js ./apps/chemical-ledger/engine.js
+COPY project-board-api.js ./
 COPY sop-api.js ./
 COPY apps/sop-creator/model.js ./apps/sop-creator/model.js
 COPY application-review-api.js ./

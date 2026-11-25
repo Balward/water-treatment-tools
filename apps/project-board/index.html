@@ -7,10 +7,10 @@
 <link rel="icon" href="/assets/logos/favicon.png">
 <link rel="stylesheet" href="/shared/operations/theme.css">
 <link rel="stylesheet" href="/shared/operations/navigation.css">
-<link rel="stylesheet" href="/apps/project-board/board.css?v=2">
+<link rel="stylesheet" href="/apps/project-board/board.css?v=3">
 <script defer src="/shared/operations/navigation.js?v=20261124-board"></script>
-<script defer src="/apps/project-board/attachments.js?v=1"></script>
-<script defer src="/apps/project-board/board.js?v=2"></script>
+<script defer src="/apps/project-board/attachments.js?v=2"></script>
+<script defer src="/apps/project-board/board.js?v=3"></script>
 </head>
 <body data-ops-app="project-board">
 <header class="site-header">
@@ -19,8 +19,9 @@
 <button data-ops-menu class="ops-apps-button" aria-haspopup="dialog">Apps</button>
 </header>
 <main>
-<div class="heading"><div><h1>Project Board</h1><p>Personal projects · Saved in this browser profile</p></div><button class="primary" id="add">+ New project</button></div>
-<div class="toolbar"><label>Plant location<select id="filter"></select></label><label>Sort by<select id="sort"><option>Location</option><option>Project title</option></select></label><button id="addLocation">+ Add location</button></div>
+<div class="heading"><div><h1>Project Board</h1><p>Personal projects · Saved on GibbHub</p></div><button class="primary" id="add" disabled>+ New project</button></div>
+<form id="login" hidden><label>Board access key<input id="accessKey" type="password" autocomplete="current-password" required></label><button class="primary">Unlock board</button></form>
+<div class="toolbar"><label>Plant location<select id="filter"></select></label><label>Sort by<select id="sort"><option>Location</option><option>Project title</option></select></label><button id="addLocation" disabled>+ Add location</button></div>
 <p id="error" role="alert" hidden></p>
 <div id="board"></div>
 </main>
@@ -30,7 +31,7 @@
 <label>Stage<select id="stage"></select></label>
 <label>Notes<textarea id="notes" rows="4"></textarea></label>
 <div class="attachments"><label>Attachments<input type="file" id="files" multiple aria-describedby="fileTypes"></label>
-<small id="fileTypes">Excel, Word, PDF, or images</small><ul id="fileList"></ul><span id="fileMessage" role="status"></span></div>
+<small id="fileTypes">Excel, Word, PDF, or images · Up to 100 MB per save</small><ul id="fileList"></ul><span id="fileMessage" role="status"></span></div>
 <footer><button type="button" data-close>Cancel</button><button class="primary">Save project</button></footer></form></dialog>
 <dialog id="locationDialog" aria-labelledby="locationTitle"><form id="locationForm"><h2 id="locationTitle">Add location</h2><label>Location name<input id="name" required maxlength="100" autofocus></label>
 <footer><button type="button" data-close>Cancel</button><button class="primary">Save location</button></footer></form></dialog>

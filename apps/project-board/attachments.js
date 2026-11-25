@@ -7,7 +7,6 @@ const boardFiles = (() => {
   const extensions = /\.(xlsx?|xlsm|xlsb|xltx?|xltm|csv|docx?|docm|dotx?|dotm|pdf|jpe?g|png|gif|webp|bmp|tiff?|heic|heif|avif|svg|ico)$/i;
   picker.accept = '.xls,.xlsx,.xlsm,.xlsb,.xlt,.xltx,.xltm,.csv,.doc,.docx,.docm,.dot,.dotx,.dotm,.pdf,image/*,.heic,.heif,.tif,.tiff';
   let database;
-  let generation = 0;
   let entries = [];
   let removed = [];
   let urls = [];
@@ -32,17 +31,21 @@ const boardFiles = (() => {
     for (const entry of entries) {
       const row = document.createElement('li');
       const link = document.createElement('a');
-      link.href = URL.createObjectURL(entry.file);
-      urls.push(link.href);
-      link.download = entry.file.name;
-      link.textContent = entry.file.name;
+      if (entry.file) {
+        link.href = URL.createObjectURL(entry.file);
+        urls.push(link.href);
+      } else {
+        link.href = '/api/project-board/projects/' + entry.projectId + '/files/' + entry.id;
+      }
+      link.download = entry.name;
+      link.textContent = entry.name;
       const remove = document.createElement('button');
       remove.type = 'button';
       remove.textContent = 'Remove';
-      remove.setAttribute('aria-label', 'Remove ' + entry.file.name);
+      remove.setAttribute('aria-label', 'Remove ' + entry.name);
       remove.onclick = () => {
         entries = entries.filter(item => item !== entry);
-        if (!entry.pending) removed.push(entry.id);
+        if (!entry.file) removed.push(entry.id);
         renderList();
       };
       row.append(link, remove);
@@ -51,7 +54,6 @@ const boardFiles = (() => {
   }
 
   function reset() {
-    generation++;
     entries = [];
     removed = [];
     picker.value = '';
@@ -60,32 +62,26 @@ const boardFiles = (() => {
     renderList();
   }
 
-  async function open(projectId) {
+  function open(project) {
     reset();
-    if (!projectId) return;
-    picker.disabled = true;
-    const current = generation;
-    try {
-      const db = await connect();
-      const saved = await new Promise((resolve, reject) => {
-        const request = db.transaction('files').objectStore('files').index('projectId').getAll(projectId);
-        request.onsuccess = () => resolve(request.result);
-        request.onerror = () => reject(request.error);
-      });
-      if (current !== generation) return;
-      entries = saved;
-      picker.disabled = false;
-      renderList();
-    } catch {
-      if (current === generation) message.textContent = 'Could not load attachments. Close and reopen the project to retry.';
-    }
+    entries = (project?.files || []).map(item => ({...item,projectId:project.id}));
+    renderList();
+  }
+
+  async function legacy(projectId) {
+    const db = await connect();
+    return new Promise((resolve,reject) => {
+      const request = db.transaction('files').objectStore('files').index('projectId').getAll(projectId);
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
   }
 
   picker.onchange = () => {
     const rejected = [];
     for (const file of picker.files) {
       if (extensions.test(file.name) || file.type.startsWith('image/')) {
-        entries.push({id:Array.from(crypto.getRandomValues(new Uint32Array(4))).join('-'), file, pending:true});
+        entries.push({id:Array.from(crypto.getRandomValues(new Uint32Array(4))).join('-'), file, name:file.name});
       } else rejected.push(file.name);
     }
     picker.value = '';
@@ -93,18 +89,6 @@ const boardFiles = (() => {
     renderList();
   };
 
-  async function commit(projectId) {
-    const additions = entries.filter(entry => entry.pending);
-    if (!additions.length && !removed.length) return;
-    const db = await connect();
-    await new Promise((resolve, reject) => {
-      const tx = db.transaction('files','readwrite');
-      tx.oncomplete = resolve;
-      tx.onabort = () => reject(tx.error);
-      const store = tx.objectStore('files');
-      for (const id of removed) store.delete(id);
-      for (const {id,file} of additions) store.put({id,projectId,file});
-    });
-  }
-  return {open, reset, commit};
+  function changes() { return {uploads:entries.filter(entry => entry.file),removed}; }
+  return {open, reset, changes, legacy};
 })();
