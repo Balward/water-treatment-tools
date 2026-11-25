@@ -9,8 +9,8 @@ assert.equal(await evaluate('getComputedStyle(document.querySelector(".app-butto
 harness.serveLegacyHome=false;
 assert.ok(await evaluate('fetch("/",{cache:"force-cache"}).then(r=>r.text()).then(text=>text.includes("Cached Legacy Home"))'),'Regression setup has cached old HTML');
 await call('Page.navigate',{url:'http://127.0.0.1:8782/?v=operations-home-20261021'});
-for(let i=0;i<100;i++){if(await evaluate('document.readyState==="complete"&&document.querySelectorAll(".app-card").length===14'))break;await new Promise(r=>setTimeout(r,50));}
-assert.equal(await evaluate('document.querySelectorAll(".app-card").length'),14);
+for(let i=0;i<100;i++){if(await evaluate('document.readyState==="complete"&&document.querySelectorAll(".app-card").length===13'))break;await new Promise(r=>setTimeout(r,50));}
+assert.equal(await evaluate('document.querySelectorAll(".app-card").length'),13);
 assert.equal(await evaluate('document.querySelectorAll(".app-card.is-under-construction").length'),0);
 assert.equal(await evaluate('document.querySelector("[data-category=water] .nav-count").textContent'),'6');
 await evaluate('document.getElementById("toolSearch").value="chemical ledger";document.getElementById("toolSearch").dispatchEvent(new Event("input"))');
@@ -26,7 +26,7 @@ assert.equal(await evaluate('document.querySelector(".app-card[data-app=equipmen
 assert.equal(await evaluate('document.querySelector(".app-card[data-app=work-orders]")'),null);
 assert.equal(await evaluate('document.querySelector(".app-card[data-app=chemical-ledger]").pathname'),'/chemical-ledger/');
 assert.equal(await evaluate('document.querySelector(".app-card[data-app=digital-twin]").pathname'),'/apps/digital-twin/index.html');
-for(const id of ['digital-twin','sops','chemical-ledger','rounds']){
+for(const id of ['project-board','digital-twin','sops','chemical-ledger','rounds']){
  const selector=JSON.stringify('.app-card[data-app='+id+'] .construction-banner');
  assert.equal(await evaluate('document.querySelector('+selector+').textContent'),'Under Construction');
 }
@@ -45,7 +45,7 @@ for(const [name,width,height]of [['desktop',1440,1000],['mobile',390,844],['smal
  assert.equal(await evaluate('document.querySelector(".ops-app-menu [aria-current=page]").dataset.opsDestination'),'home');
  assert.equal(await evaluate('document.querySelectorAll(".ops-app-menu [data-ops-destination]").length'),21);
  assert.ok(await evaluate('(()=>{const b=document.getElementById("opsAppMenu").getBoundingClientRect();return b.left>=0&&b.right<=innerWidth&&b.bottom<=innerHeight})()'));
- for(const id of ['digital-twin','sops']){
+ for(const id of ['project-board','digital-twin','sops']){
   const selector=JSON.stringify('[data-ops-destination='+id+'] .ops-app-menu-construction');
   assert.equal(await evaluate('document.querySelector('+selector+').textContent'),'Under Construction');
  }

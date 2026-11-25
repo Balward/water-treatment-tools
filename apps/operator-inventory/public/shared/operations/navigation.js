@@ -5,7 +5,7 @@
   const applications=[
     {id:'rounds',category:'operations',status:'Under Construction',name:'Plant Rounds',description:'Record AM and PM checks, compare readings, and share daily handoff notes.',icon:'board',path:'/plant-rounds/'},
     {id:'equipment',category:'operations',name:'Equipment Status Board',description:'Check equipment availability and share operating notes.',icon:'board',path:'/live-operations-dashboard/'},
-    {id:'project-board',category:'operations',name:'Project Board',description:'Track personal projects by stage and plant location.',icon:'board',path:'/project-board/'},
+    {id:'project-board',category:'operations',status:'Under Construction',name:'Project Board',description:'Track personal projects by stage and plant location.',icon:'board',path:'/project-board/'},
     {id:'inventory',category:'operations',name:'Supply Inventory',description:'Count supplies, check PAR levels, and manage your order list.',icon:'box',external:'https://inventory.gibbhub.io/'},
     {id:'sops',category:'operations',status:'Under Construction',name:'SOP Library',description:'Find and view procedures, or create and edit SOPs.',icon:'book',path:'/sop-creator/library.html'},
     {id:'robojar',category:'water',name:'RoboJar Analyzer',description:'Compare jar-test results and review coagulant performance.',icon:'jar',path:'/robojar-analyzer/?v=20261022-robo1'},
