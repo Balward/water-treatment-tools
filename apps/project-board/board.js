@@ -40,15 +40,22 @@ function effortScore({cost,hours,complexity}) {
   const points = (value, low, high) => value < low ? 1 : value <= high ? 2 : 3;
   return points(cost,500,5000) + points(hours,8,40) + complexity;
 }
-function scoreLabel(project) {
+function showEffort(node,project) {
   const score = effortScore(project);
-  return score === null ? 'Estimate incomplete' : 'Effort ' + score + '/9';
+  if (score === null) {
+    delete node.dataset.effort;
+    node.textContent = 'Estimate incomplete';
+    return;
+  }
+  const band = score <= 3 ? 'Low' : score <= 6 ? 'Medium' : 'High';
+  node.dataset.effort = band.toLowerCase();
+  node.textContent = band + ' effort · ' + score + '/9';
 }
 function readEstimate() {
   const number = id => $(id).value === '' ? null : Number($(id).value);
   return {cost:number('cost'),hours:number('hours'),complexity:number('complexity')};
 }
-function previewEstimate() { $('effortPreview').textContent = scoreLabel(readEstimate()); }
+function previewEstimate() { showEffort($('effortPreview'),readEstimate()); }
 $('estimate').addEventListener('input',previewEstimate);
 function render() {
   options($('filter'), locations, 'All locations', $('filter').value);
@@ -81,7 +88,9 @@ function render() {
       if (project.hours != null) estimates.push(project.hours + ' person-hours');
       if (project.complexity != null) estimates.push(['Low','Medium','High'][project.complexity-1] + ' complexity');
       if (estimates.length) card.append(element('small','',estimates.join(' · ')));
-      card.append(element('small','effort',scoreLabel(project)));
+      const badge = element('small','effort','');
+      showEffort(badge,project);
+      card.append(badge);
       lane.append(card);
       if (tv) continue;
       card.onclick = () => edit(project);
@@ -201,6 +210,7 @@ $('addLink').onclick = () => addPurchaseLink().focus();
 function edit(project) {
   editing = project || {id:crypto.randomUUID(),revision:0};
   $('editorTitle').textContent = project ? 'Edit project' : 'New project';
+  $('deleteProject').hidden = !project;
   $('title').value = project?.title || '';
   options($('place'), locations, 'No location', project?.place ?? $('filter').value);
   $('stage').value = project?.stage || stages[0];
@@ -231,6 +241,21 @@ $('locationForm').onsubmit = async event => {
 };
 $('editor').onclose = () => { if (!$('editor').open) boardFiles.reset(); };
 $('editor').oncancel = event => { if ($('projectForm').inert) event.preventDefault(); };
+$('deleteProject').onclick = async () => {
+  if (!editing?.revision || $('projectForm').inert) return;
+  if (!window.confirm('Permanently delete “' + editing.title + '” and all its attachments and purchase links?')) return;
+  $('projectForm').inert = true;
+  try {
+    await api('/projects/'+editing.id,{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({revision:editing.revision})});
+    projects = projects.filter(project => project.id !== editing.id);
+    $('editor').close();
+    render();
+    await refresh();
+  } catch(error) {
+    $('fileMessage').textContent = error.message;
+    report(error);
+  } finally { $('projectForm').inert = false; }
+};
 $('projectForm').onsubmit = async event => {
   event.preventDefault();
   const title = $('title').value.trim();

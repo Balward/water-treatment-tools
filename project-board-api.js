@@ -23,6 +23,7 @@ module.exports = function register(app, directory = path.join(__dirname,'data','
   const db = new DatabaseSync(path.join(directory,'board.sqlite'));
   db.exec(`PRAGMA foreign_keys=ON;
     CREATE TABLE IF NOT EXISTS projects(id TEXT PRIMARY KEY, details TEXT NOT NULL, revision INTEGER NOT NULL);
+    CREATE TABLE IF NOT EXISTS deleted_projects(id TEXT PRIMARY KEY);
     CREATE TABLE IF NOT EXISTS locations(name TEXT PRIMARY KEY COLLATE NOCASE);
     CREATE TABLE IF NOT EXISTS files(projectId TEXT REFERENCES projects(id), id TEXT, name TEXT NOT NULL, contents BLOB NOT NULL, PRIMARY KEY(projectId,id));`);
   const router = express.Router();
@@ -75,6 +76,23 @@ module.exports = function register(app, directory = path.join(__dirname,'data','
     if (!row) return res.sendStatus(404);
     res.attachment(row.name).type('application/octet-stream').send(Buffer.from(row.contents));
   });
+  router.delete('/projects/:id',express.json({limit:'1kb'}),(req,res)=>{
+    const id = req.params.id;
+    const revision = req.body?.revision;
+    if (!validId(id) || !Number.isSafeInteger(revision) || revision < 1) reject(400,'Invalid project deletion.');
+    db.exec('BEGIN IMMEDIATE');
+    try {
+      const current = db.prepare('SELECT revision FROM projects WHERE id=?').get(id);
+      if (current) {
+        if (current.revision !== revision) reject(409,'This project changed. Reload the board and review it before deleting.');
+        db.prepare('DELETE FROM files WHERE projectId=?').run(id);
+        db.prepare('DELETE FROM projects WHERE id=?').run(id);
+        db.prepare('INSERT INTO deleted_projects VALUES (?)').run(id);
+      }
+      db.exec('COMMIT');
+    } catch(error) { db.exec('ROLLBACK'); throw error; }
+    res.json({deleted:true});
+  });
   router.put('/projects/:id',express.raw({type:'multipart/form-data',limit:'100mb'}),async(req,res,next)=>{
     try {
       if (!validId(req.params.id) || !Buffer.isBuffer(req.body)) reject(400,'Invalid project submission.');
@@ -96,6 +114,10 @@ module.exports = function register(app, directory = path.join(__dirname,'data','
       db.exec('BEGIN IMMEDIATE');
       try {
         const current = db.prepare('SELECT revision,details FROM projects WHERE id=?').get(id);
+        if (!current && db.prepare('SELECT id FROM deleted_projects WHERE id=?').get(id)) {
+          if (!data.migrate) reject(410,'This project was deleted. Reload the board.');
+          db.exec('ROLLBACK'); return res.json({deleted:true});
+        }
         if (data.migrate && current) { db.exec('ROLLBACK'); return res.json({existing:true}); }
         if ((current?.revision || 0) !== data.revision) reject(409,'This project changed on the server. Reopen the board before saving.');
         const previous = current ? JSON.parse(current.details) : {};

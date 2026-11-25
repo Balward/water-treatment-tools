@@ -30,6 +30,11 @@ footer { justify-content:flex-end }
 #estimate { min-width:0; display:grid; gap:8px; margin:0; padding:12px; border:1px solid #cad8db; border-radius:7px }
 #estimate legend,#effortPreview,.card .effort { font-weight:650; color:#075c60 }
 #estimate small { margin-bottom:4px; color:#506873 }
+[data-effort] { justify-self:start; border-radius:5px; padding:3px 8px; background:var(--effort-bg) }
+#effortPreview[data-effort],.card .effort[data-effort] { color:var(--effort-ink) }
+[data-effort="low"] { --effort-bg:#d6f2da; --effort-ink:#18512a }
+[data-effort="medium"] { --effort-bg:#ffeb9a; --effort-ink:#634500 }
+[data-effort="high"] { --effort-bg:#ffd6d2; --effort-ink:#8e241d }
 .attachments { min-width:0 }
 .attachments small { display:block; margin-top:5px; color:#506873 }
 #fileList { list-style:none; padding:0; margin:0 }
