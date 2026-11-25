@@ -7,10 +7,10 @@
 <link rel="icon" href="/assets/logos/favicon.png">
 <link rel="stylesheet" href="/shared/operations/theme.css">
 <link rel="stylesheet" href="/shared/operations/navigation.css">
-<link rel="stylesheet" href="/apps/project-board/board.css?v=3">
+<link rel="stylesheet" href="/apps/project-board/board.css?v=4">
 <script defer src="/shared/operations/navigation.js?v=20261124-board"></script>
 <script defer src="/apps/project-board/attachments.js?v=2"></script>
-<script defer src="/apps/project-board/board.js?v=3"></script>
+<script defer src="/apps/project-board/board.js?v=4"></script>
 </head>
 <body data-ops-app="project-board">
 <header class="site-header">
@@ -21,7 +21,7 @@
 <main>
 <div class="heading"><div><h1>Project Board</h1><p>Personal projects · Saved on GibbHub</p></div><button class="primary" id="add" disabled>+ New project</button></div>
 <form id="login" hidden><label>Board access key<input id="accessKey" type="password" autocomplete="current-password" required></label><button class="primary">Unlock board</button></form>
-<div class="toolbar"><label>Plant location<select id="filter"></select></label><label>Sort by<select id="sort"><option>Location</option><option>Project title</option></select></label><button id="addLocation" disabled>+ Add location</button></div>
+<div class="toolbar"><label>Plant location<select id="filter"></select></label><label>Sort by<select id="sort"><option>Location</option><option>Project title</option><option value="effort">Effort (highest first)</option></select></label><button id="addLocation" disabled>+ Add location</button></div>
 <p id="error" role="alert" hidden></p>
 <div id="board"></div>
 </main>
@@ -29,6 +29,13 @@
 <label>Project title<input id="title" required maxlength="160" autofocus></label>
 <label>Plant location<select id="place"></select></label>
 <label>Stage<select id="stage"></select></label>
+<fieldset id="estimate"><legend>Effort estimate</legend>
+<label>Estimated cost ($)<input id="cost" type="number" min="0" step="0.01"></label>
+<small>1 point under $500 · 2 through $5,000 · 3 above</small>
+<label>Estimated labor (person-hours)<input id="hours" type="number" min="0" step="any"></label>
+<small>1 point under 8 hours · 2 through 40 · 3 above</small>
+<label>Complexity<select id="complexity"><option value="">Choose complexity</option><option value="1">Low · Routine work</option><option value="2">Medium · Requires coordination</option><option value="3">High · Specialized work or dependent steps</option></select></label>
+<output id="effortPreview" aria-live="polite"></output></fieldset>
 <label>Notes<textarea id="notes" rows="4"></textarea></label>
 <div class="attachments"><label>Attachments<input type="file" id="files" multiple aria-describedby="fileTypes"></label>
 <small id="fileTypes">Excel, Word, PDF, or images · Up to 100 MB per save</small><ul id="fileList"></ul><span id="fileMessage" role="status"></span></div>

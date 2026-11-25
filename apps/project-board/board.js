@@ -21,10 +21,29 @@ function options(select, names, first, selection) {
   select.replaceChildren(new Option(first, ''), ...names.map(name => new Option(name, name)));
   select.value = names.includes(selection) ? selection : '';
 }
+function effortScore({cost,hours,complexity}) {
+  if (cost == null || hours == null || complexity == null) return null;
+  const points = (value, low, high) => value < low ? 1 : value <= high ? 2 : 3;
+  return points(cost,500,5000) + points(hours,8,40) + complexity;
+}
+function scoreLabel(project) {
+  const score = effortScore(project);
+  return score === null ? 'Estimate incomplete' : 'Effort ' + score + '/9';
+}
+function readEstimate() {
+  const number = id => $(id).value === '' ? null : Number($(id).value);
+  return {cost:number('cost'),hours:number('hours'),complexity:number('complexity')};
+}
+function previewEstimate() { $('effortPreview').textContent = scoreLabel(readEstimate()); }
+$('estimate').addEventListener('input',previewEstimate);
 function render() {
   options($('filter'), locations, 'All locations', $('filter').value);
   const visible = projects.filter(p => !$('filter').value || p.place === $('filter').value);
-  visible.sort((a,b) => ($('sort').value === 'Location' && compare(a.place,b.place)) || compare(a.title,b.title));
+  const sort = $('sort').value;
+  visible.sort((a,b) => {
+    if (sort === 'effort') return (effortScore(b) ?? 0) - (effortScore(a) ?? 0) || compare(a.title,b.title);
+    return (sort === 'Location' && compare(a.place,b.place)) || compare(a.title,b.title);
+  });
   $('board').replaceChildren(...stages.map((stage,index) => {
     const lane = element('section','lane','');
     lane.style.setProperty('--accent', accents[index]);
@@ -35,6 +54,12 @@ function render() {
     for (const project of cards) {
       const card = element('button','card','');
       card.append(element('strong','',project.title),element('small','',project.place || 'No location'));
+      const estimates = [];
+      if (project.cost != null) estimates.push('$' + project.cost.toLocaleString('en-US',{maximumFractionDigits:2}));
+      if (project.hours != null) estimates.push(project.hours + ' person-hours');
+      if (project.complexity != null) estimates.push(['Low','Medium','High'][project.complexity-1] + ' complexity');
+      if (estimates.length) card.append(element('small','',estimates.join(' · ')));
+      card.append(element('small','effort',scoreLabel(project)));
       card.onclick = () => edit(project);
       card.draggable = true;
       card.ondragstart = event => { dragging = project.id; event.dataTransfer.setData('text/plain',project.id); };
@@ -120,6 +145,8 @@ function edit(project) {
   options($('place'), locations, 'No location', project?.place ?? $('filter').value);
   $('stage').value = project?.stage || stages[0];
   $('notes').value = project?.notes || '';
+  for (const id of ['cost','hours','complexity']) $(id).value = project?.[id] ?? '';
+  previewEstimate();
   boardFiles.open(project);
   $('editor').showModal();
 }
@@ -147,7 +174,7 @@ $('projectForm').onsubmit = async event => {
   const title = $('title').value.trim();
   if (!title) { $('title').setCustomValidity('Enter a project title.'); $('title').reportValidity(); return; }
   if ($('projectForm').inert) return;
-  const project = {...editing,title,place:$('place').value,stage:$('stage').value,notes:$('notes').value.trim()};
+  const project = {...editing,...readEstimate(),title,place:$('place').value,stage:$('stage').value,notes:$('notes').value.trim()};
   $('projectForm').inert = true;
   try {
     const {uploads,removed} = boardFiles.changes();

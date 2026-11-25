@@ -43,8 +43,13 @@ const { launchBrowser } = require('./lib/browser-check.cjs');
     await waitFor("localStorage.getItem('ng.project-board.migrated.v1') && document.querySelector('.card')");
     assert.equal(await evaluate("fetch('/api/project-board/projects/old/files/old-file').then(r=>r.text())"),'legacy bytes');
     await waitFor('typeof boardFiles !== "undefined" && document.querySelector(".lane") !== null');
+    assert.equal(await evaluate("document.querySelector('.effort').textContent"),'Estimate incomplete');
+    assert.deepEqual(await evaluate('[ [0,0,1],[499.99,7.9,1],[500,8,2],[5000,40,2],[5000.01,40.1,3] ].map(([cost,hours,complexity])=>effortScore({cost,hours,complexity}))'),[3,3,6,6,9]);
     await evaluate(`
       $('add').click();
+      $('cost').value = '1200';
+      $('hours').value = '16';
+      $('complexity').value = '1';
       $('title').value = 'Attachment check';
       const transfer = new DataTransfer();
       for (const name of ['plan.xlsx','scope.docx','map.pdf','photo.jpg','skip.exe']) {
@@ -60,6 +65,7 @@ const { launchBrowser } = require('./lib/browser-check.cjs');
     await evaluate('localStorage.clear()');
     await call('Page.reload');
     await waitFor("!!document.querySelector('.card')");
+    assert.equal(await evaluate("document.querySelector('.effort').textContent"),'Effort 5/9');
     await evaluate("document.querySelector('.card').click()");
     await waitFor("document.querySelectorAll('#fileList a').length === 4");
     assert.ok(await evaluate(`Promise.all([...document.querySelectorAll('#fileList a')].map(async link =>
@@ -69,7 +75,7 @@ const { launchBrowser } = require('./lib/browser-check.cjs');
     await evaluate("document.querySelector('.card').click()");
     await waitFor("document.querySelectorAll('#fileList a').length === 4");
     await evaluate("document.querySelector('#fileList button').click(); $('projectForm').requestSubmit()");
-    await waitFor("!$('editor').open");
+    await waitFor("!$('editor').open && projects.find(p=>p.title==='Attachment check')?.files.length === 3");
     await evaluate("document.querySelector('.card').click()");
     await waitFor("document.querySelectorAll('#fileList a').length === 3");
     const second = await launchBrowser();

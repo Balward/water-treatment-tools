@@ -27,6 +27,9 @@ footer { justify-content:flex-end }
 #error { color:#8b251d }
 @media(max-width:1000px){#board { grid-template-columns:repeat(2,minmax(0,1fr)) }}
 @media(max-width:580px){#board { grid-template-columns:1fr }.lane { min-height:110px }.toolbar label { max-width:100% }}
+#estimate { min-width:0; display:grid; gap:8px; margin:0; padding:12px; border:1px solid #cad8db; border-radius:7px }
+#estimate legend,#effortPreview,.card .effort { font-weight:650; color:#075c60 }
+#estimate small { margin-bottom:4px; color:#506873 }
 .attachments { min-width:0 }
 .attachments small { display:block; margin-top:5px; color:#506873 }
 #fileList { list-style:none; padding:0; margin:0 }

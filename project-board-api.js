@@ -85,9 +85,18 @@ module.exports = function register(app, directory = path.join(__dirname,'data','
       }
       db.exec('BEGIN IMMEDIATE');
       try {
-        const current = db.prepare('SELECT revision FROM projects WHERE id=?').get(id);
+        const current = db.prepare('SELECT revision,details FROM projects WHERE id=?').get(id);
         if (data.migrate && current) { db.exec('ROLLBACK'); return res.json({existing:true}); }
         if ((current?.revision || 0) !== data.revision) reject(409,'This project changed on the server. Reopen the board before saving.');
+        const previous = current ? JSON.parse(current.details) : {};
+        for (const field of ['cost','hours','complexity']) {
+          const value = Object.hasOwn(data,field) ? data[field] : previous[field];
+          if (value == null) continue;
+          if (!Number.isFinite(value) || value < 0 || (field === 'complexity' && ![1,2,3].includes(value))) {
+            reject(400,'Invalid estimate for ' + field + '.');
+          }
+          project[field] = value;
+        }
         const revision = data.revision+1;
         db.prepare('INSERT OR REPLACE INTO projects VALUES (?,?,?)').run(id,JSON.stringify(project),revision);
         if (project.place) db.prepare('INSERT OR IGNORE INTO locations VALUES (?)').run(project.place);
