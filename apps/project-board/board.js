@@ -82,6 +82,7 @@ function edit(project) {
   options($('place'), locations, 'No location', project?.place ?? $('filter').value);
   $('stage').value = project?.stage || stages[0];
   $('notes').value = project?.notes || '';
+  boardFiles.open(editing);
   $('editor').showModal();
 }
 $('stage').append(...stages.map(stage => new Option(stage)));
@@ -100,13 +101,25 @@ $('locationForm').onsubmit = event => {
   }
   if (save(locationPrefix + name.toLowerCase(),name)) $('locationDialog').close();
 };
-$('projectForm').onsubmit = event => {
+$('editor').onclose = boardFiles.reset;
+$('editor').oncancel = event => { if ($('projectForm').inert) event.preventDefault(); };
+$('projectForm').onsubmit = async event => {
   event.preventDefault();
   const title = $('title').value.trim();
   if (!title) { $('title').setCustomValidity('Enter a project title.'); $('title').reportValidity(); return; }
   const id = editing || Array.from(crypto.getRandomValues(new Uint32Array(4))).join('-');
   const project = {id,title,place:$('place').value,stage:$('stage').value,notes:$('notes').value.trim()};
-  if (save(projectPrefix + id, JSON.stringify(project))) $('editor').close();
+  if ($('projectForm').inert || !save(projectPrefix + id, JSON.stringify(project))) return;
+  editing = id;
+  $('projectForm').inert = true;
+  try {
+    await boardFiles.commit(id);
+    $('editor').close();
+  } catch {
+    $('fileMessage').textContent = 'Project details saved. Attachment changes could not be saved. Check browser storage and try again.';
+  } finally {
+    $('projectForm').inert = false;
+  }
 };
 window.addEventListener('storage', render);
 try { render(); } catch {

@@ -7,9 +7,10 @@
 <link rel="icon" href="/assets/logos/favicon.png">
 <link rel="stylesheet" href="/shared/operations/theme.css">
 <link rel="stylesheet" href="/shared/operations/navigation.css">
-<link rel="stylesheet" href="/apps/project-board/board.css?v=1">
+<link rel="stylesheet" href="/apps/project-board/board.css?v=2">
 <script defer src="/shared/operations/navigation.js?v=20261124-board"></script>
-<script defer src="/apps/project-board/board.js?v=1"></script>
+<script defer src="/apps/project-board/attachments.js?v=1"></script>
+<script defer src="/apps/project-board/board.js?v=2"></script>
 </head>
 <body data-ops-app="project-board">
 <header class="site-header">
@@ -28,6 +29,8 @@
 <label>Plant location<select id="place"></select></label>
 <label>Stage<select id="stage"></select></label>
 <label>Notes<textarea id="notes" rows="4"></textarea></label>
+<div class="attachments"><label>Attachments<input type="file" id="files" multiple aria-describedby="fileTypes"></label>
+<small id="fileTypes">Excel, Word, PDF, or images</small><ul id="fileList"></ul><span id="fileMessage" role="status"></span></div>
 <footer><button type="button" data-close>Cancel</button><button class="primary">Save project</button></footer></form></dialog>
 <dialog id="locationDialog" aria-labelledby="locationTitle"><form id="locationForm"><h2 id="locationTitle">Add location</h2><label>Location name<input id="name" required maxlength="100" autofocus></label>
 <footer><button type="button" data-close>Cancel</button><button class="primary">Save location</button></footer></form></dialog>
