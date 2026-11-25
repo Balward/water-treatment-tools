@@ -7,10 +7,10 @@
 <link rel="icon" href="/assets/logos/favicon.png">
 <link rel="stylesheet" href="/shared/operations/theme.css">
 <link rel="stylesheet" href="/shared/operations/navigation.css">
-<link rel="stylesheet" href="/apps/project-board/board.css?v=4">
+<link rel="stylesheet" href="/apps/project-board/board.css?v=5">
 <script defer src="/shared/operations/navigation.js?v=20261124-board-status"></script>
 <script defer src="/apps/project-board/attachments.js?v=2"></script>
-<script defer src="/apps/project-board/board.js?v=4"></script>
+<script defer src="/apps/project-board/board.js?v=5"></script>
 </head>
 <body data-ops-app="project-board">
 <header class="site-header">
@@ -19,7 +19,7 @@
 <button data-ops-menu class="ops-apps-button" aria-haspopup="dialog">Apps</button>
 </header>
 <main>
-<div class="heading"><div><h1>Project Board</h1><p>Personal projects · Saved on GibbHub</p></div><button class="primary" id="add" disabled>+ New project</button></div>
+<div class="heading"><div><h1>Project Board</h1><p>Personal projects · Saved on GibbHub</p></div><div class="view-actions"><a id="displayMode" href="?mode=tv">TV view</a><button class="primary" id="add" disabled>+ New project</button></div></div>
 <form id="login" hidden><label>Board access key<input id="accessKey" type="password" autocomplete="current-password" required></label><button class="primary">Unlock board</button></form>
 <div class="toolbar"><label>Plant location<select id="filter"></select></label><label>Sort by<select id="sort"><option>Location</option><option>Project title</option><option value="effort">Effort (highest first)</option></select></label><button id="addLocation" disabled>+ Add location</button></div>
 <p id="error" role="alert" hidden></p>
@@ -37,6 +37,8 @@
 <label>Complexity<select id="complexity"><option value="">Choose complexity</option><option value="1">Low · Routine work</option><option value="2">Medium · Requires coordination</option><option value="3">High · Specialized work or dependent steps</option></select></label>
 <output id="effortPreview" aria-live="polite"></output></fieldset>
 <label>Notes<textarea id="notes" rows="4"></textarea></label>
+<fieldset id="purchase"><legend>Purchase links</legend>
+<div id="linkRows"></div><button type="button" id="addLink">+ Add purchase link</button></fieldset>
 <div class="attachments"><label>Attachments<input type="file" id="files" multiple aria-describedby="fileTypes"></label>
 <small id="fileTypes">Excel, Word, PDF, or images · Up to 100 MB per save</small><ul id="fileList"></ul><span id="fileMessage" role="status"></span></div>
 <footer><button type="button" data-close>Cancel</button><button class="primary">Save project</button></footer></form></dialog>

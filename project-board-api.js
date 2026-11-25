@@ -89,6 +89,15 @@ module.exports = function register(app, directory = path.join(__dirname,'data','
         if (data.migrate && current) { db.exec('ROLLBACK'); return res.json({existing:true}); }
         if ((current?.revision || 0) !== data.revision) reject(409,'This project changed on the server. Reopen the board before saving.');
         const previous = current ? JSON.parse(current.details) : {};
+        const links = Object.hasOwn(data,'links') ? data.links : previous.links || [];
+        if (!Array.isArray(links)) reject(400,'Invalid purchase links.');
+        project.links = links.map(link => {
+          const label = textField(link?.label ?? '',160);
+          let url;
+          try { url = new URL(link?.url); } catch { reject(400,'Enter a valid retailer URL.'); }
+          if (!['https:','http:'].includes(url.protocol)) reject(400,'Use an http or https retailer link.');
+          return {label,url:url.href};
+        });
         for (const field of ['cost','hours','complexity']) {
           const value = Object.hasOwn(data,field) ? data[field] : previous[field];
           if (value == null) continue;

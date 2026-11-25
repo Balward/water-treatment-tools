@@ -10,6 +10,20 @@ let editing = null;
 let dragging = null;
 let locations = [];
 let projects = [];
+const viewParams = new URLSearchParams(location.search);
+const tv = viewParams.get('mode') === 'tv';
+document.body.classList.toggle('tv',tv);
+$('displayMode').textContent = tv ? 'Exit TV view' : 'TV view';
+function updateViewLink() {
+  const next = new URL(location.href);
+  if (tv) next.searchParams.delete('mode'); else next.searchParams.set('mode','tv');
+  for (const id of ['filter','sort']) {
+    if ($(id).value && (id !== 'sort' || $(id).value !== 'Location')) next.searchParams.set(id,$(id).value);
+    else next.searchParams.delete(id);
+  }
+  $('displayMode').href = next.href;
+}
+let restoreFilters = true;
 
 function element(tag, className, text) {
   const node = document.createElement(tag);
@@ -38,6 +52,14 @@ function previewEstimate() { $('effortPreview').textContent = scoreLabel(readEst
 $('estimate').addEventListener('input',previewEstimate);
 function render() {
   options($('filter'), locations, 'All locations', $('filter').value);
+  if (restoreFilters) {
+    const filter = viewParams.get('filter');
+    if (locations.includes(filter)) $('filter').value = filter;
+    const sort = viewParams.get('sort');
+    if ([...$('sort').options].some(item=>item.value === sort)) $('sort').value = sort;
+    restoreFilters = false;
+  }
+  updateViewLink();
   const visible = projects.filter(p => !$('filter').value || p.place === $('filter').value);
   const sort = $('sort').value;
   visible.sort((a,b) => {
@@ -52,7 +74,7 @@ function render() {
     heading.append(element('span','count',cards.length));
     lane.append(heading);
     for (const project of cards) {
-      const card = element('button','card','');
+      const card = element(tv ? 'article' : 'button','card','');
       card.append(element('strong','',project.title),element('small','',project.place || 'No location'));
       const estimates = [];
       if (project.cost != null) estimates.push('$' + project.cost.toLocaleString('en-US',{maximumFractionDigits:2}));
@@ -60,11 +82,12 @@ function render() {
       if (project.complexity != null) estimates.push(['Low','Medium','High'][project.complexity-1] + ' complexity');
       if (estimates.length) card.append(element('small','',estimates.join(' · ')));
       card.append(element('small','effort',scoreLabel(project)));
+      lane.append(card);
+      if (tv) continue;
       card.onclick = () => edit(project);
       card.draggable = true;
       card.ondragstart = event => { dragging = project.id; event.dataTransfer.setData('text/plain',project.id); };
       card.ondragend = () => { dragging = null; document.querySelectorAll('.over').forEach(n=>n.classList.remove('over')); };
-      lane.append(card);
     }
     if (!cards.length) lane.append(element('p','empty','No projects'));
     lane.ondragover = event => { if (dragging) { event.preventDefault(); lane.classList.add('over'); } };
@@ -89,7 +112,10 @@ function report(error) {
 }
 async function api(path = '', options) {
   const response = await fetch('/api/project-board' + path,options);
-  if (response.status === 401) $('login').hidden = false;
+  if (response.status === 401) {
+    $('login').hidden = false;
+    if (tv) $('board').replaceChildren();
+  }
   if (!response.ok) {
     const result = await response.json().catch(()=>({}));
     throw Error(result.error || 'Server request failed (' + response.status + ').');
@@ -138,6 +164,40 @@ $('login').onsubmit = async event => {
     await initialize();
   } catch(error) { report(error); }
 };
+function addPurchaseLink(link = {}) {
+  const row = element('div','purchase-row','');
+  const label = document.createElement('input');
+  label.placeholder = 'Item name (optional)';
+  label.setAttribute('aria-label','Item name');
+  label.maxLength = 160;
+  label.value = link.label || '';
+  const url = document.createElement('input');
+  url.type = 'url';
+  url.required = true;
+  url.placeholder = 'https://…';
+  url.setAttribute('aria-label','Retailer URL');
+  url.value = link.url || '';
+  const open = element('a','','Open retailer');
+  open.target = '_blank';
+  open.rel = 'noopener noreferrer';
+  function update() {
+    let address;
+    try { address = new URL(url.value); } catch {}
+    const valid = address && ['https:','http:'].includes(address.protocol);
+    url.setCustomValidity(url.value && !valid ? 'Enter a full http or https address.' : '');
+    open.hidden = !valid;
+    if (valid) open.href = address.href; else open.removeAttribute('href');
+  }
+  update();
+  url.oninput = update;
+  const remove = element('button','','Remove');
+  remove.type = 'button';
+  remove.onclick = () => row.remove();
+  row.append(label,url,open,remove);
+  $('linkRows').append(row);
+  return label;
+}
+$('addLink').onclick = () => addPurchaseLink().focus();
 function edit(project) {
   editing = project || {id:crypto.randomUUID(),revision:0};
   $('editorTitle').textContent = project ? 'Edit project' : 'New project';
@@ -147,6 +207,8 @@ function edit(project) {
   $('notes').value = project?.notes || '';
   for (const id of ['cost','hours','complexity']) $(id).value = project?.[id] ?? '';
   previewEstimate();
+  $('linkRows').replaceChildren();
+  for (const link of project?.links || []) addPurchaseLink(link);
   boardFiles.open(project);
   $('editor').showModal();
 }
@@ -175,6 +237,10 @@ $('projectForm').onsubmit = async event => {
   if (!title) { $('title').setCustomValidity('Enter a project title.'); $('title').reportValidity(); return; }
   if ($('projectForm').inert) return;
   const project = {...editing,...readEstimate(),title,place:$('place').value,stage:$('stage').value,notes:$('notes').value.trim()};
+  project.links = [...$('linkRows').children].map(row=>{
+    const [label,url] = row.querySelectorAll('input');
+    return {label:label.value.trim(),url:url.value.trim()};
+  });
   $('projectForm').inert = true;
   try {
     const {uploads,removed} = boardFiles.changes();
@@ -186,4 +252,14 @@ $('projectForm').onsubmit = async event => {
     report(error);
   } finally { $('projectForm').inert = false; }
 };
-initialize();
+updateViewLink();
+async function runBoard() {
+  await initialize();
+  while (tv) {
+    await new Promise(resolve => setTimeout(resolve,30000));
+    if (!$('login').hidden) continue;
+    try { await refresh(); $('error').hidden = true; }
+    catch(error) { report(error); }
+  }
+}
+runBoard();

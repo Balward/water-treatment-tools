@@ -18,8 +18,8 @@ const { launchBrowser } = require('./lib/browser-check.cjs');
   const origin = 'http://127.0.0.1:'+server.address().port;
   const browser = await launchBrowser();
   const {call, evaluate} = browser;
-  async function waitFor(expression) {
-    for (let attempt = 0; attempt < 100; attempt++) {
+  async function waitFor(expression, attempts = 100) {
+    for (let attempt = 0; attempt < attempts; attempt++) {
       if (await evaluate(expression)) return;
       await new Promise(resolve => setTimeout(resolve, 50));
     }
@@ -51,6 +51,11 @@ const { launchBrowser } = require('./lib/browser-check.cjs');
       $('hours').value = '16';
       $('complexity').value = '1';
       $('title').value = 'Attachment check';
+      $('addLink').click();
+      const [item, url] = $('linkRows').querySelectorAll('input');
+      item.value = 'Rack shelf';
+      url.value = 'https://www.grainger.com/example';
+      url.dispatchEvent(new Event('input'));
       const transfer = new DataTransfer();
       for (const name of ['plan.xlsx','scope.docx','map.pdf','photo.jpg','skip.exe']) {
         transfer.items.add(new File(['contents of ' + name], name));
@@ -68,6 +73,7 @@ const { launchBrowser } = require('./lib/browser-check.cjs');
     assert.equal(await evaluate("document.querySelector('.effort').textContent"),'Effort 5/9');
     await evaluate("document.querySelector('.card').click()");
     await waitFor("document.querySelectorAll('#fileList a').length === 4");
+    assert.equal(await evaluate("$('linkRows').querySelector('a').href"),'https://www.grainger.com/example');
     assert.ok(await evaluate(`Promise.all([...document.querySelectorAll('#fileList a')].map(async link =>
       link.download === link.textContent && await (await fetch(link.href)).text() === 'contents of ' + link.download
     )).then(matches => matches.every(Boolean))`));
@@ -93,6 +99,14 @@ const { launchBrowser } = require('./lib/browser-check.cjs');
       assert.equal(download[0],3);
       assert.equal(download[2],'contents of '+download[1]);
     } finally { await second.close(); }
+    await evaluate("$('editor').close(); $('displayMode').click()");
+    await waitFor("document.body.classList.contains('tv') && document.querySelector('article.card')");
+    assert.equal(await evaluate("getComputedStyle(document.querySelector('.site-header')).display"),'none');
+    assert.ok(await evaluate("$('board').getBoundingClientRect().top < 100"));
+    db.prepare("UPDATE projects SET details=json_set(details,'$.title',?), revision=revision+1 WHERE id=?").run('Updated on another device','old');
+    await waitFor("document.getElementById('board').textContent.includes('Updated on another device')",750);
+    await evaluate("$('displayMode').click()");
+    await waitFor("!document.body.classList.contains('tv') && document.querySelector('button.card')");
     assert.deepEqual(browser.errors, []);
     console.log('Attachment selection, rejection, persistence, downloads, cancellation and removal passed.');
   } finally {
