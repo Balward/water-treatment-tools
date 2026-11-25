@@ -1,0 +1,28 @@
+* { box-sizing:border-box }
+body { margin:0; background:#f4f7f8; color:#153745; font-family:Inter,"Segoe UI",sans-serif }
+main { max-width:1600px; margin:auto; padding:clamp(18px,4vw,60px) }
+.heading,.toolbar,footer { display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap }
+h1 { margin:0; font-size:clamp(32px,4vw,52px); letter-spacing:-.045em }
+.heading p { margin:7px 0; color:#516773 }
+.toolbar { justify-content:flex-start; align-items:end; padding:22px 0; margin:12px 0 8px; border-top:1px solid #cedbdf }
+label { display:grid; gap:6px; font-weight:600; font-size:.9rem }
+button,input,select,textarea { font:inherit; border:1px solid #a9bfc5; border-radius:7px; background:white; color:inherit; padding:10px 13px; max-width:100% }
+button { cursor:pointer; font-weight:650 }
+button:hover { border-color:#18706d }
+button.primary { background:#075c60; color:white; border-color:#075c60 }
+#board { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px }
+.lane { background:#e8eef0; border-radius:10px; padding:14px; border-top:4px solid var(--accent); min-height:230px }
+.lane h2 { display:flex; align-items:center; justify-content:space-between; margin:0 0 16px; font-size:1.1rem }
+.count { font-size:.82rem; background:white; border-radius:20px; padding:3px 9px }
+.card { width:100%; display:grid; text-align:left; gap:7px; margin-bottom:10px; border-color:#ccd9dd; padding:15px; overflow-wrap:anywhere }
+.card small,.empty { color:#506873; font-size:.85rem; font-weight:400 }
+.empty { padding:12px 0 }
+.lane.over { outline:2px dashed #18706d }
+dialog { color:inherit; border:0; border-radius:12px; padding:25px; width:min(440px,94vw) }
+dialog::backdrop { background:#17323db3 }
+form { display:grid; gap:16px }
+form h2 { margin:0 }
+footer { justify-content:flex-end }
+#error { color:#8b251d }
+@media(max-width:1000px){#board { grid-template-columns:repeat(2,minmax(0,1fr)) }}
+@media(max-width:580px){#board { grid-template-columns:1fr }.lane { min-height:110px }.toolbar label { max-width:100% }}

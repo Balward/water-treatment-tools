@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Project Board | Northglenn Water Treatment</title>
+<link rel="icon" href="/assets/logos/favicon.png">
+<link rel="stylesheet" href="/shared/operations/theme.css">
+<link rel="stylesheet" href="/shared/operations/navigation.css">
+<link rel="stylesheet" href="/apps/project-board/board.css?v=1">
+<script defer src="/shared/operations/navigation.js?v=20261124-board"></script>
+<script defer src="/apps/project-board/board.js?v=1"></script>
+</head>
+<body data-ops-app="project-board">
+<header class="site-header">
+<a class="brand" href="/"><img src="/assets/logos/northglenn-horizontal.png" alt="Northglenn Operations Home"></a>
+<div class="facility"><strong>Water Treatment Facility</strong><span>OPERATIONS &amp; TRAINING</span></div>
+<button data-ops-menu class="ops-apps-button" aria-haspopup="dialog">Apps</button>
+</header>
+<main>
+<div class="heading"><div><h1>Project Board</h1><p>Personal projects · Saved in this browser profile</p></div><button class="primary" id="add">+ New project</button></div>
+<div class="toolbar"><label>Plant location<select id="filter"></select></label><label>Sort by<select id="sort"><option>Location</option><option>Project title</option></select></label><button id="addLocation">+ Add location</button></div>
+<p id="error" role="alert" hidden></p>
+<div id="board"></div>
+</main>
+<dialog id="editor" aria-labelledby="editorTitle"><form id="projectForm"><h2 id="editorTitle">New project</h2>
+<label>Project title<input id="title" required maxlength="160" autofocus></label>
+<label>Plant location<select id="place"></select></label>
+<label>Stage<select id="stage"></select></label>
+<label>Notes<textarea id="notes" rows="4"></textarea></label>
+<footer><button type="button" data-close>Cancel</button><button class="primary">Save project</button></footer></form></dialog>
+<dialog id="locationDialog" aria-labelledby="locationTitle"><form id="locationForm"><h2 id="locationTitle">Add location</h2><label>Location name<input id="name" required maxlength="100" autofocus></label>
+<footer><button type="button" data-close>Cancel</button><button class="primary">Save location</button></footer></form></dialog>
+</body></html>
