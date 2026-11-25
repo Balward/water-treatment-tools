@@ -3,6 +3,7 @@ const express = require('express');
 const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
+const scrypt = require('node:util').promisify(crypto.scrypt);
 const {DatabaseSync} = require('node:sqlite');
 
 function reject(status, message) { throw Object.assign(new Error(message), {status}); }
@@ -17,6 +18,8 @@ module.exports = function register(app, directory = path.join(__dirname,'data','
   if (!fs.existsSync(keyPath)) fs.writeFileSync(keyPath,crypto.randomBytes(24).toString('base64url')+'\n',{flag:'wx',mode:0o600});
   const key = fs.readFileSync(keyPath,'utf8').trim();
   if (key.length < 32) throw Error('Invalid board access key');
+  const verifier = /^scrypt\$([a-f0-9]{32})\$([a-f0-9]{128})$/.exec(key);
+  if (key.startsWith('scrypt$') && !verifier) throw Error('Invalid board passcode verifier');
   const db = new DatabaseSync(path.join(directory,'board.sqlite'));
   db.exec(`PRAGMA foreign_keys=ON;
     CREATE TABLE IF NOT EXISTS projects(id TEXT PRIMARY KEY, details TEXT NOT NULL, revision INTEGER NOT NULL);
@@ -36,8 +39,15 @@ module.exports = function register(app, directory = path.join(__dirname,'data','
     }
     next();
   });
-  router.post('/login',express.json({limit:'1kb'}),(req,res)=>{
-    if (!equal(Buffer.from(String(req.body?.key || '')),Buffer.from(key))) return res.status(401).json({error:'Incorrect board access key.'});
+  router.post('/login',express.json({limit:'1kb'}),async(req,res,next)=>{
+    try {
+      const input = req.body?.key;
+      if (typeof input !== 'string' || !input || input.length > 256) return res.sendStatus(401);
+      const valid = verifier
+        ? equal(await scrypt(input,verifier[1],64),Buffer.from(verifier[2],'hex'))
+        : equal(Buffer.from(input),Buffer.from(key));
+      if (!valid) return res.status(401).json({error:'Incorrect board passcode.'});
+    } catch(error) { return next(error); }
     const age = 3*86400000, expires = String(Date.now()+age);
     res.cookie(cookie,expires+'.'+sign(expires),{httpOnly:true,sameSite:'strict',secure:process.env.NODE_ENV==='production',maxAge:age,path:'/'});
     res.json({ok:true});
